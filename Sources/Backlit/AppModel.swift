@@ -139,6 +139,11 @@ import Combine
     private var timerInterval = 0.0
     private var framePending = false
     private var competingController: String?
+    private var cachedLogoEnabled: Bool?
+    var logoStatus: LogoStatus {
+        LogoStatus(requested: output, hardwareEnabled: cachedLogoEnabled,
+                   controlling: controlling, lidClosed: cachedLid, preview: demo)
+    }
     private var cachedLid = false
     private var cachedLocked = false
     private var cachedAway = false
@@ -338,6 +343,7 @@ import Combine
                 if agents != nextAgents {agents=nextAgents}
             }
             cachedLid = demo ? false : RuntimeServices.lidClosed
+            cachedLogoEnabled = demo ? nil : LogoDevice.enabledState()
             cachedLocked = demo ? false : RuntimeServices.locked
             cachedAway = demo ? false : RuntimeServices.away
         }

@@ -152,17 +152,20 @@ if arguments.contains("--verify-hardware") {
     }
     func updateIcon() {
         guard status?.button != nil, model.visualUpdatesAllowed else { return }
-        // Geometry follows actual output. Cache at most 101 tiny template images.
-        let step = StatusIconGeometry.step(for: model.output)
+        // Confirmed hardware-off overrides the requested effect. This is not
+        // an optical brightness measurement. Cache at most 101 tiny images.
+        let logoStatus = model.logoStatus
+        let step = StatusIconGeometry.step(for: logoStatus.level)
         if step != lastIconStep {
             if iconCache[step] == nil { iconCache[step] = StatusIconGeometry.image(at: step) }
             status?.button?.image = iconCache[step]
             lastIconStep = step
         }
         let now=ProcessInfo.processInfo.systemUptime
-        if model.status != lastTooltipStatus || now-lastTooltipUpdate>=1 {
-            lastTooltipStatus=model.status;lastTooltipUpdate=now
-            status?.button?.toolTip="Backlit · \(model.status) · \(Effects.percent(model.output))% output"
+        let tooltip = "Backlit · \(model.mode.title) · \(logoStatus.detail)"
+        if now-lastTooltipUpdate>=1 {
+            lastTooltipStatus=tooltip;lastTooltipUpdate=now
+            status?.button?.toolTip=tooltip
         }
     }
     func installShortcut() {

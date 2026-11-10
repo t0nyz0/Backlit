@@ -119,6 +119,16 @@ final class LogoDevice {
             a.count == b.count && zip(a,b).allSatisfy { abs($0 - $1) <= max(0.001, abs($1) * 0.000001) }
         }
     }
+    /// The PWM enable flag is separate from the requested CoreBrightness curve.
+    /// Missing telemetry is unknown, never proof that the logo is off.
+    static func enabledState() -> Bool? {
+        let node = IORegistryEntryFromPath(kIOMainPortDefault, nodePath)
+        guard node != 0 else { return nil }
+        defer { IOObjectRelease(node) }
+        return (IORegistryEntryCreateCFProperty(node, "enabled" as CFString,
+                    kCFAllocatorDefault, 0)?.takeRetainedValue() as? NSNumber)?.boolValue
+    }
+
     static func telemetry() -> [String:Any] {
         var values: [String:Any] = [:]
         let node = IORegistryEntryFromPath(kIOMainPortDefault,nodePath)
