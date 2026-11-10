@@ -1,11 +1,11 @@
-Development checkout: **0.2.0-dev.3** (local testing build). Public downloads below remain the published release.
+Development checkout: **0.2.0-dev.4** (local testing build). Public downloads below remain the published release.
 
 <p align="center"><img src="docs/media/icon.png" width="96" alt="Backlit icon"></p>
 <h1 align="center">Backlit</h1>
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.0--dev.3-9a7400?style=flat" alt="Source 0.2.0-dev.3">
-<img src="https://img.shields.io/badge/local_tests-166_passing-2d6085?style=flat" alt="166 local tests passing">
+<img src="https://img.shields.io/badge/source-0.2.0--dev.4-9a7400?style=flat" alt="Source 0.2.0-dev.4">
+<img src="https://img.shields.io/badge/local_tests-223_passing-2d6085?style=flat" alt="223 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -27,7 +27,7 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 | --- | --- |
 | Steady | Holds the brightness you choose. |
 | Breathe | Fades in and out on a 3–10 second cycle. |
-| Battery | Automatic pulse only while actively charging; solid at full or paused charging. Unplugged, output equals the battery percentage down to zero. Manual brightness has no effect. Includes pulse speed, optional plugged-in styles, and charge-ready cues. |
+| Battery | Automatic pulse only while actively charging; solid at full or paused charging. Unplugged, output equals the battery percentage down to zero. Manual brightness has no effect. Includes pulse speed, a configurable “Dim to” floor (0% by default), optional plugged-in styles, and charge-ready cues. |
 | Music | Responds to bass energy in system playback, with automatic level adjustment, Smooth/Balanced/Punchy response, sensitivity, and dark-between-beat controls. |
 | Agents | Shows working, waiting, and attention states from coding agents. |
 | Trackpad | Lights while a finger rests on the trackpad, with any app open. Optional click blink and permission-gated typing response. |
@@ -50,7 +50,7 @@ The logo supports white light. Brightness and timing are adjustable; RGB colors 
 
 <p align="center"><img src="docs/media/menu-light.png" width="320" alt="Backlit menu with a small logo preview, behavior picker, and brightness controls"></p>
 
-The menu includes a small preview and controls for the selected behavior. Battery shows its actual battery-driven output; the other behaviors retain manual brightness. Backlit’s own outlined status icon remains visible when dim; its center follows current output. **Control–Command–B** or **Option-click** toggles the light. The shortcut is configurable.
+The menu includes a small preview and controls for the selected behavior. Battery shows its actual battery-driven output; the other behaviors retain manual brightness. Backlit’s own outlined status icon remains visible when dim; its center follows current output. **Control–Command–B** or **Option-click** toggles the light. The shortcut is configurable. You can hide the menu bar icon in Settings and reopen Backlit from the Dock or Applications.
 
 Launch connects compatible hardware automatically. Quit restores the previous logo curve. If restoration fails, Backlit retains a recovery record and offers Restore Light.
 

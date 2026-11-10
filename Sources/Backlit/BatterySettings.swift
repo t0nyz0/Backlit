@@ -22,16 +22,18 @@ enum BatteryReadyStyle: String, Codable, CaseIterable, Identifiable {
 struct BatteryResponseOptions: Codable, Equatable {
     var chargingStyle: BatteryChargeStyle = .breathe
     var pulsePeriod = 6.0
+    var pulseMinimum = 0.0
     var readyEnabled = false
     var readyThreshold = 1.0
     var readyStyle: BatteryReadyStyle = .pulse
     var readyDuration = 10.0
-    enum CodingKeys: String, CodingKey { case chargingStyle, pulsePeriod, readyEnabled, readyThreshold, readyStyle, readyDuration }
+    enum CodingKeys: String, CodingKey { case chargingStyle, pulsePeriod, pulseMinimum, readyEnabled, readyThreshold, readyStyle, readyDuration }
     init() {}
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         chargingStyle = (try? values.decode(BatteryChargeStyle.self, forKey: .chargingStyle)) ?? .breathe
         pulsePeriod = Self.bound((try? values.decode(Double.self, forKey: .pulsePeriod)) ?? 6, 3...10, fallback: 6)
+        pulseMinimum = Self.bound((try? values.decode(Double.self, forKey: .pulseMinimum)) ?? 0, 0...1, fallback: 0)
         readyEnabled = (try? values.decode(Bool.self, forKey: .readyEnabled)) ?? false
         readyThreshold = Self.bound((try? values.decode(Double.self, forKey: .readyThreshold)) ?? 1, 0.5...1, fallback: 1)
         readyStyle = (try? values.decode(BatteryReadyStyle.self, forKey: .readyStyle)) ?? .pulse
@@ -52,6 +54,9 @@ struct BatterySettingsControls: View {
             if model.batteryOptions.chargingStyle == .breathe {
                 HStack { Text("Pulse cycle"); Spacer(); Text(String(format: "%.1f seconds", model.batteryOptions.pulsePeriod)).monospacedDigit() }
                 Slider(value: $model.batteryOptions.pulsePeriod, in: 3...10, step: 0.5).accessibilityLabel("Battery pulse cycle seconds")
+                HStack { Text("Dim to"); Spacer(); Text("\(Effects.percent(model.batteryOptions.pulseMinimum))%").monospacedDigit() }
+                Slider(value: $model.batteryOptions.pulseMinimum, in: 0...1).accessibilityLabel("Charging pulse minimum brightness")
+                Text("0% goes fully dark between pulses.").foregroundStyle(.secondary)
                 Text("Pulses only while actively charging, then stays solid when charging pauses or finishes.").foregroundStyle(.secondary)
             } else if model.batteryOptions.chargingStyle == .steady {
                 Text("No charging pulse. Holds 100% logo output while plugged in.").foregroundStyle(.secondary)
@@ -75,7 +80,7 @@ struct BatterySettingsControls: View {
             }
             Button("Restore Battery Defaults") { model.batteryOptions = BatteryResponseOptions() }
                 .disabled(model.batteryOptions == BatteryResponseOptions())
-            Text("Default: automatic charging pulse, 6-second cycle, charge-ready signal off.").font(.system(size: 10)).foregroundStyle(.tertiary)
+            Text("Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.").font(.system(size: 10)).foregroundStyle(.tertiary)
         }.font(.system(size: 12))
     }
 }

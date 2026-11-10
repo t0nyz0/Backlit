@@ -67,7 +67,7 @@ struct UpdateConsent {
     func clear() { pending = nil; prepared = false }
 }
 
-@MainActor final class AppUpdater: NSObject, ObservableObject, SPUUpdaterDelegate {
+@MainActor final class AppUpdater: NSObject, ObservableObject, SPUUpdaterDelegate, @preconcurrency SPUStandardUserDriverDelegate {
     @Published private(set) var message: String?
     @Published private(set) var canCheck = true
     @Published private(set) var installPaused = false
@@ -76,12 +76,13 @@ struct UpdateConsent {
     private var observation: AnyCancellable?
     var recoverAfterFailure: (() -> Void)?
     private(set) var consent = UpdateConsent()
+    private var cancellationPending = false
 
     func check(preview: Bool) {
         do {
             _ = try UpdateConfiguration(info: Bundle.main.infoDictionary ?? [:], preview: preview)
             if controller == nil {
-                let next = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: self, userDriverDelegate: nil)
+                let next = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: self, userDriverDelegate: self)
                 // Manual-only policy also overrides persisted Sparkle auto-update settings.
                 next.updater.automaticallyChecksForUpdates = false
                 next.updater.automaticallyDownloadsUpdates = false
@@ -97,14 +98,36 @@ struct UpdateConsent {
         } catch { message = error.localizedDescription }
     }
     func retryInstall() { consent.approve(); installGate.retry(); installPaused = installGate.paused }
+    func continueApprovedInstallation() {
+        guard consent.approved else { return }
+        installGate.retry(); installPaused = installGate.paused
+    }
     func allowsTermination() -> Bool {
-        if !consent.allowsTermination { message = "An update is waiting. Choose Install Update and Relaunch, or dismiss it in the update window before quitting." }
+        if !consent.allowsTermination { message = "An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting." }
         return consent.allowsTermination
     }
     func showProgress() { controller?.checkForUpdates(nil) }
+    func standardUserDriverWillHandleShowingUpdate(_ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState) {
+        // A resumed installer is presented before willInstall callbacks. Arm
+        // here so ordinary Quit cannot act as an implicit installation choice.
+        if state.stage == .installing { consent.arm() }
+    }
     func updater(_ updater: SPUUpdater, userDidMake choice: SPUUserUpdateChoice, forUpdate item: SUAppcastItem, state: SPUUserUpdateState) {
-        if choice == .install { consent.approve() }
-        else { consent.reset() }
+        switch choice {
+        case .install:
+            cancellationPending = false; consent.approve()
+        case .dismiss:
+            // In installing stage, Dismiss closes the UI but leaves the
+            // installer alive. Never disarm a resumed install on that path.
+            if state.stage == .installing { consent.arm() }
+            else if !consent.armed { consent.reset() }
+        case .skip:
+            if state.stage == .installing || consent.armed {
+                consent.arm(); cancellationPending = true
+            } else { consent.reset() }
+        @unknown default:
+            consent.arm()
+        }
     }
     func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) { consent.arm() }
 
@@ -140,9 +163,14 @@ struct UpdateConsent {
     }
     func updater(_ updater: SPUUpdater, didAbortWithError error: Error) {
         if installGate.prepared { recoverAfterFailure?() }
-        installGate.clear(); consent.reset(); installPaused = false; message = error.localizedDescription
+        installGate.clear(); consent.reset(); cancellationPending = false; installPaused = false; message = error.localizedDescription
     }
     func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: Error?) {
+        if cancellationPending {
+            // Skip requests cancellation; wait for Sparkle to finish that
+            // update cycle instead of treating the UI choice as completion.
+            installGate.clear(); consent.reset(); cancellationPending = false
+        }
         if !installGate.paused { installPaused = false }
     }
 }

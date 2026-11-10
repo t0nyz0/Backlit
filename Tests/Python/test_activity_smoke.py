@@ -47,6 +47,7 @@ def fixture():
         thread.join(timeout=2)
 
 
+@unittest.skipUnless(sys.platform == 'darwin', 'requires macOS kqueue process-exit monitoring')
 class ActivitySmokeTests(unittest.TestCase):
     def test_real_job_exit_status_and_only_metadata_reach_fixture(self):
         with fixture() as (port, environment, events):
@@ -56,6 +57,16 @@ class ActivitySmokeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 7, result.stderr)
             self.assertEqual(events, [{'category': 'build', 'state': 'active', 'duration': 90},
                                       {'category': 'build', 'state': 'attention', 'duration': 8}])
+
+    def test_spawned_job_does_not_inherit_blocked_cancellation_signals(self):
+        job = ('import signal; blocked=signal.pthread_sigmask(signal.SIG_BLOCK, []); '
+               'raise SystemExit(9 if blocked.intersection({signal.SIGINT,signal.SIGTERM}) else 0)')
+        with fixture() as (port, environment, events):
+            result = subprocess.run([sys.executable, str(SCRIPT), '--port', str(port), 'run', 'build', '--',
+                                     sys.executable, '-c', job], env=environment,
+                                    capture_output=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual([event['state'] for event in events], ['active', 'complete'])
 
     @unittest.skipUnless(os.name == 'posix', 'requires POSIX process groups')
     def test_sigterm_reaps_only_owned_job_and_clears_signal(self):
@@ -89,3 +100,64 @@ class ActivitySmokeTests(unittest.TestCase):
                             os.killpg(child, signal.SIGKILL)
                     except ProcessLookupError:
                         pass
+
+    @unittest.skipUnless(os.name == 'posix', 'requires POSIX process groups')
+    def test_cancellation_stops_stubborn_grandchild_after_leader_exits(self):
+        for event in (signal.SIGINT, signal.SIGTERM):
+            with self.subTest(event=event), fixture() as (port, environment, events), tempfile.TemporaryDirectory(prefix='backlit-grandchild-fixture-') as folder:
+                ready = Path(folder) / 'grandchild'
+                parent_ready = Path(folder) / 'parent'
+                grandchild_code = (
+                    'import os,signal,time; from pathlib import Path; '
+                    'signal.signal(signal.SIGINT,signal.SIG_IGN); '
+                    'signal.signal(signal.SIGTERM,signal.SIG_IGN); '
+                    f'Path({str(ready)!r}).write_text(str(os.getpid())); time.sleep(60)'
+                )
+                parent_code = (
+                    'import os,signal,subprocess,sys,time; from pathlib import Path; '
+                    'signal.signal(signal.SIGINT,lambda *args: os._exit(0)); '
+                    'signal.signal(signal.SIGTERM,lambda *args: os._exit(0)); '
+                    f'child=subprocess.Popen([sys.executable,"-c",{grandchild_code!r}]); '
+                    f'path=Path({str(ready)!r}); '
+                    '\nwhile not path.exists(): time.sleep(0.01)\n'
+                    f'Path({str(parent_ready)!r}).write_text(str(os.getpid())); time.sleep(60)'
+                )
+                wrapper = subprocess.Popen([sys.executable, str(SCRIPT), '--port', str(port), 'run', 'build', '--',
+                                            sys.executable, '-c', parent_code], env=environment,
+                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                leader = descendant = None
+                try:
+                    deadline = time.monotonic() + 5
+                    while not parent_ready.exists() and time.monotonic() < deadline:
+                        time.sleep(0.01)
+                    self.assertTrue(parent_ready.exists(), 'fixture family did not become ready')
+                    leader = int(parent_ready.read_text())
+                    descendant = int(ready.read_text())
+                    self.assertEqual(os.getpgid(descendant), leader)
+                    wrapper.send_signal(event)
+                    _, stderr = wrapper.communicate(timeout=10)
+                    self.assertEqual(wrapper.returncode, 128 + event, stderr)
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(leader, 0)
+                    # Orphan reaping belongs to the OS; a zombie is terminated,
+                    # not a surviving job. Never mistake parent exit for proof.
+                    deadline = time.monotonic() + 2
+                    while time.monotonic() < deadline:
+                        state = subprocess.run(['/bin/ps', '-p', str(descendant), '-o', 'stat='],
+                                               capture_output=True, text=True, timeout=1).stdout.strip()
+                        if not state or state.startswith('Z'):
+                            break
+                        time.sleep(0.02)
+                    self.assertTrue(not state or state.startswith('Z'), 'stubborn grandchild survived cancellation')
+                    descendant = None
+                    self.assertEqual([item['state'] for item in events], ['active', 'clear'])
+                finally:
+                    if wrapper.poll() is None:
+                        wrapper.kill()
+                    if descendant is not None and leader is not None:
+                        try:
+                            if os.getpgid(descendant) == leader:
+                                os.killpg(leader, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                    wrapper.communicate(timeout=5)

@@ -61,7 +61,8 @@ if arguments.contains("--verify-hardware") {
     static weak var shared: AppDelegate?
     let model = AppModel(demo:arguments.contains("--preview") || option("--capture-suite") != nil || Bundle.main.object(forInfoDictionaryKey: "BacklitIsolatedPreview") as? Bool == true)
     var window: NSWindow!
-    var status: NSStatusItem!
+    let menuBarItem = MenuBarItemController<NSStatusItem>()
+    var status: NSStatusItem? { menuBarItem.item }
     var popover = NSPopover()
     var iconCache:[Int:NSImage]=[:]
     var lastIconStep = -1
@@ -71,6 +72,7 @@ if arguments.contains("--verify-hardware") {
     var eventHandler: EventHandlerRef?
     var observing: NSObjectProtocol?
     var quitObserver: NSObjectProtocol?
+    private var terminationPending = false
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
         NSApp.setActivationPolicy(.regular)
@@ -84,11 +86,10 @@ if arguments.contains("--verify-hardware") {
         model.onIconChange = { [weak self] in self?.updateIcon() }
         model.isPreviewVisible = { [weak self] in
             guard let self else{return false}
-            return (self.window.isVisible && !self.window.isMiniaturized && self.model.selectedPage == "light") || self.popover.isShown
+            return !NSApp.isHidden && ((self.window.isVisible && !self.window.isMiniaturized && self.model.selectedPage == "light") || self.popover.isShown)
         }
-        status = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
-        status.button?.target = self; status.button?.action = #selector(toggleMenu)
-        status.button?.sendAction(on:[.leftMouseUp,.rightMouseUp])
+        model.onMenuBarIconVisibilityChange = { [weak self] in self?.updateMenuBarVisibility() }
+        updateMenuBarVisibility()
         popover.contentViewController = NSHostingController(rootView:MenuView(model:model)); popover.behavior = .transient
         updateIcon(); installShortcut()
         observing = NotificationCenter.default.addObserver(forName:.init("Backlit.Shortcut"),object:nil,queue:.main){[weak self] _ in Task { @MainActor in self?.installShortcut() }}
@@ -100,6 +101,13 @@ if arguments.contains("--verify-hardware") {
         AutomationRouter.shared.enabled = model.automationsEnabled && !model.demo
         model.updater.recoverAfterFailure = { [weak model] in model?.resumeAfterUpdateFailure() }
         model.updater.installGate.prepare = { [weak model] in model?.prepareQuit() ?? false }
+        model.onLidStopCompleted = { [weak self] safe in
+            guard let self else { return }
+            if self.terminationPending {
+                self.terminationPending = false
+                NSApp.reply(toApplicationShouldTerminate: safe && self.model.prepareQuit())
+            } else if safe { self.model.updater.continueApprovedInstallation() }
+        }
         model.start()
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
@@ -116,15 +124,34 @@ if arguments.contains("--verify-hardware") {
     func showWindow() {popover.performClose(nil);window.makeKeyAndOrderFront(nil);NSApp.activate(ignoringOtherApps:true)}
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
         guard model.updater.allowsTermination() else { model.error = model.updater.message; return .terminateCancel }
-        return model.prepareQuit() ? .terminateNow : .terminateCancel
+        if model.prepareQuit() { return .terminateNow }
+        if model.lidStopPending { terminationPending = true; return .terminateLater }
+        return .terminateCancel
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {false}
     @objc func toggleMenu() {
         if NSApp.currentEvent?.modifierFlags.contains(.option) == true {model.enabled.toggle();return}
         if popover.isShown {popover.performClose(nil)}
-        else if let button=status.button {popover.show(relativeTo:button.bounds,of:button,preferredEdge:.minY);popover.contentViewController?.view.window?.makeKey()}
+        else if let button=status?.button {popover.show(relativeTo:button.bounds,of:button,preferredEdge:.minY);popover.contentViewController?.view.window?.makeKey()}
+    }
+    func updateMenuBarVisibility() {
+        if !model.menuBarIconVisible { popover.performClose(nil) }
+        if menuBarItem.setVisible(model.menuBarIconVisible, create: {
+            let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+            item.button?.target = self; item.button?.action = #selector(toggleMenu)
+            item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            return item
+        }, remove: { NSStatusBar.system.removeStatusItem($0) }) {
+            lastIconStep = -1; lastTooltipUpdate = -Double.infinity
+            updateIcon()
+        }
+    }
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showWindow()
+        return true
     }
     func updateIcon() {
+        guard status?.button != nil else { return }
         // Geometry follows actual output. Cache at most 101 tiny template images.
         let step = StatusIconGeometry.step(for: model.output)
         if step != lastIconStep {
@@ -212,6 +239,23 @@ if arguments.contains("--verify-hardware") {
             let iconWindow=NSWindow(contentRect:icon.frame,styleMask:.borderless,backing:.buffered,defer:false);iconWindow.contentView=icon;iconWindow.orderFront(nil)
             try await Task.sleep(nanoseconds:200_000_000)
             try capture(icon,to:directory.appendingPathComponent("icon.png"));iconWindow.orderOut(nil)
+            if arguments.contains("--capture-marker-levels") {
+                model.mode = .steady; model.selectedPage = "light"; model.notice = nil
+                for appearance in ["light", "dark"] {
+                    model.appearance = appearance
+                    for (name, level) in [("off", 0.0), ("low", 0.01), ("mid", 0.5), ("high", 1.0)] {
+                        model.brightness = level; model.enabled = level > 0
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                        try capture(window.contentView!.superview!, to: directory.appendingPathComponent("marker-window-\(appearance)-\(name).png"))
+                        let panel = NSHostingView(rootView: MenuView(model: model)); panel.frame = NSRect(origin: .zero, size: panel.fittingSize)
+                        let owned = NSWindow(contentRect: panel.frame, styleMask: .borderless, backing: .buffered, defer: false)
+                        owned.contentView = panel; owned.orderFront(nil)
+                        try await Task.sleep(nanoseconds: 100_000_000)
+                        try capture(owned.contentView!.superview!, to: directory.appendingPathComponent("marker-menu-\(appearance)-\(name).png"))
+                        owned.orderOut(nil)
+                    }
+                }
+            }
             print("Native preview screenshots captured in \(directory.path)")
         } catch { print("Capture failed: \(error)") }
         model.quit()

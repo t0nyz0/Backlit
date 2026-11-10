@@ -1,15 +1,19 @@
 # Backlit validation
 
-Candidate: **0.2.0-dev.3**, build 23. Local development build; not published. The exact candidate has not run in remote GitHub Actions. Artifact source identity and signing status are recorded in BUILD-INFO.json; SHA256SUMS.txt covers package bytes.
+Candidate: **0.2.0-dev.4**, build 24. Local development build; not published. The exact candidate has not run in remote GitHub Actions. Artifact source identity and signing status are recorded in BUILD-INFO.json; SHA256SUMS.txt covers package bytes.
 
 ## Executed local checks
 
-- 109 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
-- 43 Python tests cover Home Assistant Core/client fixtures, process/job cancellation, OBS worker/HTTP fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
+- 147 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 62 Python tests cover Home Assistant Core/client fixtures, process/job cancellation, OBS worker/HTTP fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 14 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, five-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
 
 Battery tests use saved manual levels of 0%, 25%, 50%, and other values; every unplugged percentage including zero is tested. Default/migrated preferences, active/full/paused/unplugged transitions, optional styles/cues, mode switching and preserved manual settings are covered. The original multiplier-based expectation was wrong and has been replaced. Native UI review must confirm the workspace and menu show output without a Battery manual slider.
+
+Battery pulse-floor tests sample arbitrary 20 Hz phases and verify the configured trough. Explicit zero writes bypass near-zero coalescing. Optical darkness and timing still need device observation. Menu visibility preference, repeated item lifecycles and asynchronous closed-lid cleanup/recovery are covered by isolated fixtures.
+
+Preview geometry/render tests verify fixed centered square marks at off/low/mid/high levels, filled corners, a continuous concentric halo, and finite rendering for invalid inputs.
 
 Screenshots are captured from current native views in isolated preview; they illustrate UI and do not measure emitted light. See [provenance](media/README.md).
 
@@ -23,8 +27,8 @@ Screenshots are captured from current native views in isolated preview; they ill
 | Shortcuts | Five actions extract, but native discovery is blocked in the ad-hoc signing setup. Metadata extraction is not a discovery pass. |
 | Stream Deck / OBS | Fixture/plugin packaging tests pass; actual key/profile, OBS script and recording/streaming operation remain unverified. |
 | Home Assistant / agents | Local fixtures pass; existing installation/LAN policy and live Codex compatibility remain separate checks. |
-| Updater | Trust key/feed missing, so disabled. Signature fixtures and consent tests do not prove end-to-end discovery, installation, resumed/interrupted updates or rollback/relaunch. |
-| Local installer | Filesystem fixtures cover success, signature/copy/swap/launch failure and interruption restoration. This is separate from Sparkle's update installer. |
+| Updater | Trust key/feed missing, so disabled. A disposable two-version host passed a signed upgrade/relaunch and rejected a modified signed feed. Its routes used fixture-only localhost overrides and synthetic restoration. Production transport/signing, resumed/interrupted updates, cancellation acknowledgement and failure rollback/relaunch remain unverified. |
+| Local installer | Fixtures cover copy/signature/swap/launch failure, interruption, failed rollback moves, and accepted launch followed by immediate exit. A verified prior bundle is retained until explicit validation; launch acceptance alone is not a health check. Separate from Sparkle's installer. |
 | Hardware / power | Other hardware/OS, login/reboot, administrator overrides, physical lid closure/timeout/thermal cutoffs, and forced termination recovery remain separate gates. |
 
 ## Efficiency and distribution

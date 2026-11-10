@@ -11,6 +11,14 @@ import Combine
     let updater = AppUpdater()
     let demo: Bool
     let defaults: UserDefaults
+    @Published var menuBarIconVisible = true {
+        didSet {
+            guard !isLoading, menuBarIconVisible != oldValue else { return }
+            defaults.set(menuBarIconVisible, forKey: "menuBarIcon.visible")
+            onMenuBarIconVisibilityChange?()
+        }
+    }
+    var onMenuBarIconVisibilityChange: (() -> Void)?
     let device: LogoDevice
     let audio = SystemAudio()
     let touch = TouchResponse()
@@ -84,7 +92,7 @@ import Combine
     @Published var battery = 0.0
     @Published var activelyCharging = false
     @Published var charging = false
-    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 && batteryOptions.chargingStyle == .breathe }
+    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 && batteryOptions.chargingStyle == .breathe && BatteryResponseOptions.bound(batteryOptions.pulseMinimum, 0...1, fallback: 0) < 1 }
     var batteryPowerLabel: String {
         guard batteryAvailable else { return "Battery state unavailable" }
         if !charging { return "On battery" }
@@ -135,12 +143,34 @@ import Combine
     private var cachedLocked = false
     private var cachedAway = false
     private var audioConsent = false
-    private var audioGeneration = 0
-    private var audioTask: Task<Void, Never>?
+    private lazy var audioSession = AudioSessionDriver(
+        start: { [audio = self.audio] in try await audio.start() },
+        stop: { [audio = self.audio] in await audio.stop() },
+        eligible: { [weak self] in
+            guard let self else { return false }
+            return !self.demo && self.musicCaptureAllowed
+        },
+        changed: { [weak self] state in
+            guard let self else { return }
+            self.audioStarting = state == .starting
+            self.audioRunning = state == .running
+            if state == .running { self.audioConsent = true }
+            self.requestFrame()
+        },
+        failed: { [weak self] error in
+            guard let self else { return }
+            self.audioPermissionHelp = true
+            self.error = SystemAudio.friendly(error).localizedDescription
+            self.requestFrame()
+        })
     private var screenSleeping = false
     private var systemSleeping = false
     private var consoleActive = true
-    private var watcher: Process?
+    private var watcher: (any LidWatcherProcess)?
+    private let lidStopper: LidWatcherStopper
+    private(set) var lidStopPending = false
+    var onLidStopCompleted: ((Bool) -> Void)?
+    private var lidStopFailed = false
     private var lease: URL?
     private var observers: [NSObjectProtocol] = []
     private let epoch = ProcessInfo.processInfo.systemUptime
@@ -172,9 +202,11 @@ import Combine
     }
     var colorScheme: ColorScheme? { appearance == "dark" ? .dark : appearance == "light" ? .light : nil }
 
-    init(demo: Bool = false, defaults: UserDefaults? = nil) {
+    init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil) {
+        self.lidStopper = lidStopper ?? LidWatcherStopper()
         self.demo = demo
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
+        if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
         device = LogoDevice(directory:AgentBridge.directory)
         if let raw = self.defaults.string(forKey:"mode"), let mode = GlowMode(rawValue:raw) { self.mode = mode }
         if self.defaults.object(forKey:"brightness") != nil { brightness = self.defaults.double(forKey:"brightness") }
@@ -233,6 +265,7 @@ import Combine
         }
         audio.onFailure = { [weak self] text, token in Task { @MainActor in
             guard let self, self.audioRunning, self.audio.acceptsFailure(token) else { return }
+            self.audioSession.requestStop()
             self.audioRunning = false; self.error = text; self.requestFrame()
         } }
         bridge.state = { [weak self] in self?.apiState() ?? [:] }
@@ -246,6 +279,18 @@ import Combine
             self.tick()
         }
         bridge.onStatus = { [weak self] text in self?.bridgeStatus = text }
+        self.lidStopper.onResult = { [weak self] result in
+            guard let self else { return }
+            self.lidStopPending = false
+            self.lidStopFailed = !result.safeToQuit
+            if result.safeToQuit {
+                self.watcher = nil; self.lease = nil
+                if result.leaseRemovalError != nil { self.notice = "Normal lid sleep was restored. A leftover session file could not be removed." }
+            } else {
+                self.error = "Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry."
+            }
+            self.onLidStopCompleted?(result.safeToQuit)
+        }
         isLoading = false
     }
     func start() {
@@ -315,7 +360,7 @@ import Combine
         if nextPause != nil && touchDown { touch.reset() }
         let nextOutput = effectOutput(at: now)
         output = nextOutput
-        if (demo || isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
+        if (isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
         // Capture pauses independently of hardware ownership: losing the
         // device must not keep audio active after display sleep or lock.
         if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }
@@ -330,7 +375,7 @@ import Combine
         }
         onIconChange?()
         configureTimer()
-        if let watcher, !watcher.isRunning { self.watcher = nil; keepClosed = false; error = "The closed-lid watcher stopped (\(watcher.terminationStatus)). Review power recovery in Settings." }
+        if let watcher, !watcher.isRunning, !lidStopPending, !lidStopFailed { stopLid() }
     }
     func effectOutput(at now: Double) -> Double {
         var input = EffectInput()
@@ -441,8 +486,16 @@ import Combine
     }
     func restore() {
         guard !demo else { return }
-        controlWanted = false; stopLid()
-        do { try device.restore(); controlling = false; try RuntimeServices.repairLid(); notice = "The saved logo and lid settings were restored." }
+        controlWanted = false
+        if lidStopPending || watcher?.isRunning == true {
+            stopLid(); notice = "Closed-lid cleanup is in progress. Retry Restore Light when it finishes."; return
+        }
+        do {
+            try device.restore(); controlling = false
+            let verify = watcher != nil
+            guard try completePowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
+            notice = "The saved logo and lid settings were restored."
+        }
         catch { self.error = error.localizedDescription }
     }
     private var musicCaptureAllowed: Bool {
@@ -452,36 +505,31 @@ import Combine
     func startAudio() {
         guard musicCaptureAllowed, !audioStarting, !audioRunning else { return }
         if demo { notice = "Preview uses a sample waveform. Live system audio is never started in preview."; return }
-        audioGeneration += 1
-        let generation = audioGeneration, previous = audioTask
-        audioStarting = true; audioPermissionHelp = false
-        audioTask = Task { [weak self] in
-            await previous?.value
-            guard let self, generation == self.audioGeneration else { return }
-            guard self.musicCaptureAllowed else { self.audioStarting = false; self.requestFrame(); return }
-            do {
-                try await self.audio.start()
-                if generation != self.audioGeneration || !self.musicCaptureAllowed { await self.audio.stop() }
-                else { self.audioRunning = true; self.audioConsent = true }
-            } catch {
-                if generation == self.audioGeneration { self.audioPermissionHelp = true; self.error = SystemAudio.friendly(error).localizedDescription }
-            }
-            if generation == self.audioGeneration { self.audioStarting = false; self.requestFrame() }
-        }
+        audioPermissionHelp = false
+        audioSession.requestStart()
     }
     func openAudioPrivacy() {
         NSWorkspace.shared.open(URL(string:"x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
     }
     func stopAudio() {
         musicResponse.reset()
-        audioGeneration += 1; audioRunning = false; audioStarting = false
-        let previous = audioTask
-        audioTask = Task { [audio] in await previous?.value; await audio.stop() }
+        audioSession.requestStop()
+        audioRunning = false; audioStarting = false
         requestFrame()
+    }
+    private func resumeAudioAfterUpdateFailure() {
+        guard audioSession.hasResumeIntent else { return }
+        // Refresh sleep/lock/session policy before considering the saved intent.
+        lastSourceSample = -Double.infinity
+        tick()
+        audioSession.resumeAfterInterruption(consented: audioConsent)
     }
     func setLid(_ enabled: Bool) {
         guard !demo else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
         if !enabled { stopLid(); return }
+        guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else {
+            error = "Finish the previous closed-lid session cleanup before starting another."; return
+        }
         guard controlling, device.competingApp == nil else { error = "Your logo needs to be ready before starting a closed-lid session."; return }
         do {
             try FileManager.default.createDirectory(at:AgentBridge.directory,withIntermediateDirectories:true)
@@ -490,13 +538,30 @@ import Combine
             let process = Process(); process.executableURL = Bundle.main.executableURL
             process.arguments = ["--watch-lid",String(getpid()),file.path]
             process.standardOutput = FileHandle.nullDevice; process.standardError = FileHandle.nullDevice
-            try process.run(); lease = file; watcher = process; keepClosed = true
+            try process.run(); adoptLidWatcher(process, lease: file)
         } catch { self.error = error.localizedDescription }
     }
+    /// Retain one owned helper until its exit and recovery record are checked.
+    @discardableResult func adoptLidWatcher(_ process: any LidWatcherProcess, lease: URL) -> Bool {
+        guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else { return false }
+        watcher = process; self.lease = lease; keepClosed = true; lidStopFailed = false
+        return true
+    }
     func stopLid() {
-        if let lease { try? FileManager.default.removeItem(at:lease) }
-        if let watcher, watcher.isRunning { watcher.waitUntilExit() }
-        watcher = nil; lease = nil; keepClosed = false
+        keepClosed = false
+        guard let watcher else { return }
+        if lidStopper.requestStop(process: watcher, lease: lease,
+            journal: AgentBridge.directory.appendingPathComponent("lid-recovery.json")) {
+            lidStopPending = true; lidStopFailed = false
+        }
+    }
+    /// Only an explicit successful power repair can retire a failed helper.
+    /// The caller must verify the normal power state, not merely delete a file.
+    @discardableResult func completePowerRecovery(_ repair: () throws -> Void) rethrows -> Bool {
+        guard !lidStopPending, !lidStopper.hasOutstandingFilesystemWork, watcher?.isRunning != true else { return false }
+        try repair()
+        watcher = nil; lease = nil; lidStopFailed = false
+        return true
     }
     func setAmbient(_ enabled: Bool) {
         guard !demo, device.available else { error = "A compatible live Mac is required."; return }
@@ -568,19 +633,27 @@ import Combine
         startPowerMonitoring()
         if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
         configureTimer(); requestFrame()
+        resumeAudioAfterUpdateFailure()
     }
     func quit() {
         guard updater.allowsTermination() else { error = updater.message; return }
-        if prepareQuit() { NSApp.terminate(nil) }
+        NSApp.terminate(nil)
     }
     func prepareQuit() -> Bool {
         if terminationApproved { return true }
+        // Cocoa's terminateLater path keeps the run loop responsive while the
+        // owned helper restores power. No hardware/quit decision is discarded.
+        if watcher != nil || lidStopPending {
+            stopLid()
+            return false
+        }
         if controlling && !enabled {
             let alert = NSAlert(); alert.messageText = "Leave the logo off?"; alert.informativeText = "You can leave it dark or restore the settings from before this Backlit session. A saved recovery remains available on the next launch."
             alert.addButton(withTitle:"Restore and Quit"); alert.addButton(withTitle:"Leave Off and Quit"); alert.addButton(withTitle:"Cancel")
             let result = alert.runModal(); if result == .alertThirdButtonReturn { return false }
             if result == .alertSecondButtonReturn { controlling = false }
         }
+        audioSession.retainResumeIntent(consented: audioConsent)
         isStopping = true; synchronizeTouch(); synchronizeTyping(); powerMonitor.stop(); timer?.invalidate()
         stopLid(); releaseHardware()
         if controlling { isStopping=false; startPowerMonitoring(); synchronizeTouch(forceRestart: true); synchronizeTyping(forceRestart: true); configureTimer(); return false }

@@ -256,6 +256,10 @@ struct SettingsPage: View {
             Divider()
             settingRow("Language","English / 繁體中文") {Picker("Language",selection:$model.language){Text("English").tag("en");Text("繁體中文").tag("zh-Hant")}.labelsHidden().frame(width:150)}
             Divider()
+            settingRow("Show menu bar icon", "When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.") {
+                Toggle("Show menu bar icon", isOn: $model.menuBarIconVisible).labelsHidden().toggleStyle(.switch)
+            }
+            Divider()
             settingRow(model.t("Open at login","登入時開啟"),"Keep Backlit a click away in the menu bar.") {Toggle("Open at login",isOn:Binding(get:{model.loginEnabled},set:{model.setLogin($0)})).labelsHidden().toggleStyle(.switch)}
             Divider()
             settingRow(model.t("Logo shortcut","標誌快捷鍵"),"Toggle the logo from any app. Option-click the menu icon also works.") {Button(model.shortcutLabel){recording=true}.frame(width:150)}
@@ -310,8 +314,7 @@ struct MenuLidPreview: View {
         ZStack {
             RoundedRectangle(cornerRadius:8).fill(LinearGradient(colors:[Color(white:0.30),Color(white:0.13)],startPoint:.topLeading,endPoint:.bottomTrailing))
                 .overlay(RoundedRectangle(cornerRadius:8).stroke(.white.opacity(0.25),lineWidth:0.6))
-            Capsule().fill(.white.opacity(0.12+presentation.level*0.88)).frame(width:20,height:5)
-                .shadow(color:.white.opacity(presentation.level*0.8),radius:12)
+            MenuLightMark(level: presentation.level)
             VStack {Spacer();Capsule().fill(.white.opacity(0.22)).frame(height:1).padding(.horizontal,14).padding(.bottom,4)}
         }.frame(width:88,height:60).accessibilityLabel("Logo preview, \(Effects.percent(presentation.level)) percent")
     }

@@ -69,7 +69,8 @@ struct BatteryResponse {
             }
         }
         completionStarted = nil
-        requiresAnimation = externalPower && options.chargingStyle == .breathe && !settledAtFull && activelyCharging
+        let minimum = BatteryResponseOptions.bound(options.pulseMinimum, 0...1, fallback: 0)
+        requiresAnimation = externalPower && options.chargingStyle == .breathe && !settledAtFull && activelyCharging && minimum < 1
         guard externalPower else { return amount }
         switch options.chargingStyle {
         case .level: return amount
@@ -78,7 +79,11 @@ struct BatteryResponse {
             guard !settledAtFull && activelyCharging else { return 1 }
             let cycle = BatteryResponseOptions.bound(options.pulsePeriod, 3...10, fallback: 6)
             let phase = now.truncatingRemainder(dividingBy: cycle) / cycle
-            return 0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2
+            // A finite trough lasts 160 ms, so a normal 20 Hz frame cadence
+            // reaches the configured floor even when its phase is arbitrary.
+            let distance = min(phase, 1 - phase), hold = 0.08 / cycle
+            let ramp = max(0, (distance - hold) / (0.5 - hold))
+            return minimum + (1 - minimum) * (1 - cos(.pi * ramp)) / 2
         }
     }
 }

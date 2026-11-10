@@ -74,6 +74,10 @@ final class LogoDevice {
         lease = acquired
     }
 
+    static func requiresWrite(from previous: Double, to next: Double) -> Bool {
+        // The exact off endpoint must not be swallowed by normal coalescing.
+        (next == 0 && previous != 0) || abs(previous - next) >= 0.5
+    }
     func apply(_ brightness: Double) throws {
         guard saved != nil else { throw failure("Logo control has not been enabled.") }
         guard brightness.isFinite else { throw failure("Invalid brightness.") }
@@ -81,7 +85,7 @@ final class LogoDevice {
         let rows: [[Double]] = [[0, nits], [Double(Float.greatestFiniteMagnitude), nits]]
         if let lastWritten {
             guard let current = mapping(), Self.equivalent(current,lastWritten) else { throw failure("Another controller changed the logo. Backlit stopped writing; recovery is retained.") }
-            if abs(lastWritten[0][1] - nits) < 0.5 { return }
+            if !Self.requiresWrite(from: lastWritten[0][1], to: nits) { return }
         }
         guard set(rows as NSArray, key: Self.mappingKey), set(NSNumber(value: 1), key: "DisplayPowerStateEvent") else {
             throw failure("macOS rejected the logo brightness change. Restore Logo Settings before retrying.")

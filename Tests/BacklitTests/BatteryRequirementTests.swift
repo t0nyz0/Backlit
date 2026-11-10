@@ -58,7 +58,7 @@ final class BatteryRequirementTests: XCTestCase {
                 XCTAssertEqual(model.batteryOptions.chargingStyle, .breathe)
                 XCTAssertFalse(model.batteryOptions.readyEnabled)
                 model.updateBattery(.init(level: 0.62, externalPower: true, activelyCharging: true))
-                XCTAssertEqual(model.effectOutput(at: 0), 0.15, accuracy: 0.000001)
+                XCTAssertEqual(model.effectOutput(at: 0), 0, accuracy: 0.000001)
                 XCTAssertEqual(model.effectOutput(at: 3), 1, accuracy: 0.000001)
                 model.updateBattery(.init(level: 0.62, externalPower: true, activelyCharging: false))
                 XCTAssertEqual(model.effectOutput(at: 4), 1)
