@@ -158,7 +158,12 @@ import Combine
         switch mode {
         case .steady:return t("Glowing","發光中")
         case .breathe:return t("Breathing","呼吸中")
-        case .battery:return t("Following your battery","跟隨電量")
+        case .battery:
+            if !batteryAvailable { return "Battery state unavailable" }
+            if batteryResponse.completionActive { return "Charge-ready signal" }
+            if batteryIsPulsing { return "Pulsing while charging" }
+            if charging && batteryOptions.chargingStyle != .level { return "Steady while plugged in" }
+            return t("Following your battery","跟隨電量")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
         case .signals:return signalStatus

@@ -1,4 +1,4 @@
-Development checkout: **0.2.0-dev.1** (local testing build). Public downloads below remain the published release.
+Development checkout: **0.2.0-dev.2** (local testing build). Public downloads below remain the published release.
 
 <p align="center"><img src="docs/media/icon.png" width="96" alt="Backlit icon"></p>
 <h1 align="center">Backlit</h1>

@@ -135,6 +135,7 @@ struct LightPage: View {
                         }
                         Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .battery {
+                        Label("\(Int(model.battery * 100))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
                     } else if model.mode == .signals {
                         SignalResponseControls(model: model)
