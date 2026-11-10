@@ -1,5 +1,5 @@
 {
-  "app_version": "0.1.7",
+  "app_version": "0.1.8",
   "native_capture": true,
   "isolated_preview": true,
   "source": "Backlit --capture-suite docs/media",
@@ -13,12 +13,12 @@
     "connections-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "9777b71a53474f21fed5c8f8dee7c5d5da168dfb9142642c11b5ffd2b2ee31e4"
+      "sha256": "cf62e925ddc0f70b16c9ff82df9669549d7d70283877df6c3098892672e9a367"
     },
     "connections-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "dbb12cb838c46767612d95dd3426e1f83c095e3e2c56fa95cfb3f57859e6a125"
+      "sha256": "52504f21092bf21ee0a8ac96df585ade4e5af05b200d57f0ad86fda793f844ac"
     },
     "icon.png": {
       "width": 512,
@@ -28,27 +28,27 @@
     "light-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "d3cddac721c8eee7bc08d2a9d0a8ef53f38150f2e7e81477052e4fea27c23734"
+      "sha256": "32456f8c78b8ee4ddf24ede5fb234055f10c0db5b8271adf894a8d5b815f8fc4"
     },
     "light-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "3f7b3cc6ca2886837a8f8f780211646a8c9c2d2fd35df5c758ee6c0f8e483f0b"
+      "sha256": "d66c2ca756f9dd0df96fd1db0c42ad2a31764cd0b467b49f18320f3ee240d879"
     },
     "menu-light.png": {
       "width": 640,
       "height": 768,
-      "sha256": "2477177471ba853de36cb8dba2c7cc2da6714eb3d1f44e610b28323a07d59453"
+      "sha256": "5b949eec487552624d783843d003164d0ff324d1ff032957025bb983bb0d81f3"
     },
     "settings-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "e17236f51e91008b6c9c31819a832226bbd7fcca6688349fce641f0ba78edc38"
+      "sha256": "718c90fe2c6a222dabd077686a2d14915dcc9621fc0fb9b879daa019bad6b9d7"
     },
     "settings-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "4a513e3d21d2621ca842bc88b478aeae944e5c383663a6c8b9aaa08b6cbac0be"
+      "sha256": "91e7d1aa1b445f32f85522081fe58b15321c7ebd5eaef3b725a8fc6690fb3a45"
     }
   }
 }

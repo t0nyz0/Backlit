@@ -37,12 +37,19 @@ struct LogoPreview: View {
         ZStack {
             LidCanvas(level:presentation.level,compact:compact).clipShape(RoundedRectangle(cornerRadius:compact ? 18 : 24))
             VStack {
-                HStack(spacing:5) { Circle().fill(model.controlling ? Color.green : .white.opacity(0.45)).frame(width:5,height:5); Text(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW").font(.system(size:9,weight:.semibold)).tracking(1.5); Spacer() }
+                HStack(spacing:5) {
+                    Circle().fill(model.controlling ? Color.green : .white.opacity(0.45)).frame(width:5,height:5)
+                    Text(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW").font(.system(size:9,weight:.semibold)).tracking(1.5)
+                    Spacer()
+                    if !compact {
+                        Toggle(model.t("Logo on","標誌開啟"),isOn:$model.enabled).toggleStyle(.switch).labelsHidden().controlSize(.small).help("Turn logo output on or off · \(model.shortcutLabel)")
+                    }
+                }
                 Spacer()
                 HStack { Text(model.mode.title).font(.system(size:11,weight:.medium)); Spacer(); if !model.controlling {Text("Logo unchanged").font(.system(size:10)).opacity(0.6)} }
             }.foregroundStyle(.white.opacity(0.85)).padding(18)
         }.frame(height:compact ? 210 : 234)
-            .accessibilityElement(children:.ignore).accessibilityLabel("\(model.mode.title) brightness preview, \(Int(model.output*100)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
+            .accessibilityElement(children:.contain).accessibilityLabel("\(model.mode.title) brightness preview, \(Int(model.output*100)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
     }
 }
 
@@ -60,7 +67,7 @@ struct RootView: View {
                 Spacer()
                 VStack(alignment:.leading,spacing:8) {
                     Label(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : "PREVIEW MODE",systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
-                    Text("Backlit 0.1.7").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
+                    Text("Backlit 0.1.8").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
                 }.padding(.bottom,8)
             }.padding(22).frame(width:200).background(Color(nsColor:.windowBackgroundColor))
             Divider()
@@ -100,11 +107,6 @@ struct PageHeading: View {
 struct LightPage: View {
     @ObservedObject var model: AppModel
     var body: some View {
-        HStack(alignment:.top) {
-            PageHeading(eyebrow:"BACKLIT",title:model.t("Your logo light","標誌燈光"),subtitle:model.t("Choose a behavior and set its brightness.","選擇模式並設定亮度。"))
-            Spacer()
-            Toggle(model.t("Logo on","標誌開啟"),isOn:$model.enabled).toggleStyle(.switch).labelsHidden().help("Turn logo output on or off · \(model.shortcutLabel)").padding(.top,22)
-        }
         LogoPreview(model:model)
         HStack(alignment:.top,spacing:18) {
             Surface(model.t("Behavior","選擇模式")) {
@@ -240,7 +242,7 @@ struct SettingsPage: View {
             }
         }
         Surface {
-            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version 0.1.7 · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();Button("Check for Updates"){NSWorkspace.shared.open(URL(string:"https://github.com/t0nyz0/Backlit/releases")!)}}
+            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version 0.1.8 · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();Button("Check for Updates"){NSWorkspace.shared.open(URL(string:"https://github.com/t0nyz0/Backlit/releases")!)}}
             Divider()
             HStack {Link("GitHub ↗",destination:URL(string:"https://github.com/t0nyz0/Backlit")!);Text("·").foregroundStyle(.tertiary);Link("t0nyz.com ↗",destination:URL(string:"https://t0nyz.com")!);Spacer();Link("☕ Buy me a coffee",destination:URL(string:"https://buymeacoffee.com/tonyz")!)}.font(.system(size:12))
         }
@@ -300,8 +302,8 @@ struct MenuView: View {
             Divider()
             HStack(spacing:12) {
                 MenuLidPreview(presentation:model.presentation)
-                VStack(alignment:.leading,spacing:4) {Text(model.t("Logo light","標誌燈光")).font(.system(size:13,weight:.semibold));Text(model.demo ? "Preview only" : model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
-                Spacer();Toggle("Logo light",isOn:$model.enabled).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.demo ? "Preview only" : model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
+                Spacer();Toggle("Backlight",isOn:$model.enabled).labelsHidden().toggleStyle(.switch).controlSize(.small)
             }
             HStack {
                 Text(model.t("Behavior","模式")).font(.system(size:12)).foregroundStyle(.secondary)

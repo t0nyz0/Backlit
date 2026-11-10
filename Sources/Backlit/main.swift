@@ -172,6 +172,12 @@ if arguments.contains("--verify-hardware") {
                 for page in ["light","connections","settings"] {
                     model.selectedPage=page;model.notice=nil
                     try await Task.sleep(nanoseconds:500_000_000)
+                    if page == "light" {
+                        for _ in 0..<65 {
+                            if model.output >= 0.55 {break}
+                            try await Task.sleep(nanoseconds:100_000_000)
+                        }
+                    }
                     try capture(window.contentView!.superview!,to:directory.appendingPathComponent("\(page)-\(appearance).png"))
                 }
             }

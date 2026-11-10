@@ -2,7 +2,7 @@
 <h1 align="center">Backlit</h1>
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-v0.1.7-9a7400?style=flat" alt="Source v0.1.7">
+<img src="https://img.shields.io/badge/source-v0.1.8-9a7400?style=flat" alt="Source v0.1.8">
 <img src="https://img.shields.io/badge/local_tests-27_passing-2d6085?style=flat" alt="27 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
@@ -42,14 +42,17 @@ Launch connects compatible hardware automatically. Quit restores the previous lo
 
 ## Connections
 
-Claude Code and Codex have separate, reversible status hooks. Existing hooks are preserved. They send a session identifier and status—not prompts, code, or tool output. Codex requires hook review/trust in its settings. Claude Code has been tested live by the owner; Codex still needs a live-session test.
+Claude Code and Codex have separate, reversible status hooks. Existing hooks are preserved. They send a session identifier and status—not prompts, code, or tool output. Codex requires hook review/trust in its settings. Codex live-session compatibility remains unverified.
 
 An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light and status sensors over a local, authenticated connection. It is off by default.
 
 <details>
 <summary>Connections screenshot</summary>
 
-<img src="docs/media/connections-light.png" alt="Backlit Connections with agent connectors and optional Home Assistant setup">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/media/connections-dark.png">
+  <img src="docs/media/connections-light.png" alt="Backlit Connections with agent connectors and optional Home Assistant setup">
+</picture>
 
 </details>
 
@@ -64,7 +67,7 @@ An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light
 
 Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. This early release is **ad-hoc signed, not Developer ID signed or notarized**.
 
-A physically illuminated, independently controlled logo is required. The current hardware test is a MacBook PROLED `Mac17,12` with M5 Pro on macOS 27.2.1. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
+A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
 Music starts only after you enable system audio and macOS permits it. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
 

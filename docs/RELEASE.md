@@ -4,4 +4,4 @@ Includes Steady, Breathe, Battery, Music, Agents, Trackpad behavior, a compact m
 
 The ZIP and drag-to-Applications DMG are compiled on Apple silicon. The source package is an allowlisted snapshot without private research or Git history. BUILD-INFO.json records the exact source commit and signing status; SHA256SUMS.txt covers the packages.
 
-This preview is ad-hoc signed. It is not Developer ID signed or notarized. Global screen touch is unavailable. Music and Claude Code have been confirmed live. Codex, login, administrator brightness overrides, closed-lid behavior, click accents, and optical latency retain separate verification gates. See docs/VALIDATION.md in the source package.
+This preview is ad-hoc signed. It is not Developer ID signed or notarized. Global screen touch is unavailable. Codex, login, administrator brightness overrides, closed-lid behavior, click accents, and optical latency retain separate verification gates. See docs/VALIDATION.md in the source package.
