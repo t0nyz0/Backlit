@@ -170,7 +170,7 @@ if arguments.contains("--verify-hardware") {
         do {
             try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
             model.language="en"
-            model.mode = .breathe;model.period=6
+            model.mode = .battery; model.batteryOptions = BatteryResponseOptions(); model.enabled = true
             try await Task.sleep(nanoseconds:2_200_000_000)
             for appearance in ["light","dark"] {
                 model.appearance=appearance
@@ -187,7 +187,7 @@ if arguments.contains("--verify-hardware") {
                 }
             }
             model.appearance="light"
-            // Capture a visible part of the real preview's breathing cycle.
+            // Capture the actual Battery preview at its sampled output.
             // This waits on the app's output; it does not alter the waveform.
             for _ in 0..<65 {
                 if model.output >= 0.55 {break}
@@ -197,6 +197,17 @@ if arguments.contains("--verify-hardware") {
             let owned=NSWindow(contentRect:menu.frame,styleMask:.borderless,backing:.buffered,defer:false);owned.contentView=menu;owned.orderFront(nil)
             try await Task.sleep(nanoseconds:400_000_000)
             try capture(owned.contentView!.superview!,to:directory.appendingPathComponent("menu-light.png"));owned.orderOut(nil)
+            for (behavior, filename) in [(GlowMode.music, "music-light.png"), (.touch, "trackpad-light.png"), (.signals, "signals-light.png")] {
+                model.mode = behavior; model.selectedPage = "light"; model.notice = nil
+                if behavior == .signals { model.startFocus() }
+                try await Task.sleep(nanoseconds: 500_000_000)
+                try capture(window.contentView!.superview!, to: directory.appendingPathComponent(filename))
+            }
+            model.clearSignals()
+            model.selectedPage = "connections"; model.automationsEnabled = true
+            try await Task.sleep(nanoseconds: 500_000_000)
+            try capture(window.contentView!.superview!, to: directory.appendingPathComponent("connections-automation-light.png"))
+            model.automationsEnabled = false
             let icon=NSHostingView(rootView:BrandGlyph(size:1024));icon.frame=NSRect(x:0,y:0,width:1024,height:1024)
             let iconWindow=NSWindow(contentRect:icon.frame,styleMask:.borderless,backing:.buffered,defer:false);iconWindow.contentView=icon;iconWindow.orderFront(nil)
             try await Task.sleep(nanoseconds:200_000_000)

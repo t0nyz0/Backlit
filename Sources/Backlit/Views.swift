@@ -104,6 +104,24 @@ struct PageHeading: View {
     var body: some View { VStack(alignment:.leading,spacing:9){ Text(eyebrow).font(.system(size:10,weight:.semibold)).tracking(2).foregroundStyle(.secondary); Text(title).font(.system(size:31,weight:.semibold)).tracking(-0.9); Text(subtitle).font(.system(size:13)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) } }
 }
 
+struct BatteryOutputReadout: View {
+    @ObservedObject var model: AppModel
+    @ObservedObject var presentation: LightPresentation
+    var compact: Bool
+    init(model: AppModel, compact: Bool = false) {
+        self.model = model; self.presentation = model.presentation; self.compact = compact
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("\(Int((Effects.clamp(presentation.level) * 100).rounded()))%")
+                .font(.system(size: compact ? 18 : 38, weight: .medium)).monospacedDigit()
+                .accessibilityLabel("Actual battery-driven logo output")
+            Text("Matches battery charge when unplugged.")
+                .font(.system(size: compact ? 10 : 11)).foregroundStyle(.secondary)
+        }
+    }
+}
+
 struct LightPage: View {
     @ObservedObject var model: AppModel
     var body: some View {
@@ -113,10 +131,14 @@ struct LightPage: View {
                 VStack(spacing:5) { ForEach(model.availableModes) { mode in modeRow(mode) } }
             }.frame(maxWidth:.infinity)
             VStack(spacing:18) {
+                if model.mode == .battery {
+                    Surface("Battery-driven output") { BatteryOutputReadout(model: model) }
+                } else {
                 Surface(model.t("Brightness","亮度")) {
                     HStack(alignment:.firstTextBaseline,spacing:4) { Text("\(Int(model.brightness*100))").font(.system(size:38,weight:.medium)).monospacedDigit(); Text("%").font(.system(size:19)).foregroundStyle(.secondary); Spacer(); Image(systemName:"sun.max").font(.system(size:23,weight:.light)).foregroundStyle(.secondary) }
                     Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness")
                     Text(model.t("Independent of your screen brightness.","獨立於螢幕亮度。" )).font(.system(size:11)).foregroundStyle(.secondary)
+                }
                 }
                 Surface {
                     if model.mode == .breathe {
@@ -135,7 +157,7 @@ struct LightPage: View {
                         }
                         Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .battery {
-                        Label("\(Int(model.battery * 100))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
+                        Label("\(Int((model.battery * 100).rounded()))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
                     } else if model.mode == .signals {
                         SignalResponseControls(model: model)
@@ -315,9 +337,14 @@ struct MenuView: View {
                 Spacer()
                 Picker("Behavior",selection:$model.mode) {ForEach(model.availableModes){mode in Label(mode.title,systemImage:mode.symbol).tag(mode)}}.labelsHidden().pickerStyle(.menu).frame(width:150)
             }
+            if model.mode == .battery {
+                Text("Battery-driven output").font(.system(size: 12, weight: .medium))
+                BatteryOutputReadout(model: model, compact: true)
+            } else {
             VStack(spacing:10) {
                 HStack {Text(model.t("Brightness","亮度")).font(.system(size:12,weight:.medium));Spacer();Text("\(Int(model.brightness*100))%").font(.system(size:12)).monospacedDigit().foregroundStyle(.secondary)}
                 HStack(spacing:10) {Image(systemName:"sun.min");Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness");Image(systemName:"sun.max")}.font(.system(size:12)).foregroundStyle(.secondary)
+            }
             }
             if model.mode == .breathe {
                 VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(String(format:"%.1f seconds",model.period)).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:3...10).tint(.primary).accessibilityLabel("Breathing cycle seconds")}
@@ -325,7 +352,7 @@ struct MenuView: View {
                 MusicResponseControls(model: model).font(.system(size:11))
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.intensity,in:0.25...3).tint(.primary)};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);Button(model.audioRunning ? "Stop System Audio" : "Start System Audio"){if model.audioRunning {model.stopAudio()} else {model.startAudio()}}}.font(.system(size:11))
             } else if model.mode == .battery {
-                Label("\(Int(model.battery*100))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
+                Label("\(Int((model.battery*100).rounded()))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
             } else if model.mode == .signals {
                 SignalResponseControls(model: model).font(.system(size:11))
             } else if model.mode == .touch {

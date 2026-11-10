@@ -50,7 +50,7 @@ final class CoreQATests: XCTestCase {
             }
             for time in [0, -1, Double.greatestFiniteMagnitude] {
                 let level = Effects.level(at: time, input: input)
-                XCTAssertTrue(level.isFinite && (0...0.8).contains(level), "\(mode): \(level)")
+                XCTAssertTrue(level.isFinite && (0...(mode == .battery ? 1 : 0.8)).contains(level), "\(mode): \(level)")
             }
         }
     }

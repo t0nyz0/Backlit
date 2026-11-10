@@ -17,7 +17,7 @@ The app must stay running and the Mac must be awake and reachable. A DHCP reserv
 
 | Entity | Behavior |
 | --- | --- |
-| Logo light | On/off, brightness 0–255, effects Steady/Breathe/Battery/Music/Agents, plus Trackpad where offered |
+| Logo light | On/off, brightness 0–255, effects Steady/Breathe/Battery/Music/Agents/Signals, plus Trackpad where offered |
 | Battery sensor | Internal battery percentage |
 | Agent status sensor | waiting, working, attention, or no_recent_signals |
 | Agent sessions sensor | Recent unexpired sessions |
@@ -49,8 +49,10 @@ mode: single
 
 Every request requires `Authorization: Bearer <pairing-key>`.
 
-- `GET /v1/state`: version, per-installation ID, requested enabled/brightness/effect, effects, battery, agent metadata, hardware capability, ownership, pause status, and calculated output.
+- `GET /v1/state`: version, per-installation ID, enabled/brightness/effect, effects, battery, agent metadata, hardware capability, ownership, pause status, and calculated output.
 - `POST /v1/light`: JSON containing any of `enabled` (boolean), `brightness` (0–255), and `effect` (one of the effects returned by `/v1/state`). Validation finishes before mutation. Returns the resulting state.
+
+In Battery mode, `brightness` reports battery-driven output. Writing brightness saves the manual level for other modes and does not scale Battery output. Select a manual behavior (for example Steady) when setting a fixed brightness. `output` always reports the calculated instantaneous level.
 
 Only active, unpaused hardware control accepts light commands. `output` is the calculated waveform, not an optical measurement. The protocol has no RGB field. This first version uses HTTP for trusted local-network use; the key is sent over that transport. Keep it on your trusted LAN or put an independently managed HTTPS proxy in front of it. Never port-forward the listener to the public internet.
 

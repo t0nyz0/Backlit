@@ -1,7 +1,7 @@
 import Foundation
 
-/// A normalized multiplier. The caller still owns the brightness ceiling,
-/// enable/pause policy, power-source sampling, and the animation timer.
+/// Battery-driven output, independent of the saved manual brightness.
+/// The caller owns enable/pause policy, power sampling, and animation timing.
 struct BatteryResponse {
     private(set) var ready = false
     private(set) var completionActive = false

@@ -130,7 +130,7 @@ final class BatteryMusicTests: XCTestCase {
         XCTAssertFalse(response.requiresAnimation)
     }
 
-    func testChargingStyleNeverChangesOnBatteryBehaviorOrBrightnessCeiling() {
+    func testChargingStyleNeverChangesOnBatteryPercentageTracking() {
         for style in BatteryChargeStyle.allCases {
             var response = BatteryResponse(), options = BatteryResponseOptions()
             options.chargingStyle = style
@@ -141,7 +141,7 @@ final class BatteryMusicTests: XCTestCase {
             XCTAssertLessThanOrEqual(multiplier, 1)
             var input = EffectInput(); input.mode = .battery
             input.brightness = 0.27; input.battery = multiplier
-            XCTAssertLessThanOrEqual(Effects.level(at: 3, input: input), 0.27)
+            XCTAssertEqual(Effects.level(at: 3, input: input), multiplier)
             XCTAssertEqual(response.requiresAnimation, style == .breathe)
         }
     }

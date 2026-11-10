@@ -47,7 +47,7 @@ enum Effects {
             let cycle = input.period.isFinite ? max(3, min(10, input.period)) : 6
             let phase = t.truncatingRemainder(dividingBy: cycle) / cycle
             return base * (0.04 + 0.96 * pow((1 - cos(2 * .pi * phase)) / 2, 1.5))
-        case .battery: return base * clamp(input.battery)
+        case .battery: return clamp(input.battery)
         case .music:
             let energy = clamp(input.audio * max(0.25, min(3, input.intensity)))
             return base * (input.strobe ? (energy > 0.5 ? 1 : 0) : energy)

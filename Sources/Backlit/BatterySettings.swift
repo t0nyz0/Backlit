@@ -54,11 +54,11 @@ struct BatterySettingsControls: View {
                 Slider(value: $model.batteryOptions.pulsePeriod, in: 3...10, step: 0.5).accessibilityLabel("Battery pulse cycle seconds")
                 Text("Pulses only while actively charging, then stays solid when charging pauses or finishes.").foregroundStyle(.secondary)
             } else if model.batteryOptions.chargingStyle == .steady {
-                Text("No charging pulse. Holds your chosen brightness while plugged in.").foregroundStyle(.secondary)
+                Text("No charging pulse. Holds 100% logo output while plugged in.").foregroundStyle(.secondary)
             } else {
                 Text("Follows the battery percentage while plugged in too.").foregroundStyle(.secondary)
             }
-            Text("Unplugged, brightness follows battery charge down to 0%. Your brightness slider sets the upper limit.").foregroundStyle(.secondary)
+            Text("Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.").foregroundStyle(.secondary)
             Divider()
             Toggle("Charge-ready signal", isOn: $model.batteryOptions.readyEnabled).toggleStyle(.switch).controlSize(.small)
             if model.batteryOptions.readyEnabled {

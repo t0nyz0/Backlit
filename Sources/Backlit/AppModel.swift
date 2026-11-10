@@ -313,28 +313,7 @@ import Combine
         synchronizeTouch()
         synchronizeTyping()
         if nextPause != nil && touchDown { touch.reset() }
-        var input = EffectInput()
-        input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
-        input.battery = batteryAvailable ? battery : 0
-        if mode == .battery && enabled && nextPause == nil && batteryAvailable {
-            input.battery = batteryResponse.update(charge: battery, externalPower: charging, at: now, options: batteryOptions, activelyCharging: activelyCharging)
-        } else { batteryResponse.reset() }
-        if chargeReady != batteryResponse.ready { chargeReady = batteryResponse.ready }
-        if mode == .music && (audioRunning || demo) {
-            let energy = demo ? 0.35 + 0.35 * sin((now - epoch) * 5) : audio.level
-            input.audio = musicResponse.update(energy: energy, at: now, automatic: musicAutomatic, preset: musicPreset)
-        }
-        input.intensity = intensity; input.strobe = strobe
-        input.signalLevel = signals.level(at: now)
-        let signal = signals.current
-        let nextSignalStatus = signal.map { "\($0.category.rawValue.capitalized) · \($0.state.rawValue)" } ?? "No active signals"
-        if signalStatus != nextSignalStatus { signalStatus = nextSignalStatus }
-        if signalCount != signals.count { signalCount = signals.count }
-        input.agent = agentState; input.away = cachedAway
-        // A deliberately selected physical light effect must not silently turn
-        // into Steady because the owner reduces on-screen interface motion.
-        input.touchDown = (touchDown && !touchBlinking) || typingDown
-        let nextOutput = pausedReason == nil ? Effects.level(at:ProcessInfo.processInfo.systemUptime-epoch,input:input) : 0
+        let nextOutput = effectOutput(at: now)
         output = nextOutput
         if (demo || isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
         // Capture pauses independently of hardware ownership: losing the
@@ -352,6 +331,30 @@ import Combine
         onIconChange?()
         configureTimer()
         if let watcher, !watcher.isRunning { self.watcher = nil; keepClosed = false; error = "The closed-lid watcher stopped (\(watcher.terminationStatus)). Review power recovery in Settings." }
+    }
+    func effectOutput(at now: Double) -> Double {
+        var input = EffectInput()
+        input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
+        input.battery = batteryAvailable ? battery : 0
+        if mode == .battery && enabled && pausedReason == nil && batteryAvailable {
+            input.battery = batteryResponse.update(charge: battery, externalPower: charging, at: now, options: batteryOptions, activelyCharging: activelyCharging)
+        } else { batteryResponse.reset() }
+        if chargeReady != batteryResponse.ready { chargeReady = batteryResponse.ready }
+        if mode == .music && (audioRunning || demo) {
+            let energy = demo ? 0.35 + 0.35 * sin((now - epoch) * 5) : audio.level
+            input.audio = musicResponse.update(energy: energy, at: now, automatic: musicAutomatic, preset: musicPreset)
+        }
+        input.intensity = intensity; input.strobe = strobe
+        input.signalLevel = signals.level(at: now)
+        let signal = signals.current
+        let nextSignalStatus = signal.map { "\($0.category.rawValue.capitalized) · \($0.state.rawValue)" } ?? "No active signals"
+        if signalStatus != nextSignalStatus { signalStatus = nextSignalStatus }
+        if signalCount != signals.count { signalCount = signals.count }
+        input.agent = agentState; input.away = cachedAway
+        // A deliberately selected physical light effect must not silently turn
+        // into Steady because the owner reduces on-screen interface motion.
+        input.touchDown = (touchDown && !touchBlinking) || typingDown
+        return pausedReason == nil ? Effects.level(at: now - epoch, input: input) : 0
     }
     func requestFrame() {
         guard !framePending else { return }
@@ -549,7 +552,7 @@ import Combine
         catch { self.error = error.localizedDescription }
     }
     func apiState() -> [String:Any] {
-        ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
+        ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),
          "effect":mode.title,"effects":availableModes.map(\.title),"battery":Int((battery*100).rounded()),
          "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,

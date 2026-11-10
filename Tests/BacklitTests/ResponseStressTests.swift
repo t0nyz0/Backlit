@@ -54,7 +54,7 @@ final class ResponseStressTests: XCTestCase {
             for mode in GlowMode.allCases {
                 input.mode = mode
                 let result = Effects.level(at: suppliedTime, input: input)
-                XCTAssertTrue(result.isFinite && result >= 0 && result <= Effects.clamp(input.brightness), "\(mode) frame \(frame)")
+                XCTAssertTrue(result.isFinite && result >= 0 && result <= (mode == .battery ? 1 : Effects.clamp(input.brightness)), "\(mode) frame \(frame)")
                 if !input.enabled { XCTAssertEqual(result, 0) }
             }
         }

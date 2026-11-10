@@ -128,10 +128,10 @@ final class BacklitTests: XCTestCase {
             }
         }
     }
-    func testBatteryScalesWithoutExceedingChosenBrightness() {
+    func testBatteryMatchesChargeIndependentOfManualBrightness() {
         var input=EffectInput();input.mode = .battery;input.brightness=0.6;input.battery=0.5
-        XCTAssertEqual(Effects.level(at:0,input:input),0.3,accuracy:0.0001)
-        input.battery=2;XCTAssertEqual(Effects.level(at:0,input:input),0.6)
+        XCTAssertEqual(Effects.level(at:0,input:input),0.5,accuracy:0.0001)
+        input.battery=2;XCTAssertEqual(Effects.level(at:0,input:input),1)
     }
     func testExplicitBreathingCycleVariesAtEveryPace() {
         var input=EffectInput();input.mode = .breathe;input.period=6;input.brightness=0.8
