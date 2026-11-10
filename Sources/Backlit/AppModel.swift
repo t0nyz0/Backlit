@@ -386,7 +386,7 @@ import Combine
             else {
                 do {
                     if !controlling { try device.begin(); controlling = true }
-                    try device.apply(output)
+                    try device.apply(output, closedLid: allowClosed)
                 } catch { self.error = error.localizedDescription; controlWanted = false; releaseHardware() }
             }
         }
@@ -415,7 +415,7 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
-        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation))
+        let animated = pausedReason == nil && (device.closedEffectNeedsAnimation || (enabled && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation))))
         let interval = animated ? 0.05 : 1.0
         guard timerInterval != interval || timer?.isValid != true else { return }
         timer?.invalidate(); timerInterval = interval

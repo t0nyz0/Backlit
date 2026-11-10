@@ -14,6 +14,7 @@ final class LogoDevice {
     private var client: NSObject?
     private var saved: [[Double]]?
     private var lastWritten: [[Double]]?
+    private var closedEffect: ClosedLidEffect?
     private var lease: FileLease?
     private let recovery: URL
     private(set) var available = false
@@ -78,9 +79,24 @@ final class LogoDevice {
         // The exact off endpoint must not be swallowed by normal coalescing.
         (next == 0 && previous != 0) || abs(previous - next) >= 0.5
     }
-    func apply(_ brightness: Double) throws {
+    func apply(_ brightness: Double, closedLid: Bool = false) throws {
         guard saved != nil else { throw failure("Logo control has not been enabled.") }
         guard brightness.isFinite else { throw failure("Invalid brightness.") }
+        if closedLid && RuntimeServices.physicalLidClosed == true {
+            if let lastWritten {
+                guard let current = mapping(), Self.equivalent(current, lastWritten) else { throw failure("Another controller changed the logo. Backlit stopped writing; recovery is retained.") }
+            }
+            _ = try ClosedEffectSession.locked(wait: false) {
+                guard ClosedEffectSession.permitted() else { closedEffect?.relinquish(); return }
+                if closedEffect == nil {
+                    guard let io = ClosedLidEffect.liveInterface() else { throw failure("Closed-lid effect control is unavailable.") }
+                    closedEffect = ClosedLidEffect(interface: io)
+                }
+                try closedEffect?.apply(brightness)
+            }
+            return
+        }
+        try restoreClosedEffect()
         let nits = Effects.clamp(brightness) * 1000
         let rows: [[Double]] = [[0, nits], [Double(Float.greatestFiniteMagnitude), nits]]
         if let lastWritten {
@@ -94,7 +110,16 @@ final class LogoDevice {
         lastWritten = rows
     }
 
+    var closedEffectNeedsAnimation: Bool { closedEffect?.needsAnimation == true }
+    private func restoreClosedEffect() throws {
+        guard closedEffect?.active == true else { return }
+        _ = try ClosedEffectSession.locked(wait: true) {
+            if ClosedEffectSession.permitted() { try closedEffect?.restore() }
+            else { closedEffect?.relinquish() }
+        }
+    }
     func restore() throws {
+        try restoreClosedEffect()
         guard available else { throw failure(explanation) }
         if let app = competingApp { throw failure("Quit \(app) before restoring a previous Backlit session.") }
         guard needsRecovery || saved != nil else { return }

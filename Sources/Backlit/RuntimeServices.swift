@@ -73,13 +73,22 @@ enum RuntimeServices {
             var scalar: UInt64 = disabled ? 1 : 0
             return IOConnectCallScalarMethod(connection, 12, &scalar, 1, nil, nil) == KERN_SUCCESS
         }
-        func recordRecovery() throws {
-            let bytes = try JSONSerialization.data(withJSONObject: ["needsRestore": changed, "logoOverride": logo.active])
+        func recordRecovery(effectsAllowed: Bool = false) throws {
+            let bytes = try JSONSerialization.data(withJSONObject: ["needsRestore": changed, "logoOverride": logo.active, "effectsAllowed": effectsAllowed])
             try bytes.write(to: journal, options: .atomic)
+        }
+        func restoreLogo(_ closed: Bool?) throws {
+            _ = try ClosedEffectSession.locked(wait: true) {
+                // Revoke under the same lock before touching hardware. Preserve
+                // recovery ownership until every independent reset succeeds.
+                try recordRecovery(effectsAllowed: false)
+                try logo.restore(physicalClosed: closed)
+                try recordRecovery(effectsAllowed: false)
+            }
         }
         defer {
             var restored = true
-            do { try logo.restore(physicalClosed: physicalLidClosed) } catch { restored = false }
+            do { try restoreLogo(physicalLidClosed) } catch { restored = false }
             if changed && !setDisabled(false) { restored = false }
             if restored { try? FileManager.default.removeItem(at: journal) }
             if assertion != 0 { IOPMAssertionRelease(assertion) }
@@ -99,7 +108,7 @@ enum RuntimeServices {
                 battery: power.0, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: thermal)
             // Restore the logo gate before allowing sleep or dropping the assertion.
             if (!eligible || !closed) && logo.active {
-                do { try logo.restore(physicalClosed: closed); logoEnabledAt = nil; try recordRecovery() } catch { return 8 }
+                do { try restoreLogo(closed); logoEnabledAt = nil; try recordRecovery() } catch { return 8 }
             }
             if eligible && !changed && ((rootValue("AppleClamshellCausesSleep") as? NSNumber)?.boolValue == true) {
                 do { try JSONSerialization.data(withJSONObject: ["needsRestore": true, "logoOverride": logo.active]).write(to: journal, options: .atomic) } catch { return 4 }
@@ -122,7 +131,10 @@ enum RuntimeServices {
                         // Must be durable before the first global notification.
                         try JSONSerialization.data(withJSONObject: ["needsRestore": changed, "logoOverride": true]).write(to: journal, options: .atomic)
                     }
-                    if logo.active && logoEnabledAt == nil { logoEnabledAt = ProcessInfo.processInfo.systemUptime }
+                    if logo.active && logoEnabledAt == nil {
+                        logoEnabledAt = ProcessInfo.processInfo.systemUptime
+                        _ = try ClosedEffectSession.locked(wait: true) { try recordRecovery(effectsAllowed: true) }
+                    }
                     // Allow the keyboard fade to settle, then fail closed if it is
                     // not confirmed dark. A rejected private API must not leave it lit.
                     if let since = logoEnabledAt, ProcessInfo.processInfo.systemUptime - since >= 1 {
@@ -133,7 +145,7 @@ enum RuntimeServices {
                         // samples. Restore normally rather than report a failure.
                         if enabled != false {
                             if physicalLidClosed == false {
-                                try logo.restore(physicalClosed: false)
+                                try restoreLogo(false)
                                 logoEnabledAt = nil
                                 try recordRecovery()
                             } else { return 11 }
@@ -154,8 +166,15 @@ enum RuntimeServices {
             ? try JSONDecoder().decode(LidRecovery.self, from: Data(contentsOf: journal))
             : LidRecovery(needsRestore: false, logoOverride: false)
         try record.restore(forceNormalSleep: verifyNormalSleep, logo: {
-            guard let closed = physicalLidClosed, let io = ClosedLidLogo.liveInterface(),
-                  io.setGlobalClosed(closed) else { throw failure("Could not restore the real logo lid state. Recovery is retained.") }
+            _ = try ClosedEffectSession.locked(wait: true) {
+                // Encoding the recovery record removes live effect permission.
+                // Keep its ownership bits until every independent reset works.
+                try JSONEncoder().encode(record).write(to: journal, options: .atomic)
+                guard let io = ClosedLidLogo.liveInterface() else { throw failure("Logo recovery controls are unavailable. Recovery is retained.") }
+                let lidRestored = physicalLidClosed.map(io.setGlobalClosed) ?? false
+                let effectRestored = io.restoreEffect()
+                guard lidRestored && effectRestored else { throw failure("Could not restore the real logo lid state. Recovery is retained.") }
+            }
         }, power: {
             let node = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
             guard node != 0 else { throw failure("Power service unavailable.") }; defer { IOObjectRelease(node) }

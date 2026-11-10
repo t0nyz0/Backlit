@@ -10,6 +10,7 @@ final class ClosedLidLogo {
         var keyboardIDs: () -> [UInt64]?
         var setGlobalClosed: (Bool) -> Bool
         var setKeyboardClosed: (UInt64, Bool) -> Bool
+        var restoreEffect: () -> Bool = { true }
     }
     private let io: Interface
     private(set) var active = false
@@ -37,7 +38,9 @@ final class ClosedLidLogo {
 
     func restore(physicalClosed: Bool?) throws {
         guard active else { return }
-        guard let physicalClosed, io.setGlobalClosed(physicalClosed) else {
+        let lidRestored = physicalClosed.map(io.setGlobalClosed) ?? false
+        let effectRestored = io.restoreEffect()
+        guard lidRestored && effectRestored else {
             throw RuntimeServices.failure("Could not restore the real lid state. Recovery has been retained.")
         }
         active = false
@@ -67,6 +70,9 @@ final class ClosedLidLogo {
             },
             setKeyboardClosed: { id, closed in
                 unsafeBitCast(client.method(for: keyboardWriter), to: KeyboardSetter.self)(client, keyboardWriter, NSNumber(value: closed), "ClamshellUpdate", id)
+            }, restoreEffect: {
+                let set = unsafeBitCast(client.method(for: writer), to: Setter.self)
+                return set(client, writer, NSNumber(value: 1e9), "LEPWMFactorFadeDuration") && set(client, writer, NSNumber(value: 1), "DisplayLogicalState") && set(client, writer, NSNumber(value: 0), "LEPWMFactorFadeDuration") && set(client, writer, NSNumber(value: 2), "DisplayLogicalState")
             })
     }
 }

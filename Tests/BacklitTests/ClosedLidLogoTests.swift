@@ -8,12 +8,13 @@ final class ClosedLidLogoTests: XCTestCase {
         var events: [String] = []
         var globalSucceeds = true
         var keyboardSucceeds = true
-        func make() -> ClosedLidLogo {
-            ClosedLidLogo(interface: .init(
+        func make() -> ClosedLidLogo { ClosedLidLogo(interface: makeInterfaceForEffectTest()) }
+        func makeInterfaceForEffectTest() -> ClosedLidLogo.Interface {
+            .init(
                 daemonClosed: { self.daemon },
                 keyboardIDs: { self.ids },
                 setGlobalClosed: { self.events.append("global:\($0)"); return self.globalSucceeds },
-                setKeyboardClosed: { self.events.append("keyboard:\($0):\($1)"); return self.keyboardSucceeds }))
+                setKeyboardClosed: { self.events.append("keyboard:\($0):\($1)"); return self.keyboardSucceeds })
         }
     }
     func testRecoveryPrecedesAllWritesAndBothKeyboardsStayClosed() throws {
@@ -102,6 +103,25 @@ final class ClosedLidLogoTests: XCTestCase {
         f.events.removeAll()
         try logo.enable { f.events.append("new journal") }
         XCTAssertEqual(f.events.first, "new journal")
+        XCTAssertTrue(logo.active)
+    }
+    func testEffectRestoreFollowsRealLidRestoreAndFailureRetainsOwnership() throws {
+        let f = Fake()
+        var io = f.makeInterfaceForEffectTest()
+        io.restoreEffect = { f.events.append("effect restore"); return false }
+        let logo = ClosedLidLogo(interface: io)
+        try logo.enable {}
+        XCTAssertThrowsError(try logo.restore(physicalClosed: true))
+        XCTAssertEqual(Array(f.events.suffix(2)), ["global:true", "effect restore"])
+        XCTAssertTrue(logo.active)
+    }
+    func testFailedGlobalRestoreStillAttemptsEffectCleanup() throws {
+        let f = Fake(); var io = f.makeInterfaceForEffectTest()
+        io.restoreEffect = { f.events.append("effect restore"); return true }
+        let logo = ClosedLidLogo(interface: io); try logo.enable {}
+        f.globalSucceeds = false
+        XCTAssertThrowsError(try logo.restore(physicalClosed: true))
+        XCTAssertEqual(Array(f.events.suffix(2)), ["global:true", "effect restore"])
         XCTAssertTrue(logo.active)
     }
 }
