@@ -41,7 +41,7 @@ import Combine
             guard !isLoading else { return }
             defaults.set(automationsEnabled, forKey: "automation.enabled")
             AutomationRouter.shared.enabled = automationsEnabled && !demo
-            if !automationsEnabled { signals.reset(); requestFrame() }
+            if !automationsEnabled { signals.clearExternal(); requestFrame() }
         }
     }
     private var batteryResponse = BatteryResponse()
@@ -239,11 +239,11 @@ import Combine
         for (name,action) in states { observers.append(center.addObserver(forName:name,object:nil,queue:.main){[weak self] _ in Task { @MainActor in if let self { action(self); self.synchronizeTouch(); self.synchronizeTyping(); self.requestFrame() } }}) }
         controlWanted = !demo && device.available && !device.needsRecovery
         configureTimer()
-        if !demo && enabled && mode == .touch {touchStatus=touch.start(source:touchSource) ? "Waiting for \(touchSource.title.lowercased()) touch" : "Touch events unavailable"}
         if !demo && !controlWanted && device.needsRecovery { notice = "A previous logo session needs restoration. Use Restore Light to pick up where you left off." }
         if !demo && self.defaults.bool(forKey:"bridge.enabled") { configureBridge(enabled:true,lan:self.defaults.bool(forKey:"bridge.lan")) }
         startPowerMonitoring()
-        synchronizeTyping()
+        // The first tick samples lock/power/ownership policy before either
+        // input monitor can register. All starts go through synchronization.
         tick()
     }
     func save() {
@@ -321,8 +321,11 @@ import Combine
         let nextOutput = pausedReason == nil ? Effects.level(at:ProcessInfo.processInfo.systemUptime-epoch,input:input) : 0
         output = nextOutput
         if (demo || isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
+        // Capture pauses independently of hardware ownership: losing the
+        // device must not keep audio active after display sleep or lock.
+        if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }
         if controlWanted && !demo {
-            if pausedReason != nil { releaseHardware(); if audioRunning || audioStarting { stopAudio() } }
+            if pausedReason != nil { releaseHardware() }
             else {
                 do {
                     if !controlling { try device.begin(); controlling = true }
@@ -397,7 +400,7 @@ import Combine
     func startFocus() {
         let duration = Double(min(120, max(1, focusMinutes))) * 60
         guard let signal = try? ActivitySignal(category: .focus, state: .active, duration: duration, progress: nil) else { return }
-        signals.submit(signal, at: ProcessInfo.processInfo.systemUptime)
+        signals.submit(signal, at: ProcessInfo.processInfo.systemUptime, source: .local)
         requestFrame()
     }
     func clearSignals() { signals.reset(); requestFrame() }
@@ -425,7 +428,7 @@ import Combine
     }
     private var musicCaptureAllowed: Bool {
         let allowedClosed = keepClosed && cachedLid
-        return mode == .music && enabled && pausedReason == nil && !systemSleeping && consoleActive && (!screenSleeping || allowedClosed) && (!cachedLocked || allowedClosed)
+        return !isStopping && mode == .music && enabled && pausedReason == nil && !systemSleeping && consoleActive && (!screenSleeping || allowedClosed) && (!cachedLocked || allowedClosed)
     }
     func startAudio() {
         guard musicCaptureAllowed, !audioStarting, !audioRunning else { return }

@@ -22,7 +22,11 @@ if [ -f assets/Backlit.icns ]; then cp assets/Backlit.icns "$app_bundle/Contents
 mkdir -p "$app_bundle/Contents/Resources/HomeAssistant"
 rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' homeassistant/ "$app_bundle/Contents/Resources/HomeAssistant/"
 mkdir -p "$app_bundle/Contents/Resources/Integrations"
-rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' --exclude=node_modules --exclude=.git integrations/ "$app_bundle/Contents/Resources/Integrations/"
+# The native Stream Deck plugin is a separate add-on; do not ship its SDK,
+# development tools, or tests inside the lightweight macOS controller.
+rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' \
+    --include='/obs/***' --include='/activity/***' --exclude='*' \
+    integrations/ "$app_bundle/Contents/Resources/Integrations/"
 bash scripts/shortcuts-metadata.sh extract "$app_bundle" "$target_triple"
 strip -S "$app_bundle/Contents/MacOS/Backlit"
 codesign --force --sign - --identifier local.backlit "$app_bundle"

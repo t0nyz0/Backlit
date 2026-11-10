@@ -1,3 +1,7 @@
 node_modules/
 com.t0nyz.backlit.sdPlugin/bin/
 *.streamDeckPlugin
+com.t0nyz.backlit.sdPlugin/LICENSE
+com.t0nyz.backlit.sdPlugin/THIRD-PARTY-LICENSES.txt
+com.t0nyz.backlit.sdPlugin/images/plugin*.png
+out/

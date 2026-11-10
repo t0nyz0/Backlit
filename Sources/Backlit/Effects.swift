@@ -36,7 +36,7 @@ struct EffectInput {
 
 enum Effects {
     static func level(at time: Double, input: EffectInput) -> Double {
-        guard input.enabled else { return 0 }
+        guard input.enabled, time.isFinite else { return 0 }
         let base = clamp(input.brightness)
         let t = max(0, time)
         switch input.mode {
@@ -44,8 +44,9 @@ enum Effects {
         case .signals: return base * clamp(input.signalLevel)
         case .touch: return input.touchDown ? base : 0
         case .breathe:
-            let cycle = max(3, min(10, input.period))
-            return base * (0.04 + 0.96 * pow((1 - cos(2 * .pi * t / cycle)) / 2, 1.5))
+            let cycle = input.period.isFinite ? max(3, min(10, input.period)) : 6
+            let phase = t.truncatingRemainder(dividingBy: cycle) / cycle
+            return base * (0.04 + 0.96 * pow((1 - cos(2 * .pi * phase)) / 2, 1.5))
         case .battery: return base * clamp(input.battery)
         case .music:
             let energy = clamp(input.audio * max(0.25, min(3, input.intensity)))
@@ -53,7 +54,9 @@ enum Effects {
         case .agents:
             switch input.agent {
             case .waiting: return base * 0.18
-            case .working: return base * (0.15 + 0.85 * (1 - cos(2 * .pi * t / 2.4)) / 2)
+            case .working:
+                let phase = t.truncatingRemainder(dividingBy: 2.4) / 2.4
+                return base * (0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2)
             case .attention:
                 guard input.away else { return base * 0.5 }
                 let phase = t.truncatingRemainder(dividingBy: 2)

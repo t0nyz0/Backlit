@@ -8,16 +8,25 @@
   },
   "scripts": {
     "check": "tsc --noEmit",
-    "build": "npm run check && node build.mjs",
-    "test": "node --experimental-strip-types --test src/links.test.ts"
+    "build": "npm run check && node build.mjs && npm run validate",
+    "test": "node --experimental-strip-types --test src/*.test.ts *.test.mjs",
+    "validate": "node validate.mjs",
+    "pack:plugin": "node pack.mjs"
   },
   "dependencies": {
     "@elgato/streamdeck": "3.0.4"
   },
   "devDependencies": {
+    "@elgato/cli": "1.10.4",
     "@types/node": "24.10.0",
+    "ajv": "8.20.0",
     "esbuild": "0.28.2",
     "typescript": "7.0.2"
   },
-  "license": "SEE LICENSE IN LICENSE"
+  "license": "SEE LICENSE IN LICENSE",
+  "overrides": {
+    "@elgato/utils": {
+      "zod": "4.6.7"
+    }
+  }
 }

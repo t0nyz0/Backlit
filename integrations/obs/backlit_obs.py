@@ -11,15 +11,34 @@ import threading
 import time
 import urllib.error
 import urllib.request
+import weakref
 
 import obspython as obs
 
 _worker = None
 
 
+class _PortLane:
+    def __init__(self):
+        self.send_lock = threading.Lock()
+        self.owner = None
+
+
 class _SignalWorker:
+    # A returning port reuses the lane until its older worker finishes. Slow
+    # Keychain/network work stays serialized off OBS's callback thread.
+    _lanes_lock = threading.Lock()
+    _lanes = weakref.WeakValueDictionary()
+
     def __init__(self, port):
         self.port = port
+        self._identity = object()
+        with self._lanes_lock:
+            self._lane = self._lanes.get(port)
+            if self._lane is None:
+                self._lane = _PortLane()
+                self._lanes[port] = self._lane
+            self._lane.owner = self._identity
         self.enabled = True
         self._condition = threading.Condition()
         self._desired = {}
@@ -41,6 +60,7 @@ class _SignalWorker:
             if enabled:
                 self._key_attempted = False
                 self._token = None
+                self._sent.clear()
             else:
                 for category in tuple(self._desired):
                     self._revision += 1
@@ -57,7 +77,10 @@ class _SignalWorker:
             if old is not None and (old[0] == "active") == active:
                 return
             self._revision += 1
-            self._desired[category] = ("active" if active else "complete", self._revision)
+            # An initially inactive source clears an old lease; it did not
+            # just complete a recording and must never trigger a success cue.
+            state = "active" if active else "clear" if old is None else "complete"
+            self._desired[category] = (state, self._revision)
             self._condition.notify()
 
     def close(self):
@@ -78,10 +101,20 @@ class _SignalWorker:
                 self._token = token
         return self._token
 
+    def _owns_port(self):
+        with self._lanes_lock:
+            return self._lane.owner is self._identity
+
     def _post(self, category, state, expected=None):
+        with self._lane.send_lock:
+            return self._post_serialized(category, state, expected)
+
+    def _post_serialized(self, category, state, expected=None):
         try:
+            if not self._owns_port():
+                return False
             token = self._pairing_key()
-            if token is None:
+            if token is None or not self._owns_port():
                 return False
             if expected is not None:
                 with self._condition:
@@ -133,7 +166,7 @@ class _SignalWorker:
                     # Stop/disable supersedes an active event before dispatch.
                     if self._closing or self._desired.get(category) != desired:
                         continue
-                    if desired[0] != "active" and category not in self._active_attempts:
+                    if desired[0] == "complete" and category not in self._active_attempts:
                         self._sent[category] = desired
                         continue
                     if desired[0] == "active":
@@ -149,6 +182,9 @@ class _SignalWorker:
         for category in clearing:
             self._post(category, "clear")
         self._token = None
+        with self._lanes_lock:
+            if self._lane.owner is self._identity:
+                self._lane.owner = None
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):

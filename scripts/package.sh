@@ -9,6 +9,12 @@ if [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
 fi
 codesign --verify --strict "$app_bundle"
 python3 scripts/check_privacy.py
+plugin_bundle="$PWD/integrations/streamdeck/com.t0nyz.backlit.sdPlugin"
+plugin_package="$PWD/integrations/streamdeck/out/com.t0nyz.backlit.streamDeckPlugin"
+if [ -f "$plugin_package" ]; then
+  (cd integrations/streamdeck && npm run validate)
+  python3 integrations/streamdeck/inspect-package.py "$plugin_package" "$plugin_bundle"
+fi
 app_arch="$(lipo -archs "$app_bundle/Contents/MacOS/Backlit" | tr ' ' '-')"
 output_dir="$PWD/dist/packages"
 # Packages are generated output, isolated from source and old release versions.
@@ -27,6 +33,11 @@ This preview is ad-hoc signed, not Developer ID signed or notarized.
 See the repository README and validation matrix for permissions and limits.
 EOF
 hdiutil create -volname Backlit -srcfolder "$dmg_root" -format UDZO -ov "$output_dir/$app_stem.dmg" > /dev/null
+# The optional native plugin is distributed separately; no plugin SDK or
+# development sources are loaded by the macOS controller.
+if [ -f "$plugin_package" ]; then
+  cp "$plugin_package" "$output_dir/Backlit-$app_version-StreamDeck.streamDeckPlugin"
+fi
 bash scripts/public-source.sh > /dev/null
 cp "dist/Backlit-public-source-$(git rev-parse --short HEAD).zip" "$output_dir/Backlit-$app_version-source.zip"
 python3 - "$output_dir" <<'PY'
@@ -37,7 +48,7 @@ record={'version':info['CFBundleShortVersionString'],'build':info['CFBundleVersi
         'source_commit':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),
         'architecture':subprocess.check_output(['lipo','-archs','dist/Backlit.app/Contents/MacOS/Backlit']).decode().strip(),
         'signing':'ad-hoc','developer_id_signed':False,'notarized':False,
-        'artifacts':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.iterdir()) if p.suffix in {'.zip','.dmg'}}}
+        'artifacts':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.iterdir()) if p.suffix in {'.zip','.dmg','.streamDeckPlugin'}}}
 (out/'BUILD-INFO.json').write_text(json.dumps(record,indent=2)+'\n')
 files=sorted(p for p in out.iterdir() if p.name!='SHA256SUMS.txt')
 (out/'SHA256SUMS.txt').write_text(''.join(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n' for p in files))

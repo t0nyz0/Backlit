@@ -78,10 +78,37 @@ struct LightCommand {
     }
 }
 
+private final class BridgeSession {
+    private let lock = NSLock()
+    private var active = true
+    private var connections: [ObjectIdentifier: NWConnection] = [:]
+    var isActive: Bool { lock.lock(); defer { lock.unlock() }; return active }
+    var connectionCount: Int { lock.lock(); defer { lock.unlock() }; return connections.count }
+    func attach(_ connection: NWConnection) -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        guard active, connections.count < 32 else { return false }
+        connections[ObjectIdentifier(connection)] = connection
+        return true
+    }
+    func detach(_ connection: NWConnection) {
+        lock.lock(); connections.removeValue(forKey: ObjectIdentifier(connection)); lock.unlock()
+    }
+    func invalidate() {
+        lock.lock()
+        active = false
+        let pending = Array(connections.values)
+        connections.removeAll()
+        lock.unlock()
+        pending.forEach { $0.cancel() }
+    }
+}
+
 final class HomeBridge {
     private var listener: NWListener?
+    private var session: BridgeSession?
     private let queue = DispatchQueue(label:"Backlit.HomeBridge")
     var port: UInt16? { listener?.port?.rawValue }
+    var connectionCount: Int { session?.connectionCount ?? 0 }
     var state: (() -> [String:Any])?
     var command: ((LightCommand) throws -> Void)?
     var onStatus: ((String) -> Void)?
@@ -91,34 +118,55 @@ final class HomeBridge {
         let parameters = NWParameters.tcp
         parameters.requiredLocalEndpoint = .hostPort(host:lan ? .ipv4(.any) : .ipv4(.loopback),port:NWEndpoint.Port(rawValue:port)!)
         let candidate = try NWListener(using:parameters)
+        let current = BridgeSession()
         candidate.stateUpdateHandler = { [weak self] state in
-            DispatchQueue.main.async { switch state {
-            case .ready: self?.onStatus?(lan ? "Available on your local network" : "Available on this Mac")
-            case .failed(let error): self?.onStatus?(error.localizedDescription)
-            default: break
-            } }
+            DispatchQueue.main.async {
+                guard current.isActive else { return }
+                switch state {
+                case .ready: self?.onStatus?(lan ? "Available on your local network" : "Available on this Mac")
+                case .failed(let error): self?.onStatus?(error.localizedDescription)
+                default: break
+                }
+            }
         }
         candidate.newConnectionHandler = { [weak self] connection in
-            connection.start(queue:self?.queue ?? .global())
-            self?.receive(connection,data:Data(),token:token)
-            self?.queue.asyncAfter(deadline:.now()+5) { connection.cancel() }
+            guard let self, current.attach(connection) else { connection.cancel(); return }
+            connection.stateUpdateHandler = { [weak connection, weak current = current] state in
+                if case .cancelled = state, let connection { current?.detach(connection) }
+                if case .failed = state, let connection { current?.detach(connection) }
+            }
+            connection.start(queue:self.queue)
+            self.receive(connection,data:Data(),token:token,session:current)
+            self.queue.asyncAfter(deadline:.now()+5) { [weak connection, weak current = current] in
+                if let connection { current?.detach(connection); connection.cancel() }
+            }
         }
-        listener = candidate; candidate.start(queue:queue)
+        session = current; listener = candidate; candidate.start(queue:queue)
     }
-    func stop() { listener?.cancel(); listener = nil }
-    private func receive(_ connection: NWConnection, data: Data, token: String) {
+    func stop() {
+        // Invalidate before cancelling: already parsed callbacks must not apply
+        // commands after sharing is disabled or a replacement listener starts.
+        session?.invalidate(); session = nil
+        listener?.cancel(); listener = nil
+    }
+    private func receive(_ connection: NWConnection, data: Data, token: String, session: BridgeSession) {
+        guard session.isActive else { connection.cancel(); return }
         connection.receive(minimumIncompleteLength:1,maximumLength:16384) { [weak self] bytes,_,complete,error in
-            guard let self else { connection.cancel(); return }
+            guard let self, session.isActive else { connection.cancel(); return }
             var combined = data; if let bytes { combined.append(bytes) }
             do {
                 guard let request = try BridgeRequest.parse(combined) else {
-                    if complete || error != nil { connection.cancel() } else { self.receive(connection,data:combined,token:token) }; return
+                    if complete || error != nil { connection.cancel() }
+                    else { self.receive(connection,data:combined,token:token,session:session) }
+                    return
                 }
                 guard request.authorized(token) else { self.send(connection,status:401,value:["error":"Pairing key required"]); return }
                 DispatchQueue.main.async {
+                    guard session.isActive else { connection.cancel(); return }
                     do {
                         if request.method == "POST" && request.path == "/v1/light" {
-                            try self.command?(LightCommand(data:request.body))
+                            guard let command = self.command else { throw RuntimeServices.failure("Light control is unavailable.") }
+                            try command(LightCommand(data:request.body))
                         } else if request.method == "POST" && request.path == "/v1/signal" {
                             guard let signal = self.signal else { throw RuntimeServices.failure("Activity signals are unavailable.") }
                             try signal(ActivitySignal(data: request.body))
@@ -137,4 +185,5 @@ final class HomeBridge {
         response.append(body)
         connection.send(content:response,completion:.contentProcessed{_ in connection.cancel()})
     }
+    deinit { session?.invalidate(); listener?.cancel() }
 }

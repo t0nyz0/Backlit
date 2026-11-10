@@ -1,5 +1,6 @@
 // Source-only build recipe; development does not execute this automatically.
 import { build } from "esbuild";
+import { stampBuild } from "./fingerprint.mjs";
 import { execFileSync } from "node:child_process";
 import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -27,3 +28,5 @@ for (const name of ["@elgato/streamdeck", "@elgato/utils", "@elgato/schemas", "w
     notices.push(name + "\n" + license);
 }
 await writeFile(path.join(bundle, "THIRD-PARTY-LICENSES.txt"), notices.join("\n\n"));
+
+await stampBuild(root);

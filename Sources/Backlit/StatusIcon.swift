@@ -11,6 +11,7 @@ enum StatusIconGeometry {
 
     static func marker(at step: Int) -> CGRect? {
         guard step > 0 else { return nil }
+        if step >= 100 { return interior }
         // Area follows output; the minimum size keeps 1% legible at 1x scale.
         let side = min(interior.width, max(1.8, interior.width * CGFloat(sqrt(Double(min(step, 100)) / 100))))
         return CGRect(x: interior.midX - side / 2, y: interior.midY - side / 2, width: side, height: side)

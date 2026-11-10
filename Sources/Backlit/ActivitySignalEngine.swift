@@ -1,23 +1,35 @@
 import Foundation
 
+enum ActivitySignalOrigin: String { case local, external }
+
 struct ActivitySignalEngine {
+    private struct Key: Hashable {
+        let category: ActivityCategory
+        let origin: ActivitySignalOrigin
+    }
     private struct Entry {
         var signal: ActivitySignal
         var started: Double
         var expires: Double
+        let origin: ActivitySignalOrigin
     }
-    private var entries: [ActivityCategory: Entry] = [:]
+    private var entries: [Key: Entry] = [:]
     private(set) var current: ActivitySignal?
     private(set) var requiresAnimation = false
     private(set) var count = 0
     private var lastTime: Double?
 
-    mutating func submit(_ signal: ActivitySignal, at time: Double) {
-        guard time.isFinite else { return }
+    mutating func submit(_ signal: ActivitySignal, at time: Double, source: ActivitySignalOrigin = .external) {
+        guard time.isFinite, time >= 0 else { return }
         if let lastTime, time < lastTime { reset() }
         lastTime = time
-        if signal.state == .clear { entries.removeValue(forKey: signal.category) }
-        else { entries[signal.category] = Entry(signal: signal, started: time, expires: time + signal.effectiveDuration) }
+        let key = Key(category: signal.category, origin: source)
+        if signal.state == .clear { entries.removeValue(forKey: key) }
+        else { entries[key] = Entry(signal: signal, started: time, expires: time + signal.effectiveDuration, origin: source) }
+    }
+
+    mutating func clearExternal() {
+        for key in entries.keys where key.origin == .external { entries.removeValue(forKey: key) }
     }
 
     mutating func reset() {
@@ -29,20 +41,21 @@ struct ActivitySignalEngine {
     }
 
     mutating func level(at time: Double) -> Double {
-        guard time.isFinite else { reset(); return 0 }
+        guard time.isFinite, time >= 0 else { reset(); return 0 }
         if let lastTime, time < lastTime { reset() }
         lastTime = time
-        for (category, entry) in entries where time >= entry.expires {
-            if category == .focus, entry.signal.state == .active, time - entry.expires < 8,
+        for (key, entry) in entries where time >= entry.expires {
+            if key.category == .focus, entry.signal.state == .active, time - entry.expires < 8,
                let completed = try? ActivitySignal(category: .focus, state: .complete, duration: 8, progress: nil) {
-                entries[category] = Entry(signal: completed, started: entry.expires, expires: entry.expires + 8)
-            } else { entries.removeValue(forKey: category) }
+                entries[key] = Entry(signal: completed, started: entry.expires, expires: entry.expires + 8, origin: entry.origin)
+            } else { entries.removeValue(forKey: key) }
         }
         let selected = entries.values.max {
             let lhs = priority($0.signal), rhs = priority($1.signal)
             if lhs != rhs { return lhs < rhs }
             if $0.started != $1.started { return $0.started < $1.started }
-            return $0.signal.category.rawValue < $1.signal.category.rawValue
+            if $0.signal.category != $1.signal.category { return $0.signal.category.rawValue < $1.signal.category.rawValue }
+            return $0.origin == .external && $1.origin == .local
         }
         current = selected?.signal
         count = entries.count

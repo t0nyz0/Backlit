@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from threading import Event, Thread
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
@@ -121,3 +122,80 @@ class OBSScriptTests(unittest.TestCase):
             self.assertIsNone(worker._pairing_key())
             self.assertEqual(lookup.call_count, 2)
             self.assertFalse(lookup.call_args.kwargs.get("shell", False))
+
+    def test_initial_inactive_state_clears_without_false_completion(self):
+        worker = self.worker()
+        worker.set_active("recording", False)
+        self.assertEqual(worker._desired["recording"][0], "clear")
+        states = []
+
+        def post(category, state, expected=None):
+            states.append(state)
+            worker.close()
+            return True
+
+        worker._post = post
+        worker._run()
+        self.assertEqual(states, ["clear"])
+
+    def test_returning_to_a_port_supersedes_stale_worker_cleanup(self):
+        old = self.worker()
+        old.set_active("recording", True)
+        old._active_attempts.add("recording")
+        new = self.worker()
+        self.assertIs(old._lane, new._lane)
+        old._pairing_key = Mock(return_value="fixture-key")
+        with patch.object(self.module.urllib.request, "build_opener") as opener:
+            self.assertFalse(old._post("recording", "clear"))
+            opener.assert_not_called()
+        old._pairing_key.assert_not_called()
+
+    def test_reenable_retries_current_inactive_snapshot(self):
+        worker = self.worker()
+        worker.set_active("recording", False)
+        worker._sent["recording"] = worker._desired["recording"]
+        worker.set_enabled(False)
+        worker.set_enabled(True)
+        self.assertFalse(worker._sent)
+        self.assertEqual(worker._desired["recording"][0], "clear")
+
+    def test_port_handoff_waits_for_old_inflight_request_before_new_start(self):
+        old = self.worker()
+        old._pairing_key = Mock(return_value="fixture-key")
+        entered, release, new_sent = Event(), Event(), Event()
+        states = []
+
+        def open_request(request, **kwargs):
+            state = json.loads(request.data)["state"]
+            if state == "clear":
+                entered.set()
+                release.wait(timeout=2)
+            states.append(state)
+            if state == "active":
+                new_sent.set()
+            response = MagicMock()
+            response.__enter__.return_value.status = 200
+            return response
+
+        opener = Mock()
+        opener.open.side_effect = open_request
+        previous = Thread(target=lambda: old._post("recording", "clear"))
+        following = None
+        with patch.object(self.module.urllib.request, "build_opener", return_value=opener):
+            previous.start()
+            try:
+                self.assertTrue(entered.wait(timeout=2))
+                new = self.worker()
+                new._pairing_key = Mock(return_value="fixture-key")
+                following = Thread(target=lambda: new._post("recording", "active"))
+                following.start()
+                self.assertFalse(new_sent.wait(timeout=0.05))
+            finally:
+                release.set()
+                previous.join(timeout=2)
+                if following is not None:
+                    following.join(timeout=2)
+        self.assertFalse(previous.is_alive())
+        self.assertIsNotNone(following)
+        self.assertFalse(following.is_alive())
+        self.assertEqual(states, ["clear", "active"])

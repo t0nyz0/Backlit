@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Explicit local job signals. Job output stays in the terminal, never in Backlit."""
 import argparse
+from contextlib import contextmanager
 import json
 import os
+import signal
 import subprocess
 import sys
 import urllib.error
@@ -47,15 +49,50 @@ def send_signal(opener, token, port, category, state, duration=None, progress=No
             raise ValueError("Backlit rejected the signal.")
 
 
+class JobCancelled(BaseException):
+    def __init__(self, event):
+        self.event = event
+
+
+@contextmanager
+def job_signals():
+    def terminate(event, frame):
+        raise JobCancelled(event)
+    previous = signal.signal(signal.SIGTERM, terminate)
+    try:
+        yield
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def cancel_job(child, first_signal=signal.SIGINT):
+    """Stop only the process group created for this explicitly requested job."""
+    events = (signal.SIGINT, signal.SIGTERM, signal.SIGKILL) if first_signal == signal.SIGINT else (signal.SIGTERM, signal.SIGKILL)
+    for event in events:
+        try:
+            os.killpg(child.pid, event)
+        except ProcessLookupError:
+            pass
+        try:
+            child.wait(timeout=2)
+            return
+        except subprocess.TimeoutExpired:
+            continue
+        except (KeyboardInterrupt, JobCancelled):
+            continue
+    # SIGKILL cannot be ignored; reap the owned child before returning.
+    child.wait()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Send local Backlit activity metadata or wrap a job.")
     parser.add_argument("--port", type=int, default=48261)
     commands = parser.add_subparsers(dest="action", required=True)
-    signal = commands.add_parser("signal")
-    signal.add_argument("category", choices=CATEGORIES)
-    signal.add_argument("state", choices=STATES)
-    signal.add_argument("--duration", type=float)
-    signal.add_argument("--progress", type=float)
+    signal_parser = commands.add_parser("signal")
+    signal_parser.add_argument("category", choices=CATEGORIES)
+    signal_parser.add_argument("state", choices=STATES)
+    signal_parser.add_argument("--duration", type=float)
+    signal_parser.add_argument("--progress", type=float)
     run = commands.add_parser("run")
     run.add_argument("category", choices=("build", "export", "backup"))
     run.add_argument("command", nargs=argparse.REMAINDER)
@@ -98,22 +135,29 @@ def main(argv=None):
         return 0 if emit(options.state, options.duration, options.progress) else 2
     arguments = options.command
     emit("active", 90)
-    try:
-        # No shell and no output capture. Only status metadata goes to Backlit.
-        child = subprocess.Popen(arguments)
-        while True:
-            try:
-                code = child.wait(timeout=30)
-                break
-            except subprocess.TimeoutExpired:
-                emit("active", 90)
-    except KeyboardInterrupt:
-        emit("clear")
-        return 130
-    except OSError:
-        emit("attention", 8)
-        print("Could not start the requested job.", file=sys.stderr)
-        return 127
+    with job_signals():
+        child = None
+        try:
+            # The child owns a separate process group, so cancellation of this
+            # wrapper can be forwarded to its whole job without touching our group.
+            # No shell and no output capture. Only status metadata goes to Backlit.
+            child = subprocess.Popen(arguments, start_new_session=True)
+            while True:
+                try:
+                    code = child.wait(timeout=30)
+                    break
+                except subprocess.TimeoutExpired:
+                    emit("active", 90)
+        except (KeyboardInterrupt, JobCancelled) as interrupted:
+            event = interrupted.event if isinstance(interrupted, JobCancelled) else signal.SIGINT
+            if child is not None:
+                cancel_job(child, first_signal=event)
+            emit("clear")
+            return 128 + event
+        except OSError:
+            emit("attention", 8)
+            print("Could not start the requested job.", file=sys.stderr)
+            return 127
     emit("complete" if code == 0 else "attention", 8)
     return code if code >= 0 else 128 - code
 
