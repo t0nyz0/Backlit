@@ -1,0 +1,15 @@
+# Privacy and storage
+
+Backlit has no analytics SDK or developer-operated service. Its core modes work without an account.
+
+- Preferences use the app's macOS defaults domain, `local.backlit`.
+- Hardware recovery, agent metadata, and configuration backups live in `~/Library/Application Support/Backlit`. These files are local and are not encrypted by Backlit. A hook-configuration backup may contain sensitive pre-existing agent settings; do not share it.
+- Hook commands extract only a session ID, validate it, and pass it alongside a fixed agent/state to the app. Backlit stores a hash-derived filename, agent, state, and timestamp. It does not read transcripts or receive prompts, tool input, or output. Raw session IDs are not written to event files.
+- Music uses a private, unmuted Core Audio process tap on macOS 14.2+, after user action and macOS authorization. It creates no screen/window capture session and never changes the default audio device. Its temporary private aggregate device and tap are destroyed on stop or setup failure. On macOS 14.0–14.1, the fallback uses ScreenCaptureKit with only an audio output registered. No captured material is stored or sent anywhere. No microphone source is used.
+- Touch uses native MultitouchSupport callbacks from trackpad devices only. It reads contact path/state and optional button-state changes, never coordinates or touch buffers. Input is not recorded, and callbacks stop when another mode is selected or the light is disabled. Global screen touch remains unsupported.
+- The Home Assistant key is a random 256-bit value in Keychain. Sharing starts off. Local-network access is a separate setting. The API returns light/battery/agent state, not prompts or code.
+- The optional ambient override requires system administrator authorization. It saves prior root-domain preferences under `/var/db/local.backlit` and changes only its two brightness-limit keys. Restoring those limits also requires administrator authorization.
+- A closed-lid watchdog owns an app-created lease and recovery marker. It monitors the parent process, elapsed closed time, battery, and thermal state; it releases its power changes on normal shutdown. Force-killing both the app and watchdog is a separate recovery case, not a guaranteed clean exit.
+- Check for Updates, help, GitHub, and support links open in your browser. Browser authentication and external-site privacy rules apply there. No silent updater or app license check is included.
+
+To remove Backlit: disable the brightness override if enabled, disconnect agent hooks, turn off login launch and sharing, then quit with restoration and remove the app. Keep recovery records if an operation failed; deleting them is not restoration. A deliberately retained off state needs restoration before uninstalling if you want the prior logo behavior back.

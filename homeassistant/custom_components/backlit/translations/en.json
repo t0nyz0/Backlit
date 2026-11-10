@@ -1,0 +1,10 @@
+{
+  "config": {
+    "step": {
+      "user": {"title": "Connect your Mac", "description": "Enable the bridge and local-network access in Backlit → Connections, then copy its pairing key.", "data": {"host": "Mac address", "token": "Pairing key"}},
+      "reauth_confirm": {"title": "Update pairing key", "data": {"token": "Pairing key"}}
+    },
+    "error": {"invalid_auth": "The pairing key was rejected.", "cannot_connect": "Cannot reach Backlit. Keep the app running and check local-network access.", "invalid_host": "Enter the Mac's http://hostname:48261 address.", "wrong_device": "This address points to a different Backlit installation."},
+    "abort": {"already_configured": "This Mac is already configured.", "reauth_successful": "Pairing key updated."}
+  }
+}

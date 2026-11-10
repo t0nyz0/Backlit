@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleName</key><string>Backlit</string>
+<key>CFBundleDisplayName</key><string>Backlit</string>
+<key>CFBundleIdentifier</key><string>local.backlit</string>
+<key>CFBundleExecutable</key><string>Backlit</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleShortVersionString</key><string>0.1.7</string>
+<key>CFBundleVersion</key><string>16</string>
+<key>CFBundleIconFile</key><string>Backlit</string>
+<key>LSMinimumSystemVersion</key><string>14.0</string>
+<key>NSPrincipalClass</key><string>NSApplication</string>
+<key>NSHighResolutionCapable</key><true/>
+<key>NSAudioCaptureUsageDescription</key><string>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</string>
+<key>NSScreenCaptureUsageDescription</key><string>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</string>
+<key>NSLocalNetworkUsageDescription</key><string>Connect the Backlit logo light to your Home Assistant instance on your local network.</string>
+<key>NSHumanReadableCopyright</key><string>Copyright © 2026 t0nyz.</string>
+</dict></plist>

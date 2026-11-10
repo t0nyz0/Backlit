@@ -1,0 +1,54 @@
+{
+  "app_version": "0.1.7",
+  "native_capture": true,
+  "isolated_preview": true,
+  "source": "Backlit --capture-suite docs/media",
+  "notes": "Owned native views, not mockups. Preview performs no hardware writes. Badge is an attributed official third-party asset. Metadata removed without changing IDAT pixels.",
+  "images": {
+    "buy-me-a-coffee.png": {
+      "width": 545,
+      "height": 153,
+      "sha256": "a72341bd3e0d51568e4c621bfb4bd315f6e71cf39fd3e71f7daf4a93f00425a7"
+    },
+    "connections-dark.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "9777b71a53474f21fed5c8f8dee7c5d5da168dfb9142642c11b5ffd2b2ee31e4"
+    },
+    "connections-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "dbb12cb838c46767612d95dd3426e1f83c095e3e2c56fa95cfb3f57859e6a125"
+    },
+    "icon.png": {
+      "width": 512,
+      "height": 512,
+      "sha256": "0e52d753c7dd84da861ddfeabff36cecf257b90a90bd5b6fb4507ee02db8205d"
+    },
+    "light-dark.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "d3cddac721c8eee7bc08d2a9d0a8ef53f38150f2e7e81477052e4fea27c23734"
+    },
+    "light-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "3f7b3cc6ca2886837a8f8f780211646a8c9c2d2fd35df5c758ee6c0f8e483f0b"
+    },
+    "menu-light.png": {
+      "width": 640,
+      "height": 768,
+      "sha256": "2477177471ba853de36cb8dba2c7cc2da6714eb3d1f44e610b28323a07d59453"
+    },
+    "settings-dark.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "e17236f51e91008b6c9c31819a832226bbd7fcca6688349fce641f0ba78edc38"
+    },
+    "settings-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "4a513e3d21d2621ca842bc88b478aeae944e5c383663a6c8b9aaa08b6cbac0be"
+    }
+  }
+}
