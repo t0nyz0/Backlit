@@ -85,6 +85,7 @@ struct UpdateConsent {
                 // Manual-only policy also overrides persisted Sparkle auto-update settings.
                 next.updater.automaticallyChecksForUpdates = false
                 next.updater.automaticallyDownloadsUpdates = false
+                next.updater.sendsSystemProfile = false
                 try next.updater.start()
                 controller = next
                 observation = next.updater.publisher(for: \.canCheckForUpdates)

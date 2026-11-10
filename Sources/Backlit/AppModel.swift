@@ -566,7 +566,10 @@ import Combine
         if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
         configureTimer(); requestFrame()
     }
-    func quit() { if prepareQuit() { NSApp.terminate(nil) } }
+    func quit() {
+        guard updater.allowsTermination() else { error = updater.message; return }
+        if prepareQuit() { NSApp.terminate(nil) }
+    }
     func prepareQuit() -> Bool {
         if terminationApproved { return true }
         if controlling && !enabled {
