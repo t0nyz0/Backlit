@@ -402,7 +402,7 @@ import Combine
         catch { self.error = error.localizedDescription }
     }
     func apiState() -> [String:Any] {
-        ["id":id,"name":"Backlit","version":"0.1.8","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
+        ["id":id,"name":"Backlit","version":"0.1.9","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
          "effect":mode.title,"effects":availableModes.map(\.title),"battery":Int((battery*100).rounded()),
          "charging":charging,"actively_charging":activelyCharging,"battery_available":batteryAvailable,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,

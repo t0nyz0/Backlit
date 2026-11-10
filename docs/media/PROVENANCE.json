@@ -1,5 +1,5 @@
 {
-  "app_version": "0.1.8",
+  "app_version": "0.1.9",
   "native_capture": true,
   "isolated_preview": true,
   "source": "Backlit --capture-suite docs/media",
@@ -13,42 +13,42 @@
     "connections-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "cf62e925ddc0f70b16c9ff82df9669549d7d70283877df6c3098892672e9a367"
+      "sha256": "44447370e35f393b78b02ccf311f2ffd5ee81fea8d4bb2399cd12d65cf0de5d8"
     },
     "connections-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "52504f21092bf21ee0a8ac96df585ade4e5af05b200d57f0ad86fda793f844ac"
+      "sha256": "6460473ccfad1cc94a6b68d130403c99e28f663e0fcdc6c0dd43331b41e6b7a3"
     },
     "icon.png": {
-      "width": 512,
-      "height": 512,
-      "sha256": "0e52d753c7dd84da861ddfeabff36cecf257b90a90bd5b6fb4507ee02db8205d"
+      "width": 2048,
+      "height": 2048,
+      "sha256": "d4d45871bf5aeeb7fd49e2942d0de24a1fb5239b53a172bab0f37cd159928aea"
     },
     "light-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "32456f8c78b8ee4ddf24ede5fb234055f10c0db5b8271adf894a8d5b815f8fc4"
+      "sha256": "3c071dab28b804b81559b58f00b57c26622eee5b792ee4d59f0eb47efb2aad70"
     },
     "light-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "d66c2ca756f9dd0df96fd1db0c42ad2a31764cd0b467b49f18320f3ee240d879"
+      "sha256": "b61bbe5073fec772b4ac122a6be1729a7f90905e4357d22b55fb618120ae966a"
     },
     "menu-light.png": {
       "width": 640,
       "height": 768,
-      "sha256": "5b949eec487552624d783843d003164d0ff324d1ff032957025bb983bb0d81f3"
+      "sha256": "c4114f1034309f754dd72ccf22f942f407661ece8c7fe601dd3c09e9e11a586f"
     },
     "settings-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "718c90fe2c6a222dabd077686a2d14915dcc9621fc0fb9b879daa019bad6b9d7"
+      "sha256": "178865f83c206f15ac1bda3e4956bc2a31b11cc39e08a2131a434b0e2bb4a6c7"
     },
     "settings-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "91e7d1aa1b445f32f85522081fe58b15321c7ebd5eaef3b725a8fc6690fb3a45"
+      "sha256": "15b953b9bc433f10c0cb8517090c4dc8b35913edecd209bb8399b970d405c851"
     }
   }
 }

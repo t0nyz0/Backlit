@@ -2,7 +2,7 @@
 <h1 align="center">Backlit</h1>
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-v0.1.8-9a7400?style=flat" alt="Source v0.1.8">
+<img src="https://img.shields.io/badge/source-v0.1.9-9a7400?style=flat" alt="Source v0.1.9">
 <img src="https://img.shields.io/badge/local_tests-45_passing-2d6085?style=flat" alt="45 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
@@ -62,7 +62,7 @@ An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/media/settings-dark.png">
-  <img src="docs/media/settings-light.png" alt="Backlit settings: appearance, language, login launch, keyboard shortcut, closed-lid option, and brightness override">
+  <img src="docs/media/settings-light.png" alt="Backlit settings with Battery behavior customization, appearance, language, login launch, and keyboard shortcut">
 </picture>
 
 ## Install

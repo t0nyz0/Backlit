@@ -1,6 +1,6 @@
 # Backlit validation
 
-Version: **0.1.8**, build 19. This is an early source preview. Release source metadata and artifact checksums are in `BUILD-INFO.json` and `SHA256SUMS.txt`. Test and package results are available in [GitHub Actions](https://github.com/t0nyz0/Backlit/actions).
+Version: **0.1.9**, build 20. This is an early source preview. Release source metadata and artifact checksums are in `BUILD-INFO.json` and `SHA256SUMS.txt`. Test and package results are available in [GitHub Actions](https://github.com/t0nyz0/Backlit/actions).
 
 ## Automated checks
 
@@ -16,6 +16,7 @@ Screenshots use the production native views in isolated preview mode. They are v
 | Feature | Remaining checks |
 | --- | --- |
 | Hardware control | Other hardware and operating-system variants; optical brightness and latency. Private interfaces may change. Service readback is not an optical measurement. |
+| Battery | Active-charging pulse was checked on the local Mac. Full/paused-charge and unplugged transitions are covered by automated tests, but physical checks of those states remain unverified. |
 | Music | Multiple playback sources/devices, protected audio, latency, and sustained resource use. Core Audio is used on macOS 14.2+; macOS 14.0–14.1 uses an audio-only ScreenCaptureKit fallback. |
 | Coding agents | Codex live-session compatibility; hook review/trust must be granted in Codex. |
 | Login launch | Actual login/reboot behavior after opt-in. |
