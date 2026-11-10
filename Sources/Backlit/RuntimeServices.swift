@@ -5,17 +5,24 @@ import IOKit.pwr_mgt
 import Darwin
 
 enum RuntimeServices {
-    static func battery() -> (Double, Bool) {
+    struct BatterySnapshot { let level: Double; let externalPower: Bool }
+    static func batterySnapshot() -> BatterySnapshot? {
         guard let info = IOPSCopyPowerSourcesInfo()?.takeRetainedValue(),
-              let sources = IOPSCopyPowerSourcesList(info)?.takeRetainedValue() as? [CFTypeRef] else { return (1, false) }
+              let sources = IOPSCopyPowerSourcesList(info)?.takeRetainedValue() as? [CFTypeRef] else { return nil }
         for source in sources {
             guard let value = IOPSGetPowerSourceDescription(info, source)?.takeUnretainedValue() as? [String: Any],
                   value[kIOPSTypeKey] as? String == kIOPSInternalBatteryType,
                   let current = value[kIOPSCurrentCapacityKey] as? Double,
-                  let maximum = value[kIOPSMaxCapacityKey] as? Double, maximum > 0 else { continue }
-            return (Effects.clamp(current / maximum), value[kIOPSPowerSourceStateKey] as? String == kIOPSACPowerValue)
+                  let maximum = value[kIOPSMaxCapacityKey] as? Double, maximum.isFinite, maximum > 0, current.isFinite,
+                  let state = value[kIOPSPowerSourceStateKey] as? String,
+                  state == kIOPSACPowerValue || state == kIOPSBatteryPowerValue else { continue }
+            return BatterySnapshot(level: Effects.clamp(current / maximum), externalPower: state == kIOPSACPowerValue)
         }
-        return (1, false)
+        return nil
+    }
+    static func battery() -> (Double, Bool) {
+        guard let snapshot = batterySnapshot() else { return (1, false) }
+        return (snapshot.level, snapshot.externalPower)
     }
     static func rootValue(_ key: String) -> Any? {
         let node = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))

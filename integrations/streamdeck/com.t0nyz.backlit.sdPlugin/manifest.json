@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "UUID": "com.t0nyz.backlit",
+  "Name": "Backlit",
+  "Author": "t0nyz",
+  "Description": "Backlight controls for MacBook PROLED.",
+  "Category": "Backlit",
+  "CategoryIcon": "images/category",
+  "Icon": "images/plugin",
+  "CodePath": "bin/plugin.js",
+  "Version": "0.1.0.0",
+  "SDKVersion": 3,
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "14"
+    }
+  ],
+  "Nodejs": {
+    "Version": "24"
+  },
+  "PropertyInspectorPath": "ui/settings.html",
+  "Actions": [
+    {
+      "UUID": "com.t0nyz.backlit.toggle",
+      "Name": "Toggle Backlight",
+      "Icon": "images/action",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "images/key",
+          "Title": "Toggle",
+          "TitleAlignment": "bottom",
+          "FontSize": 12
+        }
+      ],
+      "Tooltip": "Send this action to Backlit on this Mac.",
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.t0nyz.backlit.on",
+      "Name": "Backlight On",
+      "Icon": "images/action",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "images/key",
+          "Title": "On",
+          "TitleAlignment": "bottom",
+          "FontSize": 12
+        }
+      ],
+      "Tooltip": "Send this action to Backlit on this Mac.",
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.t0nyz.backlit.off",
+      "Name": "Backlight Off",
+      "Icon": "images/action",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "images/key",
+          "Title": "Off",
+          "TitleAlignment": "bottom",
+          "FontSize": 12
+        }
+      ],
+      "Tooltip": "Send this action to Backlit on this Mac.",
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.t0nyz.backlit.brightness",
+      "Name": "Set Brightness",
+      "Icon": "images/action",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "images/key",
+          "Title": "Set Brightness",
+          "TitleAlignment": "bottom",
+          "FontSize": 12
+        }
+      ],
+      "Tooltip": "Send this action to Backlit on this Mac.",
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.t0nyz.backlit.mode",
+      "Name": "Set Behavior",
+      "Icon": "images/action",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "images/key",
+          "Title": "Set Behavior",
+          "TitleAlignment": "bottom",
+          "FontSize": 12
+        }
+      ],
+      "Tooltip": "Send this action to Backlit on this Mac.",
+      "SupportedInMultiActions": true
+    }
+  ]
+}

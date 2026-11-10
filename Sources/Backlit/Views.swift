@@ -124,6 +124,7 @@ struct LightPage: View {
                         Slider(value:$model.period,in:3...10).tint(.primary).accessibilityLabel("Breathing cycle seconds")
                         HStack {Text("Faster");Spacer();Text("Slower")}.font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .music {
+                        MusicResponseControls(model: model)
                         HStack {Text(model.t("Beat intensity","節拍強度")).fontWeight(.medium);Spacer();Image(systemName:"waveform")}
                         Slider(value:$model.intensity,in:0.25...3).tint(.primary).accessibilityLabel("Music intensity")
                         Toggle(model.t("Dark between beats","節拍之間熄滅"),isOn:$model.strobe).toggleStyle(.switch).controlSize(.small)
@@ -134,8 +135,9 @@ struct LightPage: View {
                         }
                         Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .battery {
-                        Label("\(Int(model.battery*100))% · \(model.charging ? "Plugged in" : "On battery")",systemImage:model.charging ? "bolt.battery" : "battery.75percent").font(.system(size:14,weight:.medium))
-                        Text("The logo follows your battery charge. Your brightness setting sets its upper limit.").font(.system(size:12)).foregroundStyle(.secondary)
+                        BatteryResponseControls(model: model)
+                    } else if model.mode == .signals {
+                        SignalResponseControls(model: model)
                     } else if model.mode == .agents {
                         Label(model.agents.isEmpty ? "Waiting for an agent signal" : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
                         Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
@@ -143,6 +145,7 @@ struct LightPage: View {
                     } else if model.mode == .touch {
                         Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:12,weight:.medium))
                         if model.touchSource != .screen {Toggle("Blink on trackpad click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)}
+                        TypingResponseControls(model: model)
                         Text("Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.").font(.system(size:11)).foregroundStyle(.secondary)
                         Text("Global trackpad · event-driven, no input polling").font(.system(size:10)).foregroundStyle(.tertiary)
                     } else {
@@ -163,7 +166,7 @@ struct LightPage: View {
     }
     func modeRow(_ mode: GlowMode) -> some View {
         let selected = model.mode == mode
-        let subtitles: [GlowMode:String] = [.steady:model.t("Constant brightness","持續而柔和的光"),.breathe:model.t("Fade in and out","跟隨你的呼吸節奏"),.battery:model.t("Follow battery charge","一眼掌握電量"),.music:model.t("Respond to system playback","隨音樂律動"),.agents:model.t("Coding agent status","工作需要你時提醒"),.touch:model.t("Light while your fingers rest","觸碰時亮起・實驗功能")]
+        let subtitles: [GlowMode:String] = [.steady:model.t("Constant brightness","持續而柔和的光"),.breathe:model.t("Fade in and out","跟隨你的呼吸節奏"),.battery:model.t("Follow battery charge","一眼掌握電量"),.music:model.t("Respond to system playback","隨音樂律動"),.agents:model.t("Coding agent status","工作需要你時提醒"),.touch:model.t("Trackpad and optional typing response","觸控板與選用打字回應"),.signals:model.t("Activity from your apps and focus timer","應用程式活動與專注計時器")]
         return Button {model.mode=mode} label: {
             HStack(spacing:12) {
                 Image(systemName:mode.symbol).font(.system(size:17,weight:.medium)).frame(width:34,height:34).foregroundStyle(selected ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.6)).background(selected ? Color.primary : Color.primary.opacity(0.045),in:RoundedRectangle(cornerRadius:10))
@@ -181,6 +184,7 @@ struct ConnectionsPage: View {
     @State private var showHomeSetup=false
     var body: some View {
         PageHeading(eyebrow:"BACKLIT",title:model.t("Connections","連接"),subtitle:model.t("Optional connections for agents and automation.","代理程式和自動化的選用連接。"))
+        AutomationConnections(model: model)
         Surface(model.t("Coding companions","程式夥伴")) {
             ForEach(CodingAgent.allCases) { agent in
                 let connected = !model.demo && AgentBridge.connected(agent)
@@ -317,10 +321,14 @@ struct MenuView: View {
             if model.mode == .breathe {
                 VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(String(format:"%.1f seconds",model.period)).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:3...10).tint(.primary).accessibilityLabel("Breathing cycle seconds")}
             } else if model.mode == .music {
+                MusicResponseControls(model: model).font(.system(size:11))
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.intensity,in:0.25...3).tint(.primary)};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);Button(model.audioRunning ? "Stop System Audio" : "Start System Audio"){if model.audioRunning {model.stopAudio()} else {model.startAudio()}}}.font(.system(size:11))
             } else if model.mode == .battery {
                 Label("\(Int(model.battery*100))% · \(model.charging ? "Plugged in" : "On battery")",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
+            } else if model.mode == .signals {
+                SignalResponseControls(model: model).font(.system(size:11))
             } else if model.mode == .touch {
+                TypingResponseControls(model: model).font(.system(size:11))
                 VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:11)).foregroundStyle(.secondary)}
             } else if model.mode == .agents {
                 Label(model.agents.isEmpty ? "Waiting for an agent signal" : model.agentState.rawValue.capitalized,systemImage:"terminal").font(.system(size:11)).foregroundStyle(.secondary)

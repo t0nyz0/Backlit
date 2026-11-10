@@ -93,11 +93,22 @@ if arguments.contains("--verify-hardware") {
         updateIcon(); installShortcut()
         observing = NotificationCenter.default.addObserver(forName:.init("Backlit.Shortcut"),object:nil,queue:.main){[weak self] _ in Task { @MainActor in self?.installShortcut() }}
         quitObserver = DistributedNotificationCenter.default().addObserver(forName:.init("local.backlit.quit"),object:nil,queue:.main) { [weak self] _ in Task { @MainActor in self?.model.quit() } }
+        AutomationRouter.shared.handler = { [weak model] command in
+            guard let model else { throw RuntimeServices.failure("Backlit is not ready.") }
+            try model.performAutomation(command)
+        }
+        AutomationRouter.shared.enabled = model.automationsEnabled && !model.demo
         model.start()
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
         if let directory = option("--capture-suite") {
             Task { await captureSuite(URL(fileURLWithPath:directory)) }
+        }
+    }
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls.prefix(8) {
+            do { try AutomationRouter.shared.perform(AutomationCommand(url: url)) }
+            catch { model.error = error.localizedDescription }
         }
     }
     func showWindow() {popover.performClose(nil);window.makeKeyAndOrderFront(nil);NSApp.activate(ignoringOtherApps:true)}
@@ -109,25 +120,12 @@ if arguments.contains("--verify-hardware") {
         else if let button=status.button {popover.show(relativeTo:button.bounds,of:button,preferredEdge:.minY);popover.contentViewController?.view.window?.makeKey()}
     }
     func updateIcon() {
-        // Use output, not the slider ceiling: breathing and touch remain live.
-        // Twenty cached alpha levels avoid redrawing artwork at every tick.
-        let step=Int((Effects.clamp(model.output)*20).rounded())
+        // Geometry follows actual output. Cache at most 101 tiny template images.
+        let step = StatusIconGeometry.step(for: model.output)
         if step != lastIconStep {
-            if iconCache[step] == nil {
-                let alpha=CGFloat(step)/20
-                let image=NSImage(size:NSSize(width:20,height:22),flipped:false){rect in
-                    // Original Backlit mark: a permanent laptop outline and
-                    // an interior light whose alpha follows physical output.
-                    let lid=NSBezierPath(roundedRect:NSRect(x:3,y:5,width:14,height:13),xRadius:2.4,yRadius:2.4)
-                    NSColor.black.withAlphaComponent(0.78).setStroke();lid.lineWidth=1.1;lid.stroke()
-                    let base=NSBezierPath();base.move(to:NSPoint(x:2,y:3.5));base.line(to:NSPoint(x:18,y:3.5));base.lineWidth=1; base.stroke()
-                    let lamp=NSBezierPath(roundedRect:NSRect(x:7,y:10,width:6,height:3),xRadius:1.5,yRadius:1.5)
-                    NSColor.black.withAlphaComponent(alpha).setFill();lamp.fill()
-                    return true
-                }
-                image.isTemplate=true;iconCache[step]=image
-            }
-            status?.button?.image=iconCache[step];lastIconStep=step
+            if iconCache[step] == nil { iconCache[step] = StatusIconGeometry.image(at: step) }
+            status?.button?.image = iconCache[step]
+            lastIconStep = step
         }
         let now=ProcessInfo.processInfo.systemUptime
         if model.status != lastTooltipStatus || now-lastTooltipUpdate>=1 {

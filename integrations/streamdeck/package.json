@@ -1,0 +1,23 @@
+{
+  "name": "backlit-streamdeck-source",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "npm run check && node build.mjs",
+    "test": "node --experimental-strip-types --test src/links.test.ts"
+  },
+  "dependencies": {
+    "@elgato/streamdeck": "3.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.0",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  },
+  "license": "SEE LICENSE IN LICENSE"
+}

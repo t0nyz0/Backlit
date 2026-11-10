@@ -38,3 +38,7 @@ assets/*.iconset/
 /private/
 /ROADMAP.md
 /TODO.md
+
+# Local integration dependency installs.
+node_modules/
+*.streamDeckPlugin

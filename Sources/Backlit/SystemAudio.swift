@@ -5,13 +5,27 @@ import AudioToolbox
 import CoreAudio
 
 final class SystemAudio: NSObject, SCStreamOutput, SCStreamDelegate {
-    private var stream: SCStream?
+    private let stateLock = NSLock()
+    private var storedStream: SCStream?
+    private var streamGeneration: UInt64 = 0
+    private var storedRunning = false
+    private var stream: SCStream? {
+        get { stateLock.lock(); defer { stateLock.unlock() }; return storedStream }
+        set { stateLock.lock(); storedStream = newValue; streamGeneration &+= 1; stateLock.unlock() }
+    }
     private let queue = DispatchQueue(label: "Backlit.Audio", qos: .userInitiated)
     private let meter=AudioEnergyMeter()
     private let lifecycle=NSLock()
     private var native:AnyObject?
-    private(set) var running = false
-    var onFailure: ((String) -> Void)?
+    private(set) var running: Bool {
+        get { stateLock.lock(); defer { stateLock.unlock() }; return storedRunning }
+        set { stateLock.lock(); storedRunning = newValue; stateLock.unlock() }
+    }
+    var onFailure: ((String, UInt64) -> Void)?
+    func acceptsFailure(_ token: UInt64) -> Bool {
+        stateLock.lock(); defer { stateLock.unlock() }
+        return token == streamGeneration
+    }
     var level:Double {meter.level}
 
     func start() async throws {
@@ -34,8 +48,14 @@ final class SystemAudio: NSObject, SCStreamOutput, SCStreamDelegate {
         let candidate = SCStream(filter: filter, configuration: config, delegate: self)
         try candidate.addStreamOutput(self, type: .audio, sampleHandlerQueue: queue)
         stream = candidate
-        do { try await candidate.startCapture(); running = true }
-        catch { stream = nil; throw Self.friendly(error) }
+        do {
+            try await candidate.startCapture()
+            guard stream === candidate else { throw RuntimeServices.failure("System audio stopped before it was ready.") }
+            running = true
+        } catch {
+            if stream === candidate { stream = nil }
+            throw Self.friendly(error)
+        }
     }
 
     @available(macOS 14.2, *) private func startNative()throws {
@@ -75,14 +95,17 @@ final class SystemAudio: NSObject, SCStreamOutput, SCStreamDelegate {
     private func resetLevel() {meter.reset()}
 
     func stream(_ stream: SCStream, didStopWithError error: Error) {
-        running = false
-        self.stream = nil
+        stateLock.lock()
+        guard stream === storedStream else { stateLock.unlock(); return }
+        storedStream = nil; storedRunning = false
+        let token = streamGeneration
+        stateLock.unlock()
         resetLevel()
-        onFailure?(Self.friendly(error).localizedDescription)
+        onFailure?(Self.friendly(error).localizedDescription, token)
     }
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
-        guard type == .audio, sampleBuffer.isValid,
+        guard stream === self.stream, type == .audio, sampleBuffer.isValid,
               let description = sampleBuffer.formatDescription,
               let format = CMAudioFormatDescriptionGetStreamBasicDescription(description)?.pointee,
               format.mFormatID == kAudioFormatLinearPCM,

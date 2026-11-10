@@ -32,9 +32,13 @@ for name in filter(None, files):
 for line in subprocess.check_output(['git', 'log', '--all', '--format=%ae|%ce'], cwd=root).decode().splitlines():
     if any(not email.endswith('@users.noreply.github.com') for email in line.split('|')):
         failures.append('Git author/committer email is not a GitHub noreply address')
-binary=root/'dist/Backlit.app/Contents/MacOS/Backlit'
-if binary.exists() and str(Path.home()).encode() in binary.read_bytes():
-    failures.append('Compiled app contains the local home path')
+bundle = root/'dist/Backlit.app'
+if bundle.exists():
+    for file in bundle.rglob('*'):
+        if file.is_file() and not file.is_symlink():
+            data = file.read_bytes()
+            if any(value in data for value in [str(Path.home()).encode(), b'/Users/', b'/var/folders/']):
+                failures.append(f'App bundle contains a private host path: {file.relative_to(bundle)}')
 if failures:
     raise SystemExit('\n'.join(sorted(set(failures))))
 print('Tracked text and reachable commit-email privacy checks passed.')
