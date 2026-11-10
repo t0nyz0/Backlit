@@ -1,6 +1,4 @@
-<p align="center"><img src="docs/media/icon.png" width="96" alt="Backlit icon"></p>
-<h1 align="center">Backlit</h1>
-<p align="center">MacBook PROLED logo light control for macOS.</p>
+<p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
 <img src="https://img.shields.io/badge/source-0.2.1-9a7400?style=flat" alt="Source 0.2.1">
 <img src="https://img.shields.io/badge/local_tests-171_passing-2d6085?style=flat" alt="171 local tests passing">
