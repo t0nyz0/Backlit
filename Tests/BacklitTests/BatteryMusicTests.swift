@@ -2,6 +2,46 @@ import XCTest
 @testable import Backlit
 
 final class BatteryMusicTests: XCTestCase {
+    func testChargingBreatheSettlesAtFullWithoutAnAnimationTimer() {
+        var response = BatteryResponse(), options = BatteryResponseOptions()
+        options.chargingStyle = .breathe
+        XCTAssertFalse(options.readyEnabled)
+        XCTAssertLessThan(response.update(charge: 0.9, externalPower: true, at: 0, options: options), 1)
+        XCTAssertTrue(response.requiresAnimation)
+        XCTAssertEqual(response.update(charge: 1, externalPower: true, at: 1, options: options), 1)
+        XCTAssertFalse(response.requiresAnimation)
+        for (index, charge) in [0.99, 1, 0.98, 0.99].enumerated() {
+            XCTAssertEqual(response.update(charge: charge, externalPower: true, at: Double(index + 2), options: options), 1)
+            XCTAssertFalse(response.requiresAnimation, "Minor full-charge fluctuations must not restart breathing")
+        }
+        XCTAssertLessThan(response.update(charge: 0.97, externalPower: true, at: 6, options: options), 1)
+        XCTAssertTrue(response.requiresAnimation)
+    }
+
+    func testFullChargingBreatheResetsOnUnplugAndTracksBatteryLevel() {
+        var response = BatteryResponse(), options = BatteryResponseOptions()
+        options.chargingStyle = .breathe
+        XCTAssertEqual(response.update(charge: 1, externalPower: true, at: 0, options: options), 1)
+        XCTAssertFalse(response.requiresAnimation, "Opening Battery while already full should stay solid")
+        XCTAssertEqual(response.update(charge: 0.99, externalPower: false, at: 1, options: options), 0.99)
+        XCTAssertFalse(response.requiresAnimation)
+        XCTAssertLessThan(response.update(charge: 0.99, externalPower: true, at: 2, options: options), 1)
+        XCTAssertTrue(response.requiresAnimation)
+    }
+
+    func testOptionalReadyCueFinishesWithSolidFullCharge() {
+        var response = BatteryResponse(), options = BatteryResponseOptions()
+        options.chargingStyle = .breathe
+        options.readyEnabled = true; options.readyStyle = .pulse; options.readyDuration = 2
+        _ = response.update(charge: 0.99, externalPower: true, at: 0, options: options)
+        _ = response.update(charge: 1, externalPower: true, at: 1, options: options)
+        XCTAssertTrue(response.completionActive)
+        XCTAssertTrue(response.requiresAnimation)
+        XCTAssertEqual(response.update(charge: 1, externalPower: true, at: 3, options: options), 1)
+        XCTAssertFalse(response.completionActive)
+        XCTAssertFalse(response.requiresAnimation)
+    }
+
     func testBatteryPrimesFullWithoutClaimingACompletion() {
         var response = BatteryResponse(), options = BatteryResponseOptions()
         options.readyEnabled = true

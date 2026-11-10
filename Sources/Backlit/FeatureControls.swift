@@ -10,6 +10,9 @@ struct BatteryResponseControls: View {
             Picker("While plugged in", selection: $model.batteryOptions.chargingStyle) {
                 ForEach(BatteryChargeStyle.allCases) { style in Text(style.title).tag(style) }
             }
+            if model.batteryOptions.chargingStyle == .breathe {
+                Text("Breathes while charging, then stays solid at 100%. On battery, brightness follows the charge level.").font(.system(size: 10)).foregroundStyle(.secondary)
+            }
             Toggle("Charge-ready signal", isOn: $model.batteryOptions.readyEnabled).toggleStyle(.switch).controlSize(.small)
             if model.batteryOptions.readyEnabled {
                 HStack {

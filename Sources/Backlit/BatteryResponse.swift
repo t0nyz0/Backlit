@@ -37,6 +37,7 @@ struct BatteryResponse {
     private var previousThreshold: Double?
     private var previouslyEnabled = false
     private var completionStarted: Double?
+    private var settledAtFull = false
 
     init() {}
     mutating func reset() { self = BatteryResponse() }
@@ -45,6 +46,9 @@ struct BatteryResponse {
                          options: BatteryResponseOptions) -> Double {
         guard charge.isFinite, time.isFinite else { reset(); return 0 }
         let amount = min(1, max(0, charge)), now = max(0, time)
+        // Stay solid through small full-charge fluctuations while plugged in.
+        if !externalPower || amount < 0.98 { settledAtFull = false }
+        else if amount >= 1 { settledAtFull = true }
         let threshold = options.readyThreshold.isFinite ? min(1, max(0.5, options.readyThreshold)) : 1
         let duration = options.readyDuration.isFinite ? min(60, max(1, options.readyDuration)) : 10
         let staleClock = previousTime.map { now < $0 || now - $0 > 30 } ?? true
@@ -93,12 +97,13 @@ struct BatteryResponse {
             }
         }
         completionStarted = nil
-        requiresAnimation = externalPower && options.chargingStyle == .breathe
+        requiresAnimation = externalPower && options.chargingStyle == .breathe && !settledAtFull
         guard externalPower else { return amount }
         switch options.chargingStyle {
         case .level: return amount
         case .steady: return 1
         case .breathe:
+            guard !settledAtFull else { return 1 }
             let phase = now.truncatingRemainder(dividingBy: 6) / 6
             return 0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2
         }
