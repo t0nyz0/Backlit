@@ -47,57 +47,100 @@ enum RuntimeServices {
         guard node != 0 else { return nil }; defer { IOObjectRelease(node) }
         return IORegistryEntryCreateCFProperty(node, key as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue()
     }
-    static var lidClosed: Bool { (rootValue("AppleClamshellState") as? NSNumber)?.boolValue ?? false }
+    static var physicalLidClosed: Bool? { (rootValue("AppleClamshellState") as? NSNumber)?.boolValue }
+    static var lidClosed: Bool { physicalLidClosed ?? false }
     static var locked: Bool { (CGSessionCopyCurrentDictionary() as? [String: Any])?["CGSSessionScreenIsLocked"] as? Bool ?? false }
     static var away: Bool { CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .null) > 60 }
     static var externalDisplay: Bool { NSScreen.screens.count > 1 || (NSScreen.screens.first?.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? UInt32).map { CGDisplayIsBuiltin($0) == 0 } == true }
 
     /// Runs as a separate unprivileged watchdog. Selector/type come from Apple's
     /// RootDomainUserClient.cpp and the installed IOPMLibDefs.h, not guessed IDs.
-    static func watchLid(parent: pid_t, lease: URL) -> Int32 {
+    static func watchLid(parent: pid_t, lease: URL, durationSeconds: Double = 1800) -> Int32 {
+        guard LidSessionPolicy.validDuration(durationSeconds) else { return 12 }
         // Install graceful child-only cancellation before opening or changing power services.
         let cancellation = LidWatchCancellation()
         let service = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
         guard service != 0 else { return 2 }; defer { IOObjectRelease(service) }
         var connection: io_connect_t = 0
         guard IOServiceOpen(service, mach_task_self_, 0, &connection) == KERN_SUCCESS else { return 3 }
+        guard let logoInterface = ClosedLidLogo.liveInterface() else { IOServiceClose(connection); return 7 }
+        let logo = ClosedLidLogo(interface: logoInterface)
         var changed = false
         var assertion: IOPMAssertionID = 0
         let journal = AgentBridge.directory.appendingPathComponent("lid-recovery.json")
+        guard !FileManager.default.fileExists(atPath: journal.path) else { IOServiceClose(connection); return 9 }
         func setDisabled(_ disabled: Bool) -> Bool {
             var scalar: UInt64 = disabled ? 1 : 0
             return IOConnectCallScalarMethod(connection, 12, &scalar, 1, nil, nil) == KERN_SUCCESS
         }
+        func recordRecovery() throws {
+            let bytes = try JSONSerialization.data(withJSONObject: ["needsRestore": changed, "logoOverride": logo.active])
+            try bytes.write(to: journal, options: .atomic)
+        }
         defer {
-            if changed { if setDisabled(false) { try? FileManager.default.removeItem(at: journal) } }
+            var restored = true
+            do { try logo.restore(physicalClosed: physicalLidClosed) } catch { restored = false }
+            if changed && !setDisabled(false) { restored = false }
+            if restored { try? FileManager.default.removeItem(at: journal) }
             if assertion != 0 { IOPMAssertionRelease(assertion) }
             IOServiceClose(connection)
         }
+        var logoEnabledAt: Double?
         var closedAt: Double?
         var exhausted = false
         while !cancellation.isRequested && kill(parent, 0) == 0 && FileManager.default.fileExists(atPath: lease.path) {
-            let closed = lidClosed
+            guard let closed = physicalLidClosed else { return 10 }
             let power = battery()
             let thermal = ProcessInfo.processInfo.thermalState
             if !closed { closedAt = nil; exhausted = false }
             if closed && closedAt == nil { closedAt = ProcessInfo.processInfo.systemUptime }
-            if let closedAt, ProcessInfo.processInfo.systemUptime-closedAt >= 1800 && !externalDisplay { exhausted = true }
-            let eligible = !exhausted && (power.1 || power.0 > 0.2) &&
-                !ProcessInfo.processInfo.isLowPowerModeEnabled && thermal != .serious && thermal != .critical
+            if LidSessionPolicy.timedOut(closedAt: closedAt, now: ProcessInfo.processInfo.systemUptime, duration: durationSeconds) { exhausted = true }
+            let eligible = LidSessionPolicy.eligible(exhausted: exhausted, externalPower: power.1,
+                battery: power.0, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: thermal)
+            // Restore the logo gate before allowing sleep or dropping the assertion.
+            if (!eligible || !closed) && logo.active {
+                do { try logo.restore(physicalClosed: closed); logoEnabledAt = nil; try recordRecovery() } catch { return 8 }
+            }
             if eligible && !changed && ((rootValue("AppleClamshellCausesSleep") as? NSNumber)?.boolValue == true) {
-                do { try Data("{\"needsRestore\":true}".utf8).write(to: journal, options: .atomic) } catch { return 4 }
-                guard setDisabled(true) else { try? FileManager.default.removeItem(at: journal); return 5 }
+                do { try JSONSerialization.data(withJSONObject: ["needsRestore": true, "logoOverride": logo.active]).write(to: journal, options: .atomic) } catch { return 4 }
+                // Retain recovery even if the private call reports failure.
                 changed = true
+                guard setDisabled(true) else { return 5 }
             } else if !eligible && changed {
                 guard setDisabled(false) else { return 6 }
                 changed = false
-                try? FileManager.default.removeItem(at: journal)
+                do { try recordRecovery() } catch { return 4 }
                 if assertion != 0 { IOPMAssertionRelease(assertion); assertion = 0 }
             }
             if eligible && closed && assertion == 0 {
                 _ = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleSystemSleep as CFString,
                     IOPMAssertionLevel(kIOPMAssertionLevelOn), "Backlit bounded closed-lid session" as CFString, &assertion)
             } else if (!eligible || !closed) && assertion != 0 { IOPMAssertionRelease(assertion); assertion = 0 }
+            do {
+                if eligible && closed {
+                    try logo.enable {
+                        // Must be durable before the first global notification.
+                        try JSONSerialization.data(withJSONObject: ["needsRestore": changed, "logoOverride": true]).write(to: journal, options: .atomic)
+                    }
+                    if logo.active && logoEnabledAt == nil { logoEnabledAt = ProcessInfo.processInfo.systemUptime }
+                    // Allow the keyboard fade to settle, then fail closed if it is
+                    // not confirmed dark. A rejected private API must not leave it lit.
+                    if let since = logoEnabledAt, ProcessInfo.processInfo.systemUptime - since >= 1 {
+                        let node = IORegistryEntryFromPath(kIOMainPortDefault, "IODeviceTree:/arm-io/pwm0/kbd-backlight")
+                        let enabled = node == 0 ? nil : (IORegistryEntryCreateCFProperty(node, "enabled" as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue() as? NSNumber)?.boolValue
+                        if node != 0 { IOObjectRelease(node) }
+                        // A real reopen may wake the keyboard between our two
+                        // samples. Restore normally rather than report a failure.
+                        if enabled != false {
+                            if physicalLidClosed == false {
+                                try logo.restore(physicalClosed: false)
+                                logoEnabledAt = nil
+                                try recordRecovery()
+                            } else { return 11 }
+                        }
+                    }
+                }
+            } catch { return 8 }
             Thread.sleep(forTimeInterval: 0.5)
         }
         return 0
@@ -107,16 +150,24 @@ enum RuntimeServices {
         let journal = AgentBridge.directory.appendingPathComponent("lid-recovery.json")
         let hasJournal = FileManager.default.fileExists(atPath: journal.path)
         guard hasJournal || verifyNormalSleep else { return }
-        let node = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
-        guard node != 0 else { throw failure("Power service unavailable.") }; defer { IOObjectRelease(node) }
-        var connection: io_connect_t = 0
-        guard IOServiceOpen(node, mach_task_self_, 0, &connection) == KERN_SUCCESS else { throw failure("Cannot reopen the power service.") }
-        defer { IOServiceClose(connection) }
-        var value: UInt64 = 0
-        guard IOConnectCallScalarMethod(connection, 12, &value, 1, nil, nil) == KERN_SUCCESS else { throw failure("Could not restore normal lid sleep.") }
-        if verifyNormalSleep {
-            guard (rootValue("AppleClamshellCausesSleep") as? NSNumber)?.boolValue == true else { throw failure("Normal lid sleep has not been confirmed. Recovery is retained.") }
-        }
+        let record = hasJournal
+            ? try JSONDecoder().decode(LidRecovery.self, from: Data(contentsOf: journal))
+            : LidRecovery(needsRestore: false, logoOverride: false)
+        try record.restore(forceNormalSleep: verifyNormalSleep, logo: {
+            guard let closed = physicalLidClosed, let io = ClosedLidLogo.liveInterface(),
+                  io.setGlobalClosed(closed) else { throw failure("Could not restore the real logo lid state. Recovery is retained.") }
+        }, power: {
+            let node = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
+            guard node != 0 else { throw failure("Power service unavailable.") }; defer { IOObjectRelease(node) }
+            var connection: io_connect_t = 0
+            guard IOServiceOpen(node, mach_task_self_, 0, &connection) == KERN_SUCCESS else { throw failure("Cannot reopen the power service.") }
+            defer { IOServiceClose(connection) }
+            var value: UInt64 = 0
+            guard IOConnectCallScalarMethod(connection, 12, &value, 1, nil, nil) == KERN_SUCCESS else { throw failure("Could not restore normal lid sleep.") }
+            if verifyNormalSleep {
+                guard (rootValue("AppleClamshellCausesSleep") as? NSNumber)?.boolValue == true else { throw failure("Normal lid sleep has not been confirmed. Recovery is retained.") }
+            }
+        })
         if hasJournal { try FileManager.default.removeItem(at: journal) }
     }
 

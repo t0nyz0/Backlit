@@ -108,6 +108,13 @@ import Combine
     @Published var audioPermissionHelp = false
     @Published var audioStarting = false
     @Published var keepClosed = false
+    @Published private(set) var lidSessionDuration = LidSessionDuration() {
+        didSet {
+            guard !isLoading, let data = try? JSONEncoder().encode(lidSessionDuration) else { return }
+            defaults.set(data, forKey: LidSessionDuration.preferenceKey)
+        }
+    }
+    var canEditLidDuration: Bool { watcher == nil && !lidStopPending && !lidStopper.hasOutstandingFilesystemWork }
     @Published var ambientUnlocked = false
     @Published var bridgeEnabled = false
     @Published var bridgeLAN = false
@@ -173,7 +180,7 @@ import Combine
     private var consoleActive = true
     private var watcher: (any LidWatcherProcess)?
     private let lidStopper: LidWatcherStopper
-    private(set) var lidStopPending = false
+    @Published private(set) var lidStopPending = false
     var onLidStopCompleted: ((Bool) -> Void)?
     private var lidStopFailed = false
     private var lease: URL?
@@ -212,6 +219,8 @@ import Combine
         self.demo = demo
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
         if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
+        if let data = self.defaults.data(forKey: LidSessionDuration.preferenceKey),
+           let duration = try? JSONDecoder().decode(LidSessionDuration.self, from: data) { lidSessionDuration = duration }
         device = LogoDevice(directory:AgentBridge.directory)
         if let raw = self.defaults.string(forKey: "mode") {
             if raw == "signals" {
@@ -514,6 +523,11 @@ import Combine
         tick()
         audioSession.resumeAfterInterruption(consented: audioConsent)
     }
+    func setLidDuration(mode: LidDurationMode? = nil, amount: Int? = nil, unit: LidDurationUnit? = nil) {
+        guard canEditLidDuration else { return }
+        lidSessionDuration = LidSessionDuration(mode: mode ?? lidSessionDuration.mode,
+            amount: amount ?? lidSessionDuration.amount, unit: unit ?? lidSessionDuration.unit)
+    }
     func setLid(_ enabled: Bool) {
         guard !demo else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
         if !enabled { stopLid(); return }
@@ -526,7 +540,7 @@ import Combine
             let file = AgentBridge.directory.appendingPathComponent("lid-lease-\(UUID().uuidString)")
             try Data().write(to:file,options:.atomic)
             let process = Process(); process.executableURL = Bundle.main.executableURL
-            process.arguments = ["--watch-lid",String(getpid()),file.path]
+            process.arguments = lidSessionDuration.watcherArguments(parent: getpid(), lease: file)
             process.standardOutput = FileHandle.nullDevice; process.standardError = FileHandle.nullDevice
             try process.run(); adoptLidWatcher(process, lease: file)
         } catch { self.error = error.localizedDescription }

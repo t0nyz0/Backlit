@@ -24,8 +24,11 @@ if let index = arguments.firstIndex(of:AgentBridge.marker), arguments.count > in
         try AgentBridge.receive(agent:agent,state:arguments[index+2],session:arguments[index+3]); exit(0)
     } catch { exit(1) }
 }
-if let parent = option("--watch-lid"), let pid = Int32(parent), let last = arguments.last {
-    exit(RuntimeServices.watchLid(parent:pid,lease:URL(fileURLWithPath:last)))
+if arguments.contains("--watch-lid") {
+    guard let request = LidWatcherArguments(arguments: arguments) else {
+        FileHandle.standardError.write(Data("Invalid closed-lid helper arguments.\n".utf8)); exit(2)
+    }
+    exit(RuntimeServices.watchLid(parent: request.parent, lease: request.lease, durationSeconds: request.durationSeconds))
 }
 if let operation = option("--ambient-helper") {
     do { guard ["enable","restore"].contains(operation) else { exit(2) }; try RuntimeServices.ambientHelper(enabled:operation == "enable"); exit(0) }

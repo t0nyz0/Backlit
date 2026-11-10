@@ -263,7 +263,8 @@ struct SettingsPage: View {
             settingRow(model.t("Logo shortcut","標誌快捷鍵"),"Toggle the logo from any app. Option-click the menu icon also works.") {Button(model.shortcutLabel){recording=true}.frame(width:150)}
         }
         Surface(model.t("Logo and power","進階控制")) {
-            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),"Up to 30 minutes without an external display. Stops for low battery or heat. Keep your Mac ventilated.") {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.keepClosed},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
+            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake while closed. Stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔上螢幕時讓 Mac 保持喚醒。電量不足、過熱或開啟低耗電模式時停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.keepClosed},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
+            LidDurationControls(model: model)
             Divider()
             settingRow(model.t("Override ambient brightness limit","任何環境下的全亮度"),"Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.") {Toggle("Override ambient brightness limit",isOn:Binding(get:{model.ambientUnlocked},set:{model.setAmbient($0)})).labelsHidden().toggleStyle(.switch)}
             if !model.demo && model.device.needsRecovery && (!model.controlWanted || !model.controlling) {
@@ -281,6 +282,52 @@ struct SettingsPage: View {
     }
     func settingRow<Accessory:View>(_ title: String,_ subtitle: String,@ViewBuilder accessory:()->Accessory) -> some View {
         HStack(spacing:22){VStack(alignment:.leading,spacing:5){Text(title).font(.system(size:13,weight:.medium));Text(subtitle).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)};Spacer(minLength:20);accessory()}
+    }
+}
+
+struct LidDurationControls: View {
+    @ObservedObject var model: AppModel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(model.t("Closed-lid duration", "闔蓋持續時間")).fontWeight(.medium)
+                Spacer()
+                Picker(model.t("Closed-lid duration", "闔蓋持續時間"), selection: Binding(
+                    get: { model.lidSessionDuration.mode }, set: { model.setLidDuration(mode: $0) })) {
+                    Text(model.t("Timer", "計時器")).tag(LidDurationMode.timed)
+                    Text(model.t("Until turned off", "直到手動關閉")).tag(LidDurationMode.untilTurnedOff)
+                }.labelsHidden().frame(width: 180)
+            }
+            if model.lidSessionDuration.mode == .timed {
+                HStack(spacing: 8) {
+                    Text(model.t("Keep on for", "保持開啟"))
+                    Spacer()
+                    TextField(model.t("Duration", "持續時間"), value: Binding(
+                        get: { model.lidSessionDuration.amount }, set: { model.setLidDuration(amount: $0) }), format: .number)
+                        .textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing).frame(width: 65)
+                        .accessibilityLabel(model.t("Closed-lid duration amount", "闔蓋持續時間數值"))
+                    Stepper(model.t("Duration", "持續時間"), value: Binding(
+                        get: { model.lidSessionDuration.amount }, set: { model.setLidDuration(amount: $0) }),
+                        in: 1...model.lidSessionDuration.unit.maximum).labelsHidden()
+                    Picker(model.t("Duration unit", "時間單位"), selection: Binding(
+                        get: { model.lidSessionDuration.unit }, set: { model.setLidDuration(unit: $0) })) {
+                        Text(model.t("Minutes", "分鐘")).tag(LidDurationUnit.minutes)
+                        Text(model.t("Hours", "小時")).tag(LidDurationUnit.hours)
+                    }.labelsHidden().frame(width: 100)
+                }
+                Text(model.t("The timer starts each time you close the lid. Maximum 7 days.", "每次闔蓋時開始計時，最長 7 天。"))
+                    .foregroundStyle(.secondary)
+            } else {
+                Text(model.t("No timer. Stays active until you turn it off or quit Backlit. Safety limits still apply.", "不設定計時器，直到手動關閉或結束 Backlit。安全限制仍然適用。"))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .font(.system(size: 11))
+        .disabled(!model.canEditLidDuration)
+        if !model.canEditLidDuration {
+            Text(model.t("Turn off the closed-lid session and let cleanup finish before changing its duration.", "請先關閉闔蓋功能並等待還原完成，再更改持續時間。"))
+                .font(.system(size: 11)).foregroundStyle(.secondary)
+        }
     }
 }
 

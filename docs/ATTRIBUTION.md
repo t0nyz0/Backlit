@@ -19,3 +19,5 @@ The Buy Me a Coffee badge is the official asset at https://cdn.buymeacoffee.com/
 The public repository starts with a clean source snapshot. Private reference screenshots and planning documents are retained only outside its tracked files and history. Agent configuration locations and event names follow the agents’ published formats; Backlit owns its adapter, validation, merging, and launch code.
 
 Sparkle 2.10.1 provides the in-app update framework, under its MIT license and included third-party notices. See [Sparkle license](licenses/Sparkle.txt) and [upstream](https://github.com/sparkle-project/Sparkle).
+
+- Public interoperability research on CoreBrightness clamshell and keyboard routing: https://github.com/Ark0N/LogoLight/blob/7018b92503f936cfc5956bef4a74cb730078a9d5/docs/corebrightnessd.md . Backlit implements its own bounded watchdog, state machine, recovery and tests; no third-party implementation was copied.

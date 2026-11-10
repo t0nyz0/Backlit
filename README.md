@@ -88,7 +88,7 @@ A physically illuminated, independently controlled logo is required. The macOS 1
 
 Music starts only after you enable system audio and macOS permits it. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
 
-Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid and administrator behavior still need physical validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
+Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid lighting was physically verified on the test Mac with an external display. It keeps the keyboard dark and restores the real lid state when stopped. Choose a duration in minutes or hours, or Until turned off. The default is 30 minutes; low battery, Low Power Mode and heat still stop the session. Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
 
 ## Updates
 
