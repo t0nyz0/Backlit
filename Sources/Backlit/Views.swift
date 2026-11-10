@@ -116,6 +116,7 @@ struct BatteryOutputReadout: View {
             Text("\(Int((Effects.clamp(presentation.level) * 100).rounded()))%")
                 .font(.system(size: compact ? 18 : 38, weight: .medium)).monospacedDigit()
                 .accessibilityLabel("Actual battery-driven logo output")
+                .accessibilityValue("\(Int((Effects.clamp(presentation.level) * 100).rounded())) percent")
             Text("Matches battery charge when unplugged.")
                 .font(.system(size: compact ? 10 : 11)).foregroundStyle(.secondary)
         }
