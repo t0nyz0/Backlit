@@ -6,6 +6,7 @@ Public t0nyz links/branding are deliberate. No matching values are printed.
 """
 from pathlib import Path
 import re
+import hashlib
 import subprocess
 
 root = Path(__file__).resolve().parents[1]
@@ -26,15 +27,24 @@ for name in filter(None, files):
         text = (root / name).read_text()
     except (UnicodeError, OSError):
         continue
+    # Required upstream notices contain their authors' public contact details.
+    # Only this exact pinned license may use the personal-email exception.
+    upstream_license = name == 'docs/licenses/Sparkle.txt' and hashlib.sha256((root/name).read_bytes()).hexdigest() == '389a4e4e9a32f059775b13a06e25a591445ba229d2838d26dd3e7c0c45127cfe'
     for kind, pattern in patterns.items():
+        if upstream_license and kind == 'personal email':
+            continue
         if re.search(pattern, text):
             failures.append(f'{name}: {kind}')
 for line in subprocess.check_output(['git', 'log', '--all', '--format=%ae|%ce'], cwd=root).decode().splitlines():
     if any(not email.endswith('@users.noreply.github.com') for email in line.split('|')):
         failures.append('Git author/committer email is not a GitHub noreply address')
-binary=root/'dist/Backlit.app/Contents/MacOS/Backlit'
-if binary.exists() and str(Path.home()).encode() in binary.read_bytes():
-    failures.append('Compiled app contains the local home path')
+bundle = root/'dist/Backlit.app'
+if bundle.exists():
+    for file in bundle.rglob('*'):
+        if file.is_file() and not file.is_symlink():
+            data = file.read_bytes()
+            if any(value in data for value in [str(Path.home()).encode(), b'/Users/', b'/var/folders/']):
+                failures.append(f'App bundle contains a private host path: {file.relative_to(bundle)}')
 if failures:
     raise SystemExit('\n'.join(sorted(set(failures))))
 print('Tracked text and reachable commit-email privacy checks passed.')

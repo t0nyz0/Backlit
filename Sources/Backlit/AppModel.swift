@@ -8,16 +8,59 @@ import Combine
 }
 
 @MainActor final class AppModel: ObservableObject {
+    let updater = AppUpdater()
     let demo: Bool
     let defaults: UserDefaults
+    @Published var menuBarIconVisible = true {
+        didSet {
+            guard !isLoading, menuBarIconVisible != oldValue else { return }
+            defaults.set(menuBarIconVisible, forKey: "menuBarIcon.visible")
+            onMenuBarIconVisibilityChange?()
+        }
+    }
+    var onMenuBarIconVisibilityChange: (() -> Void)?
     let device: LogoDevice
     let audio = SystemAudio()
     let touch = TouchResponse()
+    let typing = TypingInput()
+    private let powerMonitor = PowerSourceMonitor()
+    private var typingDown = false
+    private var typingWanted = false
+    private var touchWanted = false
+    @Published var typingStatus = "Typing response is off"
+    @Published var typingEnabled = false {
+        didSet { guard !isLoading else { return }; defaults.set(typingEnabled, forKey: "typing.enabled"); synchronizeTyping() }
+    }
+    @Published var musicAutomatic = true { didSet { guard !isLoading else { return }; musicResponse.reset(); save(); requestFrame() } }
+    @Published var musicPreset: MusicResponsePreset = .balanced { didSet { guard !isLoading else { return }; musicResponse.reset(); save(); requestFrame() } }
+    @Published var batteryOptions = BatteryResponseOptions() {
+        didSet {
+            guard !isLoading else { return }
+            if let data = try? JSONEncoder().encode(batteryOptions) { defaults.set(data, forKey: "battery.response") }
+            requestFrame()
+        }
+    }
+    @Published var batteryAvailable = false
+    @Published var chargeReady = false
+    @Published var signalStatus = "No active signals"
+    @Published var signalCount = 0
+    @Published var focusMinutes = 25
+    @Published var automationsEnabled = false {
+        didSet {
+            guard !isLoading else { return }
+            defaults.set(automationsEnabled, forKey: "automation.enabled")
+            AutomationRouter.shared.enabled = automationsEnabled && !demo
+            if !automationsEnabled { signals.clearExternal(); requestFrame() }
+        }
+    }
+    private var batteryResponse = BatteryResponse()
+    private var musicResponse = MusicResponse()
+    private var signals = ActivitySignalEngine()
     let touchSources = TouchResponse.sources
-    var touchAvailable:Bool {!touchSources.isEmpty}
+    var touchAvailable:Bool {!touchSources.isEmpty || typingEnabled}
     @Published var touchSource:TouchSource = .screen {didSet {
         guard !isLoading else{return};defaults.set(touchSource.rawValue,forKey:"touch.source")
-        if mode == .touch && enabled && !demo {_ = touch.start(source:touchSource)}
+        synchronizeTouch(forceRestart: true)
     }}
     @Published var touchClickBlink = false {didSet {if !isLoading {defaults.set(touchClickBlink,forKey:"touch.clickBlink")}}}
     private var touchBlinking = false
@@ -26,25 +69,17 @@ import Combine
     @Published var touchStatus = "Waiting for touch"
     var availableModes:[GlowMode] {GlowMode.allCases.filter{$0 != .touch || touchAvailable}}
     let bridge = HomeBridge()
-    @Published var batteryOptions = BatteryResponseOptions() { didSet {
-        guard !isLoading else { return }
-        if let data = try? JSONEncoder().encode(batteryOptions) { defaults.set(data, forKey: "battery.response") }
-        batteryReadySignal.reset(); configureTimer(); requestFrame()
-    } }
-    private var batteryReadySignal = BatteryReadySignal()
-    @Published var batterySignalActive = false
     @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
-        if mode == .touch && enabled && !demo { touchStatus = touch.start(source:touchSource) ? "Waiting for \(touchSource.title.lowercased()) touch" : "Touch events are unavailable on this macOS build" }
-        else { touch.stop() }
-        batteryReadySignal.reset(); configureTimer(); requestFrame() } }
+        synchronizeTouch()
+        batteryResponse.reset(); musicResponse.reset(); synchronizeTyping(); configureTimer(); requestFrame() } }
     @Published var enabled = true { didSet {
         guard !isLoading else{return}
         defaults.set(enabled,forKey:"enabled")
         if !demo && device.available && !device.needsRecovery { controlWanted = true }
-        if mode == .touch && !demo { if enabled { _ = touch.start(source:touchSource) } else { touch.stop() } }
+        synchronizeTouch()
         if !enabled && (audioRunning || audioStarting) {stopAudio()}
         else if enabled && mode == .music && audioConsent {startAudio()}
-        requestFrame(); configureTimer()
+        synchronizeTyping(); requestFrame(); configureTimer()
     } }
     @Published var brightness = 0.68 { didSet { save(); requestFrame() } }
     @Published var period = 6.0 { didSet { save(); requestFrame() } }
@@ -55,11 +90,9 @@ import Combine
     let presentation = LightPresentation()
     private(set) var output = 0.0
     @Published var battery = 0.0
-    // Keep the existing API's charging field compatible: it means external power.
-    @Published var charging = false
     @Published var activelyCharging = false
-    @Published var batteryAvailable = false
-    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 && batteryOptions.chargingStyle == .breathe }
+    @Published var charging = false
+    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 && batteryOptions.chargingStyle == .breathe && BatteryResponseOptions.bound(batteryOptions.pulseMinimum, 0...1, fallback: 0) < 1 }
     var batteryPowerLabel: String {
         guard batteryAvailable else { return "Battery state unavailable" }
         if !charging { return "On battery" }
@@ -95,6 +128,10 @@ import Combine
     var openWindow: (() -> Void)?
     var onIconChange: (() -> Void)?
     var isPreviewVisible:(()->Bool)?
+    var visualUpdatesAllowed: Bool {
+        VisualUpdatePolicy.allows(locked: cachedLocked, screenSleeping: screenSleeping,
+                                  systemSleeping: systemSleeping, consoleActive: consoleActive)
+    }
     private var isLoading = true
     private var timer: Timer?
     private var terminationApproved = false
@@ -110,11 +147,34 @@ import Combine
     private var cachedLocked = false
     private var cachedAway = false
     private var audioConsent = false
-    private var audioGeneration = 0
+    private lazy var audioSession = AudioSessionDriver(
+        start: { [audio = self.audio] in try await audio.start() },
+        stop: { [audio = self.audio] in await audio.stop() },
+        eligible: { [weak self] in
+            guard let self else { return false }
+            return !self.demo && self.musicCaptureAllowed
+        },
+        changed: { [weak self] state in
+            guard let self else { return }
+            self.audioStarting = state == .starting
+            self.audioRunning = state == .running
+            if state == .running { self.audioConsent = true }
+            self.requestFrame()
+        },
+        failed: { [weak self] error in
+            guard let self else { return }
+            self.audioPermissionHelp = true
+            self.error = SystemAudio.friendly(error).localizedDescription
+            self.requestFrame()
+        })
     private var screenSleeping = false
     private var systemSleeping = false
     private var consoleActive = true
-    private var watcher: Process?
+    private var watcher: (any LidWatcherProcess)?
+    private let lidStopper: LidWatcherStopper
+    private(set) var lidStopPending = false
+    var onLidStopCompleted: ((Bool) -> Void)?
+    private var lidStopFailed = false
     private var lease: URL?
     private var observers: [NSObjectProtocol] = []
     private let epoch = ProcessInfo.processInfo.systemUptime
@@ -134,32 +194,38 @@ import Combine
         case .breathe:return t("Breathing","呼吸中")
         case .battery:
             if !batteryAvailable { return "Battery state unavailable" }
-            if batterySignalActive { return "Charge-ready signal" }
+            if batteryResponse.completionActive { return "Charge-ready signal" }
             if batteryIsPulsing { return "Pulsing while charging" }
             if charging && batteryOptions.chargingStyle != .level { return "Steady while plugged in" }
             return t("Following your battery","跟隨電量")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
-        case .touch:return touchDown ? "Touching · light on" : "Ready for \(touchSource.title.lowercased()) touch"
+        case .signals:return signalStatus
+        case .touch:return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
         }
     }
     var colorScheme: ColorScheme? { appearance == "dark" ? .dark : appearance == "light" ? .light : nil }
 
-    init(demo: Bool = false, defaults: UserDefaults? = nil) {
+    init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil) {
+        self.lidStopper = lidStopper ?? LidWatcherStopper()
         self.demo = demo
-        self.defaults = defaults ?? (demo ? UserDefaults(suiteName:"local.backlit.preview")! : .standard)
+        self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
+        if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
         device = LogoDevice(directory:AgentBridge.directory)
-        if let data = self.defaults.data(forKey: "battery.response"),
-           let options = try? JSONDecoder().decode(BatteryResponseOptions.self, from: data) { batteryOptions = options }
         if let raw = self.defaults.string(forKey:"mode"), let mode = GlowMode(rawValue:raw) { self.mode = mode }
         if self.defaults.object(forKey:"brightness") != nil { brightness = self.defaults.double(forKey:"brightness") }
         if self.defaults.object(forKey:"period") != nil { period = self.defaults.double(forKey:"period") }
         if self.defaults.object(forKey:"intensity") != nil { intensity = self.defaults.double(forKey:"intensity") }
         if let raw=self.defaults.string(forKey:"touch.source"),let source=TouchSource(rawValue:raw),touchSources.contains(source) {touchSource=source}
         else {touchSource=touchSources.first ?? .screen}
-        if mode == .touch && !touchAvailable { mode = .steady }
         touchClickBlink = self.defaults.bool(forKey:"touch.clickBlink")
         strobe = self.defaults.bool(forKey:"strobe")
+        typingEnabled = self.defaults.bool(forKey: "typing.enabled")
+        if mode == .touch && !touchAvailable { mode = .steady }
+        automationsEnabled = self.defaults.bool(forKey: "automation.enabled")
+        if self.defaults.object(forKey: "music.automatic") != nil { musicAutomatic = self.defaults.bool(forKey: "music.automatic") }
+        if let raw = self.defaults.string(forKey: "music.preset"), let preset = MusicResponsePreset(rawValue: raw) { musicPreset = preset }
+        if let data = self.defaults.data(forKey: "battery.response"), let options = try? JSONDecoder().decode(BatteryResponseOptions.self, from: data) { batteryOptions = options }
         if self.defaults.object(forKey:"enabled") != nil { enabled = self.defaults.bool(forKey:"enabled") }
         language = self.defaults.string(forKey:"language") ?? "en"
         appearance = self.defaults.string(forKey:"appearance") ?? "system"
@@ -174,7 +240,7 @@ import Combine
             guard let self else{return}
             self.touchDown=down
             self.touchStatus=self.touch.eventCount == 0 ? "Waiting for \(self.touchSource.title.lowercased()) touch" : (down ? "Touch detected · hold to keep lit" : "Touch released · light off")
-            if self.mode == .touch {self.cachedLocked=RuntimeServices.locked;self.tick()}
+            if self.mode == .touch {self.cachedLocked=RuntimeServices.locked;self.requestFrame()}
         }
         touch.onClick = { [weak self] in
             guard let self,self.mode == .touch,self.enabled,self.touchClickBlink,self.touchDown,self.touchSource != .screen else{return}
@@ -185,7 +251,27 @@ import Combine
                 self.touchBlinking=false;self.tick()
             }
         }
-        audio.onFailure = { [weak self] text in Task { @MainActor in self?.audioRunning = false; self?.error = text } }
+        typing.onActivity = { [weak self] active in
+            guard let self else { return }
+            if active && RuntimeServices.locked {
+                self.cachedLocked = true
+                self.typing.stop()
+                self.typingWanted = false
+                return
+            }
+            self.typingDown = active
+            self.requestFrame()
+        }
+        typing.onStatus = { [weak self] status in self?.typingStatus = status }
+        bridge.signal = { [weak self] signal in
+            guard let self else { return }
+            try self.performAutomation(.signal(signal))
+        }
+        audio.onFailure = { [weak self] text, token in Task { @MainActor in
+            guard let self, self.audioRunning, self.audio.acceptsFailure(token) else { return }
+            self.audioSession.requestStop()
+            self.audioRunning = false; self.error = text; self.requestFrame()
+        } }
         bridge.state = { [weak self] in self?.apiState() ?? [:] }
         bridge.command = { [weak self] command in
             guard let self else { return }
@@ -197,6 +283,18 @@ import Combine
             self.tick()
         }
         bridge.onStatus = { [weak self] text in self?.bridgeStatus = text }
+        self.lidStopper.onResult = { [weak self] result in
+            guard let self else { return }
+            self.lidStopPending = false
+            self.lidStopFailed = !result.safeToQuit
+            if result.safeToQuit {
+                self.watcher = nil; self.lease = nil
+                if result.leaseRemovalError != nil { self.notice = "Normal lid sleep was restored. A leftover session file could not be removed." }
+            } else {
+                self.error = "Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry."
+            }
+            self.onLidStopCompleted?(result.safeToQuit)
+        }
         isLoading = false
     }
     func start() {
@@ -209,12 +307,14 @@ import Combine
             (NSWorkspace.sessionDidResignActiveNotification,{$0.consoleActive = false; $0.touch.reset(); $0.stopAudio(); $0.releaseHardware()}),
             (NSWorkspace.sessionDidBecomeActiveNotification,{$0.consoleActive = true;$0.touch.reset()})
         ]
-        for (name,action) in states { observers.append(center.addObserver(forName:name,object:nil,queue:.main){[weak self] _ in Task { @MainActor in if let self { action(self) } }}) }
+        for (name,action) in states { observers.append(center.addObserver(forName:name,object:nil,queue:.main){[weak self] _ in Task { @MainActor in if let self { action(self); self.synchronizeTouch(); self.synchronizeTyping(); self.requestFrame() } }}) }
         controlWanted = !demo && device.available && !device.needsRecovery
         configureTimer()
-        if !demo && enabled && mode == .touch {touchStatus=touch.start(source:touchSource) ? "Waiting for \(touchSource.title.lowercased()) touch" : "Touch events unavailable"}
         if !demo && !controlWanted && device.needsRecovery { notice = "A previous logo session needs restoration. Use Restore Light to pick up where you left off." }
         if !demo && self.defaults.bool(forKey:"bridge.enabled") { configureBridge(enabled:true,lan:self.defaults.bool(forKey:"bridge.lan")) }
+        startPowerMonitoring()
+        // The first tick samples lock/power/ownership policy before either
+        // input monitor can register. All starts go through synchronization.
         tick()
     }
     func save() {
@@ -222,6 +322,8 @@ import Combine
         defaults.set(mode.rawValue,forKey:"mode"); defaults.set(brightness,forKey:"brightness")
         defaults.set(period,forKey:"period"); defaults.set(intensity,forKey:"intensity"); defaults.set(strobe,forKey:"strobe")
         defaults.set(language,forKey:"language"); defaults.set(appearance,forKey:"appearance")
+        defaults.set(musicAutomatic, forKey: "music.automatic")
+        defaults.set(musicPreset.rawValue, forKey: "music.preset")
     }
     func tick() {
         guard !isStopping else { return }
@@ -230,9 +332,10 @@ import Combine
         if now-lastSourceSample >= 1 {
             lastSourceSample = now
             competingController = demo ? nil : device.competingApp
-            if now-lastBatterySample >= (mode == .battery ? 1 : 15) {
+            if now-lastBatterySample >= 15 {
                 lastBatterySample=now
-                updateBattery(demo ? RuntimeServices.BatterySnapshot(level: 0.82, externalPower: false, activelyCharging: false) : RuntimeServices.batterySnapshot())
+                updateBattery(demo ? .init(level: 0.82, externalPower: false, activelyCharging: false) : RuntimeServices.batterySnapshot())
+                if !batteryAvailable { batteryResponse.reset() }
             }
             if mode == .agents || bridgeEnabled {
                 let nextAgents=demo ? [] : AgentBridge.events().sorted{$0.time<$1.time}
@@ -254,32 +357,19 @@ import Combine
         else { nextPause = nil }
         if pausedReason != nextPause {
             pausedReason = nextPause
-            if mode == .touch && !demo {
-                if nextPause != nil {touch.stop()}
-                else if enabled {_ = touch.start(source:touchSource)}
-            }
+            if nextPause == nil && enabled && mode == .music && audioConsent { startAudio() }
         }
+        synchronizeTouch()
+        synchronizeTyping()
         if nextPause != nil && touchDown { touch.reset() }
-        var input = EffectInput()
-        input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
-        input.battery = battery; input.batteryAvailable = batteryAvailable
-        input.externalPower = charging; input.activelyCharging = activelyCharging
-        input.batteryChargingStyle = batteryOptions.chargingStyle; input.batteryPulsePeriod = batteryOptions.pulsePeriod
-        if mode == .battery && enabled && nextPause == nil && batteryAvailable {
-            input.batteryCueLevel = batteryReadySignal.update(charge: battery, externalPower: charging, at: now, options: batteryOptions)
-        } else { batteryReadySignal.reset() }
-        if batterySignalActive != batteryReadySignal.active { batterySignalActive = batteryReadySignal.active }
-        input.audio = audio.level; input.intensity = intensity; input.strobe = strobe
-        input.agent = agentState; input.away = cachedAway
-        // A deliberately selected physical light effect must not silently turn
-        // into Steady because the owner reduces on-screen interface motion.
-        input.touchDown = touchDown && !touchBlinking
-        if demo && mode == .music { input.audio = 0.35 + 0.35 * sin((ProcessInfo.processInfo.systemUptime-epoch)*5) }
-        let nextOutput = pausedReason == nil ? Effects.level(at:ProcessInfo.processInfo.systemUptime-epoch,input:input) : 0
+        let nextOutput = effectOutput(at: now)
         output = nextOutput
-        if (demo || isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
+        if visualUpdatesAllowed && (isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
+        // Capture pauses independently of hardware ownership: losing the
+        // device must not keep audio active after display sleep or lock.
+        if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }
         if controlWanted && !demo {
-            if pausedReason != nil { releaseHardware(); if audioRunning { stopAudio() } }
+            if pausedReason != nil { releaseHardware() }
             else {
                 do {
                     if !controlling { try device.begin(); controlling = true }
@@ -289,7 +379,31 @@ import Combine
         }
         onIconChange?()
         configureTimer()
-        if let watcher, !watcher.isRunning { self.watcher = nil; keepClosed = false; error = "The closed-lid watcher stopped (\(watcher.terminationStatus)). Review power recovery in Settings." }
+        if let watcher, !watcher.isRunning, !lidStopPending, !lidStopFailed { stopLid() }
+    }
+    func effectOutput(at now: Double) -> Double {
+        var input = EffectInput()
+        input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
+        input.battery = batteryAvailable ? battery : 0
+        if mode == .battery && enabled && pausedReason == nil && batteryAvailable {
+            input.battery = batteryResponse.update(charge: battery, externalPower: charging, at: now, options: batteryOptions, activelyCharging: activelyCharging)
+        } else { batteryResponse.reset() }
+        if chargeReady != batteryResponse.ready { chargeReady = batteryResponse.ready }
+        if mode == .music && (audioRunning || demo) {
+            let energy = demo ? 0.35 + 0.35 * sin((now - epoch) * 5) : audio.level
+            input.audio = musicResponse.update(energy: energy, at: now, automatic: musicAutomatic, preset: musicPreset)
+        }
+        input.intensity = intensity; input.strobe = strobe
+        input.signalLevel = signals.level(at: now)
+        let signal = signals.current
+        let nextSignalStatus = signal.map { "\($0.category.rawValue.capitalized) · \($0.state.rawValue)" } ?? "No active signals"
+        if signalStatus != nextSignalStatus { signalStatus = nextSignalStatus }
+        if signalCount != signals.count { signalCount = signals.count }
+        input.agent = agentState; input.away = cachedAway
+        // A deliberately selected physical light effect must not silently turn
+        // into Steady because the owner reduces on-screen interface motion.
+        input.touchDown = (touchDown && !touchBlinking) || typingDown
+        return pausedReason == nil ? Effects.level(at: now - epoch, input: input) : 0
     }
     func requestFrame() {
         guard !framePending else { return }
@@ -297,14 +411,68 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
-        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .battery && (batteryIsPulsing || batteryReadySignal.requiresAnimation)) || (mode == .music && audioRunning) || (mode == .agents && agentState != .waiting))
+        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation) || (mode == .signals && signals.requiresAnimation))
         let interval = animated ? 0.05 : 1.0
-        guard timerInterval != interval || timer == nil else { return }
+        guard timerInterval != interval || timer?.isValid != true else { return }
         timer?.invalidate(); timerInterval = interval
         let next=Timer(timeInterval:interval,repeats:true){[weak self] _ in MainActor.assumeIsolated{self?.tick()}}
         next.tolerance=animated ? 0.003 : 0.1
         RunLoop.main.add(next,forMode:.common);timer=next
     }
+    private func synchronizeTouch(forceRestart: Bool = false) {
+        let shouldRun = !demo && !isStopping && controlWanted && mode == .touch && enabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
+        let previous = touchWanted
+        touchWanted = shouldRun
+        if shouldRun && (!previous || forceRestart) {
+            touchStatus = touch.start(source: touchSource) ? "Ready for trackpad contact" : "Trackpad events are unavailable on this macOS build"
+        } else if !shouldRun && previous { touch.stop() }
+    }
+    private func startPowerMonitoring() {
+        guard !demo else { return }
+        powerMonitor.start { [weak self] in
+            self?.lastBatterySample = -Double.infinity
+            self?.lastSourceSample = -Double.infinity
+            self?.requestFrame()
+        }
+    }
+    private func synchronizeTyping(forceRestart: Bool = false) {
+        let shouldRun = !demo && !isStopping && controlWanted && mode == .touch && enabled && typingEnabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
+        if shouldRun && (!typingWanted || forceRestart) { _ = typing.start() }
+        else if !shouldRun && typing.running { typing.stop() }
+        typingWanted = shouldRun
+        if !shouldRun { typingDown = false }
+    }
+    func setTypingEnabled(_ enabled: Bool) {
+        guard !demo else { notice = "Typing input is disabled in preview."; return }
+        if enabled && !typing.permissionGranted { _ = typing.requestPermission() }
+        let restart = typingEnabled == enabled
+        typingEnabled = enabled
+        if restart { synchronizeTyping(forceRestart: enabled) }
+    }
+    func performAutomation(_ command: AutomationCommand) throws {
+        guard automationsEnabled, !demo else { throw RuntimeServices.failure("Enable Shortcuts and other apps in Connections first.") }
+        guard device.available, controlWanted, !device.needsRecovery else { throw RuntimeServices.failure("Open Backlit and restore its light before using external controls.") }
+        switch command {
+        case .power(let on): enabled = on
+        case .toggle: enabled.toggle()
+        case .brightness(let level):
+            guard level.isFinite, (0...1).contains(level) else { throw RuntimeServices.failure("Brightness must be between 0 and 100 percent.") }
+            brightness = level
+        case .mode(let selected):
+            guard availableModes.contains(selected) else { throw RuntimeServices.failure("That behavior is unavailable on this Mac.") }
+            mode = selected
+        case .signal(let signal): signals.submit(signal, at: ProcessInfo.processInfo.systemUptime)
+        }
+        tick()
+    }
+    func startFocus() {
+        let duration = Double(min(120, max(1, focusMinutes))) * 60
+        guard let signal = try? ActivitySignal(category: .focus, state: .active, duration: duration, progress: nil) else { return }
+        signals.submit(signal, at: ProcessInfo.processInfo.systemUptime, source: .local)
+        requestFrame()
+    }
+    func clearSignals() { signals.reset(); requestFrame() }
+
     func repairAndResume() {
         restore()
         if !device.needsRecovery { controlWanted = !demo && device.available; notice = "Your light is ready."; tick() }
@@ -322,33 +490,50 @@ import Combine
     }
     func restore() {
         guard !demo else { return }
-        controlWanted = false; stopLid()
-        do { try device.restore(); controlling = false; try RuntimeServices.repairLid(); notice = "The saved logo and lid settings were restored." }
+        controlWanted = false
+        if lidStopPending || watcher?.isRunning == true {
+            stopLid(); notice = "Closed-lid cleanup is in progress. Retry Restore Light when it finishes."; return
+        }
+        do {
+            try device.restore(); controlling = false
+            let verify = watcher != nil
+            guard try completePowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
+            notice = "The saved logo and lid settings were restored."
+        }
         catch { self.error = error.localizedDescription }
     }
+    private var musicCaptureAllowed: Bool {
+        let allowedClosed = keepClosed && cachedLid
+        return !isStopping && mode == .music && enabled && pausedReason == nil && !systemSleeping && consoleActive && (!screenSleeping || allowedClosed) && (!cachedLocked || allowedClosed)
+    }
     func startAudio() {
-        guard mode == .music, enabled, !audioStarting, !audioRunning else { return }
+        guard musicCaptureAllowed, !audioStarting, !audioRunning else { return }
         if demo { notice = "Preview uses a sample waveform. Live system audio is never started in preview."; return }
-        audioGeneration += 1; let generation = audioGeneration; audioStarting = true; audioPermissionHelp=false
-        Task {
-            do {
-                try await audio.start()
-                if generation != audioGeneration || mode != .music { await audio.stop() }
-                else { audioRunning = true; audioConsent = true }
-            } catch { self.audioPermissionHelp=true; self.error = SystemAudio.friendly(error).localizedDescription }
-            audioStarting = false
-        }
+        audioPermissionHelp = false
+        audioSession.requestStart()
     }
     func openAudioPrivacy() {
         NSWorkspace.shared.open(URL(string:"x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
     }
     func stopAudio() {
-        audioGeneration += 1; audioRunning = false
-        Task { await audio.stop() }
+        musicResponse.reset()
+        audioSession.requestStop()
+        audioRunning = false; audioStarting = false
+        requestFrame()
+    }
+    private func resumeAudioAfterUpdateFailure() {
+        guard audioSession.hasResumeIntent else { return }
+        // Refresh sleep/lock/session policy before considering the saved intent.
+        lastSourceSample = -Double.infinity
+        tick()
+        audioSession.resumeAfterInterruption(consented: audioConsent)
     }
     func setLid(_ enabled: Bool) {
         guard !demo else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
         if !enabled { stopLid(); return }
+        guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else {
+            error = "Finish the previous closed-lid session cleanup before starting another."; return
+        }
         guard controlling, device.competingApp == nil else { error = "Your logo needs to be ready before starting a closed-lid session."; return }
         do {
             try FileManager.default.createDirectory(at:AgentBridge.directory,withIntermediateDirectories:true)
@@ -357,13 +542,30 @@ import Combine
             let process = Process(); process.executableURL = Bundle.main.executableURL
             process.arguments = ["--watch-lid",String(getpid()),file.path]
             process.standardOutput = FileHandle.nullDevice; process.standardError = FileHandle.nullDevice
-            try process.run(); lease = file; watcher = process; keepClosed = true
+            try process.run(); adoptLidWatcher(process, lease: file)
         } catch { self.error = error.localizedDescription }
     }
+    /// Retain one owned helper until its exit and recovery record are checked.
+    @discardableResult func adoptLidWatcher(_ process: any LidWatcherProcess, lease: URL) -> Bool {
+        guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else { return false }
+        watcher = process; self.lease = lease; keepClosed = true; lidStopFailed = false
+        return true
+    }
     func stopLid() {
-        if let lease { try? FileManager.default.removeItem(at:lease) }
-        if let watcher, watcher.isRunning { watcher.waitUntilExit() }
-        watcher = nil; lease = nil; keepClosed = false
+        keepClosed = false
+        guard let watcher else { return }
+        if lidStopper.requestStop(process: watcher, lease: lease,
+            journal: AgentBridge.directory.appendingPathComponent("lid-recovery.json")) {
+            lidStopPending = true; lidStopFailed = false
+        }
+    }
+    /// Only an explicit successful power repair can retire a failed helper.
+    /// The caller must verify the normal power state, not merely delete a file.
+    @discardableResult func completePowerRecovery(_ repair: () throws -> Void) rethrows -> Bool {
+        guard !lidStopPending, !lidStopper.hasOutstandingFilesystemWork, watcher?.isRunning != true else { return false }
+        try repair()
+        watcher = nil; lease = nil; lidStopFailed = false
+        return true
     }
     func setAmbient(_ enabled: Bool) {
         guard !demo, device.available else { error = "A compatible live Mac is required."; return }
@@ -396,30 +598,69 @@ import Combine
             defaults.set(enabled,forKey:"bridge.enabled"); defaults.set(lan,forKey:"bridge.lan")
         } catch { self.error = error.localizedDescription }
     }
+    func copyToggleLink() {
+        guard !demo else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString("backlit://toggle", forType: .string)
+        notice = "Backlit link copied. Use it with a launcher that supports custom app links."
+    }
+    func saveOBSScript() {
+        guard !demo else { return }
+        guard let script = Bundle.main.resourceURL?.appendingPathComponent("Integrations/obs/backlit_obs.py"),
+              let data = try? Data(contentsOf: script) else { error = "The OBS script is missing from this build."; return }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "backlit_obs.py"
+        panel.title = "Save OBS integration"
+        guard panel.runModal() == .OK, let destination = panel.url else { return }
+        do { try data.write(to: destination, options: .atomic); notice = "Add the script in OBS → Tools → Scripts. Enable the local connection and select Signals in Backlit." }
+        catch { self.error = error.localizedDescription }
+    }
     func copyPairingKey() {
         guard !demo else { return }
         do { let token = try BridgeToken.value(); NSPasteboard.general.clearContents(); NSPasteboard.general.setString(token,forType:.string); notice = "Pairing key copied. Paste it into Home Assistant; keep it private." }
         catch { self.error = error.localizedDescription }
     }
     func apiState() -> [String:Any] {
-        ["id":id,"name":"Backlit","version":"0.1.9","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
-         "effect":mode.title,"effects":availableModes.map(\.title),"battery":Int((battery*100).rounded()),
-         "charging":charging,"actively_charging":activelyCharging,"battery_available":batteryAvailable,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
+        ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),
+         "effect":mode.title,"effects":availableModes.map(\.title),"battery":Effects.percent(battery),
+         "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
-         "preview":!controlling,"paused":pausedReason ?? "","output":output]
+         "preview":!controlling,"paused":pausedReason ?? "","output":output,
+         "battery_available":batteryAvailable,"charge_ready":chargeReady,"automation_enabled":automationsEnabled,
+         "signal_category":signals.current?.category.rawValue ?? "","signal_state":signals.current?.state.rawValue ?? "",
+         "signal_count":signalCount]
     }
-    func quit() { if prepareQuit() { NSApp.terminate(nil) } }
+    func resumeAfterUpdateFailure() {
+        guard isStopping && terminationApproved else { return }
+        isStopping = false; terminationApproved = false
+        controlWanted = !demo && device.available && !device.needsRecovery
+        startPowerMonitoring()
+        if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
+        configureTimer(); requestFrame()
+        resumeAudioAfterUpdateFailure()
+    }
+    func quit() {
+        guard updater.allowsTermination() else { error = updater.message; return }
+        NSApp.terminate(nil)
+    }
     func prepareQuit() -> Bool {
         if terminationApproved { return true }
+        // Cocoa's terminateLater path keeps the run loop responsive while the
+        // owned helper restores power. No hardware/quit decision is discarded.
+        if watcher != nil || lidStopPending {
+            stopLid()
+            return false
+        }
         if controlling && !enabled {
             let alert = NSAlert(); alert.messageText = "Leave the logo off?"; alert.informativeText = "You can leave it dark or restore the settings from before this Backlit session. A saved recovery remains available on the next launch."
             alert.addButton(withTitle:"Restore and Quit"); alert.addButton(withTitle:"Leave Off and Quit"); alert.addButton(withTitle:"Cancel")
             let result = alert.runModal(); if result == .alertThirdButtonReturn { return false }
             if result == .alertSecondButtonReturn { controlling = false }
         }
-        isStopping = true; touch.stop(); timer?.invalidate()
+        audioSession.retainResumeIntent(consented: audioConsent)
+        isStopping = true; synchronizeTouch(); synchronizeTyping(); powerMonitor.stop(); timer?.invalidate()
         stopLid(); releaseHardware()
-        if controlling { isStopping=false; configureTimer(); return false }
+        if controlling { isStopping=false; startPowerMonitoring(); synchronizeTouch(forceRestart: true); synchronizeTyping(forceRestart: true); configureTimer(); return false }
         timer?.invalidate(); bridge.stop(); stopAudio(); terminationApproved = true; return true
     }
 }

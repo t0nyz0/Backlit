@@ -1,12 +1,11 @@
-Backlit v0.1.9 adds Battery behavior customization while keeping automatic charging behavior as the default.
+Backlit 0.2.0 (build 25) for MacBook PROLED.
 
-- Automatic pulse while actively charging, steady light while plugged in but not charging, and charge-level brightness while unplugged.
-- Choose Automatic pulse, Steady, or Match battery level while plugged in, and adjust the pulse cycle.
-- Optional charge-ready signals with a configurable threshold, style, and duration. They are off by default.
-- Battery controls in Your light and Settings, plus Restore Battery Defaults. Existing preferences are preserved.
+Battery mode now follows the battery percentage exactly when unplugged, independently of saved manual brightness. The default pulses only during active charging and stays solid when charging pauses or finishes. Pulse speed, the “Dim to” minimum, optional plugged-in styles and charge-ready cues are configurable. The workspace and menu label battery-driven output; other modes retain manual brightness.
 
-Backlit is a native MacBook PROLED logo-control source preview with original branding and interface. It also includes Steady, Breathe, Music, Agents, and Trackpad behaviors, plus an optional Home Assistant integration.
+This release also includes square lid previews, a hideable menu bar icon with Dock/Applications recovery, Music response presets and automatic level adjustment, optional timing-only typing response, Signals/Focus, and local automation links. Stream Deck and OBS integrations are experimental. Native Shortcuts actions are unavailable in this ad-hoc signed build.
 
-The ZIP and drag-to-Applications DMG are compiled on Apple silicon. The source package is an allowlisted snapshot without private research or Git history. BUILD-INFO.json records the exact source commit and signing status; SHA256SUMS.txt covers the packages. Quit any running Backlit before replacing the app in Applications.
+Download the Apple silicon ZIP or DMG and replace the app manually. The app is ad-hoc signed, not Developer ID signed or notarized. In-app updates remain disabled because no production publisher key or signed feed is provisioned. A disposable signed update fixture passed installation/relaunch and rejected a modified feed; that does not establish production updater trust, resumed/cancelled installation, interruption recovery or rollback.
 
-This preview is ad-hoc signed, not Developer ID signed or notarized. Active-charging pulse was checked on the local Mac. Full/paused-charge and unplugged states are covered by automated tests, but their physical behavior remains unverified. Global screen touch is unavailable. Codex, login, administrator brightness overrides, closed-lid behavior, click accents, and optical latency retain separate verification gates. See docs/VALIDATION.md in the source package.
+Assets include the app ZIP/DMG, source archive, separate Stream Deck add-on, BUILD-INFO.json and SHA256SUMS.txt. Build metadata records the exact source commit. Checksums detect changed bytes; they do not authenticate the publisher. Release publication requires passing CI for the exact version tag.
+
+See [validation and known limits](https://github.com/t0nyz0/Backlit/blob/v0.2.0/docs/VALIDATION.md), [installation](https://github.com/t0nyz0/Backlit/blob/v0.2.0/README.md#install) and [privacy](https://github.com/t0nyz0/Backlit/blob/v0.2.0/docs/PRIVACY.md).

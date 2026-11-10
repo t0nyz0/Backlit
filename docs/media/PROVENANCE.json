@@ -1,5 +1,5 @@
 {
-  "app_version": "0.1.9",
+  "app_version": "0.2.0",
   "native_capture": true,
   "isolated_preview": true,
   "source": "Backlit --capture-suite docs/media",
@@ -10,45 +10,65 @@
       "height": 153,
       "sha256": "a72341bd3e0d51568e4c621bfb4bd315f6e71cf39fd3e71f7daf4a93f00425a7"
     },
+    "connections-automation-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "e2552acb046def6b250df0bd086831a02f799df4b89485ea3b7f5b2f76450234"
+    },
     "connections-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "44447370e35f393b78b02ccf311f2ffd5ee81fea8d4bb2399cd12d65cf0de5d8"
+      "sha256": "fa6ac93b5f3e789835dcf4eac97f099472624e09d0fdd4abca0d02af1d62486a"
     },
     "connections-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "6460473ccfad1cc94a6b68d130403c99e28f663e0fcdc6c0dd43331b41e6b7a3"
+      "sha256": "1b0edfb0566ed61050a819b88dd771be2da973d9ded4c01d452a0b3ca191b825"
     },
     "icon.png": {
-      "width": 2048,
-      "height": 2048,
-      "sha256": "d4d45871bf5aeeb7fd49e2942d0de24a1fb5239b53a172bab0f37cd159928aea"
+      "width": 512,
+      "height": 512,
+      "sha256": "0e52d753c7dd84da861ddfeabff36cecf257b90a90bd5b6fb4507ee02db8205d"
     },
     "light-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "3c071dab28b804b81559b58f00b57c26622eee5b792ee4d59f0eb47efb2aad70"
+      "sha256": "1be186cfcfe3af9285fecf46def45ca3532e2abe5f9b9130c08057279f4b8abd"
     },
     "light-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "b61bbe5073fec772b4ac122a6be1729a7f90905e4357d22b55fb618120ae966a"
+      "sha256": "fc7683ffe4b47cac0da99d1034cbb6ee080216fb50fa3e8e5375e2ef3d7cee28"
     },
     "menu-light.png": {
       "width": 640,
-      "height": 768,
-      "sha256": "c4114f1034309f754dd72ccf22f942f407661ece8c7fe601dd3c09e9e11a586f"
+      "height": 772,
+      "sha256": "34b7c20b4a1e585df46ccd7f4ccd23c93a3f1246d6830e90ee4536dadb46280c"
+    },
+    "music-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "a65de27c5243b82be2067779f406a0b0a0956ff54d17ca9616c905b71b1151ce"
     },
     "settings-dark.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "178865f83c206f15ac1bda3e4956bc2a31b11cc39e08a2131a434b0e2bb4a6c7"
+      "sha256": "125c7a3d459e9f0332c3bbc37ed2c4b1a59fbc231247bd7b7a55457bed0cb0fc"
     },
     "settings-light.png": {
       "width": 2200,
       "height": 1776,
-      "sha256": "15b953b9bc433f10c0cb8517090c4dc8b35913edecd209bb8399b970d405c851"
+      "sha256": "e434265a79a9c2e5e9230f35f28160359140af7aec86a3e23b0edd17945320f2"
+    },
+    "signals-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "1cfdaac87975ed686a9d9c98c26f1b91bb7c8d16f5a6dc5877621796546e46f1"
+    },
+    "trackpad-light.png": {
+      "width": 2200,
+      "height": 1776,
+      "sha256": "0838ffb8d39af6a09b937dfeca3b2c454bd1f9d61166618988e6a47029e6dbaf"
     }
   }
 }

@@ -29,10 +29,34 @@ jobs:
           gitleaks git --log-opts=--all --redact --no-banner .
       - name: Native tests
         run: swift test
+      - name: Provision pinned Sparkle signature test tool
+        run: |
+          backlit_sparkle_archive="$RUNNER_TEMP/backlit-Sparkle-2.10.1.tar.xz"
+          curl --fail --location --retry 3 --output "$backlit_sparkle_archive" https://github.com/sparkle-project/Sparkle/releases/download/2.10.1/Sparkle-2.10.1.tar.xz
+          echo "1a856d2a9edb8e628de88121d7be04cf0e2167f8641650b78fca00b14244cf27  $backlit_sparkle_archive" | shasum -a 256 --check
+          mkdir -p "$RUNNER_TEMP/backlit-sparkle-tools"
+          tar -xJf "$backlit_sparkle_archive" -C "$RUNNER_TEMP/backlit-sparkle-tools"
+          codesign --verify --deep --strict "$RUNNER_TEMP/backlit-sparkle-tools/Sparkle.framework"
+          test -x "$RUNNER_TEMP/backlit-sparkle-tools/bin/sign_update"
+          echo "BACKLIT_SPARKLE_SIGN_TOOL=$RUNNER_TEMP/backlit-sparkle-tools/bin/sign_update" >> "$GITHUB_ENV"
       - name: Home Assistant client and Core tests
         run: |
           python -m pip install -r Tests/Python/requirements-ci.txt
           python -m unittest discover -s Tests/Python -v
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: integrations/streamdeck/package-lock.json
+      - name: Stream Deck checks
+        working-directory: integrations/streamdeck
+        run: |
+          npm ci --ignore-scripts
+          npm run check
+          npm test
+          npm audit --audit-level=high
+          npm run build
+          npm run pack:plugin
       - name: Documentation and media checks
         run: |
           python3 scripts/check_docs.py
@@ -41,6 +65,7 @@ jobs:
       - name: Compile and package app
         run: |
           bash scripts/build.sh
+          test "$(lipo -archs dist/Backlit.app/Contents/MacOS/Backlit)" = arm64
           bash scripts/package.sh
       - name: Upload compiled packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -61,9 +86,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Download tested build and publish preview release
+      - name: Download tested build and publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh run download "$GITHUB_RUN_ID" -n backlit-macos-arm64 -D dist/packages
-          gh release create "$GITHUB_REF_NAME" dist/packages/* --verify-tag --prerelease --title "Backlit $GITHUB_REF_NAME" --notes-file docs/RELEASE.md
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            backlit_release_flags=(--prerelease --latest=false)
+          else
+            backlit_release_flags=(--latest)
+          fi
+          gh release create "$GITHUB_REF_NAME" dist/packages/* --verify-tag "${backlit_release_flags[@]}" --title "Backlit $GITHUB_REF_NAME" --notes-file docs/RELEASE.md

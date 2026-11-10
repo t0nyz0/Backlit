@@ -1,41 +1,38 @@
 # Backlit validation
 
-Version: **0.1.9**, build 20. This is an early source preview. Release source metadata and artifact checksums are in `BUILD-INFO.json` and `SHA256SUMS.txt`. Test and package results are available in [GitHub Actions](https://github.com/t0nyz0/Backlit/actions).
+Version: **0.2.0**, build 25. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.0` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
 
-## Automated checks
+## Executed local checks
 
-- 40 native Swift tests cover bounded effects, off precedence, automatic charging/paused/full/unplugged battery behavior, preference migration and customization, bounded opt-in charge-ready signals, breathing cycles, audio envelopes, contact state, preference loading, device leases, recovery curves, authenticated HTTP framing, command validation, and localhost bridge traffic.
-- Agent-hook tests cover configuration overrides, preservation of unrelated commands, migration of earlier Backlit hooks, literal shell-path quoting, metadata-only storage, expiry, and invalid session rejection.
-- Five Python tests cover the client against a local HTTP fixture and the custom integration in isolated Home Assistant 2026.11.1 Core. They exercise pairing, invalid keys, duplicate devices, entities, light commands, preview availability, and unloading.
-- Packaging checks compiled binaries for local home paths, bundles the license and attribution notices, and verifies the app signature. Documentation/media checks cover local links, version metadata, PNG integrity, and image metadata.
+- 150 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 62 Python tests cover Home Assistant Core/client fixtures, process/job cancellation, OBS worker/HTTP fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
+- 14 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
+- Optimized arm64 build, five-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
 
-Screenshots use the production native views in isolated preview mode. They are visually reviewed; they do not measure physical light output.
+Battery tests use saved manual levels of 0%, 25%, 50%, and other values; every unplugged percentage including zero is tested. Default/migrated preferences, active/full/paused/unplugged transitions, optional styles/cues, mode switching and preserved manual settings are covered. The corrected tests exercise the production model, rather than treating a manual-brightness multiplier as the expected result. Native captures show the workspace and menu output without a Battery manual slider.
 
-## Compatibility and verification limits
+Battery pulse-floor tests cover arbitrary 20 Hz phases, delayed timestamps and cycle crossing. The floor is delivered on the next available frame and the pulse restarts smoothly; this cannot make a stalled process produce timely physical frames. Explicit zero writes bypass near-zero coalescing. Optical darkness and timing still need device observation. Menu visibility preference, repeated item lifecycles and asynchronous closed-lid cleanup/recovery are covered by isolated fixtures.
 
-| Feature | Remaining checks |
+Preview geometry/render tests verify fixed centered square marks at off/low/mid/high levels, filled corners, a continuous concentric halo, and finite rendering for invalid inputs.
+
+Screenshots are captured from current native views in isolated preview; they illustrate UI and do not measure emitted light. See [provenance](media/README.md).
+
+## Boundaries
+
+| Area | Acceptance limit |
 | --- | --- |
-| Hardware control | Other hardware and operating-system variants; optical brightness and latency. Private interfaces may change. Service readback is not an optical measurement. |
-| Battery | Active-charging pulse was checked on the local Mac. Full/paused-charge and unplugged transitions are covered by automated tests, but physical checks of those states remain unverified. |
-| Music | Multiple playback sources/devices, protected audio, latency, and sustained resource use. Core Audio is used on macOS 14.2+; macOS 14.0–14.1 uses an audio-only ScreenCaptureKit fallback. |
-| Coding agents | Codex live-session compatibility; hook review/trust must be granted in Codex. |
-| Login launch | Actual login/reboot behavior after opt-in. |
-| Ambient override | Administrator-authorized execution and physical brightness range. |
-| Closed-lid operation | Physical closure with and without an external display, permissions, timeout, and thermal/battery cutoffs. |
-| Quit and recovery | Normal shutdown requests restoration. Force-killing the app and watchdog is a separate recovery case. Reboot persistence of a deliberately retained dark state is not claimed. |
-| Trackpad | Click accents, missed-release stress, and optical latency. Global screen touch is unsupported and is not offered. |
-| Home Assistant | Pairing with an existing installation and its LAN policy. |
+| Battery | Automated/model tests do not establish natural full-charge optical behavior on every device. Hardware reads and preview values are not optical measurements. |
+| Music | Playback devices, protected audio, perceived latency and sustained whole-app resource use still need live acceptance. No performance guarantee. |
+| Typing | Input Monitoring, Secure Input, sleep/lock/user-switch handling need live acceptance. No permission bypass. |
+| Shortcuts | Native actions are unavailable in this ad-hoc signed build. Five actions extract as metadata, which is not a discovery pass. |
+| Stream Deck / OBS | Fixture/plugin packaging tests pass; actual key/profile, OBS script and recording/streaming operation remain unverified. |
+| Home Assistant / agents | Local fixtures pass; existing installation/LAN policy and live Codex compatibility remain separate checks. |
+| Updater | Trust key/feed missing, so disabled. A disposable two-version host passed a signed upgrade/relaunch and rejected a modified signed feed. Its routes used fixture-only localhost overrides and synthetic restoration. Production transport/signing, resumed/interrupted updates, cancellation acknowledgement and failure rollback/relaunch remain unverified. |
+| Local installer | Fixtures cover copy/signature/swap/launch failure, interruption, failed rollback moves, and accepted launch followed by immediate exit. A verified prior bundle is retained until explicit validation; launch acceptance alone is not a health check. Separate from Sparkle's installer. |
+| Hardware / power | Other hardware/OS, login/reboot, administrator overrides, physical lid closure/timeout/thermal cutoffs, and forced termination recovery remain separate gates. |
 
-## Efficiency design
+## Efficiency and distribution
 
-Steady, non-charging Battery, Trackpad, off, and paused states use one-second housekeeping. Battery animates at 20 Hz while actively charging with Automatic pulse selected, or during an explicitly enabled animated charge-ready signal; power state is sampled once per second while Battery is selected. Animated effects use a capped 20 Hz loop; preview publication is capped at 10 Hz. Hidden previews do not keep redrawing. Competing-controller detection uses launch/quit notifications rather than repeated application enumeration. Unchanged battery and agent values are not republished.
+Animated effects use a capped 20 Hz loop and previews a capped 10 Hz publication rate. Static/off/paused states use one-second housekeeping. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
 
-Trackpad input uses callbacks only while selected and enabled. It does not poll a device, inspect coordinates, record input, or seize a HID device. Audio is analyzed locally without recording; its envelope release is time-based and stale packets fade out. These implementation choices are not a battery-life or latency guarantee.
-
-## Distribution limits
-
-- The binary targets Apple silicon and macOS 14+. This does not establish support for every Mac or macOS release.
-- The app is ad-hoc signed, not Developer ID signed or notarized.
-- Lock observation uses a compatibility-sensitive session key. Sleep, display sleep, lock, lid closure, and user switching are distinct conditions.
-- Update checking opens GitHub Releases; there is no automatic updater.
-- English and Traditional Chinese primary controls are available; some diagnostics remain English.
+The app targets Apple silicon/macOS 14+ and uses compatibility-sensitive private hardware/audio interfaces. Global screen-touch is unsupported. It is ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.

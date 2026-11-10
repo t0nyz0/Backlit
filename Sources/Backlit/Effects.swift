@@ -1,7 +1,7 @@
 import Foundation
 
 enum GlowMode: String, CaseIterable, Codable, Identifiable {
-    case steady, breathe, battery, music, agents, touch
+    case steady, breathe, battery, music, agents, touch, signals
     var id: String { rawValue }
     var title: String { self == .touch ? "Trackpad" : rawValue.capitalized }
     var symbol: String {
@@ -11,6 +11,7 @@ enum GlowMode: String, CaseIterable, Codable, Identifiable {
         case .battery: return "battery.75percent"
         case .music: return "waveform"
         case .agents: return "sparkles"
+        case .signals: return "dot.radiowaves.left.and.right"
         case .touch: return "hand.tap"
         }
     }
@@ -24,48 +25,38 @@ struct EffectInput {
     var brightness = 0.7
     var period = 6.0
     var battery = 1.0
-    var batteryAvailable = true
-    var externalPower = false
-    var activelyCharging = false
-    var batteryChargingStyle: BatteryChargeStyle = .breathe
-    var batteryPulsePeriod = 6.0
-    var batteryCueLevel: Double?
     var audio = 0.0
     var intensity = 1.0
     var strobe = false
     var agent: AgentState = .waiting
     var away = false
     var touchDown = false
+    var signalLevel = 0.0
 }
 
 enum Effects {
     static func level(at time: Double, input: EffectInput) -> Double {
-        guard input.enabled else { return 0 }
+        guard input.enabled, time.isFinite else { return 0 }
         let base = clamp(input.brightness)
-        let t = time.isFinite ? max(0, time) : 0
+        let t = max(0, time)
         switch input.mode {
         case .steady: return base
+        case .signals: return base * clamp(input.signalLevel)
         case .touch: return input.touchDown ? base : 0
         case .breathe:
-            let cycle = max(3, min(10, input.period))
-            return base * (0.04 + 0.96 * pow((1 - cos(2 * .pi * t / cycle)) / 2, 1.5))
-        case .battery:
-            guard input.batteryAvailable, input.battery.isFinite else { return 0 }
-            let charge = clamp(input.battery)
-            guard input.externalPower else { return base * charge }
-            if let cue = input.batteryCueLevel { return base * clamp(cue) }
-            if input.batteryChargingStyle == .level { return base * charge }
-            guard input.batteryChargingStyle == .breathe, input.activelyCharging, charge < 1 else { return base }
-            let cycle = BatteryResponseOptions.bound(input.batteryPulsePeriod, 3...10, fallback: 6)
+            let cycle = input.period.isFinite ? max(3, min(10, input.period)) : 6
             let phase = t.truncatingRemainder(dividingBy: cycle) / cycle
-            return base * (0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2)
+            return base * (0.04 + 0.96 * pow((1 - cos(2 * .pi * phase)) / 2, 1.5))
+        case .battery: return clamp(input.battery)
         case .music:
             let energy = clamp(input.audio * max(0.25, min(3, input.intensity)))
             return base * (input.strobe ? (energy > 0.5 ? 1 : 0) : energy)
         case .agents:
             switch input.agent {
             case .waiting: return base * 0.18
-            case .working: return base * (0.15 + 0.85 * (1 - cos(2 * .pi * t / 2.4)) / 2)
+            case .working:
+                let phase = t.truncatingRemainder(dividingBy: 2.4) / 2.4
+                return base * (0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2)
             case .attention:
                 guard input.away else { return base * 0.5 }
                 let phase = t.truncatingRemainder(dividingBy: 2)
@@ -73,5 +64,6 @@ enum Effects {
             }
         }
     }
+    static func percent(_ value: Double) -> Int { Int((clamp(value) * 100).rounded()) }
     static func clamp(_ value: Double) -> Double { value.isFinite ? min(1, max(0, value)) : 0 }
 }

@@ -55,6 +55,8 @@ enum RuntimeServices {
     /// Runs as a separate unprivileged watchdog. Selector/type come from Apple's
     /// RootDomainUserClient.cpp and the installed IOPMLibDefs.h, not guessed IDs.
     static func watchLid(parent: pid_t, lease: URL) -> Int32 {
+        // Install graceful child-only cancellation before opening or changing power services.
+        let cancellation = LidWatchCancellation()
         let service = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
         guard service != 0 else { return 2 }; defer { IOObjectRelease(service) }
         var connection: io_connect_t = 0
@@ -73,7 +75,7 @@ enum RuntimeServices {
         }
         var closedAt: Double?
         var exhausted = false
-        while kill(parent, 0) == 0 && FileManager.default.fileExists(atPath: lease.path) {
+        while !cancellation.isRequested && kill(parent, 0) == 0 && FileManager.default.fileExists(atPath: lease.path) {
             let closed = lidClosed
             let power = battery()
             let thermal = ProcessInfo.processInfo.thermalState
@@ -101,9 +103,10 @@ enum RuntimeServices {
         return 0
     }
 
-    static func repairLid() throws {
+    static func repairLid(verifyNormalSleep: Bool = false) throws {
         let journal = AgentBridge.directory.appendingPathComponent("lid-recovery.json")
-        guard FileManager.default.fileExists(atPath: journal.path) else { return }
+        let hasJournal = FileManager.default.fileExists(atPath: journal.path)
+        guard hasJournal || verifyNormalSleep else { return }
         let node = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
         guard node != 0 else { throw failure("Power service unavailable.") }; defer { IOObjectRelease(node) }
         var connection: io_connect_t = 0
@@ -111,7 +114,10 @@ enum RuntimeServices {
         defer { IOServiceClose(connection) }
         var value: UInt64 = 0
         guard IOConnectCallScalarMethod(connection, 12, &value, 1, nil, nil) == KERN_SUCCESS else { throw failure("Could not restore normal lid sleep.") }
-        try FileManager.default.removeItem(at: journal)
+        if verifyNormalSleep {
+            guard (rootValue("AppleClamshellCausesSleep") as? NSNumber)?.boolValue == true else { throw failure("Normal lid sleep has not been confirmed. Recovery is retained.") }
+        }
+        if hasJournal { try FileManager.default.removeItem(at: journal) }
     }
 
     static func authorizedAmbient(_ enabled: Bool) throws {

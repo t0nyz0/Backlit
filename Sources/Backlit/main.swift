@@ -59,9 +59,10 @@ if arguments.contains("--verify-hardware") {
 
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     static weak var shared: AppDelegate?
-    let model = AppModel(demo:arguments.contains("--preview") || option("--capture-suite") != nil)
+    let model = AppModel(demo:arguments.contains("--preview") || option("--capture-suite") != nil || Bundle.main.object(forInfoDictionaryKey: "BacklitIsolatedPreview") as? Bool == true)
     var window: NSWindow!
-    var status: NSStatusItem!
+    let menuBarItem = MenuBarItemController<NSStatusItem>()
+    var status: NSStatusItem? { menuBarItem.item }
     var popover = NSPopover()
     var iconCache:[Int:NSImage]=[:]
     var lastIconStep = -1
@@ -71,12 +72,13 @@ if arguments.contains("--verify-hardware") {
     var eventHandler: EventHandlerRef?
     var observing: NSObjectProtocol?
     var quitObserver: NSObjectProtocol?
+    private var terminationPending = false
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
         NSApp.setActivationPolicy(.regular)
         buildMenus()
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:860),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
-        window.title = "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
+        window.title = model.demo ? "Backlit — Preview" : "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
         let hosting=NSHostingView(rootView:RootView(model:model))
         hosting.allowedTouchTypes = .direct
         window.contentView=hosting; window.center(); window.isReleasedWhenClosed = false
@@ -84,15 +86,28 @@ if arguments.contains("--verify-hardware") {
         model.onIconChange = { [weak self] in self?.updateIcon() }
         model.isPreviewVisible = { [weak self] in
             guard let self else{return false}
-            return (self.window.isVisible && !self.window.isMiniaturized && self.model.selectedPage == "light") || self.popover.isShown
+            return !NSApp.isHidden && ((self.window.isVisible && !self.window.isMiniaturized && self.model.selectedPage == "light") || self.popover.isShown)
         }
-        status = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
-        status.button?.target = self; status.button?.action = #selector(toggleMenu)
-        status.button?.sendAction(on:[.leftMouseUp,.rightMouseUp])
+        model.onMenuBarIconVisibilityChange = { [weak self] in self?.updateMenuBarVisibility() }
+        updateMenuBarVisibility()
         popover.contentViewController = NSHostingController(rootView:MenuView(model:model)); popover.behavior = .transient
         updateIcon(); installShortcut()
         observing = NotificationCenter.default.addObserver(forName:.init("Backlit.Shortcut"),object:nil,queue:.main){[weak self] _ in Task { @MainActor in self?.installShortcut() }}
         quitObserver = DistributedNotificationCenter.default().addObserver(forName:.init("local.backlit.quit"),object:nil,queue:.main) { [weak self] _ in Task { @MainActor in self?.model.quit() } }
+        AutomationRouter.shared.handler = { [weak model] command in
+            guard let model else { throw RuntimeServices.failure("Backlit is not ready.") }
+            try model.performAutomation(command)
+        }
+        AutomationRouter.shared.enabled = model.automationsEnabled && !model.demo
+        model.updater.recoverAfterFailure = { [weak model] in model?.resumeAfterUpdateFailure() }
+        model.updater.installGate.prepare = { [weak model] in model?.prepareQuit() ?? false }
+        model.onLidStopCompleted = { [weak self] safe in
+            guard let self else { return }
+            if self.terminationPending {
+                self.terminationPending = false
+                NSApp.reply(toApplicationShouldTerminate: safe && self.model.prepareQuit())
+            } else if safe { self.model.updater.continueApprovedInstallation() }
+        }
         model.start()
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
@@ -100,42 +115,59 @@ if arguments.contains("--verify-hardware") {
             Task { await captureSuite(URL(fileURLWithPath:directory)) }
         }
     }
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls.prefix(8) {
+            do { try AutomationRouter.shared.perform(AutomationCommand(url: url)) }
+            catch { model.error = error.localizedDescription }
+        }
+    }
     func showWindow() {popover.performClose(nil);window.makeKeyAndOrderFront(nil);NSApp.activate(ignoringOtherApps:true)}
-    func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {model.prepareQuit() ? .terminateNow : .terminateCancel}
+    func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
+        guard model.updater.allowsTermination() else { model.error = model.updater.message; return .terminateCancel }
+        if model.prepareQuit() { return .terminateNow }
+        if model.lidStopPending { terminationPending = true; return .terminateLater }
+        return .terminateCancel
+    }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {false}
     @objc func toggleMenu() {
         if NSApp.currentEvent?.modifierFlags.contains(.option) == true {model.enabled.toggle();return}
         if popover.isShown {popover.performClose(nil)}
-        else if let button=status.button {popover.show(relativeTo:button.bounds,of:button,preferredEdge:.minY);popover.contentViewController?.view.window?.makeKey()}
+        else if let button=status?.button {popover.show(relativeTo:button.bounds,of:button,preferredEdge:.minY);popover.contentViewController?.view.window?.makeKey()}
+    }
+    func updateMenuBarVisibility() {
+        if !model.menuBarIconVisible { popover.performClose(nil) }
+        if menuBarItem.setVisible(model.menuBarIconVisible, create: {
+            let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+            item.button?.target = self; item.button?.action = #selector(toggleMenu)
+            item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            return item
+        }, remove: { NSStatusBar.system.removeStatusItem($0) }) {
+            lastIconStep = -1; lastTooltipUpdate = -Double.infinity
+            updateIcon()
+        }
+    }
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showWindow()
+        return true
     }
     func updateIcon() {
-        // Use output, not the slider ceiling: breathing and touch remain live.
-        // Twenty cached alpha levels avoid redrawing artwork at every tick.
-        let step=Int((Effects.clamp(model.output)*20).rounded())
+        guard status?.button != nil, model.visualUpdatesAllowed else { return }
+        // Geometry follows actual output. Cache at most 101 tiny template images.
+        let step = StatusIconGeometry.step(for: model.output)
         if step != lastIconStep {
-            if iconCache[step] == nil {
-                let alpha=CGFloat(step)/20
-                let image=NSImage(size:NSSize(width:20,height:22),flipped:false){rect in
-                    // Original Backlit mark: a permanent laptop outline and
-                    // an interior light whose alpha follows physical output.
-                    let lid=NSBezierPath(roundedRect:NSRect(x:3,y:5,width:14,height:13),xRadius:2.4,yRadius:2.4)
-                    NSColor.black.withAlphaComponent(0.78).setStroke();lid.lineWidth=1.1;lid.stroke()
-                    let base=NSBezierPath();base.move(to:NSPoint(x:2,y:3.5));base.line(to:NSPoint(x:18,y:3.5));base.lineWidth=1; base.stroke()
-                    let lamp=NSBezierPath(roundedRect:NSRect(x:7,y:10,width:6,height:3),xRadius:1.5,yRadius:1.5)
-                    NSColor.black.withAlphaComponent(alpha).setFill();lamp.fill()
-                    return true
-                }
-                image.isTemplate=true;iconCache[step]=image
-            }
-            status?.button?.image=iconCache[step];lastIconStep=step
+            if iconCache[step] == nil { iconCache[step] = StatusIconGeometry.image(at: step) }
+            status?.button?.image = iconCache[step]
+            lastIconStep = step
         }
         let now=ProcessInfo.processInfo.systemUptime
         if model.status != lastTooltipStatus || now-lastTooltipUpdate>=1 {
             lastTooltipStatus=model.status;lastTooltipUpdate=now
-            status?.button?.toolTip="Backlit · \(model.status) · \(Int(model.output*100))% output"
+            status?.button?.toolTip="Backlit · \(model.status) · \(Effects.percent(model.output))% output"
         }
     }
     func installShortcut() {
+        // An isolated preview must not claim a system-wide keyboard shortcut.
+        guard !model.demo else { return }
         if let hotkey {UnregisterEventHotKey(hotkey)}
         if eventHandler == nil {
             var spec = EventTypeSpec(eventClass:OSType(kEventClassKeyboard),eventKind:UInt32(kEventHotKeyPressed))
@@ -165,7 +197,7 @@ if arguments.contains("--verify-hardware") {
         do {
             try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
             model.language="en"
-            model.mode = .breathe;model.period=6
+            model.mode = .battery; model.batteryOptions = BatteryResponseOptions(); model.enabled = true
             try await Task.sleep(nanoseconds:2_200_000_000)
             for appearance in ["light","dark"] {
                 model.appearance=appearance
@@ -182,7 +214,7 @@ if arguments.contains("--verify-hardware") {
                 }
             }
             model.appearance="light"
-            // Capture a visible part of the real preview's breathing cycle.
+            // Capture the actual Battery preview at its sampled output.
             // This waits on the app's output; it does not alter the waveform.
             for _ in 0..<65 {
                 if model.output >= 0.55 {break}
@@ -192,10 +224,38 @@ if arguments.contains("--verify-hardware") {
             let owned=NSWindow(contentRect:menu.frame,styleMask:.borderless,backing:.buffered,defer:false);owned.contentView=menu;owned.orderFront(nil)
             try await Task.sleep(nanoseconds:400_000_000)
             try capture(owned.contentView!.superview!,to:directory.appendingPathComponent("menu-light.png"));owned.orderOut(nil)
+            for (behavior, filename) in [(GlowMode.music, "music-light.png"), (.touch, "trackpad-light.png"), (.signals, "signals-light.png")] {
+                model.mode = behavior; model.selectedPage = "light"; model.notice = nil
+                if behavior == .signals { model.startFocus() }
+                try await Task.sleep(nanoseconds: 500_000_000)
+                try capture(window.contentView!.superview!, to: directory.appendingPathComponent(filename))
+            }
+            model.clearSignals()
+            model.selectedPage = "connections"; model.automationsEnabled = true
+            try await Task.sleep(nanoseconds: 500_000_000)
+            try capture(window.contentView!.superview!, to: directory.appendingPathComponent("connections-automation-light.png"))
+            model.automationsEnabled = false
             let icon=NSHostingView(rootView:BrandGlyph(size:1024));icon.frame=NSRect(x:0,y:0,width:1024,height:1024)
             let iconWindow=NSWindow(contentRect:icon.frame,styleMask:.borderless,backing:.buffered,defer:false);iconWindow.contentView=icon;iconWindow.orderFront(nil)
             try await Task.sleep(nanoseconds:200_000_000)
             try capture(icon,to:directory.appendingPathComponent("icon.png"));iconWindow.orderOut(nil)
+            if arguments.contains("--capture-marker-levels") {
+                model.mode = .steady; model.selectedPage = "light"; model.notice = nil
+                for appearance in ["light", "dark"] {
+                    model.appearance = appearance
+                    for (name, level) in [("off", 0.0), ("low", 0.01), ("mid", 0.5), ("high", 1.0)] {
+                        model.brightness = level; model.enabled = level > 0
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                        try capture(window.contentView!.superview!, to: directory.appendingPathComponent("marker-window-\(appearance)-\(name).png"))
+                        let panel = NSHostingView(rootView: MenuView(model: model)); panel.frame = NSRect(origin: .zero, size: panel.fittingSize)
+                        let owned = NSWindow(contentRect: panel.frame, styleMask: .borderless, backing: .buffered, defer: false)
+                        owned.contentView = panel; owned.orderFront(nil)
+                        try await Task.sleep(nanoseconds: 100_000_000)
+                        try capture(owned.contentView!.superview!, to: directory.appendingPathComponent("marker-menu-\(appearance)-\(name).png"))
+                        owned.orderOut(nil)
+                    }
+                }
+            }
             print("Native preview screenshots captured in \(directory.path)")
         } catch { print("Capture failed: \(error)") }
         model.quit()

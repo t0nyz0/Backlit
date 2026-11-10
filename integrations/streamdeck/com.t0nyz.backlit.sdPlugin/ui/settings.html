@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src ws://127.0.0.1:*">
+<style>body{font:13px system-ui;color:#ddd;background:#2d2d2d;margin:16px}label{display:block;margin:12px 0}input,select{margin-top:6px;width:100%;box-sizing:border-box;padding:7px}p{color:#aaa;line-height:1.5}[hidden]{display:none}</style>
+<title>Backlit</title></head><body>
+<p>Enable Shortcuts and other apps in Backlit. These controls run on this Mac.</p>
+<label id="brightness-row" hidden>Brightness (%)<input id="brightness" type="number" min="0" max="100" step="1" value="50"></label>
+<label id="mode-row" hidden>Behavior<select id="mode"><option value="steady">Steady</option><option value="breathe">Breathe</option><option value="battery">Battery</option><option value="music">Music</option><option value="agents">Agents</option><option value="trackpad">Trackpad</option><option value="signals">Signals</option></select></label>
+<p id="status" role="status"></p><script src="settings.js"></script></body></html>
