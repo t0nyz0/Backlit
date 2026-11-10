@@ -190,6 +190,7 @@ import Combine
         if !controlWanted && device.needsRecovery { return "Restore your light to continue" }
         if !enabled { return t("Logo off","標誌已關閉") }
         guard controlling else { return "Connecting to your MacBook" }
+        if let label = logoStatus.statusLabel { return label }
         switch mode {
         case .steady:return t("Glowing","發光中")
         case .breathe:return t("Breathing","呼吸中")
@@ -366,7 +367,8 @@ import Combine
         if nextPause != nil && touchDown { touch.reset() }
         let nextOutput = effectOutput(at: now)
         output = nextOutput
-        if visualUpdatesAllowed && (isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
+        let presentedOutput = logoStatus.level
+        if visualUpdatesAllowed && (isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-presentedOutput) > 0.005 { presentation.level = presentedOutput; lastPreviewSample = now }
         // Capture pauses independently of hardware ownership: losing the
         // device must not keep audio active after display sleep or lock.
         if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }

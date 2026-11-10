@@ -6,12 +6,14 @@ final class LogoStatusTests: XCTestCase {
         let state = LogoStatus(requested: 1, hardwareEnabled: false, controlling: true, lidClosed: true, preview: false)
         XCTAssertEqual(state.level, 0)
         XCTAssertEqual(state.detail, "Logo off · lid closed")
+        XCTAssertEqual(state.statusLabel, "Off · lid closed")
         XCTAssertEqual(StatusIconGeometry.step(for: state.level), 0)
     }
     func testOpenLidDisabledHardwareAlsoOverridesRequestedEffect() {
         let state = LogoStatus(requested: 0.8, hardwareEnabled: false, controlling: true, lidClosed: false, preview: false)
         XCTAssertEqual(state.level, 0)
         XCTAssertEqual(state.detail, "Logo off · hardware disabled")
+        XCTAssertEqual(state.statusLabel, "Off")
     }
     func testClosedLidIsNotAssumedOffWhenHardwareRemainsEnabled() {
         let state = LogoStatus(requested: 0.6, hardwareEnabled: true, controlling: true, lidClosed: true, preview: false)
@@ -23,6 +25,7 @@ final class LogoStatusTests: XCTestCase {
         XCTAssertEqual(state.level, 0)
         XCTAssertTrue(state.detail.contains("unavailable"))
         XCTAssertTrue(state.detail.contains("100% requested"))
+        XCTAssertEqual(state.statusLabel, "State unavailable")
     }
     func testNoOwnershipDoesNotShowRequestedLevelAsActual() {
         let state = LogoStatus(requested: 1, hardwareEnabled: true, controlling: false, lidClosed: false, preview: false)
@@ -33,6 +36,7 @@ final class LogoStatusTests: XCTestCase {
         let state = LogoStatus(requested: 0.4, hardwareEnabled: false, controlling: false, lidClosed: true, preview: true)
         XCTAssertEqual(state.level, 0.4)
         XCTAssertTrue(state.detail.hasPrefix("Preview"))
+        XCTAssertEqual(state.statusLabel, "Preview only")
     }
     func testReopenAndRepeatedCloseReturnToCorrectStatusWithoutChangingRequestedLevel() {
         let states = [false, true, false, true].map {

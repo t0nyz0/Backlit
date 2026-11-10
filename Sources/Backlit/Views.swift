@@ -49,7 +49,7 @@ struct LogoPreview: View {
                 HStack { Text(model.mode.title).font(.system(size:11,weight:.medium)); Spacer(); if !model.controlling {Text("Logo unchanged").font(.system(size:10)).opacity(0.6)} }
             }.foregroundStyle(.white.opacity(0.85)).padding(18)
         }.frame(height:compact ? 210 : 234)
-            .accessibilityElement(children:.contain).accessibilityLabel("\(model.mode.title) brightness preview, \(Effects.percent(model.output)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
+            .accessibilityElement(children:.contain).accessibilityLabel("\(model.mode.title) brightness preview, \(Effects.percent(presentation.level)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
     }
 }
 
@@ -331,7 +331,7 @@ struct MenuView: View {
             Divider()
             HStack(spacing:12) {
                 MenuLidPreview(presentation:model.presentation)
-                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.demo ? "Preview only" : model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
+                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.logoStatus.statusLabel ?? model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
                 Spacer();Toggle("Backlight",isOn:$model.enabled).labelsHidden().toggleStyle(.switch).controlSize(.small)
             }
             HStack {
