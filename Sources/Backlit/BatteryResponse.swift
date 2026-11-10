@@ -1,31 +1,5 @@
 import Foundation
 
-enum BatteryChargeStyle: String, Codable, CaseIterable, Identifiable {
-    case level, steady, breathe
-    var id: String { rawValue }
-    var title: String {
-        switch self {
-        case .level: return "Battery level"
-        case .steady: return "Steady"
-        case .breathe: return "Breathe"
-        }
-    }
-}
-
-enum BatteryReadyStyle: String, Codable, CaseIterable, Identifiable {
-    case glow, pulse, blink
-    var id: String { rawValue }
-    var title: String { rawValue.capitalized }
-}
-
-struct BatteryResponseOptions: Codable, Equatable {
-    var chargingStyle: BatteryChargeStyle = .level
-    var readyEnabled = false
-    var readyThreshold = 1.0
-    var readyStyle: BatteryReadyStyle = .pulse
-    var readyDuration = 10.0
-}
-
 /// A normalized multiplier. The caller still owns the brightness ceiling,
 /// enable/pause policy, power-source sampling, and the animation timer.
 struct BatteryResponse {
@@ -34,8 +8,7 @@ struct BatteryResponse {
     private(set) var requiresAnimation = false
     private var previousExternalPower: Bool?
     private var previousTime: Double?
-    private var previousThreshold: Double?
-    private var previouslyEnabled = false
+    private var previousOptions: BatteryResponseOptions?
     private var completionStarted: Double?
     private var settledAtFull = false
 
@@ -43,7 +16,7 @@ struct BatteryResponse {
     mutating func reset() { self = BatteryResponse() }
 
     mutating func update(charge: Double, externalPower: Bool, at time: Double,
-                         options: BatteryResponseOptions) -> Double {
+                         options: BatteryResponseOptions, activelyCharging: Bool = true) -> Double {
         guard charge.isFinite, time.isFinite else { reset(); return 0 }
         let amount = min(1, max(0, charge)), now = max(0, time)
         // Stay solid through small full-charge fluctuations while plugged in.
@@ -52,7 +25,7 @@ struct BatteryResponse {
         let threshold = options.readyThreshold.isFinite ? min(1, max(0.5, options.readyThreshold)) : 1
         let duration = options.readyDuration.isFinite ? min(60, max(1, options.readyDuration)) : 10
         let staleClock = previousTime.map { now < $0 || now - $0 > 30 } ?? true
-        let changedOptions = previousThreshold != threshold || previouslyEnabled != options.readyEnabled
+        let changedOptions = previousOptions != options
 
         if staleClock || changedOptions {
             // Prime a new session; opening the app or editing a threshold is
@@ -76,8 +49,7 @@ struct BatteryResponse {
         }
         previousExternalPower = externalPower
         previousTime = now
-        previousThreshold = threshold
-        previouslyEnabled = options.readyEnabled
+        previousOptions = options
 
         completionActive = false
         if options.readyEnabled, externalPower, ready, let started = completionStarted {
@@ -97,14 +69,15 @@ struct BatteryResponse {
             }
         }
         completionStarted = nil
-        requiresAnimation = externalPower && options.chargingStyle == .breathe && !settledAtFull
+        requiresAnimation = externalPower && options.chargingStyle == .breathe && !settledAtFull && activelyCharging
         guard externalPower else { return amount }
         switch options.chargingStyle {
         case .level: return amount
         case .steady: return 1
         case .breathe:
-            guard !settledAtFull else { return 1 }
-            let phase = now.truncatingRemainder(dividingBy: 6) / 6
+            guard !settledAtFull && activelyCharging else { return 1 }
+            let cycle = BatteryResponseOptions.bound(options.pulsePeriod, 3...10, fallback: 6)
+            let phase = now.truncatingRemainder(dividingBy: cycle) / cycle
             return 0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2
         }
     }

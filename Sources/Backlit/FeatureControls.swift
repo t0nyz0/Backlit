@@ -1,35 +1,5 @@
 import SwiftUI
 
-struct BatteryResponseControls: View {
-    @ObservedObject var model: AppModel
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if model.batteryAvailable {
-                Label("\(Int(model.battery * 100))% · \(model.charging ? "Plugged in" : "On battery")", systemImage: model.charging ? "bolt.battery" : "battery.75percent")
-            } else { Text("Battery state unavailable").foregroundStyle(.secondary) }
-            Picker("While plugged in", selection: $model.batteryOptions.chargingStyle) {
-                ForEach(BatteryChargeStyle.allCases) { style in Text(style.title).tag(style) }
-            }
-            if model.batteryOptions.chargingStyle == .breathe {
-                Text("Breathes while charging, then stays solid at 100%. On battery, brightness follows the charge level.").font(.system(size: 10)).foregroundStyle(.secondary)
-            }
-            Toggle("Charge-ready signal", isOn: $model.batteryOptions.readyEnabled).toggleStyle(.switch).controlSize(.small)
-            if model.batteryOptions.readyEnabled {
-                HStack {
-                    Text("Ready at")
-                    Slider(value: $model.batteryOptions.readyThreshold, in: 0.5...1, step: 0.01).accessibilityLabel("Charge-ready threshold")
-                    Text("\(Int((model.batteryOptions.readyThreshold * 100).rounded()))%").monospacedDigit().frame(width: 35)
-                }
-                Picker("Signal", selection: $model.batteryOptions.readyStyle) {
-                    ForEach(BatteryReadyStyle.allCases) { style in Text(style.title).tag(style) }
-                }
-                Stepper("For \(Int(model.batteryOptions.readyDuration)) seconds", value: $model.batteryOptions.readyDuration, in: 1...60, step: 1)
-                Text("Signals once when charge reaches your threshold while Battery is selected. Your brightness remains the upper limit.").font(.system(size: 10)).foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
 struct MusicResponseControls: View {
     @ObservedObject var model: AppModel
     var body: some View {

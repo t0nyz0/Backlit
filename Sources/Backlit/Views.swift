@@ -67,7 +67,7 @@ struct RootView: View {
                 Spacer()
                 VStack(alignment:.leading,spacing:8) {
                     Label(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : "PREVIEW MODE",systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
-                    Text("Backlit 0.1.8").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
+                    Text("Backlit \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development")").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
                 }.padding(.bottom,8)
             }.padding(22).frame(width:200).background(Color(nsColor:.windowBackgroundColor))
             Divider()
@@ -135,7 +135,7 @@ struct LightPage: View {
                         }
                         Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .battery {
-                        BatteryResponseControls(model: model)
+                        BatterySettingsControls(model: model)
                     } else if model.mode == .signals {
                         SignalResponseControls(model: model)
                     } else if model.mode == .agents {
@@ -246,7 +246,7 @@ struct SettingsPage: View {
             }
         }
         Surface {
-            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version 0.1.8 · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();Button("Check for Updates"){NSWorkspace.shared.open(URL(string:"https://github.com/t0nyz0/Backlit/releases")!)}}
+            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development") · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();UpdateControls(updater: model.updater, preview: model.demo)}
             Divider()
             HStack {Link("GitHub ↗",destination:URL(string:"https://github.com/t0nyz0/Backlit")!);Text("·").foregroundStyle(.tertiary);Link("t0nyz.com ↗",destination:URL(string:"https://t0nyz.com")!);Spacer();Link("☕ Buy me a coffee",destination:URL(string:"https://buymeacoffee.com/tonyz")!)}.font(.system(size:12))
         }
@@ -324,7 +324,7 @@ struct MenuView: View {
                 MusicResponseControls(model: model).font(.system(size:11))
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.intensity,in:0.25...3).tint(.primary)};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);Button(model.audioRunning ? "Stop System Audio" : "Start System Audio"){if model.audioRunning {model.stopAudio()} else {model.startAudio()}}}.font(.system(size:11))
             } else if model.mode == .battery {
-                Label("\(Int(model.battery*100))% · \(model.charging ? "Plugged in" : "On battery")",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
+                Label("\(Int(model.battery*100))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
             } else if model.mode == .signals {
                 SignalResponseControls(model: model).font(.system(size:11))
             } else if model.mode == .touch {

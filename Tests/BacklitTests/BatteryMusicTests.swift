@@ -2,6 +2,19 @@ import XCTest
 @testable import Backlit
 
 final class BatteryMusicTests: XCTestCase {
+    func testPausedChargingIsSolidAndUnpluggedStillTracksCharge() {
+        var response = BatteryResponse(), options = BatteryResponseOptions()
+        options.chargingStyle = .breathe
+        for time in [0.0, 1, 3, 6, 9] {
+            XCTAssertEqual(response.update(charge: 0.8, externalPower: true, at: time, options: options, activelyCharging: false), 1)
+            XCTAssertFalse(response.requiresAnimation)
+        }
+        for percent in 0...100 {
+            XCTAssertEqual(response.update(charge: Double(percent) / 100, externalPower: false, at: Double(percent + 10), options: options, activelyCharging: true), Double(percent) / 100)
+            XCTAssertFalse(response.requiresAnimation)
+        }
+    }
+
     func testChargingBreatheSettlesAtFullWithoutAnAnimationTimer() {
         var response = BatteryResponse(), options = BatteryResponseOptions()
         options.chargingStyle = .breathe
@@ -53,6 +66,7 @@ final class BatteryMusicTests: XCTestCase {
 
     func testBatteryCompletionHasAHysteresisAndAFiniteDuration() {
         var response = BatteryResponse(), options = BatteryResponseOptions()
+        options.chargingStyle = .level
         options.readyEnabled = true; options.readyThreshold = 0.8
         options.readyDuration = 2; options.readyStyle = .blink
         _ = response.update(charge: 0.7, externalPower: true, at: 0, options: options)

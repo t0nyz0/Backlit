@@ -98,6 +98,8 @@ if arguments.contains("--verify-hardware") {
             try model.performAutomation(command)
         }
         AutomationRouter.shared.enabled = model.automationsEnabled && !model.demo
+        model.updater.recoverAfterFailure = { [weak model] in model?.resumeAfterUpdateFailure() }
+        model.updater.installGate.prepare = { [weak model] in model?.prepareQuit() ?? false }
         model.start()
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
@@ -112,7 +114,10 @@ if arguments.contains("--verify-hardware") {
         }
     }
     func showWindow() {popover.performClose(nil);window.makeKeyAndOrderFront(nil);NSApp.activate(ignoringOtherApps:true)}
-    func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {model.prepareQuit() ? .terminateNow : .terminateCancel}
+    func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
+        guard model.updater.allowsTermination() else { model.error = model.updater.message; return .terminateCancel }
+        return model.prepareQuit() ? .terminateNow : .terminateCancel
+    }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {false}
     @objc func toggleMenu() {
         if NSApp.currentEvent?.modifierFlags.contains(.option) == true {model.enabled.toggle();return}

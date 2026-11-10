@@ -5,23 +5,41 @@ import IOKit.pwr_mgt
 import Darwin
 
 enum RuntimeServices {
-    struct BatterySnapshot { let level: Double; let externalPower: Bool }
+    struct BatterySnapshot: Equatable {
+        let level: Double
+        let externalPower: Bool
+        let activelyCharging: Bool
+    }
+
+    // Read active charging separately from AC power: charge limits, optimized
+    // charging and a full battery can all leave a Mac plugged in but not charging.
+    static func batterySnapshot(description value: [String: Any]) -> BatterySnapshot? {
+        guard value[kIOPSTypeKey] as? String == kIOPSInternalBatteryType,
+              value[kIOPSIsPresentKey] as? Bool != false,
+              let current = value[kIOPSCurrentCapacityKey] as? Double, current.isFinite, current >= 0,
+              let maximum = value[kIOPSMaxCapacityKey] as? Double, maximum.isFinite, maximum > 0,
+              let state = value[kIOPSPowerSourceStateKey] as? String,
+              state == kIOPSACPowerValue || state == kIOPSBatteryPowerValue,
+              let isCharging = value[kIOPSIsChargingKey] as? Bool else { return nil }
+        let level = Effects.clamp(current / maximum)
+        let externalPower = state == kIOPSACPowerValue
+        let full = level >= 1 || value[kIOPSIsChargedKey] as? Bool == true
+        return BatterySnapshot(level: level, externalPower: externalPower,
+                               activelyCharging: externalPower && isCharging && !full)
+    }
+
     static func batterySnapshot() -> BatterySnapshot? {
         guard let info = IOPSCopyPowerSourcesInfo()?.takeRetainedValue(),
               let sources = IOPSCopyPowerSourcesList(info)?.takeRetainedValue() as? [CFTypeRef] else { return nil }
         for source in sources {
-            guard let value = IOPSGetPowerSourceDescription(info, source)?.takeUnretainedValue() as? [String: Any],
-                  value[kIOPSTypeKey] as? String == kIOPSInternalBatteryType,
-                  let current = value[kIOPSCurrentCapacityKey] as? Double,
-                  let maximum = value[kIOPSMaxCapacityKey] as? Double, maximum.isFinite, maximum > 0, current.isFinite,
-                  let state = value[kIOPSPowerSourceStateKey] as? String,
-                  state == kIOPSACPowerValue || state == kIOPSBatteryPowerValue else { continue }
-            return BatterySnapshot(level: Effects.clamp(current / maximum), externalPower: state == kIOPSACPowerValue)
+            if let value = IOPSGetPowerSourceDescription(info, source)?.takeUnretainedValue() as? [String: Any],
+               let snapshot = batterySnapshot(description: value) { return snapshot }
         }
         return nil
     }
+
     static func battery() -> (Double, Bool) {
-        guard let snapshot = batterySnapshot() else { return (1, false) }
+        guard let snapshot = batterySnapshot() else { return (0, false) }
         return (snapshot.level, snapshot.externalPower)
     }
     static func rootValue(_ key: String) -> Any? {

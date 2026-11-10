@@ -8,14 +8,21 @@ app_target="/Applications/Backlit.app"
 # over a live version that is still waiting for an off/restore decision.
 "$app_source/Contents/MacOS/Backlit" --quit-running
 stage_dir="$(mktemp -d /Applications/.backlit-install.XXXXXX)"
+install_committed=false
 restore_install() {
-  if [ -d "$stage_dir/Previous.app" ] && [ ! -d "$app_target" ]; then mv "$stage_dir/Previous.app" "$app_target"; fi
+  if [ "$install_committed" = false ] && [ -d "$stage_dir/Previous.app" ]; then
+    if [ -d "$app_target" ]; then mv "$app_target" "$stage_dir/Failed.app"; fi
+    mv "$stage_dir/Previous.app" "$app_target"
+    open "$app_target" || true
+  fi
   rm -rf "$stage_dir"
 }
 trap restore_install EXIT
+trap 'exit 130' HUP INT TERM
 ditto "$app_source" "$stage_dir/Backlit.app"
 codesign --verify --strict "$stage_dir/Backlit.app"
 if [ -d "$app_target" ]; then mv "$app_target" "$stage_dir/Previous.app"; fi
 mv "$stage_dir/Backlit.app" "$app_target"
 open "$app_target"
+install_committed=true
 echo 'Installed and reopened /Applications/Backlit.app'

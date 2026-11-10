@@ -8,6 +8,7 @@ import Combine
 }
 
 @MainActor final class AppModel: ObservableObject {
+    let updater = AppUpdater()
     let demo: Bool
     let defaults: UserDefaults
     let device: LogoDevice
@@ -60,7 +61,7 @@ import Combine
     @Published var touchStatus = "Waiting for touch"
     var availableModes:[GlowMode] {GlowMode.allCases.filter{$0 != .touch || touchAvailable}}
     let bridge = HomeBridge()
-    @Published var mode: GlowMode = .steady { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
+    @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
         synchronizeTouch()
         batteryResponse.reset(); musicResponse.reset(); synchronizeTyping(); configureTimer(); requestFrame() } }
     @Published var enabled = true { didSet {
@@ -80,8 +81,24 @@ import Combine
     @Published var controlling = false
     let presentation = LightPresentation()
     private(set) var output = 0.0
-    @Published var battery = 1.0
+    @Published var battery = 0.0
+    @Published var activelyCharging = false
     @Published var charging = false
+    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 && batteryOptions.chargingStyle == .breathe }
+    var batteryPowerLabel: String {
+        guard batteryAvailable else { return "Battery state unavailable" }
+        if !charging { return "On battery" }
+        if battery >= 1 { return "Fully charged" }
+        return activelyCharging ? "Charging" : "Plugged in · Not charging"
+    }
+    func updateBattery(_ snapshot: RuntimeServices.BatterySnapshot?) {
+        let level = snapshot?.level ?? 0, external = snapshot?.externalPower ?? false
+        let active = snapshot?.activelyCharging ?? false, available = snapshot != nil
+        if battery != level { battery = level }
+        if charging != external { charging = external }
+        if activelyCharging != active { activelyCharging = active }
+        if batteryAvailable != available { batteryAvailable = available }
+    }
     @Published var agents: [AgentEvent] = []
     @Published var audioRunning = false
     @Published var audioPermissionHelp = false
@@ -263,16 +280,8 @@ import Combine
             competingController = demo ? nil : device.competingApp
             if now-lastBatterySample >= 15 {
                 lastBatterySample=now
-                if demo {
-                    battery = 0.82; charging = false; batteryAvailable = true
-                } else if let power = RuntimeServices.batterySnapshot() {
-                    if battery != power.level { battery = power.level }
-                    if charging != power.externalPower { charging = power.externalPower }
-                    if !batteryAvailable { batteryAvailable = true }
-                } else {
-                    if batteryAvailable { batteryAvailable = false }
-                    batteryResponse.reset()
-                }
+                updateBattery(demo ? .init(level: 0.82, externalPower: false, activelyCharging: false) : RuntimeServices.batterySnapshot())
+                if !batteryAvailable { batteryResponse.reset() }
             }
             if mode == .agents || bridgeEnabled {
                 let nextAgents=demo ? [] : AgentBridge.events().sorted{$0.time<$1.time}
@@ -303,7 +312,7 @@ import Combine
         input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
         input.battery = batteryAvailable ? battery : 0
         if mode == .battery && enabled && nextPause == nil && batteryAvailable {
-            input.battery = batteryResponse.update(charge: battery, externalPower: charging, at: now, options: batteryOptions)
+            input.battery = batteryResponse.update(charge: battery, externalPower: charging, at: now, options: batteryOptions, activelyCharging: activelyCharging)
         } else { batteryResponse.reset() }
         if chargeReady != batteryResponse.ready { chargeReady = batteryResponse.ready }
         if mode == .music && (audioRunning || demo) {
@@ -535,14 +544,22 @@ import Combine
         catch { self.error = error.localizedDescription }
     }
     func apiState() -> [String:Any] {
-        ["id":id,"name":"Backlit","version":"0.1.8","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
+        ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
          "effect":mode.title,"effects":availableModes.map(\.title),"battery":Int((battery*100).rounded()),
-         "charging":charging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
+         "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
          "preview":!controlling,"paused":pausedReason ?? "","output":output,
          "battery_available":batteryAvailable,"charge_ready":chargeReady,"automation_enabled":automationsEnabled,
          "signal_category":signals.current?.category.rawValue ?? "","signal_state":signals.current?.state.rawValue ?? "",
          "signal_count":signalCount]
+    }
+    func resumeAfterUpdateFailure() {
+        guard isStopping && terminationApproved else { return }
+        isStopping = false; terminationApproved = false
+        controlWanted = !demo && device.available && !device.needsRecovery
+        startPowerMonitoring()
+        if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
+        configureTimer(); requestFrame()
     }
     func quit() { if prepareQuit() { NSApp.terminate(nil) } }
     func prepareQuit() -> Bool {
