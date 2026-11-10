@@ -4,7 +4,7 @@ Candidate: **0.2.0-dev.4**, build 24. Local development build; not published. Th
 
 ## Executed local checks
 
-- 148 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 149 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 62 Python tests cover Home Assistant Core/client fixtures, process/job cancellation, OBS worker/HTTP fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 14 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, five-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
@@ -33,6 +33,6 @@ Screenshots are captured from current native views in isolated preview; they ill
 
 ## Efficiency and distribution
 
-Animated effects use a capped 20 Hz loop and previews a capped 10 Hz publication rate. Static/off/paused states use one-second housekeeping. Input callbacks run only while eligible; hidden previews do not keep publishing frames. These mechanisms are not measured battery-life/latency claims.
+Animated effects use a capped 20 Hz loop and previews a capped 10 Hz publication rate. Static/off/paused states use one-second housekeeping. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
 
 The app targets Apple silicon/macOS 14+ and uses compatibility-sensitive private hardware/audio interfaces. Global screen-touch is unsupported. It is ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.

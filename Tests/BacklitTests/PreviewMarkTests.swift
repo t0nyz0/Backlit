@@ -88,4 +88,26 @@ import XCTest
         XCTAssertTrue(model.prepareQuit())
     }
 
+    @MainActor func testVisualPolicyDeniesUnavailableDisplaysAndRecoversOnSessionReturn() async {
+        for bits in 0..<16 {
+            let allowed = VisualUpdatePolicy.allows(locked: bits & 1 != 0, screenSleeping: bits & 2 != 0,
+                systemSleeping: bits & 4 != 0, consoleActive: bits & 8 == 0)
+            XCTAssertEqual(allowed, bits == 0)
+        }
+        let suite = "local.backlit.test.visual-policy." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let model = AppModel(demo: true, defaults: defaults)
+        model.start()
+        XCTAssertTrue(model.visualUpdatesAllowed)
+        let center = NSWorkspace.shared.notificationCenter
+        center.post(name: NSWorkspace.sessionDidResignActiveNotification, object: nil)
+        try? await Task.sleep(nanoseconds: 20_000_000)
+        XCTAssertFalse(model.visualUpdatesAllowed)
+        center.post(name: NSWorkspace.sessionDidBecomeActiveNotification, object: nil)
+        try? await Task.sleep(nanoseconds: 20_000_000)
+        XCTAssertTrue(model.visualUpdatesAllowed)
+        XCTAssertTrue(model.prepareQuit())
+    }
+
 }

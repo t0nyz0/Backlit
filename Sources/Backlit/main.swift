@@ -151,7 +151,7 @@ if arguments.contains("--verify-hardware") {
         return true
     }
     func updateIcon() {
-        guard status?.button != nil else { return }
+        guard status?.button != nil, model.visualUpdatesAllowed else { return }
         // Geometry follows actual output. Cache at most 101 tiny template images.
         let step = StatusIconGeometry.step(for: model.output)
         if step != lastIconStep {

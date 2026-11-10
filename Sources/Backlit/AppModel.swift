@@ -128,6 +128,10 @@ import Combine
     var openWindow: (() -> Void)?
     var onIconChange: (() -> Void)?
     var isPreviewVisible:(()->Bool)?
+    var visualUpdatesAllowed: Bool {
+        VisualUpdatePolicy.allows(locked: cachedLocked, screenSleeping: screenSleeping,
+                                  systemSleeping: systemSleeping, consoleActive: consoleActive)
+    }
     private var isLoading = true
     private var timer: Timer?
     private var terminationApproved = false
@@ -360,7 +364,7 @@ import Combine
         if nextPause != nil && touchDown { touch.reset() }
         let nextOutput = effectOutput(at: now)
         output = nextOutput
-        if (isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
+        if visualUpdatesAllowed && (isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
         // Capture pauses independently of hardware ownership: losing the
         // device must not keep audio active after display sleep or lock.
         if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }
