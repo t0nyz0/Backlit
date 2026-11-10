@@ -3,7 +3,7 @@
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
 <img src="https://img.shields.io/badge/source-v0.1.8-9a7400?style=flat" alt="Source v0.1.8">
-<img src="https://img.shields.io/badge/local_tests-27_passing-2d6085?style=flat" alt="27 local tests passing">
+<img src="https://img.shields.io/badge/local_tests-36_passing-2d6085?style=flat" alt="36 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -25,7 +25,7 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 | --- | --- |
 | Steady | Holds the brightness you choose. |
 | Breathe | Fades in and out on a 3–10 second cycle. |
-| Battery | Scales brightness with the battery level. |
+| Battery | Pulses while actively charging, stays solid when plugged in but not charging, and follows charge down to 0% when unplugged. This is the default behavior; the brightness slider sets its upper limit. |
 | Music | Responds to bass energy in system playback. Includes sensitivity and dark-between-beat controls. |
 | Agents | Shows working, waiting, and attention states from coding agents. |
 | Trackpad | Lights while a finger rests on the trackpad, with any app open. Optional click blink. |

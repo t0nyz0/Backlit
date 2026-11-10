@@ -26,7 +26,7 @@ import Combine
     @Published var touchStatus = "Waiting for touch"
     var availableModes:[GlowMode] {GlowMode.allCases.filter{$0 != .touch || touchAvailable}}
     let bridge = HomeBridge()
-    @Published var mode: GlowMode = .steady { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
+    @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
         if mode == .touch && enabled && !demo { touchStatus = touch.start(source:touchSource) ? "Waiting for \(touchSource.title.lowercased()) touch" : "Touch events are unavailable on this macOS build" }
         else { touch.stop() }
         configureTimer(); requestFrame() } }
@@ -47,8 +47,26 @@ import Combine
     @Published var controlling = false
     let presentation = LightPresentation()
     private(set) var output = 0.0
-    @Published var battery = 1.0
+    @Published var battery = 0.0
+    // Keep the existing API's charging field compatible: it means external power.
     @Published var charging = false
+    @Published var activelyCharging = false
+    @Published var batteryAvailable = false
+    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 }
+    var batteryPowerLabel: String {
+        guard batteryAvailable else { return "Battery state unavailable" }
+        if !charging { return "On battery" }
+        if battery >= 1 { return "Fully charged" }
+        return activelyCharging ? "Charging" : "Plugged in · Not charging"
+    }
+    func updateBattery(_ snapshot: RuntimeServices.BatterySnapshot?) {
+        let level = snapshot?.level ?? 0, external = snapshot?.externalPower ?? false
+        let active = snapshot?.activelyCharging ?? false, available = snapshot != nil
+        if battery != level { battery = level }
+        if charging != external { charging = external }
+        if activelyCharging != active { activelyCharging = active }
+        if batteryAvailable != available { batteryAvailable = available }
+    }
     @Published var agents: [AgentEvent] = []
     @Published var audioRunning = false
     @Published var audioPermissionHelp = false
@@ -107,7 +125,10 @@ import Combine
         switch mode {
         case .steady:return t("Glowing","發光中")
         case .breathe:return t("Breathing","呼吸中")
-        case .battery:return t("Following your battery","跟隨電量")
+        case .battery:
+            if !batteryAvailable { return "Battery state unavailable" }
+            if batteryIsPulsing { return "Pulsing while charging" }
+            return charging ? "Solid while not charging" : t("Following your battery","跟隨電量")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
         case .touch:return touchDown ? "Touching · light on" : "Ready for \(touchSource.title.lowercased()) touch"
@@ -198,10 +219,9 @@ import Combine
         if now-lastSourceSample >= 1 {
             lastSourceSample = now
             competingController = demo ? nil : device.competingApp
-            if now-lastBatterySample >= 15 {
+            if now-lastBatterySample >= (mode == .battery ? 1 : 15) {
                 lastBatterySample=now
-                let power=RuntimeServices.battery(),nextBattery=demo ? 0.82 : power.0,nextCharging=demo ? false:power.1
-                if battery != nextBattery {battery=nextBattery};if charging != nextCharging {charging=nextCharging}
+                updateBattery(demo ? RuntimeServices.BatterySnapshot(level: 0.82, externalPower: false, activelyCharging: false) : RuntimeServices.batterySnapshot())
             }
             if mode == .agents || bridgeEnabled {
                 let nextAgents=demo ? [] : AgentBridge.events().sorted{$0.time<$1.time}
@@ -231,7 +251,9 @@ import Combine
         if nextPause != nil && touchDown { touch.reset() }
         var input = EffectInput()
         input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
-        input.battery = battery; input.audio = audio.level; input.intensity = intensity; input.strobe = strobe
+        input.battery = battery; input.batteryAvailable = batteryAvailable
+        input.externalPower = charging; input.activelyCharging = activelyCharging
+        input.audio = audio.level; input.intensity = intensity; input.strobe = strobe
         input.agent = agentState; input.away = cachedAway
         // A deliberately selected physical light effect must not silently turn
         // into Steady because the owner reduces on-screen interface motion.
@@ -259,7 +281,7 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
-        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && audioRunning) || (mode == .agents && agentState != .waiting))
+        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .battery && batteryIsPulsing) || (mode == .music && audioRunning) || (mode == .agents && agentState != .waiting))
         let interval = animated ? 0.05 : 1.0
         guard timerInterval != interval || timer == nil else { return }
         timer?.invalidate(); timerInterval = interval
@@ -366,7 +388,7 @@ import Combine
     func apiState() -> [String:Any] {
         ["id":id,"name":"Backlit","version":"0.1.8","enabled":enabled,"brightness":Int((Effects.clamp(brightness)*255).rounded()),
          "effect":mode.title,"effects":availableModes.map(\.title),"battery":Int((battery*100).rounded()),
-         "charging":charging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
+         "charging":charging,"actively_charging":activelyCharging,"battery_available":batteryAvailable,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
          "preview":!controlling,"paused":pausedReason ?? "","output":output]
     }
