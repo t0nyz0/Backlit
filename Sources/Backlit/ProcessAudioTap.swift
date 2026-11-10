@@ -61,18 +61,28 @@ final class AudioEnergyMeter {
     }
     func reset(){lock.lock();filtered=0;energy=0;lastUpdate = -Double.infinity;lock.unlock()}
     func consume(_ raw:UnsafeRawPointer,bytes:Int,channels:Int,sampleRate:Double,bits:UInt32) {
-        guard sampleRate.isFinite,sampleRate>0,[32,64].contains(bits),channels>0 else{return}
+        guard sampleRate.isFinite,sampleRate>=1,sampleRate<=768_000,[32,64].contains(bits),channels>0,bytes>0 else{return}
         let width=Int(bits/8),count=bytes/Int(bits/8)
-        guard count>0 else{return}
+        let completeFrames=count/channels
+        guard completeFrames>0 else{return}
         lock.lock();defer{lock.unlock()}
         let alpha=1-exp(-2*Double.pi*180/sampleRate)
         var square=0.0,frames=0
-        for index in stride(from:0,to:count,by:channels) {
-            let value=bits == 32 ? Double(raw.load(fromByteOffset:index*width,as:Float.self)) : raw.load(fromByteOffset:index*width,as:Double.self)
+        for frame in 0..<completeFrames {
+            let offset=frame*channels*width
+            let value=bits == 32 ? Double(raw.loadUnaligned(fromByteOffset:offset,as:Float.self)) : raw.loadUnaligned(fromByteOffset:offset,as:Double.self)
             guard value.isFinite else{continue}
-            filtered += alpha*(value-filtered);square += filtered*filtered;frames += 1
+            // Capture buffers are normally normalized. Malformed finite samples
+            // must not overflow the filter and poison every later packet.
+            let sample=max(-1,min(1,value))
+            filtered += alpha*(sample-filtered);square += filtered*filtered;frames += 1
         }
-        guard frames>0 else{energy=0;return}
+        guard frames>0 else {
+            // End the old envelope as well as its output. Otherwise one silent
+            // sample after a corrupt packet can resurrect the old filter value.
+            filtered=0;energy=0;lastUpdate = -Double.infinity
+            return
+        }
         let next=min(1,sqrt(square/Double(frames))*12)
         bufferDuration=Double(frames)/sampleRate
         let release=exp(-bufferDuration/0.06)

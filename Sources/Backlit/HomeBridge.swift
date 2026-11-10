@@ -27,25 +27,53 @@ struct BridgeRequest {
     let body: Data
     static func parse(_ data: Data) throws -> BridgeRequest? {
         guard data.count <= 16384 else { throw RuntimeServices.failure("Request too large.") }
-        guard let split = data.range(of:Data("\r\n\r\n".utf8)) else { return nil }
-        guard split.lowerBound < 8192, let text = String(data:data[..<split.lowerBound],encoding:.utf8) else { throw RuntimeServices.failure("Invalid HTTP headers.") }
-        let lines = text.components(separatedBy:"\r\n")
-        let first = lines[0].split(separator:" ")
-        guard first.count == 3, first[2] == "HTTP/1.1" || first[2] == "HTTP/1.0" else { throw RuntimeServices.failure("Invalid HTTP request.") }
-        var headers: [String:String] = [:]
+        let terminator = Data("\r\n\r\n".utf8)
+        guard let split = data.range(of: terminator) else {
+            // Up to three trailing bytes may already belong to a fragmented
+            // terminator. Count only bytes that are definitely header content.
+            let partialTerminator = (1...3).reversed().first { length in
+                data.count >= length && data.suffix(length).elementsEqual(terminator.prefix(length))
+            } ?? 0
+            guard data.count - partialTerminator < 8192 else { throw RuntimeServices.failure("Invalid HTTP headers.") }
+            return nil
+        }
+        guard split.lowerBound < 8192, let text = String(data: data[..<split.lowerBound], encoding: .utf8) else { throw RuntimeServices.failure("Invalid HTTP headers.") }
+        let lines = text.components(separatedBy: "\r\n")
+        let first = lines[0].split(separator: " ")
+        func token(_ value: some StringProtocol) -> Bool {
+            !value.isEmpty && value.utf8.allSatisfy {
+                switch $0 {
+                case 48...57, 65...90, 97...122, 33, 35, 36, 37, 38, 39, 42, 43, 45, 46, 94, 95, 96, 124, 126: return true
+                default: return false
+                }
+            }
+        }
+        guard first.count == 3, token(first[0]),
+              first[1].utf8.allSatisfy({ (33...126).contains($0) }),
+              first[2] == "HTTP/1.1" || first[2] == "HTTP/1.0" else { throw RuntimeServices.failure("Invalid HTTP request.") }
+        var headers: [String: String] = [:]
         for line in lines.dropFirst() {
-            guard let colon = line.firstIndex(of:":") else { throw RuntimeServices.failure("Invalid header.") }
-            let key = String(line[..<colon]).lowercased()
+            guard let colon = line.firstIndex(of: ":") else { throw RuntimeServices.failure("Invalid header.") }
+            let name = line[..<colon]
+            guard token(name) else { throw RuntimeServices.failure("Invalid header name.") }
+            let raw = line[line.index(after: colon)...]
+            // RFC field values allow SP, HTAB, visible bytes and obs-text,
+            // but embedded controls or an obsolete folded field are invalid.
+            guard raw.utf8.allSatisfy({ $0 == 9 || $0 >= 32 && $0 != 127 }) else { throw RuntimeServices.failure("Invalid header value.") }
+            let key = name.lowercased()
             guard headers[key] == nil else { throw RuntimeServices.failure("Duplicate header.") }
-            headers[key] = String(line[line.index(after:colon)...]).trimmingCharacters(in:.whitespaces)
+            headers[key] = raw.trimmingCharacters(in: CharacterSet(charactersIn: " \t"))
         }
         guard headers["transfer-encoding"] == nil else { throw RuntimeServices.failure("Chunked requests are not supported.") }
         let length: Int
-        if let raw = headers["content-length"] { guard let value = Int(raw), (0...8192).contains(value) else { throw RuntimeServices.failure("Invalid content length.") }; length = value }
-        else { length = 0 }
+        if let raw = headers["content-length"] {
+            guard !raw.isEmpty, raw.utf8.allSatisfy({ (48...57).contains($0) }),
+                  let value = Int(raw), (0...8192).contains(value) else { throw RuntimeServices.failure("Invalid content length.") }
+            length = value
+        } else { length = 0 }
         guard data.count >= split.upperBound + length else { return nil }
         guard data.count == split.upperBound + length else { throw RuntimeServices.failure("Unexpected pipelined data.") }
-        return BridgeRequest(method:String(first[0]),path:String(first[1]),headers:headers,body:Data(data[split.upperBound...]))
+        return BridgeRequest(method: String(first[0]), path: String(first[1]), headers: headers, body: Data(data[split.upperBound...]))
     }
     func authorized(_ token: String) -> Bool {
         guard headers["origin"] == nil, let value = headers["authorization"], value.hasPrefix("Bearer ") else { return false }
@@ -106,6 +134,10 @@ private final class BridgeSession {
 final class HomeBridge {
     private var listener: NWListener?
     private var session: BridgeSession?
+    private var listenerStarted = false
+    private var retiring: [ObjectIdentifier: NWListener] = [:]
+    private var generation: UInt64 = 0
+    private var pendingDeadline: DispatchWorkItem?
     private let queue = DispatchQueue(label:"Backlit.HomeBridge")
     var port: UInt16? { listener?.port?.rawValue }
     var connectionCount: Int { session?.connectionCount ?? 0 }
@@ -119,8 +151,14 @@ final class HomeBridge {
         parameters.requiredLocalEndpoint = .hostPort(host:lan ? .ipv4(.any) : .ipv4(.loopback),port:NWEndpoint.Port(rawValue:port)!)
         let candidate = try NWListener(using:parameters)
         let current = BridgeSession()
+        let identity = ObjectIdentifier(candidate), requestedGeneration = generation
         candidate.stateUpdateHandler = { [weak self] state in
             DispatchQueue.main.async {
+                if case .cancelled = state {
+                    self?.retiring.removeValue(forKey: identity)
+                    self?.startPendingListener()
+                    return
+                }
                 guard current.isActive else { return }
                 switch state {
                 case .ready: self?.onStatus?(lan ? "Available on your local network" : "Available on this Mac")
@@ -141,13 +179,43 @@ final class HomeBridge {
                 if let connection { current?.detach(connection); connection.cancel() }
             }
         }
-        session = current; listener = candidate; candidate.start(queue:queue)
+        session = current; listener = candidate; listenerStarted = false
+        if !retiring.isEmpty {
+            let timeout = DispatchWorkItem { [weak self] in
+                guard let self, self.generation == requestedGeneration, !self.listenerStarted else { return }
+                self.stop()
+                self.onStatus?("The previous local connection is still closing. Turn sharing off and on to retry.")
+            }
+            pendingDeadline = timeout
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: timeout)
+        }
+        startPendingListener()
+    }
+    private func startPendingListener() {
+        guard retiring.isEmpty, !listenerStarted, let listener, session?.isActive == true else { return }
+        pendingDeadline?.cancel(); pendingDeadline = nil
+        listenerStarted = true
+        listener.start(queue: queue)
     }
     func stop() {
         // Invalidate before cancelling: already parsed callbacks must not apply
         // commands after sharing is disabled or a replacement listener starts.
+        generation &+= 1
+        pendingDeadline?.cancel(); pendingDeadline = nil
         session?.invalidate(); session = nil
-        listener?.cancel(); listener = nil
+        if let listener {
+            if listenerStarted {
+                // Cancellation is asynchronous. Keep the old listener alive
+                // until .cancelled confirms its bind is being retired; a new
+                // exclusive bind must not race the old socket's teardown.
+                retiring[ObjectIdentifier(listener)] = listener
+                listener.cancel()
+            } else {
+                listener.stateUpdateHandler = nil
+                listener.cancel()
+            }
+        }
+        listener = nil; listenerStarted = false
     }
     private func receive(_ connection: NWConnection, data: Data, token: String, session: BridgeSession) {
         guard session.isActive else { connection.cancel(); return }
@@ -185,5 +253,9 @@ final class HomeBridge {
         response.append(body)
         connection.send(content:response,completion:.contentProcessed{_ in connection.cancel()})
     }
-    deinit { session?.invalidate(); listener?.cancel() }
+    deinit {
+        pendingDeadline?.cancel()
+        session?.invalidate(); listener?.cancel()
+        retiring.values.forEach { $0.cancel() }
+    }
 }

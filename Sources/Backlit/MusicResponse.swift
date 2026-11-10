@@ -44,7 +44,9 @@ struct MusicResponse {
         guard energy.isFinite, time.isFinite else { reset(); return 0 }
         let now = max(0, time)
         if let previousTime, now < previousTime || now - previousTime > 0.75 { reset() }
-        let dt = previousTime.map { min(0.25, max(0, now - $0)) } ?? 0.05
+        // The stale-session guard already bounds elapsed time. Keeping the
+        // actual interval lets release and gain catch up after a delayed frame.
+        let dt = previousTime.map { max(0, now - $0) } ?? 0.05
         previousTime = now
         guard dt > 0 else { return filtered }
         let raw = min(1, max(0, energy))

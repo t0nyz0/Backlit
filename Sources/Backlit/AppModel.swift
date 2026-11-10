@@ -152,7 +152,7 @@ import Combine
 
     init(demo: Bool = false, defaults: UserDefaults? = nil) {
         self.demo = demo
-        self.defaults = defaults ?? (demo ? UserDefaults(suiteName:"local.backlit.preview")! : .standard)
+        self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
         device = LogoDevice(directory:AgentBridge.directory)
         if let raw = self.defaults.string(forKey:"mode"), let mode = GlowMode(rawValue:raw) { self.mode = mode }
         if self.defaults.object(forKey:"brightness") != nil { brightness = self.defaults.double(forKey:"brightness") }
@@ -306,7 +306,10 @@ import Combine
             input.battery = batteryResponse.update(charge: battery, externalPower: charging, at: now, options: batteryOptions)
         } else { batteryResponse.reset() }
         if chargeReady != batteryResponse.ready { chargeReady = batteryResponse.ready }
-        input.audio = mode == .music && audioRunning ? musicResponse.update(energy: audio.level, at: now, automatic: musicAutomatic, preset: musicPreset) : 0
+        if mode == .music && (audioRunning || demo) {
+            let energy = demo ? 0.35 + 0.35 * sin((now - epoch) * 5) : audio.level
+            input.audio = musicResponse.update(energy: energy, at: now, automatic: musicAutomatic, preset: musicPreset)
+        }
         input.intensity = intensity; input.strobe = strobe
         input.signalLevel = signals.level(at: now)
         let signal = signals.current
@@ -317,7 +320,6 @@ import Combine
         // A deliberately selected physical light effect must not silently turn
         // into Steady because the owner reduces on-screen interface motion.
         input.touchDown = (touchDown && !touchBlinking) || typingDown
-        if demo && mode == .music { input.audio = 0.35 + 0.35 * sin((ProcessInfo.processInfo.systemUptime-epoch)*5) }
         let nextOutput = pausedReason == nil ? Effects.level(at:ProcessInfo.processInfo.systemUptime-epoch,input:input) : 0
         output = nextOutput
         if (demo || isPreviewVisible?() != false) && now-lastPreviewSample >= 0.1 && abs(presentation.level-nextOutput) > 0.005 { presentation.level = nextOutput; lastPreviewSample = now }
@@ -343,7 +345,7 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
-        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && audioRunning) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation) || (mode == .signals && signals.requiresAnimation))
+        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation) || (mode == .signals && signals.requiresAnimation))
         let interval = animated ? 0.05 : 1.0
         guard timerInterval != interval || timer?.isValid != true else { return }
         timer?.invalidate(); timerInterval = interval

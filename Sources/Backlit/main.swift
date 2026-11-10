@@ -59,7 +59,7 @@ if arguments.contains("--verify-hardware") {
 
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     static weak var shared: AppDelegate?
-    let model = AppModel(demo:arguments.contains("--preview") || option("--capture-suite") != nil)
+    let model = AppModel(demo:arguments.contains("--preview") || option("--capture-suite") != nil || Bundle.main.object(forInfoDictionaryKey: "BacklitIsolatedPreview") as? Bool == true)
     var window: NSWindow!
     var status: NSStatusItem!
     var popover = NSPopover()
@@ -76,7 +76,7 @@ if arguments.contains("--verify-hardware") {
         NSApp.setActivationPolicy(.regular)
         buildMenus()
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:860),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
-        window.title = "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
+        window.title = model.demo ? "Backlit — Preview" : "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
         let hosting=NSHostingView(rootView:RootView(model:model))
         hosting.allowedTouchTypes = .direct
         window.contentView=hosting; window.center(); window.isReleasedWhenClosed = false
@@ -134,6 +134,8 @@ if arguments.contains("--verify-hardware") {
         }
     }
     func installShortcut() {
+        // An isolated preview must not claim a system-wide keyboard shortcut.
+        guard !model.demo else { return }
         if let hotkey {UnregisterEventHotKey(hotkey)}
         if eventHandler == nil {
             var spec = EventTypeSpec(eventClass:OSType(kEventClassKeyboard),eventKind:UInt32(kEventHotKeyPressed))
