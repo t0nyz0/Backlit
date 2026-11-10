@@ -11,6 +11,7 @@ struct BatteryResponse {
     private var previousOptions: BatteryResponseOptions?
     private var completionStarted: Double?
     private var settledAtFull = false
+    private var pulseStartedAt: Double?
 
     init() {}
     mutating func reset() { self = BatteryResponse() }
@@ -56,6 +57,7 @@ struct BatteryResponse {
             let elapsed = now - started
             if elapsed >= 0 && elapsed < duration {
                 completionActive = true
+                pulseStartedAt = nil
                 requiresAnimation = options.readyStyle != .glow
                 switch options.readyStyle {
                 case .glow: return 1
@@ -71,6 +73,7 @@ struct BatteryResponse {
         completionStarted = nil
         let minimum = BatteryResponseOptions.bound(options.pulseMinimum, 0...1, fallback: 0)
         requiresAnimation = externalPower && options.chargingStyle == .breathe && !settledAtFull && activelyCharging && minimum < 1
+        if !requiresAnimation { pulseStartedAt = nil }
         guard externalPower else { return amount }
         switch options.chargingStyle {
         case .level: return amount
@@ -78,9 +81,13 @@ struct BatteryResponse {
         case .breathe:
             guard !settledAtFull && activelyCharging else { return 1 }
             let cycle = BatteryResponseOptions.bound(options.pulsePeriod, 3...10, fallback: 6)
-            let phase = now.truncatingRemainder(dividingBy: cycle) / cycle
-            // A finite trough lasts 160 ms, so a normal 20 Hz frame cadence
-            // reaches the configured floor even when its phase is arbitrary.
+            if pulseStartedAt == nil || staleClock || changedOptions { pulseStartedAt = now }
+            let elapsed = now - (pulseStartedAt ?? now)
+            // Deliver the floor on the first available frame after a cycle,
+            // including delayed/throttled frames. Restart smoothly from there.
+            if elapsed >= cycle { pulseStartedAt = now; return minimum }
+            let phase = elapsed / cycle
+            // Keep a finite trough around each cycle boundary.
             let distance = min(phase, 1 - phase), hold = 0.08 / cycle
             let ramp = max(0, (distance - hold) / (0.5 - hold))
             return minimum + (1 - minimum) * (1 - cos(.pi * ramp)) / 2

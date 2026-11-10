@@ -4,14 +4,14 @@ Candidate: **0.2.0-dev.4**, build 24. Local development build; not published. Th
 
 ## Executed local checks
 
-- 147 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 148 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, signal expiry/priority, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 62 Python tests cover Home Assistant Core/client fixtures, process/job cancellation, OBS worker/HTTP fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 14 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, five-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
 
 Battery tests use saved manual levels of 0%, 25%, 50%, and other values; every unplugged percentage including zero is tested. Default/migrated preferences, active/full/paused/unplugged transitions, optional styles/cues, mode switching and preserved manual settings are covered. The original multiplier-based expectation was wrong and has been replaced. Native UI review must confirm the workspace and menu show output without a Battery manual slider.
 
-Battery pulse-floor tests sample arbitrary 20 Hz phases and verify the configured trough. Explicit zero writes bypass near-zero coalescing. Optical darkness and timing still need device observation. Menu visibility preference, repeated item lifecycles and asynchronous closed-lid cleanup/recovery are covered by isolated fixtures.
+Battery pulse-floor tests cover arbitrary 20 Hz phases, delayed timestamps and cycle crossing. The floor is delivered on the next available frame and the pulse restarts smoothly; this cannot make a stalled process produce timely physical frames. Explicit zero writes bypass near-zero coalescing. Optical darkness and timing still need device observation. Menu visibility preference, repeated item lifecycles and asynchronous closed-lid cleanup/recovery are covered by isolated fixtures.
 
 Preview geometry/render tests verify fixed centered square marks at off/low/mid/high levels, filled corners, a continuous concentric halo, and finite rendering for invalid inputs.
 

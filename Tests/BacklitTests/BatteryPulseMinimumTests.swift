@@ -2,6 +2,26 @@ import XCTest
 @testable import Backlit
 
 final class BatteryPulseMinimumTests: XCTestCase {
+    func testDelayedFramesDeliverTheFloorAtCycleCrossingAndRestartSmoothly() {
+        for cycle in [3.0, 6, 10] {
+            for delay in [0.167, 0.25, 0.7, 4, 40] {
+                for minimum in [0.0, 0.2, 0.9] {
+                    var options = BatteryResponseOptions(); options.pulsePeriod = cycle; options.pulseMinimum = minimum
+                    var response = BatteryResponse()
+                    let started = 100.123
+                    XCTAssertEqual(response.update(charge: 0.6, externalPower: true, at: started, options: options), minimum)
+                    _ = response.update(charge: 0.6, externalPower: true, at: started + cycle - 0.1, options: options)
+                    let crossed = started + cycle + delay
+                    XCTAssertEqual(response.update(charge: 0.6, externalPower: true, at: crossed, options: options), minimum)
+                    let next = response.update(charge: 0.6, externalPower: true, at: crossed + 0.05, options: options)
+                    XCTAssertEqual(next, minimum, accuracy: 0.0000001)
+                    XCTAssertEqual(response.update(charge: 0.6, externalPower: true, at: crossed + cycle/2, options: options), 1, accuracy: 0.000001)
+                    XCTAssertEqual(response.update(charge: 0.37, externalPower: false, at: crossed + cycle, options: options), 0.37)
+                    XCTAssertEqual(response.update(charge: 0.6, externalPower: true, at: crossed + cycle + 0.05, options: options, activelyCharging: false), 1)
+                }
+            }
+        }
+    }
     func testEverySamplePhaseReachesAnExplicitFloorAndHardwareDoesNotCoalesceOff() {
         for cycle in [3.0, 6, 10] {
             for offset in stride(from: 0.001, through: 0.049, by: 0.004) {
