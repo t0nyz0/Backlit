@@ -1,10 +1,16 @@
 # Backlit validation
 
-Version: **0.2.1**, build 26. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.1` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
+Version: **0.2.2**, build 27. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.2` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
+
+## Clamshell indicator regression
+
+The logo-enable flag is sampled once per second, independently of the requested brightness mapping. Confirmed hardware-off produces dark previews and a dark menu bar icon; the menu label distinguishes “Off · lid closed” from unavailable readback. Seven regression cases cover disabled/open/closed, enabled closed-lid operation, unavailable readback, no ownership, isolated preview, and repeated close/reopen state transitions. Saved brightness is preserved.
+
+Read-only checks on the test Mac confirmed closed lid and disabled logo despite nonzero stored PWM duty. The installed same-code local build was observed with a dark workspace preview and “Off · lid closed” while saved brightness stayed 100%. The menu popover and physical repeated lid transitions still require owner acceptance. The versioned release candidate has not been installed or accepted. No optical brightness measurement or broader hardware-compatibility claim is implied.
 
 ## Executed local checks
 
-- 139 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 146 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 17 Python tests cover Home Assistant Core/client fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 15 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, four-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
