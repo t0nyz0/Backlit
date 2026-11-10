@@ -47,8 +47,8 @@ struct AutomationConnections: View {
     @ObservedObject var model: AppModel
     var body: some View {
         Surface("Other apps") {
-            Toggle("Allow Shortcuts and other apps", isOn: $model.automationsEnabled).toggleStyle(.switch)
-            Text("Lets Shortcuts and Backlit links change the light. Activity signals use the authenticated local connection below.").font(.system(size: 11)).foregroundStyle(.secondary)
+            Toggle("Allow Backlit links and other apps", isOn: $model.automationsEnabled).toggleStyle(.switch)
+            Text("Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build. Activity signals use the authenticated local connection below.").font(.system(size: 11)).foregroundStyle(.secondary)
             if model.automationsEnabled {
                 HStack {
                     Text("Stream Deck").fontWeight(.medium)

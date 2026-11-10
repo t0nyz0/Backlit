@@ -1,10 +1,8 @@
-Development checkout: **0.2.0-dev.4** (local testing build). Public downloads below remain the published release.
-
 <p align="center"><img src="docs/media/icon.png" width="96" alt="Backlit icon"></p>
 <h1 align="center">Backlit</h1>
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.0--dev.4-9a7400?style=flat" alt="Source 0.2.0-dev.4">
+<img src="https://img.shields.io/badge/source-0.2.0-9a7400?style=flat" alt="Source 0.2.0">
 <img src="https://img.shields.io/badge/local_tests-226_passing-2d6085?style=flat" alt="226 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
@@ -58,7 +56,7 @@ Launch connects compatible hardware automatically. Quit restores the previous lo
 
 Claude Code and Codex have separate, reversible status hooks. Existing hooks are preserved. They send a session identifier and status—not prompts, code, or tool output. Codex requires hook review/trust in its settings. Codex live-session compatibility remains unverified.
 
-Opt-in local automation links, a separately packaged Stream Deck plugin, and an OBS script are included. Activity signals cover build, export, backup, focus, recording, and streaming. They are experimental: real Stream Deck/OBS operation and native Shortcuts discovery have not passed acceptance testing. The five native Shortcuts actions are not discoverable in the current ad-hoc signing setup; extracted metadata alone does not establish availability.
+Opt-in local automation links, a separately packaged Stream Deck plugin, and an OBS script are included. Activity signals cover build, export, backup, focus, recording, and streaming. Stream Deck and OBS are experimental; real key/profile and recording/streaming acceptance remain unverified. Native Shortcuts actions are unavailable in this ad-hoc signed build. Extracted action metadata does not establish discovery.
 
 <details>
 <summary>Other apps screenshot</summary>
@@ -88,7 +86,7 @@ An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light
 
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. This early release is **ad-hoc signed, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.0 is **ad-hoc signed, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
@@ -98,7 +96,7 @@ Optional login launch, closed-lid operation, and an administrator-authorized bri
 
 ## Updates
 
-The in-app updater uses Sparkle, but is **disabled in this development build** because a publisher trust key and signed feed have not been provisioned. It does not fall back to installing unsigned GitHub downloads. Existing published versions need a trusted manual installation to acquire the updater and its public trust key. Authentic update installation, interruption recovery, and rollback have not been tested end to end. Same-source SHA-256 checksums detect changed bytes; they do not prove publisher identity.
+Download updates from [GitHub Releases](https://github.com/t0nyz0/Backlit/releases) and replace the app manually. In-app updates are **disabled in 0.2.0** because a publisher trust key and signed feed have not been provisioned. There is no fallback to unsigned downloads. SHA-256 checksums detect changed bytes; they do not prove publisher identity. See [validation](docs/VALIDATION.md) for the updater test scope.
 
 ## Build
 
@@ -116,7 +114,7 @@ The local installer gracefully quits, replaces, and reopens `/Applications/Backl
 open -n dist/Backlit.app --args --preview
 ```
 
-The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) defines tests, privacy/secret checks, and an optimized build. **This development candidate has been checked locally; its exact commit has not run in remote CI.** The release workflow packages ZIP, DMG, clean source, build metadata, and SHA-256 checksums when an authorized version tag is published. [Contributing](CONTRIBUTING.md) covers packaging and Home Assistant tests.
+The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy/secret checks, and an optimized build. Release publication requires that workflow to pass for the exact version tag. It packages ZIP, DMG, clean source, the separate Stream Deck add-on, build metadata, and SHA-256 checksums. Check the tagged workflow run for its commit and results. [Contributing](CONTRIBUTING.md) covers packaging and Home Assistant tests.
 
 [Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md) · [Attribution](docs/ATTRIBUTION.md)
 

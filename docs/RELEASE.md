@@ -1,9 +1,11 @@
-Backlit 0.2.0 development candidate for MacBook PROLED. Not a published release.
+Backlit 0.2.0 (build 25) for MacBook PROLED.
 
-Battery mode ignores saved manual brightness: the default pulses only during active charging, stays solid when charging pauses or finishes, and exactly matches battery percentage when unplugged. The window and menu show battery-driven output; manual brightness is retained for other modes. Battery customization and optional charge-ready cues remain available.
+Battery mode now follows the battery percentage exactly when unplugged, independently of saved manual brightness. The default pulses only during active charging and stays solid when charging pauses or finishes. Pulse speed, the “Dim to” minimum, optional plugged-in styles and charge-ready cues are configurable. The workspace and menu label battery-driven output; other modes retain manual brightness.
 
-Also includes the output-scaled status marker, Music response controls, optional timing-only typing response, activity signals/Focus, local automation links, and experimental Stream Deck/OBS integrations. Native Shortcuts discovery and live external integration acceptance remain unverified. See [validation](VALIDATION.md).
+This release also includes square lid previews, a hideable menu bar icon with Dock/Applications recovery, Music response presets and automatic level adjustment, optional timing-only typing response, Signals/Focus, and local automation links. Stream Deck and OBS integrations are experimental. Native Shortcuts actions are unavailable in this ad-hoc signed build.
 
-Sparkle is integrated but disabled pending trusted key/feed provisioning. Actual authenticated update/install/recovery/rollback is not established by unit tests. The app is ad-hoc signed, not Developer ID signed or notarized. No remote CI has run for this exact development candidate.
+Download the Apple silicon ZIP or DMG and replace the app manually. The app is ad-hoc signed, not Developer ID signed or notarized. In-app updates remain disabled because no production publisher key or signed feed is provisioned. A disposable signed update fixture passed installation/relaunch and rejected a modified feed; that does not establish production updater trust, resumed/cancelled installation, interruption recovery or rollback.
 
-Local packages include arm64 ZIP/DMG, allowlisted source without Git history/private planning, separate Stream Deck add-on, build metadata and hashes. Package hashes alone do not authenticate the publisher.
+Assets include the app ZIP/DMG, source archive, separate Stream Deck add-on, BUILD-INFO.json and SHA256SUMS.txt. Build metadata records the exact source commit. Checksums detect changed bytes; they do not authenticate the publisher. Release publication requires passing CI for the exact version tag.
+
+See [validation and known limits](https://github.com/t0nyz0/Backlit/blob/v0.2.0/docs/VALIDATION.md), [installation](https://github.com/t0nyz0/Backlit/blob/v0.2.0/README.md#install) and [privacy](https://github.com/t0nyz0/Backlit/blob/v0.2.0/docs/PRIVACY.md).

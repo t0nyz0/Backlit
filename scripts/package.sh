@@ -27,9 +27,9 @@ trap 'rm -rf "$dmg_root"' EXIT
 ditto "$app_bundle" "$dmg_root/Backlit.app"
 ln -s /Applications "$dmg_root/Applications"
 cat > "$dmg_root/Installation.txt" <<'EOF'
-Backlit source preview
+Backlit installation
 Quit the running Backlit before replacing it. Drag Backlit to Applications.
-This preview is ad-hoc signed, not Developer ID signed or notarized.
+This release is ad-hoc signed, not Developer ID signed or notarized.
 See the repository README and validation matrix for permissions and limits.
 EOF
 hdiutil create -volname Backlit -srcfolder "$dmg_root" -format UDZO -ov "$output_dir/$app_stem.dmg" > /dev/null
