@@ -118,7 +118,7 @@ final class BatteryBehaviorTests: XCTestCase {
         XCTAssertFalse(model.batteryIsPulsing)
     }
 
-    @MainActor func testExistingPreferencesAndLegacyCueCannotOverrideBatteryBehavior() {
+    @MainActor func testExistingPreferencesAndLegacyCustomizationArePreserved() {
         let suite = "local.backlit.test.battery." + UUID().uuidString
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -129,7 +129,9 @@ final class BatteryBehaviorTests: XCTestCase {
         let model = AppModel(demo: true, defaults: defaults)
         XCTAssertEqual(model.mode, .battery); XCTAssertEqual(model.brightness, 0.45); XCTAssertFalse(model.enabled)
         model.updateBattery(.init(level: 0.8, externalPower: true, activelyCharging: true))
-        XCTAssertTrue(model.batteryIsPulsing); XCTAssertEqual(model.batteryPowerLabel, "Charging")
+        XCTAssertFalse(model.batteryIsPulsing); XCTAssertEqual(model.batteryPowerLabel, "Charging")
+        XCTAssertEqual(model.batteryOptions.chargingStyle, .level)
+        XCTAssertTrue(model.batteryOptions.readyEnabled)
         model.updateBattery(.init(level: 0.8, externalPower: true, activelyCharging: false))
         XCTAssertFalse(model.batteryIsPulsing); XCTAssertEqual(model.batteryPowerLabel, "Plugged in · Not charging")
         model.updateBattery(.init(level: 1, externalPower: true, activelyCharging: false))

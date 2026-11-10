@@ -3,7 +3,7 @@
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
 <img src="https://img.shields.io/badge/source-v0.1.8-9a7400?style=flat" alt="Source v0.1.8">
-<img src="https://img.shields.io/badge/local_tests-36_passing-2d6085?style=flat" alt="36 local tests passing">
+<img src="https://img.shields.io/badge/local_tests-45_passing-2d6085?style=flat" alt="45 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -29,6 +29,8 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 | Music | Responds to bass energy in system playback. Includes sensitivity and dark-between-beat controls. |
 | Agents | Shows working, waiting, and attention states from coding agents. |
 | Trackpad | Lights while a finger rests on the trackpad, with any app open. Optional click blink. |
+
+Battery options are available in **Your light → Battery** and **Settings → Battery behavior**. Choose Automatic pulse, Steady, or Match battery level while plugged in; adjust the pulse cycle; optionally enable a charge-ready signal with a threshold, style, and duration. **Restore Battery Defaults** returns to automatic pulsing with the ready signal off. Existing choices are preserved.
 
 The logo supports white light. Brightness and timing are adjustable; RGB colors and pixel animations are not supported.
 

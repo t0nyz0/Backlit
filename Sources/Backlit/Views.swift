@@ -67,7 +67,7 @@ struct RootView: View {
                 Spacer()
                 VStack(alignment:.leading,spacing:8) {
                     Label(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : "PREVIEW MODE",systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
-                    Text("Backlit 0.1.8 (18)").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
+                    Text("Backlit 0.1.8 (19)").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
                 }.padding(.bottom,8)
             }.padding(22).frame(width:200).background(Color(nsColor:.windowBackgroundColor))
             Divider()
@@ -135,7 +135,7 @@ struct LightPage: View {
                         Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .battery {
                         Label("\(Int(model.battery*100))% · \(model.batteryPowerLabel)",systemImage:model.charging ? "bolt.battery" : "battery.75percent").font(.system(size:14,weight:.medium))
-                        Text("Pulses while charging. Stays solid when plugged in but not charging. Unplugged, brightness follows battery charge down to 0%.").font(.system(size:12)).foregroundStyle(.secondary)
+                        BatterySettingsControls(model: model)
                     } else if model.mode == .agents {
                         Label(model.agents.isEmpty ? "Waiting for an agent signal" : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
                         Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
@@ -223,6 +223,10 @@ struct SettingsPage: View {
     @State private var recording = false
     var body: some View {
         Text(model.t("Settings","設定")).font(.system(size:31,weight:.semibold))
+        Surface("Battery behavior") {
+            Text("Customize Battery mode. These settings do not change your selected mode.").font(.system(size: 12)).foregroundStyle(.secondary)
+            BatterySettingsControls(model: model)
+        }
         Surface(model.t("General","融入你的 Mac")) {
             settingRow("Appearance","Follow your Mac, or choose a look.") {Picker("Appearance",selection:$model.appearance){Text("System").tag("system");Text("Light").tag("light");Text("Dark").tag("dark")}.labelsHidden().frame(width:150)}
             Divider()
@@ -242,7 +246,7 @@ struct SettingsPage: View {
             }
         }
         Surface {
-            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version 0.1.8 · build 18 · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();Button("Check for Updates"){NSWorkspace.shared.open(URL(string:"https://github.com/t0nyz0/Backlit/releases")!)}}
+            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version 0.1.8 · build 19 · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();Button("Check for Updates"){NSWorkspace.shared.open(URL(string:"https://github.com/t0nyz0/Backlit/releases")!)}}
             Divider()
             HStack {Link("GitHub ↗",destination:URL(string:"https://github.com/t0nyz0/Backlit")!);Text("·").foregroundStyle(.tertiary);Link("t0nyz.com ↗",destination:URL(string:"https://t0nyz.com")!);Spacer();Link("☕ Buy me a coffee",destination:URL(string:"https://buymeacoffee.com/tonyz")!)}.font(.system(size:12))
         }

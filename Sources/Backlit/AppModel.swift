@@ -26,10 +26,17 @@ import Combine
     @Published var touchStatus = "Waiting for touch"
     var availableModes:[GlowMode] {GlowMode.allCases.filter{$0 != .touch || touchAvailable}}
     let bridge = HomeBridge()
+    @Published var batteryOptions = BatteryResponseOptions() { didSet {
+        guard !isLoading else { return }
+        if let data = try? JSONEncoder().encode(batteryOptions) { defaults.set(data, forKey: "battery.response") }
+        batteryReadySignal.reset(); configureTimer(); requestFrame()
+    } }
+    private var batteryReadySignal = BatteryReadySignal()
+    @Published var batterySignalActive = false
     @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
         if mode == .touch && enabled && !demo { touchStatus = touch.start(source:touchSource) ? "Waiting for \(touchSource.title.lowercased()) touch" : "Touch events are unavailable on this macOS build" }
         else { touch.stop() }
-        configureTimer(); requestFrame() } }
+        batteryReadySignal.reset(); configureTimer(); requestFrame() } }
     @Published var enabled = true { didSet {
         guard !isLoading else{return}
         defaults.set(enabled,forKey:"enabled")
@@ -52,7 +59,7 @@ import Combine
     @Published var charging = false
     @Published var activelyCharging = false
     @Published var batteryAvailable = false
-    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 }
+    var batteryIsPulsing: Bool { batteryAvailable && charging && activelyCharging && battery < 1 && batteryOptions.chargingStyle == .breathe }
     var batteryPowerLabel: String {
         guard batteryAvailable else { return "Battery state unavailable" }
         if !charging { return "On battery" }
@@ -127,8 +134,10 @@ import Combine
         case .breathe:return t("Breathing","呼吸中")
         case .battery:
             if !batteryAvailable { return "Battery state unavailable" }
+            if batterySignalActive { return "Charge-ready signal" }
             if batteryIsPulsing { return "Pulsing while charging" }
-            return charging ? "Solid while not charging" : t("Following your battery","跟隨電量")
+            if charging && batteryOptions.chargingStyle != .level { return "Steady while plugged in" }
+            return t("Following your battery","跟隨電量")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
         case .touch:return touchDown ? "Touching · light on" : "Ready for \(touchSource.title.lowercased()) touch"
@@ -140,6 +149,8 @@ import Combine
         self.demo = demo
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:"local.backlit.preview")! : .standard)
         device = LogoDevice(directory:AgentBridge.directory)
+        if let data = self.defaults.data(forKey: "battery.response"),
+           let options = try? JSONDecoder().decode(BatteryResponseOptions.self, from: data) { batteryOptions = options }
         if let raw = self.defaults.string(forKey:"mode"), let mode = GlowMode(rawValue:raw) { self.mode = mode }
         if self.defaults.object(forKey:"brightness") != nil { brightness = self.defaults.double(forKey:"brightness") }
         if self.defaults.object(forKey:"period") != nil { period = self.defaults.double(forKey:"period") }
@@ -253,6 +264,11 @@ import Combine
         input.mode = mode; input.enabled = enabled; input.brightness = brightness; input.period = period
         input.battery = battery; input.batteryAvailable = batteryAvailable
         input.externalPower = charging; input.activelyCharging = activelyCharging
+        input.batteryChargingStyle = batteryOptions.chargingStyle; input.batteryPulsePeriod = batteryOptions.pulsePeriod
+        if mode == .battery && enabled && nextPause == nil && batteryAvailable {
+            input.batteryCueLevel = batteryReadySignal.update(charge: battery, externalPower: charging, at: now, options: batteryOptions)
+        } else { batteryReadySignal.reset() }
+        if batterySignalActive != batteryReadySignal.active { batterySignalActive = batteryReadySignal.active }
         input.audio = audio.level; input.intensity = intensity; input.strobe = strobe
         input.agent = agentState; input.away = cachedAway
         // A deliberately selected physical light effect must not silently turn
@@ -281,7 +297,7 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
-        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .battery && batteryIsPulsing) || (mode == .music && audioRunning) || (mode == .agents && agentState != .waiting))
+        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .battery && (batteryIsPulsing || batteryReadySignal.requiresAnimation)) || (mode == .music && audioRunning) || (mode == .agents && agentState != .waiting))
         let interval = animated ? 0.05 : 1.0
         guard timerInterval != interval || timer == nil else { return }
         timer?.invalidate(); timerInterval = interval

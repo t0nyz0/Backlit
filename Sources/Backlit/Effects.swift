@@ -27,6 +27,9 @@ struct EffectInput {
     var batteryAvailable = true
     var externalPower = false
     var activelyCharging = false
+    var batteryChargingStyle: BatteryChargeStyle = .breathe
+    var batteryPulsePeriod = 6.0
+    var batteryCueLevel: Double?
     var audio = 0.0
     var intensity = 1.0
     var strobe = false
@@ -50,8 +53,11 @@ enum Effects {
             guard input.batteryAvailable, input.battery.isFinite else { return 0 }
             let charge = clamp(input.battery)
             guard input.externalPower else { return base * charge }
-            guard input.activelyCharging, charge < 1 else { return base }
-            let phase = t.truncatingRemainder(dividingBy: 6) / 6
+            if let cue = input.batteryCueLevel { return base * clamp(cue) }
+            if input.batteryChargingStyle == .level { return base * charge }
+            guard input.batteryChargingStyle == .breathe, input.activelyCharging, charge < 1 else { return base }
+            let cycle = BatteryResponseOptions.bound(input.batteryPulsePeriod, 3...10, fallback: 6)
+            let phase = t.truncatingRemainder(dividingBy: cycle) / cycle
             return base * (0.15 + 0.85 * (1 - cos(2 * .pi * phase)) / 2)
         case .music:
             let energy = clamp(input.audio * max(0.25, min(3, input.intensity)))
