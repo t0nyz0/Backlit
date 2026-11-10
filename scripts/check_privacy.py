@@ -6,6 +6,7 @@ Public t0nyz links/branding are deliberate. No matching values are printed.
 """
 from pathlib import Path
 import re
+import hashlib
 import subprocess
 
 root = Path(__file__).resolve().parents[1]
@@ -26,7 +27,12 @@ for name in filter(None, files):
         text = (root / name).read_text()
     except (UnicodeError, OSError):
         continue
+    # Required upstream notices contain their authors' public contact details.
+    # Only this exact pinned license may use the personal-email exception.
+    upstream_license = name == 'docs/licenses/Sparkle.txt' and hashlib.sha256((root/name).read_bytes()).hexdigest() == '389a4e4e9a32f059775b13a06e25a591445ba229d2838d26dd3e7c0c45127cfe'
     for kind, pattern in patterns.items():
+        if upstream_license and kind == 'personal email':
+            continue
         if re.search(pattern, text):
             failures.append(f'{name}: {kind}')
 for line in subprocess.check_output(['git', 'log', '--all', '--format=%ae|%ce'], cwd=root).decode().splitlines():
