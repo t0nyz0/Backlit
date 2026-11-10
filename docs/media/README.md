@@ -1,6 +1,6 @@
 # Backlit native media
 
-Workspace, Connections, Settings and menu views were recaptured for **0.2.3 (28)**. Battery shows the 82% unplugged preview fixture with no manual brightness slider. The existing original icon artwork and photographic header are unchanged. These isolated previews illustrate current controls, not physical closed-lid output.
+Workspace, Connections, Settings and menu views were captured for **0.2.3 (28)** and remain current for **0.2.4 (29)**, whose visible controls are unchanged; its icon and closed-lid output implementation are updated. Battery shows the 82% unplugged preview fixture with no manual brightness slider. The existing original icon artwork and photographic header are unchanged. These isolated previews illustrate current controls, not physical closed-lid output.
 
 These are real native SwiftUI/AppKit views captured from the running Backlit executable using an owned-window capture path. They are not image-generated app mockups or borrowed screenshots.
 

@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.3-9a7400?style=flat" alt="Source 0.2.3">
-<img src="https://img.shields.io/badge/local_tests-217_passing-2d6085?style=flat" alt="217 local tests passing">
+<img src="https://img.shields.io/badge/source-0.2.4-9a7400?style=flat" alt="Source 0.2.4">
+<img src="https://img.shields.io/badge/local_tests-236_passing-2d6085?style=flat" alt="236 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -84,7 +84,7 @@ Downloads are disabled in isolated preview. In the app, **Download Latest Versio
 
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.3 is **ad-hoc signed, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.4 is **ad-hoc signed, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
@@ -94,7 +94,7 @@ Optional login launch, closed-lid operation, and an administrator-authorized bri
 
 ## Updates
 
-Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.3. See [validation](docs/VALIDATION.md) for update verification and known limits.
+Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.4. See [validation](docs/VALIDATION.md) for update verification and known limits.
 
 ## Build
 

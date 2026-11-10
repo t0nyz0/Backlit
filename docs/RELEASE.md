@@ -1,11 +1,9 @@
-Backlit 0.2.3 (build 28) for MacBook PROLED.
+Backlit 0.2.4 (build 29) for MacBook PROLED.
 
-Settings now shows **Download Latest Version** when in-app updates are unavailable. It opens the [installer page](https://t0nyz.com/backlit/install) with plain manual replacement guidance, instead of displaying internal configuration errors. Preview disables downloads. A build with valid trusted update configuration retains Check for Updates.
+Fixes white points around the app icon in Finder by regenerating the smaller icon sizes. The original artwork is unchanged.
 
-The security policy is shorter and includes the public reporting address. README and attribution now state the separate copyright notice for the header photograph. The software license and header photograph are unchanged.
+Adds hardware-feedback control for closed-lid effects and serialized cleanup between the app and its lid watchdog. Saved preferences remain intact. This is a local test candidate; physical close-from-Off, low-brightness transitions, Music and lifecycle acceptance must finish before publication.
 
-Saved brightness and behavior settings are preserved. Download the Apple silicon ZIP or DMG and replace the app manually. The app is ad-hoc signed, not Developer ID signed or notarized. In-app installation remains unavailable in this release.
+Download the Apple silicon ZIP or DMG, quit Backlit, and replace it in Applications.
 
-Assets include the app ZIP/DMG, source archive, separate Stream Deck add-on, BUILD-INFO.json and SHA256SUMS.txt. Build metadata records the exact source commit. Checksums detect changed bytes; they do not authenticate the publisher. Release publication requires passing CI for the exact version tag.
-
-See [validation and known limits](https://github.com/t0nyz0/Backlit/blob/v0.2.3/docs/VALIDATION.md), [installation](https://github.com/t0nyz0/Backlit/blob/v0.2.3/README.md#install) and [privacy](https://github.com/t0nyz0/Backlit/blob/v0.2.3/docs/PRIVACY.md).
+See [validation and known limits](https://github.com/t0nyz0/Backlit/blob/v0.2.4/docs/VALIDATION.md) and [installation](https://github.com/t0nyz0/Backlit/blob/v0.2.4/README.md#install).

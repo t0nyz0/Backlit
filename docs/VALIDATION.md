@@ -1,6 +1,16 @@
 # Backlit validation
 
-Version: **0.2.3**, build 28. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.3` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
+Version: **0.2.4**, build 29. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.4` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
+
+## App icon regression
+
+The 0.2.4 icon uses unchanged master artwork with regenerated smaller ICNS representations. A local Finder comparison reproduced white edge points with the released 0.2.3 ICNS and showed clean edges with the regenerated icon. The full-size representation is unchanged. The icon change does not alter settings.
+
+## Closed-lid effects candidate
+
+Requested mapping values could change while actual hardware output stayed fixed with the lid closed. The candidate uses feedback from the hardware fade factor, preserves ambient limits and keeps the keyboard dark. Effect batches and watchdog cleanup share an exclusive lock; cleanup revokes frame permission before resetting hardware. Static levels use fast ticks only until settled.
+
+Local bounded probes verified a Breathe cycle and stable 30%/70% levels. These are probe results, not completed installed-app acceptance. Close-from-Off, close-at-low-brightness, real Music input, repeated physical reopening, timeout and full-app efficiency remain release blockers until tested. No broad compatibility claim is made.
 
 ## Clamshell indicator regression
 
@@ -20,7 +30,7 @@ Settings offers Download Latest Version when trusted in-app updating is unavaila
 
 ## Executed local checks
 
-- 185 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 204 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 17 Python tests cover Home Assistant Core/client fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 15 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, four-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
@@ -49,6 +59,6 @@ Screenshots are captured from current native views in isolated preview; they ill
 
 ## Efficiency and distribution
 
-Animated effects use a capped 20 Hz loop and previews a capped 10 Hz publication rate. Static/off/paused states use one-second housekeeping. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
+Animated effects use a capped 20 Hz loop and previews a capped 10 Hz publication rate. Settled static/off/paused states use one-second housekeeping; a closed-lid static target retains the fast loop only while settling. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
 
 The app targets Apple silicon/macOS 14+ and uses compatibility-sensitive private hardware/audio interfaces. Global screen-touch is unsupported. It is ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.
