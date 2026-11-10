@@ -124,4 +124,19 @@ final class ClosedLidLogoTests: XCTestCase {
         XCTAssertEqual(Array(f.events.suffix(2)), ["global:true", "effect restore"])
         XCTAssertTrue(logo.active)
     }
+    func testDisplayLidRestorationRunsBeforeKeyboardSafety() throws {
+        let f=Fake();var io=f.makeInterfaceForEffectTest()
+        io.restoreDisplayLidState = { closed in f.events.append("displays:\(closed)");return true }
+        let logo=ClosedLidLogo(interface:io);try logo.enable {}
+        XCTAssertEqual(f.events,["global:false","displays:true","keyboard:13:true","keyboard:42:true"])
+    }
+    func testDisplayRestorationFailureStillDarkensAllKeyboardsAndRetainsRecovery() {
+        let f=Fake();var io=f.makeInterfaceForEffectTest()
+        io.restoreDisplayLidState = { _ in false }
+        let logo=ClosedLidLogo(interface:io)
+        XCTAssertThrowsError(try logo.enable {})
+        XCTAssertTrue(logo.active)
+        XCTAssertEqual(Array(f.events.suffix(2)),["keyboard:13:true","keyboard:42:true"])
+    }
+
 }

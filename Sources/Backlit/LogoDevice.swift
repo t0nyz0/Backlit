@@ -14,7 +14,9 @@ final class LogoDevice {
     private var client: NSObject?
     private var saved: [[Double]]?
     private var lastWritten: [[Double]]?
+    private var pendingWritten: [[Double]]?
     private var closedEffect: ClosedLidEffect?
+    private var fadeRuntime: FadeRuntime?
     private var lease: FileLease?
     private let recovery: URL
     private(set) var available = false
@@ -41,7 +43,7 @@ final class LogoDevice {
 
     var competingApp:String? {ControllerMonitor.shared.competingApp}
 
-    var needsRecovery: Bool { FileManager.default.fileExists(atPath: recovery.path) }
+    var needsRecovery: Bool { FileManager.default.fileExists(atPath: recovery.path) || FileManager.default.fileExists(atPath: AgentBridge.directory.appendingPathComponent("fade-recovery.json").path) }
 
     func read(_ key: String) -> Any? {
         client?.perform(reader, with: key)?.takeRetainedValue()
@@ -80,21 +82,23 @@ final class LogoDevice {
         (next == 0 && previous != 0) || abs(previous - next) >= 0.5
     }
     func apply(_ brightness: Double, closedLid: Bool = false) throws {
+        guard saved != nil else {throw failure("Logo control has not been enabled.")}
+        guard brightness.isFinite else {throw failure("Invalid brightness.")}
+        guard let current=mapping(),let original=saved,Self.equivalent(current,original) else {
+            throw failure("The native logo brightness source changed. Logo control was stopped.")
+        }
+        // Keep the original usable source instead of writing zero/low mappings
+        // that can remain latched after the panel stops updating in clamshell.
+        if fadeRuntime == nil {fadeRuntime=try FadeRuntime(closedLidRequested:closedLid)}
+        try fadeRuntime?.apply(brightness,closedLidRequested:closedLid)
+    }
+
+    /// Explicit diagnostic only. Normal app behavior uses the owned fade path.
+    func applyLegacyMapping(_ brightness: Double, closedLid: Bool = false) throws {
         guard saved != nil else { throw failure("Logo control has not been enabled.") }
         guard brightness.isFinite else { throw failure("Invalid brightness.") }
-        if closedLid && RuntimeServices.physicalLidClosed == true {
-            if let lastWritten {
-                guard let current = mapping(), Self.equivalent(current, lastWritten) else { throw failure("Another controller changed the logo. Backlit stopped writing; recovery is retained.") }
-            }
-            _ = try ClosedEffectSession.locked(wait: false) {
-                guard ClosedEffectSession.permitted() else { closedEffect?.relinquish(); return }
-                if closedEffect == nil {
-                    guard let io = ClosedLidEffect.liveInterface() else { throw failure("Closed-lid effect control is unavailable.") }
-                    closedEffect = ClosedLidEffect(interface: io)
-                }
-                try closedEffect?.apply(brightness)
-            }
-            return
+        guard !closedLid, RuntimeServices.physicalLidClosed == false else {
+            throw failure("Legacy mapping verification is available only with the physical lid open.")
         }
         try restoreClosedEffect()
         let nits = Effects.clamp(brightness) * 1000
@@ -103,14 +107,15 @@ final class LogoDevice {
             guard let current = mapping(), Self.equivalent(current,lastWritten) else { throw failure("Another controller changed the logo. Backlit stopped writing; recovery is retained.") }
             if !Self.requiresWrite(from: lastWritten[0][1], to: nits) { return }
         }
+        pendingWritten = rows
         guard set(rows as NSArray, key: Self.mappingKey), set(NSNumber(value: 1), key: "DisplayPowerStateEvent") else {
             throw failure("macOS rejected the logo brightness change. Restore Logo Settings before retrying.")
         }
         guard let actual = mapping(), Self.equivalent(actual, rows) else { throw failure("The logo service did not confirm the requested brightness.") }
-        lastWritten = rows
+        lastWritten = rows; pendingWritten = nil
     }
 
-    var closedEffectNeedsAnimation: Bool { closedEffect?.needsAnimation == true }
+    var closedEffectNeedsAnimation: Bool { fadeRuntime?.needsAnimation == true || closedEffect?.needsAnimation == true }
     private func restoreClosedEffect() throws {
         guard closedEffect?.active == true else { return }
         _ = try ClosedEffectSession.locked(wait: true) {
@@ -119,24 +124,42 @@ final class LogoDevice {
         }
     }
     func restore() throws {
-        try restoreClosedEffect()
         guard available else { throw failure(explanation) }
         if let app = competingApp { throw failure("Quit \(app) before restoring a previous Backlit session.") }
         guard needsRecovery || saved != nil else { return }
         if lease == nil { lease = try FileLease(url:AgentBridge.directory.appendingPathComponent("logo.lock")) }
+        // Acquire global ownership before touching a prior process's recovery.
+        if let fadeRuntime {try fadeRuntime.restore();self.fadeRuntime=nil}
+        else {try FadeRuntime.recoverPending()}
+        try restoreClosedEffect()
         let original: [[Double]]
         if let saved { original = saved }
         else { original = try JSONDecoder().decode([[Double]].self, from: Data(contentsOf: recovery)) }
         guard Self.valid(original) else { throw failure("The recovery configuration is invalid; it was left untouched.") }
-        if let lastWritten, let current = mapping(), !Self.equivalent(current, lastWritten) {
-            throw failure("Another controller changed the logo. Its settings were left untouched; the recovery file is retained.")
+        if saved != nil {
+            guard Self.matchesOwnedMapping(mapping(), confirmed: lastWritten ?? saved, pending: pendingWritten) else {
+                throw failure("Another controller changed the logo or its state is unavailable. Recovery was retained.")
+            }
         }
-        guard set(original as NSArray, key: Self.mappingKey), set(NSNumber(value: 1), key: "DisplayPowerStateEvent"),
-              let actual = mapping(), Self.equivalent(actual, original) else { throw failure("macOS did not confirm restoration. The recovery file is retained.") }
-        if needsRecovery { try FileManager.default.removeItem(at: recovery) }
+        guard let current=mapping() else {throw failure("Logo mapping is unavailable; recovery was retained.")}
+        if !Self.equivalent(current,original) {
+            pendingWritten = original
+            guard set(original as NSArray, key: Self.mappingKey), set(NSNumber(value: 1), key: "DisplayPowerStateEvent"),
+                  let actual = mapping(), Self.equivalent(actual, original) else { throw failure("macOS did not confirm restoration. The recovery file is retained.") }
+        }
+        if FileManager.default.fileExists(atPath:recovery.path) { try FileManager.default.removeItem(at: recovery) }
         saved = nil
         lastWritten = nil
+        pendingWritten = nil
         lease = nil
+    }
+
+    /// A mapping write can succeed before its wake/readback step fails. Retain
+    /// both confirmed and intended ownership so cleanup does not mistake our
+    /// own partial write for a competing controller. Unknown state fails closed.
+    static func matchesOwnedMapping(_ current: [[Double]]?, confirmed: [[Double]]?, pending: [[Double]]?) -> Bool {
+        guard let current else { return false }
+        return confirmed.map { equivalent(current,$0) } == true || pending.map { equivalent(current,$0) } == true
     }
 
     static func equivalent(_ lhs: [[Double]], _ rhs: [[Double]]) -> Bool {

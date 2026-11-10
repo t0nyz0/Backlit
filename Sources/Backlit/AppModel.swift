@@ -139,6 +139,7 @@ import Combine
     private var timer: Timer?
     private var terminationApproved = false
     private var isStopping = false
+    private(set) var hardwareRecoveryInProgress = false
     private var tickCount = 0
     private var lastSourceSample = -Double.infinity
     private var lastBatterySample = -Double.infinity
@@ -337,7 +338,7 @@ import Combine
         defaults.set(musicPreset.rawValue, forKey: "music.preset")
     }
     func tick() {
-        guard !isStopping else { return }
+        guard !isStopping, !hardwareRecoveryInProgress else { return }
         tickCount += 1
         let now = ProcessInfo.processInfo.systemUptime
         if now-lastSourceSample >= 1 {
@@ -386,8 +387,8 @@ import Combine
             else {
                 do {
                     if !controlling { try device.begin(); controlling = true }
-                    try device.apply(output, closedLid: allowClosed)
-                } catch { self.error = error.localizedDescription; controlWanted = false; releaseHardware() }
+                    try device.apply(output, closedLid: keepClosed)
+                } catch { self.error = error.localizedDescription; controlWanted = false; stopLid(); releaseHardware() }
             }
         }
         onIconChange?()
@@ -469,31 +470,44 @@ import Combine
         tick()
     }
     func repairAndResume() {
+        guard !hardwareRecoveryInProgress else { return }
         restore()
         if !device.needsRecovery { controlWanted = !demo && device.available; notice = "Your light is ready."; tick() }
     }
     func setControl(_ wanted: Bool) {
+        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress."; return }
         if demo { notice = "This is an isolated preview. Your real logo is unchanged."; return }
         controlWanted = wanted
         if !wanted { stopLid(); releaseHardware() }
         tick()
     }
+    /// Terminal verification pumps the run loop for safety notifications. Keep
+    /// timer/user callbacks from entering another hardware operation meanwhile.
+    @discardableResult func withHardwareRecovery(_ operation: () throws -> Void) rethrows -> Bool {
+        guard !hardwareRecoveryInProgress else { return false }
+        hardwareRecoveryInProgress = true
+        defer { hardwareRecoveryInProgress = false; requestFrame() }
+        try operation()
+        return true
+    }
     func releaseHardware() {
-        guard controlling else { return }
-        do { try device.restore(); controlling = false }
+        guard controlling, !hardwareRecoveryInProgress else { return }
+        do { try withHardwareRecovery { try device.restore(); controlling = false } }
         catch { self.error = error.localizedDescription; controlWanted = false }
     }
     func restore() {
-        guard !demo else { return }
+        guard !demo, !hardwareRecoveryInProgress else { return }
         controlWanted = false
         if lidStopPending || watcher?.isRunning == true {
             stopLid(); notice = "Closed-lid cleanup is in progress. Retry Restore Light when it finishes."; return
         }
         do {
-            try device.restore(); controlling = false
-            let verify = watcher != nil
-            guard try completePowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
-            notice = "The saved logo and lid settings were restored."
+            try withHardwareRecovery {
+                try device.restore(); controlling = false
+                let verify = watcher != nil
+                guard try completePowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
+                notice = "The saved logo and lid settings were restored."
+            }
         }
         catch { self.error = error.localizedDescription }
     }
@@ -529,6 +543,7 @@ import Combine
             amount: amount ?? lidSessionDuration.amount, unit: unit ?? lidSessionDuration.unit)
     }
     func setLid(_ enabled: Bool) {
+        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress."; return }
         guard !demo else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
         if !enabled { stopLid(); return }
         guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else {
@@ -568,6 +583,7 @@ import Combine
         return true
     }
     func setAmbient(_ enabled: Bool) {
+        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress."; return }
         guard !demo, device.available else { error = "A compatible live Mac is required."; return }
         if let app = device.competingApp { error = "Quit \(app) before changing logo settings."; return }
         let resume = controlWanted; controlWanted = false; releaseHardware()
@@ -631,6 +647,7 @@ import Combine
         NSApp.terminate(nil)
     }
     func prepareQuit() -> Bool {
+        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress. Retry Quit when it finishes."; return false }
         if terminationApproved { return true }
         // Cocoa's terminateLater path keeps the run loop responsive while the
         // owned helper restores power. No hardware/quit decision is discarded.

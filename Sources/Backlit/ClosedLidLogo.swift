@@ -11,6 +11,7 @@ final class ClosedLidLogo {
         var setGlobalClosed: (Bool) -> Bool
         var setKeyboardClosed: (UInt64, Bool) -> Bool
         var restoreEffect: () -> Bool = { true }
+        var restoreDisplayLidState: (Bool) -> Bool = { _ in true }
     }
     private let io: Interface
     private(set) var active = false
@@ -29,10 +30,13 @@ final class ClosedLidLogo {
         guard io.setGlobalClosed(false) else {
             throw RuntimeServices.failure("macOS rejected closed-lid lighting. Restore the lid session before retrying.")
         }
-        for id in ids {
-            guard io.setKeyboardClosed(id, true) else {
-                throw RuntimeServices.failure("Could not keep the keyboard dark. Closed-lid lighting was stopped.")
-            }
+        // Global notification also reaches display color modules. Restore their
+        // real lid state immediately; never change True Tone preferences.
+        let displaysRestored = io.restoreDisplayLidState(true)
+        var keyboardsSafe = true
+        for id in ids { keyboardsSafe = io.setKeyboardClosed(id, true) && keyboardsSafe }
+        guard displaysRestored && keyboardsSafe else {
+            throw RuntimeServices.failure("Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.")
         }
     }
 
@@ -55,8 +59,9 @@ final class ClosedLidLogo {
         let writer = NSSelectorFromString("setProperty:forKey:")
         let keyboardWriter = NSSelectorFromString("setProperty:withKey:keyboardID:")
         let idsReader = NSSelectorFromString("copyKeyboardBacklightIDs")
+        let displayWriter = NSSelectorFromString("setProperty:withKey:andDisplay:")
         guard client.responds(to: reader), client.responds(to: writer),
-              client.responds(to: keyboardWriter), keyboard.responds(to: idsReader) else { return nil }
+              client.responds(to: keyboardWriter), client.responds(to: displayWriter), keyboard.responds(to: idsReader) else { return nil }
         typealias Setter = @convention(c) (AnyObject, Selector, AnyObject, NSString) -> Bool
         typealias KeyboardSetter = @convention(c) (AnyObject, Selector, AnyObject, NSString, UInt64) -> Bool
         return Interface(
@@ -71,8 +76,18 @@ final class ClosedLidLogo {
             setKeyboardClosed: { id, closed in
                 unsafeBitCast(client.method(for: keyboardWriter), to: KeyboardSetter.self)(client, keyboardWriter, NSNumber(value: closed), "ClamshellUpdate", id)
             }, restoreEffect: {
-                let set = unsafeBitCast(client.method(for: writer), to: Setter.self)
-                return set(client, writer, NSNumber(value: 1e9), "LEPWMFactorFadeDuration") && set(client, writer, NSNumber(value: 1), "DisplayLogicalState") && set(client, writer, NSNumber(value: 0), "LEPWMFactorFadeDuration") && set(client, writer, NSNumber(value: 2), "DisplayLogicalState")
+                // FadeRuntime alone owns verified fade recovery. This lid-only
+                // owner must never issue a competing global logical-state reset.
+                true
+            }, restoreDisplayLidState: { closed in
+                guard let list = client.perform(reader, with: "CBDisplayList")?.takeRetainedValue() as? [String: Any],
+                      let displays = list["CBDisplayDeviceIDs"] as? [NSNumber] else { return false }
+                var restored = true
+                for display in displays {
+                    let accepted = unsafeBitCast(client.method(for: displayWriter), to: KeyboardSetter.self)(client, displayWriter, NSNumber(value: closed), "ClamshellUpdate", display.uint64Value)
+                    restored = accepted && restored
+                }
+                return restored
             })
     }
 }

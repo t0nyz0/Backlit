@@ -24,6 +24,10 @@ if let index = arguments.firstIndex(of:AgentBridge.marker), arguments.count > in
         try AgentBridge.receive(agent:agent,state:arguments[index+2],session:arguments[index+3]); exit(0)
     } catch { exit(1) }
 }
+if arguments.contains("--watch-fade") {
+    guard let request=FadeHelperArguments(arguments) else {exit(2)}
+    exit(FadeRuntime.runHelper(request))
+}
 if arguments.contains("--watch-lid") {
     guard let request = LidWatcherArguments(arguments: arguments) else {
         FileHandle.standardError.write(Data("Invalid closed-lid helper arguments.\n".utf8)); exit(2)
@@ -42,7 +46,7 @@ if arguments.contains("--verify-hardware") {
         let before = LogoDevice.telemetry()
         try device.begin()
         do {
-            try device.apply(0.12)
+            try device.applyLegacyMapping(0.12)
             Thread.sleep(forTimeInterval:0.25)
             let changed = device.mapping()
             let during = LogoDevice.telemetry()
