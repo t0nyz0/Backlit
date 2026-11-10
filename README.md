@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.2-9a7400?style=flat" alt="Source 0.2.2">
-<img src="https://img.shields.io/badge/local_tests-171_passing-2d6085?style=flat" alt="171 local tests passing">
+<img src="https://img.shields.io/badge/source-0.2.3-9a7400?style=flat" alt="Source 0.2.3">
+<img src="https://img.shields.io/badge/local_tests-217_passing-2d6085?style=flat" alt="217 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -80,19 +80,21 @@ An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light
   <img src="docs/media/settings-light.png" alt="Backlit settings: appearance, language, login launch, keyboard shortcut, closed-lid option, and brightness override">
 </picture>
 
+Downloads are disabled in isolated preview. In the app, **Download Latest Version** opens the installer page.
+
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.2 is **ad-hoc signed, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.3 is **ad-hoc signed, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
 Music starts only after you enable system audio and macOS permits it. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
 
-Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid lighting was physically verified on the test Mac with an external display. It keeps the keyboard dark and restores the real lid state when stopped. Choose a duration in minutes or hours, or Until turned off. The default is 30 minutes; low battery, Low Power Mode and heat still stop the session. Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
+Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid lighting keeps the keyboard dark and restores the real lid state when stopped. Choose a duration in minutes or hours, or Until turned off. The default is 30 minutes; low battery, Low Power Mode and heat still stop the session. Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
 
 ## Updates
 
-Download updates from [GitHub Releases](https://github.com/t0nyz0/Backlit/releases) and replace the app manually. In-app updates are **disabled in 0.2.2** because a publisher trust key and signed feed have not been provisioned. There is no fallback to unsigned downloads. SHA-256 checksums detect changed bytes; they do not prove publisher identity. See [validation](docs/VALIDATION.md) for the updater test scope.
+Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.3. See [validation](docs/VALIDATION.md) for update verification and known limits.
 
 ## Build
 

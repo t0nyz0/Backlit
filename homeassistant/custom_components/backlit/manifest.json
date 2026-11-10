@@ -1,7 +1,7 @@
 {
   "domain": "backlit",
   "name": "Backlit",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "documentation": "https://github.com/t0nyz0/Backlit/blob/main/docs/HOME-ASSISTANT.md",
   "issue_tracker": "https://github.com/t0nyz0/Backlit/issues",
   "codeowners": [

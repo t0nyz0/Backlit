@@ -1,26 +1,26 @@
 # Backlit validation
 
-Version: **0.2.2**, build 27. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.2` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
+Version: **0.2.3**, build 28. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.3` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
 
 ## Clamshell indicator regression
 
 The logo-enable flag is sampled once per second, independently of the requested brightness mapping. Confirmed hardware-off produces dark previews and a dark menu bar icon; the menu label distinguishes “Off · lid closed” from unavailable readback. Seven regression cases cover disabled/open/closed, enabled closed-lid operation, unavailable readback, no ownership, isolated preview, and repeated close/reopen state transitions. Saved brightness is preserved.
 
-Read-only checks on the test Mac confirmed closed lid and disabled logo despite nonzero stored PWM duty. The installed same-code local build was observed with a dark workspace preview and “Off · lid closed” while saved brightness stayed 100%. The owner confirmed the corrected menu state and visually confirmed closed-lid illumination on the installed 0.2.2 candidate. Repeated physical lid transitions remain unverified. No optical brightness measurement or broader hardware-compatibility claim is implied.
-
 ## Closed-lid control regression
 
 The existing opt-in helper sends a temporary CoreBrightness lid notification override only after macOS observes the real closed lid, then keeps keyboard modules in their closed state. Recovery is recorded before writes. It restores the current physical lid state, not a stale startup snapshot. Failed logo restoration does not prevent independent normal-sleep recovery, and logo-only records do not change unowned power state.
 
-On the test Mac with an external display, a bounded five-second probe and a 60-second visual test enabled the logo while the keyboard remained disabled. Cleanup and an independent test watchdog restored the original off state. The owner confirmed visible light. Integrated app toggle-on/off checks confirmed logo enable/disable, dark keyboard, released sleep assertion and cleared recovery journal. Production-helper checks also passed short timer expiry, graceful cancellation and parent-process exit. Native minutes/hours selection, Until turned off, and locked active-session controls were verified; the test preferences were restored to the 30-minute default. The external display stayed active and reported display nits were unchanged; this does not establish unchanged True Tone/color behavior.
-
 Regression tests cover durable-before-write ordering, repeated-poll suppression, missing keyboard capability, daemon readiness, partial/rejected writes, current-lid restoration, unknown state, cleanup retry, reopen/reclose state, independent recovery and ownership. Duration-policy tests cover exact timer boundaries, no-timer sessions and retained safety cutoffs. Timers apply with or without an external display; Until turned off removes only the timer, not safety stops. Duration changes apply to a new session. Existing helper cancellation and lifecycle fixtures remain in place.
 
-The private global notification also reaches display/color modules. Broader compatibility, physical reopening/keyboard restoration, external-display hotplug, real thermal/low-battery cutoffs and force-killed helper recovery remain hardware acceptance limits. No persistent brightness or security setting is changed by this option.
+The private global notification also reaches display/color modules. Unchanged True Tone and color behavior has not been established. Broader compatibility, repeated physical lid transitions and keyboard restoration, external-display hotplug, real thermal/low-battery cutoffs and force-killed helper recovery remain hardware acceptance limits. No optical brightness measurement or broader hardware-compatibility claim is implied. No persistent brightness or security setting is changed by this option.
+
+## Manual-download controls
+
+Settings offers Download Latest Version when trusted in-app updating is unavailable. It opens the installer page and explains manual replacement; internal publisher-configuration diagnostics stay hidden. Valid strict configuration retains Check for Updates. Preview disables downloads and in-app update checks. Six presentation regressions cover missing, invalid and valid configurations, policy flags, the destination and preview safety.
 
 ## Executed local checks
 
-- 179 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 185 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 17 Python tests cover Home Assistant Core/client fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 15 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, four-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
