@@ -16,6 +16,8 @@ Functional research used:
 
 The Buy Me a Coffee badge is the official asset at https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png. It links to https://buymeacoffee.com/tonyz, verified from the owner's https://t0nyz.com site. That third-party badge is not covered by the project's PolyForm Perimeter license.
 
+Header photograph (`docs/header.png` and the underlying original photo): © 2026 t0nyz. All rights reserved. Reuse requires prior permission, except where permitted by law or GitHub’s terms.
+
 The public repository starts with a clean source snapshot. Private reference screenshots and planning documents are retained only outside its tracked files and history. Agent configuration locations and event names follow the agents’ published formats; Backlit owns its adapter, validation, merging, and launch code.
 
 Sparkle 2.10.1 provides the in-app update framework, under its MIT license and included third-party notices. See [Sparkle license](licenses/Sparkle.txt) and [upstream](https://github.com/sparkle-project/Sparkle).

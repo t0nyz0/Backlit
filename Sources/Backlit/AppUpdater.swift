@@ -170,15 +170,45 @@ struct UpdateConsent {
     }
 }
 
+struct UpdateControlPresentation {
+    static let downloadURL = URL(string: "https://t0nyz.com/backlit/install")!
+    let canUpdateInApp: Bool
+    let canDownload: Bool
+    private let preview: Bool
+
+    init(info: [String: Any], preview: Bool) {
+        self.preview = preview
+        canUpdateInApp = (try? UpdateConfiguration(info: info, preview: preview)) != nil
+        canDownload = !preview
+    }
+    var primaryTitle: String { canUpdateInApp ? "Check for Updates" : "Download Latest Version" }
+    var guidance: String? {
+        guard !canUpdateInApp else { return nil }
+        return preview ? "Downloads are disabled in preview." : "Download the app, then quit Backlit and replace it in Applications."
+    }
+}
+
 struct UpdateControls: View {
     @ObservedObject var updater: AppUpdater
     let preview: Bool
     var body: some View {
+        let presentation = UpdateControlPresentation(info: Bundle.main.infoDictionary ?? [:], preview: preview)
         VStack(alignment: .trailing, spacing: 8) {
-            Button("Check for Updates") { updater.check(preview: preview) }.disabled(!updater.canCheck)
-            if updater.installPaused { Button("Install Update and Relaunch") { updater.retryInstall() } }
-            if !updater.canCheck { Button("Show Update Progress") { updater.showProgress() } }
-            if let message = updater.message { Text(message).font(.system(size: 11)).foregroundStyle(.secondary).frame(maxWidth: 300).fixedSize(horizontal: false, vertical: true) }
+            if presentation.canUpdateInApp {
+                Button(presentation.primaryTitle) { updater.check(preview: preview) }.disabled(!updater.canCheck)
+                if updater.installPaused { Button("Install Update and Relaunch") { updater.retryInstall() } }
+                if !updater.canCheck { Button("Show Update Progress") { updater.showProgress() } }
+                if let message = updater.message { Text(message).font(.system(size: 11)).foregroundStyle(.secondary).frame(maxWidth: 300).fixedSize(horizontal: false, vertical: true) }
+            } else {
+                Link(presentation.primaryTitle, destination: UpdateControlPresentation.downloadURL)
+                    .buttonStyle(.bordered)
+                    .disabled(!presentation.canDownload)
+                if let guidance = presentation.guidance {
+                    Text(guidance).font(.system(size: 11)).foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing).frame(maxWidth: 300, alignment: .trailing)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
     }
 }

@@ -1,9 +1,7 @@
 # Security
 
-Backlit's local bridge is opt-in and uses a Keychain pairing key. It binds only to loopback unless local-network sharing is enabled. Do not expose it directly to the internet. The bridge rejects cross-origin browser requests, duplicate headers, chunked bodies, oversized messages, and unsupported control fields.
+Report security issues privately to [tonyz@outlook.com](mailto:tonyz@outlook.com). Include your Backlit version, macOS version, and steps to reproduce. Do not include credentials or personal data, or post sensitive details in public issues.
 
-Report a security issue privately using the contact route at https://t0nyz.com. Include the app version, OS build, and a minimal reproduction; omit credentials, prompts, transcripts, and personal data. Please do not post working keys or private configuration in public issues.
+Download updates from the [latest release](https://github.com/t0nyz0/Backlit/releases/latest).
 
-The preview is not a security guarantee. Undocumented logo/power controls, administrator-authorized preferences, agent configuration, local HTTP transport, and crash recovery are reviewed separately in the validation document.
-
-In-app updates require a bundle-pinned Ed25519 public key, HTTPS signed feed, non-expiring signed-feed policy, and archive verification before extraction. This development build has no trust feed/key and refuses update checks. Checksums served beside an archive are not publisher authentication. Automatic checks/downloads and system profiling are disabled. Actual authenticated update installation, resumed/interrupted installs, and rollback remain unverified.
+See [validation and known limits](docs/VALIDATION.md) for technical details.

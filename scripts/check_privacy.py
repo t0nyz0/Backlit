@@ -33,7 +33,13 @@ for name in filter(None, files):
     for kind, pattern in patterns.items():
         if upstream_license and kind == 'personal email':
             continue
-        if re.search(pattern, text):
+        # The owner approved this public security contact in this file only.
+        if name == 'SECURITY.md' and kind == 'personal email':
+            checked = re.sub(r'(?<![\w.%+@-])tonyz@outlook\.com(?![\w.%+@-])', '', text)
+            found = re.search(pattern, checked) is not None
+        else:
+            found = re.search(pattern, text) is not None
+        if found:
             failures.append(f'{name}: {kind}')
 for line in subprocess.check_output(['git', 'log', '--all', '--format=%ae|%ce'], cwd=root).decode().splitlines():
     if any(not email.endswith('@users.noreply.github.com') for email in line.split('|')):

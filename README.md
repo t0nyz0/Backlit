@@ -114,7 +114,9 @@ The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs te
 
 [Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md) · [Attribution](docs/ATTRIBUTION.md)
 
-Backlit is independent of Apple, Anthropic, OpenAI, Home Assistant, Backglow, and LidPulse. Their names and marks belong to their owners. Backlit’s original code and artwork use [PolyForm Perimeter 1.0.0](LICENSE), a source-available license that restricts competing reuse. Third-party marks and the coffee badge are excluded.
+Backlit is independent of Apple, Anthropic, OpenAI, Home Assistant, Backglow, and LidPulse. Their names and marks belong to their owners. Backlit’s original code and artwork use [PolyForm Perimeter 1.0.0](LICENSE), a source-available license that restricts competing reuse. The header photograph, third-party marks and the coffee badge are excluded.
+
+Header photograph (`docs/header.png` and the underlying original photo): © 2026 t0nyz. All rights reserved. Reuse requires prior permission, except where permitted by law or GitHub’s terms.
 
 ---
 
