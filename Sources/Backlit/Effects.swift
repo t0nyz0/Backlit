@@ -64,5 +64,6 @@ enum Effects {
             }
         }
     }
+    static func percent(_ value: Double) -> Int { Int((clamp(value) * 100).rounded()) }
     static func clamp(_ value: Double) -> Double { value.isFinite ? min(1, max(0, value)) : 0 }
 }

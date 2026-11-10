@@ -553,7 +553,7 @@ import Combine
     }
     func apiState() -> [String:Any] {
         ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),
-         "effect":mode.title,"effects":availableModes.map(\.title),"battery":Int((battery*100).rounded()),
+         "effect":mode.title,"effects":availableModes.map(\.title),"battery":Effects.percent(battery),
          "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
          "preview":!controlling,"paused":pausedReason ?? "","output":output,

@@ -7,6 +7,7 @@ final class BatteryRequirementTests: XCTestCase {
     func testEveryBatteryPercentageIgnoresEverySavedManualBrightness() {
         for manual in savedLevels + [.nan, .infinity, -1, 2] {
             for percent in 0...100 {
+                XCTAssertEqual(Effects.percent(Double(percent)/100), percent, "Display percentages must not truncate values such as 58%")
                 var input = EffectInput()
                 input.mode = .battery; input.brightness = manual; input.battery = Double(percent) / 100
                 XCTAssertEqual(Effects.level(at: 0, input: input), Double(percent) / 100,
@@ -42,6 +43,7 @@ final class BatteryRequirementTests: XCTestCase {
                     for percent in 0...100 {
                         model.updateBattery(.init(level: Double(percent)/100, externalPower: false, activelyCharging: false))
                         XCTAssertEqual(model.effectOutput(at: Double(percent)), Double(percent)/100)
+                        XCTAssertEqual(model.apiState()["battery"] as? Int, percent)
                         XCTAssertEqual(model.brightness, originalManual)
                     }
                     if let manual { XCTAssertEqual(defaults.double(forKey: "brightness"), manual) }

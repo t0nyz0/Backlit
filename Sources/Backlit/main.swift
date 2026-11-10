@@ -135,7 +135,7 @@ if arguments.contains("--verify-hardware") {
         let now=ProcessInfo.processInfo.systemUptime
         if model.status != lastTooltipStatus || now-lastTooltipUpdate>=1 {
             lastTooltipStatus=model.status;lastTooltipUpdate=now
-            status?.button?.toolTip="Backlit · \(model.status) · \(Int(model.output*100))% output"
+            status?.button?.toolTip="Backlit · \(model.status) · \(Effects.percent(model.output))% output"
         }
     }
     func installShortcut() {

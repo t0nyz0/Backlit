@@ -49,7 +49,7 @@ struct LogoPreview: View {
                 HStack { Text(model.mode.title).font(.system(size:11,weight:.medium)); Spacer(); if !model.controlling {Text("Logo unchanged").font(.system(size:10)).opacity(0.6)} }
             }.foregroundStyle(.white.opacity(0.85)).padding(18)
         }.frame(height:compact ? 210 : 234)
-            .accessibilityElement(children:.contain).accessibilityLabel("\(model.mode.title) brightness preview, \(Int(model.output*100)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
+            .accessibilityElement(children:.contain).accessibilityLabel("\(model.mode.title) brightness preview, \(Effects.percent(model.output)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
     }
 }
 
@@ -113,10 +113,10 @@ struct BatteryOutputReadout: View {
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("\(Int((Effects.clamp(presentation.level) * 100).rounded()))%")
+            Text("\(Effects.percent(presentation.level))%")
                 .font(.system(size: compact ? 18 : 38, weight: .medium)).monospacedDigit()
                 .accessibilityLabel("Actual battery-driven logo output")
-                .accessibilityValue("\(Int((Effects.clamp(presentation.level) * 100).rounded())) percent")
+                .accessibilityValue("\(Effects.percent(presentation.level)) percent")
             Text("Matches battery charge when unplugged.")
                 .font(.system(size: compact ? 10 : 11)).foregroundStyle(.secondary)
         }
@@ -136,7 +136,7 @@ struct LightPage: View {
                     Surface("Battery-driven output") { BatteryOutputReadout(model: model) }
                 } else {
                 Surface(model.t("Brightness","亮度")) {
-                    HStack(alignment:.firstTextBaseline,spacing:4) { Text("\(Int(model.brightness*100))").font(.system(size:38,weight:.medium)).monospacedDigit(); Text("%").font(.system(size:19)).foregroundStyle(.secondary); Spacer(); Image(systemName:"sun.max").font(.system(size:23,weight:.light)).foregroundStyle(.secondary) }
+                    HStack(alignment:.firstTextBaseline,spacing:4) { Text("\(Effects.percent(model.brightness))").font(.system(size:38,weight:.medium)).monospacedDigit(); Text("%").font(.system(size:19)).foregroundStyle(.secondary); Spacer(); Image(systemName:"sun.max").font(.system(size:23,weight:.light)).foregroundStyle(.secondary) }
                     Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness")
                     Text(model.t("Independent of your screen brightness.","獨立於螢幕亮度。" )).font(.system(size:11)).foregroundStyle(.secondary)
                 }
@@ -158,7 +158,7 @@ struct LightPage: View {
                         }
                         Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .battery {
-                        Label("\(Int((model.battery * 100).rounded()))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
+                        Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
                     } else if model.mode == .signals {
                         SignalResponseControls(model: model)
@@ -313,7 +313,7 @@ struct MenuLidPreview: View {
             Capsule().fill(.white.opacity(0.12+presentation.level*0.88)).frame(width:20,height:5)
                 .shadow(color:.white.opacity(presentation.level*0.8),radius:12)
             VStack {Spacer();Capsule().fill(.white.opacity(0.22)).frame(height:1).padding(.horizontal,14).padding(.bottom,4)}
-        }.frame(width:88,height:60).accessibilityLabel("Logo preview, \(Int(presentation.level*100)) percent")
+        }.frame(width:88,height:60).accessibilityLabel("Logo preview, \(Effects.percent(presentation.level)) percent")
     }
 }
 
@@ -343,7 +343,7 @@ struct MenuView: View {
                 BatteryOutputReadout(model: model, compact: true)
             } else {
             VStack(spacing:10) {
-                HStack {Text(model.t("Brightness","亮度")).font(.system(size:12,weight:.medium));Spacer();Text("\(Int(model.brightness*100))%").font(.system(size:12)).monospacedDigit().foregroundStyle(.secondary)}
+                HStack {Text(model.t("Brightness","亮度")).font(.system(size:12,weight:.medium));Spacer();Text("\(Effects.percent(model.brightness))%").font(.system(size:12)).monospacedDigit().foregroundStyle(.secondary)}
                 HStack(spacing:10) {Image(systemName:"sun.min");Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness");Image(systemName:"sun.max")}.font(.system(size:12)).foregroundStyle(.secondary)
             }
             }
@@ -353,7 +353,7 @@ struct MenuView: View {
                 MusicResponseControls(model: model).font(.system(size:11))
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.intensity,in:0.25...3).tint(.primary)};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);Button(model.audioRunning ? "Stop System Audio" : "Start System Audio"){if model.audioRunning {model.stopAudio()} else {model.startAudio()}}}.font(.system(size:11))
             } else if model.mode == .battery {
-                Label("\(Int((model.battery*100).rounded()))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
+                Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
             } else if model.mode == .signals {
                 SignalResponseControls(model: model).font(.system(size:11))
             } else if model.mode == .touch {
