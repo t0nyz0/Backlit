@@ -53,8 +53,8 @@ struct UpdateConsent {
     private(set) var prepared = false
     var prepare: (() -> Bool)?
     var paused: Bool { pending != nil }
-    func postpone(_ install: @escaping () -> Void) -> Bool {
-        guard prepare?() == true else { pending = install; return true }
+    func postpone(_ install: @escaping () -> Void, approved: Bool = true) -> Bool {
+        guard approved, prepare?() == true else { pending = install; return true }
         prepared = true
         return false
     }
@@ -145,12 +145,7 @@ struct UpdateConsent {
     }
     func updater(_ updater: SPUUpdater, shouldPostponeRelaunchForUpdate item: SUAppcastItem, untilInvokingBlock installHandler: @escaping () -> Void) -> Bool {
         consent.arm()
-        let originalPreparation = installGate.prepare
-        installGate.prepare = { [weak self] in
-            guard let self, self.consent.approved else { return false }
-            return originalPreparation?() == true
-        }
-        let postponed = installGate.postpone(installHandler)
+        let postponed = installGate.postpone(installHandler, approved: consent.approved)
         installPaused = postponed
         if postponed { message = "Update paused. Finish restoring the light, then retry installation." }
         return postponed

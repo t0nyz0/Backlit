@@ -5,7 +5,7 @@ Development checkout: **0.2.0-dev.4** (local testing build). Public downloads be
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
 <img src="https://img.shields.io/badge/source-0.2.0--dev.4-9a7400?style=flat" alt="Source 0.2.0-dev.4">
-<img src="https://img.shields.io/badge/local_tests-225_passing-2d6085?style=flat" alt="225 local tests passing">
+<img src="https://img.shields.io/badge/local_tests-226_passing-2d6085?style=flat" alt="226 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">

@@ -48,4 +48,24 @@ import Sparkle
         app.updater(sdk.updater, userDidMake: .dismiss, forUpdate: item, state: try state(.installing))
         XCTAssertTrue(app.allowsTermination())
     }
+    func testRepeatedPostponementPreservesPreparationAndNeedsExplicitApproval() {
+        let app = AppUpdater()
+        let sdk = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
+        var preparations = 0, installs = 0
+        app.installGate.prepare = { preparations += 1; return true }
+        for _ in 0..<100 {
+            XCTAssertTrue(app.updater(sdk.updater, shouldPostponeRelaunchForUpdate: SUAppcastItem.empty(), untilInvokingBlock: { installs += 1 }))
+        }
+        XCTAssertEqual(preparations, 0)
+        XCTAssertEqual(installs, 0)
+        XCTAssertTrue(app.installGate.prepare?() == true, "Postponement must preserve the original preparation callback")
+        app.continueApprovedInstallation()
+        XCTAssertEqual(installs, 0)
+        app.retryInstall() // Simulates the explicit Install Update and Relaunch choice.
+        XCTAssertEqual(installs, 1)
+        XCTAssertEqual(preparations, 2)
+        app.continueApprovedInstallation()
+        XCTAssertEqual(installs, 1)
+    }
+
 }
