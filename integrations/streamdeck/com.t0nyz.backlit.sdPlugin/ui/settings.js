@@ -2,7 +2,7 @@
 let socket, context, actionType;
 const actions = new Set(["toggle", "on", "off", "brightness", "mode"].map(name => "com.t0nyz.backlit." + name));
 const brightness = document.getElementById("brightness"), mode = document.getElementById("mode");
-const behaviors = new Set(["steady", "breathe", "battery", "music", "agents", "trackpad", "signals"]);
+const behaviors = new Set(["steady", "breathe", "battery", "music", "agents", "trackpad"]);
 window.connectElgatoStreamDeckSocket = (port, uuid, event, info, actionInfo) => {
     if (!/^\d{1,5}$/.test(String(port)) || Number(port) < 1 || Number(port) > 65535 || event !== "registerPropertyInspector") return;
     let action;

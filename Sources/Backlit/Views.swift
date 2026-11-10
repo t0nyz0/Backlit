@@ -160,10 +160,8 @@ struct LightPage: View {
                     } else if model.mode == .battery {
                         Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
-                    } else if model.mode == .signals {
-                        SignalResponseControls(model: model)
                     } else if model.mode == .agents {
-                        Label(model.agents.isEmpty ? "Waiting for an agent signal" : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
+                        Label(model.agents.isEmpty ? "Waiting for an agent" : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
                         Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
                         Button("Manage Connections"){model.selectedPage="connections"}
                     } else if model.mode == .touch {
@@ -190,7 +188,7 @@ struct LightPage: View {
     }
     func modeRow(_ mode: GlowMode) -> some View {
         let selected = model.mode == mode
-        let subtitles: [GlowMode:String] = [.steady:model.t("Constant brightness","持續而柔和的光"),.breathe:model.t("Fade in and out","跟隨你的呼吸節奏"),.battery:model.t("Follow battery charge","一眼掌握電量"),.music:model.t("Respond to system playback","隨音樂律動"),.agents:model.t("Coding agent status","工作需要你時提醒"),.touch:model.t("Trackpad and optional typing response","觸控板與選用打字回應"),.signals:model.t("Activity from your apps and focus timer","應用程式活動與專注計時器")]
+        let subtitles: [GlowMode:String] = [.steady:model.t("Constant brightness","持續而柔和的光"),.breathe:model.t("Fade in and out","跟隨你的呼吸節奏"),.battery:model.t("Follow battery charge","一眼掌握電量"),.music:model.t("Respond to system playback","隨音樂律動"),.agents:model.t("Coding agent status","工作需要你時提醒"),.touch:model.t("Trackpad and optional typing response","觸控板與選用打字回應")]
         return Button {model.mode=mode} label: {
             HStack(spacing:12) {
                 Image(systemName:mode.symbol).font(.system(size:17,weight:.medium)).frame(width:34,height:34).foregroundStyle(selected ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.6)).background(selected ? Color.primary : Color.primary.opacity(0.045),in:RoundedRectangle(cornerRadius:10))
@@ -357,13 +355,11 @@ struct MenuView: View {
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.intensity,in:0.25...3).tint(.primary)};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);Button(model.audioRunning ? "Stop System Audio" : "Start System Audio"){if model.audioRunning {model.stopAudio()} else {model.startAudio()}}}.font(.system(size:11))
             } else if model.mode == .battery {
                 Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
-            } else if model.mode == .signals {
-                SignalResponseControls(model: model).font(.system(size:11))
             } else if model.mode == .touch {
                 TypingResponseControls(model: model).font(.system(size:11))
                 VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:11)).foregroundStyle(.secondary)}
             } else if model.mode == .agents {
-                Label(model.agents.isEmpty ? "Waiting for an agent signal" : model.agentState.rawValue.capitalized,systemImage:"terminal").font(.system(size:11)).foregroundStyle(.secondary)
+                Label(model.agents.isEmpty ? "Waiting for an agent" : model.agentState.rawValue.capitalized,systemImage:"terminal").font(.system(size:11)).foregroundStyle(.secondary)
             }
             if !model.demo && model.device.needsRecovery && (!model.controlWanted || !model.controlling) {
                 Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}.buttonStyle(.borderedProminent).tint(.primary)

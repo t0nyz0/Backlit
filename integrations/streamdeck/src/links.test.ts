@@ -13,7 +13,7 @@ test("fixed commands and validated settings produce only Backlit links", () => {
 
 test("URLs, credentials, booleans and nonfinite values cannot become settings", () => {
     for (const percentage of [-1, 101, NaN, Infinity, "50", true, null]) assert.throws(() => linkFor("brightness", { percentage }));
-    for (const mode of ["steady&token=value", "https://example.invalid", "$(command)", false, null]) assert.throws(() => linkFor("mode", { mode }));
+    for (const mode of ["signals", "focus", "steady&token=value", "https://example.invalid", "$(command)", false, null]) assert.throws(() => linkFor("mode", { mode }));
     assert.throws(() => linkFor("toggle", { token: "fixture" }));
     assert.throws(() => linkFor("unknown"));
     assert.throws(() => linkFor("toggle", null));

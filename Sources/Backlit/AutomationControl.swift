@@ -1,71 +1,19 @@
 import Foundation
-import CoreFoundation
-
-enum ActivityCategory:String,CaseIterable,Codable,Identifiable {
-    case build,export,backup,focus,recording,streaming
-    var id:String {rawValue}
-    var title:String {rawValue.capitalized}
-}
-
-enum ActivityState:String,CaseIterable,Codable,Identifiable {
-    case active,complete,attention,clear
-    var id:String {rawValue}
-}
 
 enum AutomationError:Error,LocalizedError,Equatable {
-    case invalidURL,invalidSignal,invalidValue,disabled,unavailable
+    case invalidURL,invalidValue,disabled,unavailable
     var errorDescription:String? {
         switch self {
         case .invalidURL:return "That Backlit link is not valid."
-        case .invalidSignal:return "Use a known activity and state, with a bounded duration and progress from 0 to 1."
         case .invalidValue:return "Brightness must be a finite value from 0 to 100 percent."
-        case .disabled:return "Enable Shortcuts and links in Backlit before using this action."
+        case .disabled:return "Enable Backlit links in Connections before using this action."
         case .unavailable:return "Open Backlit before using this action."
         }
     }
 }
 
-/// Only fixed activity metadata crosses the automation boundary.
-struct ActivitySignal:Codable,Equatable {
-    let category:ActivityCategory
-    let state:ActivityState
-    let duration:Double?
-    let progress:Double?
-    var effectiveDuration:Double {duration ?? (state == .active ? 60 : state == .clear ? 0 : 8)}
-
-    init(category:ActivityCategory,state:ActivityState,duration:Double?=nil,progress:Double?=nil) throws {
-        if let duration {
-            let maximum=state == .active ? 14_400.0 : 60.0
-            guard state != .clear,duration.isFinite,(1...maximum).contains(duration) else {throw AutomationError.invalidSignal}
-        }
-        if let progress {
-            guard state == .active,progress.isFinite,(0...1).contains(progress) else {throw AutomationError.invalidSignal}
-        }
-        self.category=category;self.state=state;self.duration=duration;self.progress=progress
-    }
-    init(data:Data) throws {
-        guard data.count<=2048,
-              let object=try? JSONSerialization.jsonObject(with:data),let value=object as? [String:Any],
-              Set(value.keys).isSubset(of:["category","state","duration","progress"]),
-              let rawCategory=value["category"] as? String,let category=ActivityCategory(rawValue:rawCategory),
-              let rawState=value["state"] as? String,let state=ActivityState(rawValue:rawState) else {throw AutomationError.invalidSignal}
-        func number(_ key:String) throws ->Double? {
-            guard let raw=value[key] else{return nil}
-            guard let n=raw as? NSNumber,CFGetTypeID(n) != CFBooleanGetTypeID(),n.doubleValue.isFinite else {throw AutomationError.invalidSignal}
-            return n.doubleValue
-        }
-        try self.init(category:category,state:state,duration:number("duration"),progress:number("progress"))
-    }
-    init(from decoder:Decoder) throws {
-        let values=try decoder.container(keyedBy:CodingKeys.self)
-        try self.init(category:values.decode(ActivityCategory.self,forKey:.category),state:values.decode(ActivityState.self,forKey:.state),
-                      duration:values.decodeIfPresent(Double.self,forKey:.duration),progress:values.decodeIfPresent(Double.self,forKey:.progress))
-    }
-    private enum CodingKeys:String,CodingKey {case category,state,duration,progress}
-}
-
 enum AutomationCommand:Equatable {
-    case power(Bool),toggle,brightness(Double),mode(GlowMode),signal(ActivitySignal)
+    case power(Bool),toggle,brightness(Double),mode(GlowMode)
 
     static func behavior(named name:String) throws ->GlowMode {
         guard let value=GlowMode(rawValue:name.lowercased() == "trackpad" ? "touch" : name.lowercased()) else {throw AutomationError.invalidURL}
@@ -105,11 +53,6 @@ enum AutomationCommand:Equatable {
             try only(["name"])
             guard let name=query["name"] else {throw AutomationError.invalidURL}
             self = .mode(try Self.behavior(named:name))
-        case "signal":
-            try only(["category","state","duration","progress"])
-            guard let name=query["category"],let category=ActivityCategory(rawValue:name),
-                  let raw=query["state"],let state=ActivityState(rawValue:raw) else {throw AutomationError.invalidSignal}
-            self = .signal(try ActivitySignal(category:category,state:state,duration:number("duration"),progress:number("progress")))
         default:throw AutomationError.invalidURL
         }
     }

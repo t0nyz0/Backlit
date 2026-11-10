@@ -2,8 +2,8 @@
 <h1 align="center">Backlit</h1>
 <p align="center">MacBook PROLED logo light control for macOS.</p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.0-9a7400?style=flat" alt="Source 0.2.0">
-<img src="https://img.shields.io/badge/local_tests-226_passing-2d6085?style=flat" alt="226 local tests passing">
+<img src="https://img.shields.io/badge/source-0.2.1-9a7400?style=flat" alt="Source 0.2.1">
+<img src="https://img.shields.io/badge/local_tests-171_passing-2d6085?style=flat" alt="171 local tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -29,18 +29,16 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 | Music | Responds to bass energy in system playback, with automatic level adjustment, Smooth/Balanced/Punchy response, sensitivity, and dark-between-beat controls. |
 | Agents | Shows working, waiting, and attention states from coding agents. |
 | Trackpad | Lights while a finger rests on the trackpad, with any app open. Optional click blink and permission-gated typing response. |
-| Signals | Displays bounded activity/progress signals from apps and a local Focus timer. |
 
 Battery mode displays **Battery-driven output** in the workspace and menu, without a manual brightness slider. Switching to another mode restores its saved manual brightness. Optional Battery styles and brief charge-ready signals can override the automatic charging pattern.
 
 The logo supports white light. Brightness and timing are adjustable; RGB colors and pixel animations are not supported.
 
 <details>
-<summary>Music, Trackpad and Signals screenshots</summary>
+<summary>Music and Trackpad screenshots</summary>
 
 <img src="docs/media/music-light.png" width="280" alt="Native Music controls with Automatic level and response presets">
 <img src="docs/media/trackpad-light.png" width="280" alt="Native Trackpad controls with optional typing response switched off">
-<img src="docs/media/signals-light.png" width="280" alt="Native Signals controls showing a local Focus timer preview">
 
 </details>
 
@@ -56,7 +54,7 @@ Launch connects compatible hardware automatically. Quit restores the previous lo
 
 Claude Code and Codex have separate, reversible status hooks. Existing hooks are preserved. They send a session identifier and status—not prompts, code, or tool output. Codex requires hook review/trust in its settings. Codex live-session compatibility remains unverified.
 
-Opt-in local automation links, a separately packaged Stream Deck plugin, and an OBS script are included. Activity signals cover build, export, backup, focus, recording, and streaming. Stream Deck and OBS are experimental; real key/profile and recording/streaming acceptance remain unverified. Native Shortcuts actions are unavailable in this ad-hoc signed build. Extracted action metadata does not establish discovery.
+Opt-in local Backlit links and a separately packaged Stream Deck plugin provide toggle, on/off, brightness and behavior controls. Stream Deck remains experimental; real key/profile acceptance is unverified. The four native Shortcuts actions are unavailable in this ad-hoc signed build. Extracted action metadata does not establish discovery.
 
 <details>
 <summary>Other apps screenshot</summary>
@@ -86,7 +84,7 @@ An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light
 
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.0 is **ad-hoc signed, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.1 is **ad-hoc signed, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
@@ -96,7 +94,7 @@ Optional login launch, closed-lid operation, and an administrator-authorized bri
 
 ## Updates
 
-Download updates from [GitHub Releases](https://github.com/t0nyz0/Backlit/releases) and replace the app manually. In-app updates are **disabled in 0.2.0** because a publisher trust key and signed feed have not been provisioned. There is no fallback to unsigned downloads. SHA-256 checksums detect changed bytes; they do not prove publisher identity. See [validation](docs/VALIDATION.md) for the updater test scope.
+Download updates from [GitHub Releases](https://github.com/t0nyz0/Backlit/releases) and replace the app manually. In-app updates are **disabled in 0.2.1** because a publisher trust key and signed feed have not been provisioned. There is no fallback to unsigned downloads. SHA-256 checksums detect changed bytes; they do not prove publisher identity. See [validation](docs/VALIDATION.md) for the updater test scope.
 
 ## Build
 

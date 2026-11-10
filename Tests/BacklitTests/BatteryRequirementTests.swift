@@ -139,7 +139,7 @@ final class BatteryRequirementTests: XCTestCase {
             for manual in savedLevels {
                 var input = EffectInput()
                 input.mode = mode; input.brightness = manual; input.audio = 1
-                input.agent = .working; input.touchDown = true; input.signalLevel = 1
+                input.agent = .working; input.touchDown = true
                 for time in [0.0, 1, 3] { XCTAssertLessThanOrEqual(Effects.level(at: time, input: input), manual) }
             }
         }

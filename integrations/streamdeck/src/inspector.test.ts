@@ -74,3 +74,12 @@ test("new registration closes previous socket and ignores stale messages", () =>
     old.onmessage!({ data: JSON.stringify({ event: "didReceiveSettings", action: "com.t0nyz.backlit.brightness", context: "new-action", payload: { settings: { percentage: 100 } } }) });
     assert.equal(ui.fields.get("brightness")!.value, 20);
 });
+
+
+test("inspector migrates a removed behavior to a supported selection on save", () => {
+    const ui = inspector(); ui.connect("mode", { mode: "signals" });
+    const socket = ui.sockets[0]; socket.onopen!();
+    assert.equal(ui.fields.get("mode")!.value, "steady");
+    ui.fields.get("mode")!.handlers.get("change")!();
+    assert.equal(JSON.parse(socket.sent[1]).payload.mode, "steady");
+});

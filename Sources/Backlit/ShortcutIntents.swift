@@ -2,26 +2,10 @@ import AppIntents
 
 // Native intent discovery/metadata extraction still needs a packaged-app check.
 enum ShortcutBehavior:String,AppEnum {
-    case steady,breathe,battery,music,agents,trackpad,signals
+    case steady,breathe,battery,music,agents,trackpad
     static var typeDisplayRepresentation:TypeDisplayRepresentation {"Behavior"}
     static var caseDisplayRepresentations:[ShortcutBehavior:DisplayRepresentation] {
-        [.steady:"Steady",.breathe:"Breathe",.battery:"Battery",.music:"Music",.agents:"Agents",.trackpad:"Trackpad",.signals:"Signals"]
-    }
-}
-
-enum ShortcutActivity:String,AppEnum {
-    case build,export,backup,focus,recording,streaming
-    static var typeDisplayRepresentation:TypeDisplayRepresentation {"Activity"}
-    static var caseDisplayRepresentations:[ShortcutActivity:DisplayRepresentation] {
-        [.build:"Build",.export:"Export",.backup:"Backup",.focus:"Focus",.recording:"Recording",.streaming:"Streaming"]
-    }
-}
-
-enum ShortcutActivityState:String,AppEnum {
-    case active,complete,attention,clear
-    static var typeDisplayRepresentation:TypeDisplayRepresentation {"Activity state"}
-    static var caseDisplayRepresentations:[ShortcutActivityState:DisplayRepresentation] {
-        [.active:"Active",.complete:"Complete",.attention:"Needs attention",.clear:"Clear"]
+        [.steady:"Steady",.breathe:"Breathe",.battery:"Battery",.music:"Music",.agents:"Agents",.trackpad:"Trackpad"]
     }
 }
 
@@ -62,21 +46,6 @@ struct SetBacklightBehaviorIntent:AppIntent {
     @Parameter(title:"Behavior") var behavior:ShortcutBehavior
     @MainActor func perform() async throws ->some IntentResult {
         try AutomationRouter.shared.perform(.mode(try AutomationCommand.behavior(named:behavior.rawValue)));return .result()
-    }
-}
-
-struct SendBacklightSignalIntent:AppIntent {
-    static var title:LocalizedStringResource {"Send Backlight Signal"}
-    static var openAppWhenRun:Bool {true}
-    static var authenticationPolicy:IntentAuthenticationPolicy {.requiresLocalDeviceAuthentication}
-    @Parameter(title:"Activity") var activity:ShortcutActivity
-    @Parameter(title:"State") var state:ShortcutActivityState
-    @Parameter(title:"Duration in seconds") var seconds:Double?
-    @Parameter(title:"Progress from 0 to 1") var progress:Double?
-    @MainActor func perform() async throws ->some IntentResult {
-        guard let category=ActivityCategory(rawValue:activity.rawValue),let status=ActivityState(rawValue:self.state.rawValue) else {throw AutomationError.invalidSignal}
-        let signal=try ActivitySignal(category:category,state:status,duration:seconds,progress:progress)
-        try AutomationRouter.shared.perform(.signal(signal));return .result()
     }
 }
 

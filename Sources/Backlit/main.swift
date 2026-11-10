@@ -224,13 +224,11 @@ if arguments.contains("--verify-hardware") {
             let owned=NSWindow(contentRect:menu.frame,styleMask:.borderless,backing:.buffered,defer:false);owned.contentView=menu;owned.orderFront(nil)
             try await Task.sleep(nanoseconds:400_000_000)
             try capture(owned.contentView!.superview!,to:directory.appendingPathComponent("menu-light.png"));owned.orderOut(nil)
-            for (behavior, filename) in [(GlowMode.music, "music-light.png"), (.touch, "trackpad-light.png"), (.signals, "signals-light.png")] {
+            for (behavior, filename) in [(GlowMode.music, "music-light.png"), (.touch, "trackpad-light.png")] {
                 model.mode = behavior; model.selectedPage = "light"; model.notice = nil
-                if behavior == .signals { model.startFocus() }
                 try await Task.sleep(nanoseconds: 500_000_000)
                 try capture(window.contentView!.superview!, to: directory.appendingPathComponent(filename))
             }
-            model.clearSignals()
             model.selectedPage = "connections"; model.automationsEnabled = true
             try await Task.sleep(nanoseconds: 500_000_000)
             try capture(window.contentView!.superview!, to: directory.appendingPathComponent("connections-automation-light.png"))

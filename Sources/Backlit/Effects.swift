@@ -1,7 +1,7 @@
 import Foundation
 
 enum GlowMode: String, CaseIterable, Codable, Identifiable {
-    case steady, breathe, battery, music, agents, touch, signals
+    case steady, breathe, battery, music, agents, touch
     var id: String { rawValue }
     var title: String { self == .touch ? "Trackpad" : rawValue.capitalized }
     var symbol: String {
@@ -11,7 +11,6 @@ enum GlowMode: String, CaseIterable, Codable, Identifiable {
         case .battery: return "battery.75percent"
         case .music: return "waveform"
         case .agents: return "sparkles"
-        case .signals: return "dot.radiowaves.left.and.right"
         case .touch: return "hand.tap"
         }
     }
@@ -31,7 +30,6 @@ struct EffectInput {
     var agent: AgentState = .waiting
     var away = false
     var touchDown = false
-    var signalLevel = 0.0
 }
 
 enum Effects {
@@ -41,7 +39,6 @@ enum Effects {
         let t = max(0, time)
         switch input.mode {
         case .steady: return base
-        case .signals: return base * clamp(input.signalLevel)
         case .touch: return input.touchDown ? base : 0
         case .breathe:
             let cycle = input.period.isFinite ? max(3, min(10, input.period)) : 6

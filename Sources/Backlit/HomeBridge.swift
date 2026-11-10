@@ -144,7 +144,6 @@ final class HomeBridge {
     var state: (() -> [String:Any])?
     var command: ((LightCommand) throws -> Void)?
     var onStatus: ((String) -> Void)?
-    var signal: ((ActivitySignal) throws -> Void)?
     func start(lan: Bool, token: String, port: UInt16 = 48261) throws {
         stop()
         let parameters = NWParameters.tcp
@@ -235,9 +234,6 @@ final class HomeBridge {
                         if request.method == "POST" && request.path == "/v1/light" {
                             guard let command = self.command else { throw RuntimeServices.failure("Light control is unavailable.") }
                             try command(LightCommand(data:request.body))
-                        } else if request.method == "POST" && request.path == "/v1/signal" {
-                            guard let signal = self.signal else { throw RuntimeServices.failure("Activity signals are unavailable.") }
-                            try signal(ActivitySignal(data: request.body))
                         } else if request.method != "GET" || request.path != "/v1/state" {
                             self.send(connection,status:404,value:["error":"Unknown endpoint"]); return
                         }

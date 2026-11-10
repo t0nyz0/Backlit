@@ -42,20 +42,16 @@ import Combine
     }
     @Published var batteryAvailable = false
     @Published var chargeReady = false
-    @Published var signalStatus = "No active signals"
-    @Published var signalCount = 0
-    @Published var focusMinutes = 25
     @Published var automationsEnabled = false {
         didSet {
             guard !isLoading else { return }
             defaults.set(automationsEnabled, forKey: "automation.enabled")
             AutomationRouter.shared.enabled = automationsEnabled && !demo
-            if !automationsEnabled { signals.clearExternal(); requestFrame() }
+            requestFrame()
         }
     }
     private var batteryResponse = BatteryResponse()
     private var musicResponse = MusicResponse()
-    private var signals = ActivitySignalEngine()
     let touchSources = TouchResponse.sources
     var touchAvailable:Bool {!touchSources.isEmpty || typingEnabled}
     @Published var touchSource:TouchSource = .screen {didSet {
@@ -200,7 +196,6 @@ import Combine
             return t("Following your battery","跟隨電量")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
-        case .signals:return signalStatus
         case .touch:return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
         }
     }
@@ -212,7 +207,12 @@ import Combine
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
         if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
         device = LogoDevice(directory:AgentBridge.directory)
-        if let raw = self.defaults.string(forKey:"mode"), let mode = GlowMode(rawValue:raw) { self.mode = mode }
+        if let raw = self.defaults.string(forKey: "mode") {
+            if raw == "signals" {
+                mode = .battery
+                self.defaults.set(GlowMode.battery.rawValue, forKey: "mode")
+            } else if let mode = GlowMode(rawValue: raw) { self.mode = mode }
+        }
         if self.defaults.object(forKey:"brightness") != nil { brightness = self.defaults.double(forKey:"brightness") }
         if self.defaults.object(forKey:"period") != nil { period = self.defaults.double(forKey:"period") }
         if self.defaults.object(forKey:"intensity") != nil { intensity = self.defaults.double(forKey:"intensity") }
@@ -263,10 +263,6 @@ import Combine
             self.requestFrame()
         }
         typing.onStatus = { [weak self] status in self?.typingStatus = status }
-        bridge.signal = { [weak self] signal in
-            guard let self else { return }
-            try self.performAutomation(.signal(signal))
-        }
         audio.onFailure = { [weak self] text, token in Task { @MainActor in
             guard let self, self.audioRunning, self.audio.acceptsFailure(token) else { return }
             self.audioSession.requestStop()
@@ -394,15 +390,6 @@ import Combine
             input.audio = musicResponse.update(energy: energy, at: now, automatic: musicAutomatic, preset: musicPreset)
         }
         input.intensity = intensity; input.strobe = strobe
-        input.signalLevel = signals.level(at: now)
-        let signal = signals.current
-        let nextSignalStatus = signal.map { "\($0.category.rawValue.capitalized) · \($0.state.rawValue)" } ?? "No active signals"
-        if signalStatus != nextSignalStatus { signalStatus = nextSignalStatus }
-        if signalCount != signals.count { signalCount = signals.count }
-        input.agent = agentState; input.away = cachedAway
-        // A deliberately selected physical light effect must not silently turn
-        // into Steady because the owner reduces on-screen interface motion.
-        input.touchDown = (touchDown && !touchBlinking) || typingDown
         return pausedReason == nil ? Effects.level(at: now - epoch, input: input) : 0
     }
     func requestFrame() {
@@ -411,7 +398,7 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
-        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation) || (mode == .signals && signals.requiresAnimation))
+        let animated = enabled && pausedReason == nil && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation))
         let interval = animated ? 0.05 : 1.0
         guard timerInterval != interval || timer?.isValid != true else { return }
         timer?.invalidate(); timerInterval = interval
@@ -450,7 +437,7 @@ import Combine
         if restart { synchronizeTyping(forceRestart: enabled) }
     }
     func performAutomation(_ command: AutomationCommand) throws {
-        guard automationsEnabled, !demo else { throw RuntimeServices.failure("Enable Shortcuts and other apps in Connections first.") }
+        guard automationsEnabled, !demo else { throw RuntimeServices.failure("Enable Backlit links and other apps in Connections first.") }
         guard device.available, controlWanted, !device.needsRecovery else { throw RuntimeServices.failure("Open Backlit and restore its light before using external controls.") }
         switch command {
         case .power(let on): enabled = on
@@ -461,18 +448,9 @@ import Combine
         case .mode(let selected):
             guard availableModes.contains(selected) else { throw RuntimeServices.failure("That behavior is unavailable on this Mac.") }
             mode = selected
-        case .signal(let signal): signals.submit(signal, at: ProcessInfo.processInfo.systemUptime)
         }
         tick()
     }
-    func startFocus() {
-        let duration = Double(min(120, max(1, focusMinutes))) * 60
-        guard let signal = try? ActivitySignal(category: .focus, state: .active, duration: duration, progress: nil) else { return }
-        signals.submit(signal, at: ProcessInfo.processInfo.systemUptime, source: .local)
-        requestFrame()
-    }
-    func clearSignals() { signals.reset(); requestFrame() }
-
     func repairAndResume() {
         restore()
         if !device.needsRecovery { controlWanted = !demo && device.available; notice = "Your light is ready."; tick() }
@@ -582,7 +560,7 @@ import Combine
     }
     func connectAgent(_ agent: CodingAgent, _ enabled: Bool) {
         guard !demo else { notice = "Connections are disabled in isolated preview."; return }
-        do { try AgentBridge.connect(agent,enabled:enabled); notice = enabled ? (agent == .codex ? "Hooks installed. Review and trust them in Codex Settings → Hooks, then start a new session." : "Hooks installed. Start a new Claude Code session to see signals.") : "Backlit's hooks were removed. Existing hooks were preserved."; objectWillChange.send() }
+        do { try AgentBridge.connect(agent,enabled:enabled); notice = enabled ? (agent == .codex ? "Hooks installed. Review and trust them in Codex Settings → Hooks, then start a new session." : "Hooks installed. Start a new Claude Code session to see status.") : "Backlit's hooks were removed. Existing hooks were preserved."; objectWillChange.send() }
         catch { self.error = error.localizedDescription }
     }
     func chooseFolder(_ agent: CodingAgent) {
@@ -604,17 +582,6 @@ import Combine
         NSPasteboard.general.setString("backlit://toggle", forType: .string)
         notice = "Backlit link copied. Use it with a launcher that supports custom app links."
     }
-    func saveOBSScript() {
-        guard !demo else { return }
-        guard let script = Bundle.main.resourceURL?.appendingPathComponent("Integrations/obs/backlit_obs.py"),
-              let data = try? Data(contentsOf: script) else { error = "The OBS script is missing from this build."; return }
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = "backlit_obs.py"
-        panel.title = "Save OBS integration"
-        guard panel.runModal() == .OK, let destination = panel.url else { return }
-        do { try data.write(to: destination, options: .atomic); notice = "Add the script in OBS → Tools → Scripts. Enable the local connection and select Signals in Backlit." }
-        catch { self.error = error.localizedDescription }
-    }
     func copyPairingKey() {
         guard !demo else { return }
         do { let token = try BridgeToken.value(); NSPasteboard.general.clearContents(); NSPasteboard.general.setString(token,forType:.string); notice = "Pairing key copied. Paste it into Home Assistant; keep it private." }
@@ -626,9 +593,7 @@ import Combine
          "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
          "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
          "preview":!controlling,"paused":pausedReason ?? "","output":output,
-         "battery_available":batteryAvailable,"charge_ready":chargeReady,"automation_enabled":automationsEnabled,
-         "signal_category":signals.current?.category.rawValue ?? "","signal_state":signals.current?.state.rawValue ?? "",
-         "signal_count":signalCount]
+         "battery_available":batteryAvailable,"charge_ready":chargeReady,"automation_enabled":automationsEnabled]
     }
     func resumeAfterUpdateFailure() {
         guard isStopping && terminationApproved else { return }

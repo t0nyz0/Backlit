@@ -1,4 +1,4 @@
-const behaviors = new Set(["steady", "breathe", "battery", "music", "agents", "trackpad", "signals"]);
+const behaviors = new Set(["steady", "breathe", "battery", "music", "agents", "trackpad"]);
 
 /** Only the fixed Backlit vocabulary can reach /usr/bin/open. */
 export function linkFor(kind: unknown, value: unknown = {}): string {

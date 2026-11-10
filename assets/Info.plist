@@ -6,8 +6,8 @@
 <key>CFBundleIdentifier</key><string>local.backlit</string>
 <key>CFBundleExecutable</key><string>Backlit</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.2.0</string>
-<key>CFBundleVersion</key><string>25</string>
+<key>CFBundleShortVersionString</key><string>0.2.1</string>
+<key>CFBundleVersion</key><string>26</string>
 <key>CFBundleIconFile</key><string>Backlit</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>local.backlit.controls</string><key>CFBundleURLSchemes</key><array><string>backlit</string></array></dict></array>

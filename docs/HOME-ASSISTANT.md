@@ -17,7 +17,7 @@ The app must stay running and the Mac must be awake and reachable. A DHCP reserv
 
 | Entity | Behavior |
 | --- | --- |
-| Logo light | On/off, brightness 0–255, effects Steady/Breathe/Battery/Music/Agents/Signals, plus Trackpad where offered |
+| Logo light | On/off, brightness 0–255, effects Steady/Breathe/Battery/Music/Agents, plus Trackpad where offered |
 | Battery sensor | Internal battery percentage |
 | Agent status sensor | waiting, working, attention, or no_recent_signals |
 | Agent sessions sensor | Recent unexpired sessions |

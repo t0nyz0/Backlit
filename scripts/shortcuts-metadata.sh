@@ -22,7 +22,7 @@ backlit_binary="$backlit_bundle/Contents/MacOS/Backlit"
 [ -x "$backlit_binary" ] || fail 'Compile and copy the app binary before extracting metadata.'
 backlit_work="$PWD/dist/appintents"
 backlit_const="$backlit_work/Backlit.swiftconstvalues"
-[ -s "$backlit_const" ] || fail 'Missing compiler constants. Build Backlit with -const-gather-protocols-list and -emit-const-values-path before this step.'
+[ -s "$backlit_const" ] || fail 'Missing compiler constants. Run scripts/build.sh to gather the driver-emitted release constants before this step.'
 backlit_processor="$(xcrun --find appintentsmetadataprocessor)"
 backlit_help="$("$backlit_processor" --help 2>&1 || true)"
 # Xcode 27 exposes some registered options in its binary but omits them in help.
@@ -109,12 +109,12 @@ files=[p for p in folders[0].rglob('*') if p.is_file() and p.stat().st_size]
 if not files:
     raise SystemExit('Backlit Shortcuts metadata: extraction output is empty.')
 content=b'\n'.join(p.read_bytes() for p in files)
-for name in [b'ToggleBacklightIntent',b'SetBacklightPowerIntent',b'SetBacklightBrightnessIntent',b'SetBacklightBehaviorIntent',b'SendBacklightSignalIntent']:
+for name in [b'ToggleBacklightIntent',b'SetBacklightPowerIntent',b'SetBacklightBrightnessIntent',b'SetBacklightBehaviorIntent']:
     if name not in content:
         raise SystemExit('Backlit Shortcuts metadata: expected action is missing; inspect extraction output before packaging.')
 normalized=content.replace(b'\\/',b'/')
 private_roots=[b'/' + name + b'/' for name in (b'Users',b'Volumes',b'var/folders')]
 if any(value in normalized for value in [str(Path.home()).encode(),*private_roots]):
     raise SystemExit('Backlit Shortcuts metadata: private host path found in generated metadata. Fix compiler prefix mapping before packaging.')
-print('Extracted metadata includes all five Backlit actions. Discovery in Shortcuts still requires a packaged-app runtime check.')
+print('Extracted metadata includes all four Backlit actions. Discovery in Shortcuts still requires a packaged-app runtime check.')
 PY

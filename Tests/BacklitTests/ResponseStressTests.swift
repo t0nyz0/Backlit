@@ -46,7 +46,6 @@ final class ResponseStressTests: XCTestCase {
             input.audio = envelope
             input.intensity = generator.adversarial()
             input.period = generator.adversarial()
-            input.signalLevel = generator.adversarial()
             input.strobe = generator.bit()
             input.touchDown = generator.bit()
             input.away = generator.bit()
@@ -133,38 +132,6 @@ final class ResponseStressTests: XCTestCase {
             XCTAssertEqual(endLevels[0], endLevels[1], accuracy: 0.000_000_1)
             XCTAssertEqual(endLevels[1], endLevels[2], accuracy: 0.000_000_1)
         }
-    }
-
-    func testSignalStormStaysBoundedAndCannotResetOrClearLocalFocus() throws {
-        var generator = Generator(), engine = ActivitySignalEngine()
-        let local = try ActivitySignal(category: .focus, state: .active, duration: 60)
-        engine.submit(local, at: 0, source: .local)
-        var previousLocalLevel = 0.0
-        for index in 0..<1_000 {
-            let time = Double(index) / 20
-            let category = ActivityCategory.allCases[generator.index(ActivityCategory.allCases.count)]
-            let state = ActivityState.allCases[generator.index(ActivityState.allCases.count)]
-            let duration = state == .clear ? nil : 1 + generator.unit() * 30
-            let signal = try ActivitySignal(category: category, state: state, duration: duration)
-            engine.submit(signal, at: time)
-            let value = engine.level(at: time)
-            XCTAssertTrue(value.isFinite && (0...1).contains(value))
-            XCTAssertLessThanOrEqual(engine.count, 12)
-            if index % 7 == 0 {
-                engine.clearExternal()
-                let currentLocalLevel = engine.level(at: time)
-                XCTAssertEqual(engine.current, local)
-                XCTAssertEqual(engine.count, 1)
-                XCTAssertGreaterThanOrEqual(currentLocalLevel, previousLocalLevel)
-                previousLocalLevel = currentLocalLevel
-            }
-        }
-        engine.clearExternal()
-        _ = engine.level(at: 60)
-        XCTAssertEqual(engine.current?.state, .complete)
-        XCTAssertTrue(engine.requiresAnimation)
-        XCTAssertEqual(engine.level(at: 68), 0)
-        XCTAssertEqual(engine.count, 0)
     }
 
     func testTypingBurstsRemainBoundedAfterThousandsOfResetsAndStaleDeadlines() {

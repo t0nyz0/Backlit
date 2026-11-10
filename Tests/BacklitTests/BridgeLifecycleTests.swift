@@ -37,41 +37,26 @@ final class BridgeLifecycleTests: XCTestCase {
         XCTAssertEqual(calls, 0)
     }
 
-    @MainActor func testSignalEndpointAuthenticatesAndValidatesBeforeCallingHandler() async throws {
+    @MainActor func testRemovedActivityEndpointRejectsWithoutMutationAndLightControlRemainsAvailable() async throws {
         let server = try await startedServer()
         defer { server.stop() }
-        var signals: [ActivitySignal] = []
-        server.signal = { signals.append($0) }
-        server.state = { ["signal_count": signals.count] }
+        var calls = 0
+        server.command = { _ in calls += 1 }
         let port = try XCTUnwrap(server.port)
         var request = URLRequest(url: URL(string: "http://127.0.0.1:\(port)/v1/signal")!)
         request.httpMethod = "POST"
         request.httpBody = Data(#"{"category":"build","state":"active","progress":0.5}"#.utf8)
         let (_, denied) = try await URLSession.shared.data(for: request)
         XCTAssertEqual((denied as? HTTPURLResponse)?.statusCode, 401)
-        XCTAssertTrue(signals.isEmpty)
         request.setValue("Bearer isolated-fixture-key", forHTTPHeaderField: "Authorization")
-        request.httpBody = Data(#"{"category":"build","state":"active","progress":true}"#.utf8)
-        let (_, invalid) = try await URLSession.shared.data(for: request)
-        XCTAssertEqual((invalid as? HTTPURLResponse)?.statusCode, 400)
-        XCTAssertTrue(signals.isEmpty)
-        request.httpBody = Data(#"{"category":"build","state":"active","progress":0.5}"#.utf8)
-        let (data, accepted) = try await URLSession.shared.data(for: request)
+        let (_, removed) = try await URLSession.shared.data(for: request)
+        XCTAssertEqual((removed as? HTTPURLResponse)?.statusCode, 404)
+        XCTAssertEqual(calls, 0)
+        request.url = URL(string: "http://127.0.0.1:\(port)/v1/light")!
+        request.httpBody = Data(#"{"enabled":false}"#.utf8)
+        let (_, accepted) = try await URLSession.shared.data(for: request)
         XCTAssertEqual((accepted as? HTTPURLResponse)?.statusCode, 200)
-        XCTAssertEqual(signals, [try ActivitySignal(category: .build, state: .active, progress: 0.5)])
-        let state = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        XCTAssertEqual(state?["signal_count"] as? Int, 1)
+        XCTAssertEqual(calls, 1)
     }
 
-    @MainActor func testMissingSignalHandlerDoesNotPretendCommandSucceeded() async throws {
-        let server = try await startedServer()
-        defer { server.stop() }
-        let port = try XCTUnwrap(server.port)
-        var request = URLRequest(url: URL(string: "http://127.0.0.1:\(port)/v1/signal")!)
-        request.httpMethod = "POST"
-        request.httpBody = Data(#"{"category":"build","state":"complete"}"#.utf8)
-        request.setValue("Bearer isolated-fixture-key", forHTTPHeaderField: "Authorization")
-        let (_, response) = try await URLSession.shared.data(for: request)
-        XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 400)
-    }
 }
