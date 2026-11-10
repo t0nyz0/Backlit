@@ -28,7 +28,24 @@ with zipfile.ZipFile(artifact) as archive:
     for name in actual:
         relative = PurePosixPath(name).relative_to(root)
         source = bundle.joinpath(*relative.parts)
-        if hashlib.sha256(archive.read(name)).digest() != hashlib.sha256(source.read_bytes()).digest():
+        if str(relative) == 'manifest.json':
+            # The official CLI reformats its staging manifest. Values must
+            # remain identical; whitespace is not a change to the manifest.
+            def unique_object(pairs):
+                value = {}
+                for key, item in pairs:
+                    if key in value:
+                        raise ValueError('Duplicate manifest key')
+                    value[key] = item
+                return value
+            try:
+                packed = json.loads(archive.read(name), object_pairs_hook=unique_object)
+                original = json.loads(source.read_bytes(), object_pairs_hook=unique_object)
+            except (ValueError, UnicodeError):
+                raise SystemExit('Plugin archive manifest is invalid or ambiguous.')
+            if packed != original:
+                raise SystemExit('Plugin archive manifest values differ from the validated source bundle.')
+        elif hashlib.sha256(archive.read(name)).digest() != hashlib.sha256(source.read_bytes()).digest():
             raise SystemExit('Plugin archive content differs from its validated source bundle.')
     manifest = json.loads(archive.read(root + '/manifest.json'))
     if manifest['UUID'] != 'com.t0nyz.backlit':
