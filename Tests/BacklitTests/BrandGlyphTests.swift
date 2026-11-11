@@ -50,4 +50,26 @@ final class BrandGlyphTests: XCTestCase {
             }
         }
     }
+    func testPackagedSmallIconsKeepGraphiteEdges() throws {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let icon = try XCTUnwrap(NSImage(contentsOf: root.appendingPathComponent("assets/Backlit.icns")))
+        XCTAssertEqual(icon.representations.count, 10)
+        for representation in icon.representations where representation.pixelsWide <= 64 {
+            let image = try XCTUnwrap(representation as? NSBitmapImageRep)
+            var edgePixels = 0
+            for y in 0..<image.pixelsHigh {
+                for x in 0..<image.pixelsWide {
+                    let color = try rgb(image, x, y)
+                    if color.alphaComponent > 0.01 && color.alphaComponent < 0.99 {
+                        edgePixels += 1
+                        XCTAssertLessThan(max(color.redComponent, color.greenComponent, color.blueComponent),
+                                          0.4, "Transparent edges must not become white at \\(image.pixelsWide) px")
+                    }
+                }
+            }
+            XCTAssertGreaterThan(edgePixels, 0)
+        }
+    }
+
 }
