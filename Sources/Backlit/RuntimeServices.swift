@@ -55,7 +55,7 @@ enum RuntimeServices {
 
     /// Runs as a separate unprivileged watchdog. Selector/type come from Apple's
     /// RootDomainUserClient.cpp and the installed IOPMLibDefs.h, not guessed IDs.
-    static func watchLid(parent: pid_t, lease: URL, durationSeconds: Double = 1800) -> Int32 {
+    static func watchLid(parent: pid_t, lease: URL, durationSeconds: Double = 1800, intentID: UUID? = nil) -> Int32 {
         guard LidSessionPolicy.validDuration(durationSeconds) else { return 12 }
         // Install graceful child-only cancellation before opening or changing power services.
         let cancellation = LidWatchCancellation()
@@ -97,15 +97,27 @@ enum RuntimeServices {
         var logoEnabledAt: Double?
         var closedAt: Double?
         var exhausted = false
+        let intent = intentID.flatMap { LidSessionIntent(id: $0, durationSeconds: durationSeconds) }
+        let checkpoints = LidTimerCheckpointStore(directory: AgentBridge.directory)
+        let timer = intent.map { intent in
+            LidTimerMonitor(intent: intent, read: { checkpoints.read(intent.id) }, write: { try checkpoints.write($0) })
+        }
         while !cancellation.isRequested && kill(parent, 0) == 0 && FileManager.default.fileExists(atPath: lease.path) {
             guard let closed = physicalLidClosed else { return 10 }
             let power = battery()
             let thermal = ProcessInfo.processInfo.thermalState
-            if !closed { closedAt = nil; exhausted = false }
-            if closed && closedAt == nil { closedAt = ProcessInfo.processInfo.systemUptime }
-            if LidSessionPolicy.timedOut(closedAt: closedAt, now: ProcessInfo.processInfo.systemUptime, duration: durationSeconds) { exhausted = true }
+            if let timer {
+                // Durable before any power override or logo permission grant.
+                do { exhausted = try !timer.update(closed: closed, clock: LidContinuousClock.live()) }
+                catch { return 13 }
+            } else {
+                // Legacy explicit helper invocations retain their bounded timer.
+                if !closed { closedAt = nil; exhausted = false }
+                if closed && closedAt == nil { closedAt = ProcessInfo.processInfo.systemUptime }
+                if LidSessionPolicy.timedOut(closedAt: closedAt, now: ProcessInfo.processInfo.systemUptime, duration: durationSeconds) { exhausted = true }
+            }
             let eligible = LidSessionPolicy.eligible(exhausted: exhausted, externalPower: power.1,
-                battery: power.0, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: thermal)
+                battery: power.0, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: thermal) && LidResumeSafety.sessionUnlocked()
             // Restore the logo gate before allowing sleep or dropping the assertion.
             if (!eligible || !closed) && logo.active {
                 do { try restoreLogo(closed); logoEnabledAt = nil; try recordRecovery() } catch { return 8 }

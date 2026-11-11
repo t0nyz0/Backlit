@@ -159,6 +159,10 @@ struct LightPage: View {
                         Label(model.agents.isEmpty ? "Waiting for an agent" : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
                         Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
                         Button("Manage Connections"){model.selectedPage="connections"}
+                    } else if model.mode == .typing {
+                        Label("Light up while typing", systemImage: "keyboard").font(.system(size: 13, weight: .medium))
+                        TypingResponseControls(model: model)
+                        Text("The light turns off shortly after typing stops. With the lid closed, use an external keyboard.").font(.system(size: 11)).foregroundStyle(.secondary)
                     } else if model.mode == .touch {
                         Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:12,weight:.medium))
                         if model.touchSource != .screen {Toggle("Blink on trackpad click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)}
@@ -183,7 +187,7 @@ struct LightPage: View {
     }
     func modeRow(_ mode: GlowMode) -> some View {
         let selected = model.mode == mode
-        let subtitles: [GlowMode:String] = [.steady:model.t("Constant brightness","持續而柔和的光"),.breathe:model.t("Fade in and out","跟隨你的呼吸節奏"),.battery:model.t("Follow battery charge","一眼掌握電量"),.music:model.t("Respond to system playback","隨音樂律動"),.agents:model.t("Coding agent status","工作需要你時提醒"),.touch:model.t("Trackpad and optional typing response","觸控板與選用打字回應")]
+        let subtitles: [GlowMode:String] = [.steady:model.t("Constant brightness","持續而柔和的光"),.breathe:model.t("Fade in and out","跟隨你的呼吸節奏"),.battery:model.t("Follow battery charge","一眼掌握電量"),.music:model.t("Respond to system playback","隨音樂律動"),.agents:model.t("Coding agent status","工作需要你時提醒"),.touch:model.t("Trackpad and optional typing response","觸控板與選用打字回應"),.typing:model.t("Light up while typing","打字時亮起")]
         return Button {model.mode=mode} label: {
             HStack(spacing:12) {
                 Image(systemName:mode.symbol).font(.system(size:17,weight:.medium)).frame(width:34,height:34).foregroundStyle(selected ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.6)).background(selected ? Color.primary : Color.primary.opacity(0.045),in:RoundedRectangle(cornerRadius:10))
@@ -258,7 +262,8 @@ struct SettingsPage: View {
             settingRow(model.t("Logo shortcut","標誌快捷鍵"),"Toggle the logo from any app. Option-click the menu icon also works.") {Button(model.shortcutLabel){recording=true}.frame(width:150)}
         }
         Surface(model.t("Logo and power","進階控制")) {
-            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake while closed. Stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔上螢幕時讓 Mac 保持喚醒。電量不足、過熱或開啟低耗電模式時停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.keepClosed},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
+            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake while closed. Stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔上螢幕時讓 Mac 保持喚醒。電量不足、過熱或開啟低耗電模式時停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.lidRequested},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
+            Text(model.lidPreferenceStatus).font(.system(size: 11)).foregroundStyle(.secondary)
             LidDurationControls(model: model)
             Divider()
             settingRow(model.t("Override ambient brightness limit","任何環境下的全亮度"),"Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.") {Toggle("Override ambient brightness limit",isOn:Binding(get:{model.ambientUnlocked},set:{model.setAmbient($0)})).labelsHidden().toggleStyle(.switch)}
@@ -310,10 +315,10 @@ struct LidDurationControls: View {
                         Text(model.t("Hours", "小時")).tag(LidDurationUnit.hours)
                     }.labelsHidden().frame(width: 100)
                 }
-                Text(model.t("The timer starts each time you close the lid. Maximum 7 days.", "每次闔蓋時開始計時，最長 7 天。"))
+                Text(model.t("The timer starts each time you close the lid. Relaunching does not reset it. Maximum 7 days.", "每次闔蓋時開始計時，重新開啟不會重設計時器，最長 7 天。"))
                     .foregroundStyle(.secondary)
             } else {
-                Text(model.t("No timer. Stays active until you turn it off or quit Backlit. Safety limits still apply.", "不設定計時器，直到手動關閉或結束 Backlit。安全限制仍然適用。"))
+                Text(model.t("No timer. Your choice is remembered across updates and relaunches. Quitting restores normal sleep; reopening resumes only when safe.", "不設定計時器。更新或重新開啟後仍保留選擇。結束時還原正常睡眠，重新開啟後只在安全時恢復。"))
                     .foregroundStyle(.secondary)
             }
         }
@@ -397,6 +402,8 @@ struct MenuView: View {
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel("Music intensity")};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);MusicCaptureStatus(model: model)}.font(.system(size:11))
             } else if model.mode == .battery {
                 Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
+            } else if model.mode == .typing {
+                TypingResponseControls(model: model).font(.system(size: 11))
             } else if model.mode == .touch {
                 TypingResponseControls(model: model).font(.system(size:11))
                 VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:11)).foregroundStyle(.secondary)}

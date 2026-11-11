@@ -34,8 +34,8 @@ import XCTest
         XCTAssertEqual(reopened.brightness, 0.23)
         XCTAssertTrue(reopened.prepareQuit())
     }
-    func testOnlyTheSixExistingBehaviorsAndBasicAutomationRemain() {
-        XCTAssertEqual(Set(GlowMode.allCases.map(\.rawValue)), Set(["steady", "breathe", "battery", "music", "agents", "touch"]))
+    func testSupportedBehaviorsIncludeStandaloneTypingAndBasicAutomation() {
+        XCTAssertEqual(Set(GlowMode.allCases.map(\.rawValue)), Set(["steady", "breathe", "battery", "music", "agents", "touch", "typing"]))
         XCTAssertNil(GlowMode(rawValue: "signals"))
         XCTAssertNil(GlowMode(rawValue: "focus"))
         for url in ["backlit://signal?category=build&state=active", "backlit://focus", "backlit://mode?name=Signals"] {
@@ -43,5 +43,6 @@ import XCTest
         }
         XCTAssertNoThrow(try AutomationCommand(url: URL(string: "backlit://toggle")!))
         XCTAssertNoThrow(try AutomationCommand(url: URL(string: "backlit://mode?name=Battery")!))
+        XCTAssertEqual(try? AutomationCommand(url: URL(string: "backlit://mode?name=Typing")!), .mode(.typing))
     }
 }

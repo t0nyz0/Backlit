@@ -9,6 +9,7 @@ test("fixed commands and validated settings produce only Backlit links", () => {
     assert.equal(linkFor("brightness", { percentage: 1 }), "backlit://brightness?value=1");
     assert.equal(linkFor("brightness", { percentage: 100 }), "backlit://brightness?value=100");
     assert.equal(linkFor("mode", { mode: "trackpad" }), "backlit://mode?name=trackpad");
+    assert.equal(linkFor("mode", { mode: "typing" }), "backlit://mode?name=typing");
 });
 
 test("URLs, credentials, booleans and nonfinite values cannot become settings", () => {

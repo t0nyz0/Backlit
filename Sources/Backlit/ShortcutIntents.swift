@@ -2,10 +2,10 @@ import AppIntents
 
 // Native intent discovery/metadata extraction still needs a packaged-app check.
 enum ShortcutBehavior:String,AppEnum {
-    case steady,breathe,battery,music,agents,trackpad
+    case steady,breathe,battery,music,agents,trackpad,typing
     static var typeDisplayRepresentation:TypeDisplayRepresentation {"Behavior"}
     static var caseDisplayRepresentations:[ShortcutBehavior:DisplayRepresentation] {
-        [.steady:"Steady",.breathe:"Breathe",.battery:"Battery",.music:"Music",.agents:"Agents",.trackpad:"Trackpad"]
+        [.steady:"Steady",.breathe:"Breathe",.battery:"Battery",.music:"Music",.agents:"Agents",.trackpad:"Trackpad",.typing:"Typing"]
     }
 }
 

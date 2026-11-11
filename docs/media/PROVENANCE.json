@@ -13,17 +13,17 @@
     "connections-automation-light.png": {
       "width": 1100,
       "height": 1148,
-      "sha256": "e2c246f62bfb6f0b10510f76d1a308d66595e87d17bdc40b24691970529957af"
+      "sha256": "91f91e69b064ae4bb7a2d39c80ba05181faa6ee18106a8be8a876b56238eadaf"
     },
     "connections-dark.png": {
       "width": 1100,
-      "height": 888,
-      "sha256": "30dead6a1fad373fac9e32dc8c04d0bd24cbecc4b47d0bf4a6fdac9c04a45232"
+      "height": 1148,
+      "sha256": "ac4517e8412c96e1915a82b44907ff3cc6667d14ab12ccded5adf30029a3d0f9"
     },
     "connections-light.png": {
       "width": 1100,
-      "height": 888,
-      "sha256": "8fd12b43fbaa9f1008ec78d36e3f32281592b87b2d9545041b114aff8755992c"
+      "height": 1148,
+      "sha256": "d26dca606791fbe4764767b0333562156256c6e2dfaeb98a9cf50a26e4ce730c"
     },
     "icon.png": {
       "width": 512,
@@ -32,38 +32,43 @@
     },
     "light-dark.png": {
       "width": 1100,
-      "height": 888,
-      "sha256": "0453ffd90261c311924f555270c95776db4bdd8a291aee11b2948ff6e110b634"
+      "height": 1148,
+      "sha256": "cd5013a0006f5ec44527180f52f779d0edfc71aedc5fb7f531a14a1f982a8239"
     },
     "light-light.png": {
       "width": 1100,
-      "height": 888,
-      "sha256": "257bfc2f4964c91704a7119aa085740d1ef637650d86b293f7f7d5ae8f8b4954"
+      "height": 1148,
+      "sha256": "75fbd833d5959d4e12cb519247d410aa21ab56fdfc0c0384259d51bc4d4c216f"
     },
     "menu-light.png": {
       "width": 320,
       "height": 386,
-      "sha256": "a5b7faa4dbcbd969f0e86a091b92f007938deaaf98d8494baee8f9723db72a65"
+      "sha256": "9394eb0c89823ccf1f2699dc13ab2d87bc68b9c33e9a55c0e4b1777bb26f2d27"
     },
     "music-light.png": {
       "width": 1100,
       "height": 1148,
-      "sha256": "993787fea988174963385b60bf4601335c98d6d1d3b1f58f9c20243524707d12"
+      "sha256": "9af076a30292309312982d9f09cf6692df56d5d283b01a870054640ed4c7cbe5"
     },
     "settings-dark.png": {
       "width": 1100,
       "height": 1148,
-      "sha256": "90f18611c6f1ed55c8458e1069093de2cae273844e780922972d7a4aa307a3c0"
+      "sha256": "cdab40127c0c35bd927e77f64d6790661a65ddb45f5548f3e990f7ec092e15a1"
     },
     "settings-light.png": {
       "width": 1100,
       "height": 1148,
-      "sha256": "745b98205afbc3e808803adf97c2513bb854c8fe92e470247991c5114abb6c36"
+      "sha256": "e04125edce33ea841f88635b601892143a6aaf6c3b0d29882f841077667186a9"
     },
     "trackpad-light.png": {
       "width": 1100,
       "height": 1148,
-      "sha256": "5004555b973d83804c5a6c2be719326e2e8a9e22aa6bb0adfb867d0f39717ea0"
+      "sha256": "8395c82c136a8179cf12d88ce6119b335afff1e071c992e2366734e5ebdafa57"
+    },
+    "typing-light.png": {
+      "width": 1100,
+      "height": 1148,
+      "sha256": "35acdd0ee4cfb4c393a7449f662780ea35ecb0567040a7a9774f2439a2f876a7"
     }
   }
 }

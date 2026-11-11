@@ -12,7 +12,7 @@ enum LidDurationUnit: String, Codable, CaseIterable, Identifiable {
     var maximum: Int { Int(LidSessionDuration.maximumSeconds) / seconds }
 }
 
-/// Only the duration preference persists. Starting a session remains an explicit action.
+/// Duration preference is separate from the explicitly requested session.
 struct LidSessionDuration: Codable, Equatable {
     static let preferenceKey = "lid.sessionDuration"
     static let defaultSeconds = 1800.0
@@ -43,8 +43,8 @@ struct LidSessionDuration: Codable, Equatable {
         self.init(mode: mode, amount: amount, unit: unit)
     }
 
-    func watcherArguments(parent: Int32, lease: URL) -> [String] {
-        ["--watch-lid", String(parent), lease.path, String(Int(durationSeconds))]
+    func watcherArguments(parent: Int32, lease: URL, intent: UUID? = nil) -> [String] {
+        ["--watch-lid", String(parent), lease.path, String(Int(durationSeconds))] + (intent.map { [$0.uuidString] } ?? [])
     }
 }
 
@@ -54,15 +54,16 @@ struct LidWatcherArguments: Equatable {
     let parent: Int32
     let lease: URL
     let durationSeconds: Double
+    let intent: UUID?
 
     init?(arguments: [String]) {
         guard let index = arguments.firstIndex(of: "--watch-lid") else { return nil }
         let values = Array(arguments.dropFirst(index + 1))
-        guard values.count == 2 || values.count == 3,
+        guard (2...4).contains(values.count),
               let parent = Int32(values[0]), parent > 0,
               values[1].hasPrefix("/"), !values[1].contains("\0") else { return nil }
         let seconds: Double
-        if values.count == 3 {
+        if values.count >= 3 {
             guard let parsed = Double(values[2]), parsed.isFinite,
                   parsed >= 0, parsed <= LidSessionDuration.maximumSeconds else { return nil }
             seconds = parsed
@@ -70,5 +71,9 @@ struct LidWatcherArguments: Equatable {
         self.parent = parent
         self.lease = URL(fileURLWithPath: values[1])
         self.durationSeconds = seconds
+        if values.count == 4 {
+            guard let intent = UUID(uuidString: values[3]) else { return nil }
+            self.intent = intent
+        } else { intent = nil }
     }
 }

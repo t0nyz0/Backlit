@@ -27,16 +27,20 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 | Music | Responds to bass energy in system playback, with automatic level adjustment, Smooth/Balanced/Punchy response, sensitivity, and dark-between-beat controls. |
 | Agents | Shows working, waiting, and attention states from coding agents. |
 | Trackpad | Lights while a finger rests on the trackpad, with any app open. Optional click blink and permission-gated typing response. |
+| Typing | Lights briefly while you type, with any app open. Requires macOS Input Monitoring permission; uses timing only, not characters. |
 
 Battery mode displays **Battery-driven output** in the workspace and menu, without a manual brightness slider. Switching to another mode restores its saved manual brightness. Optional Battery styles and brief charge-ready signals can override the automatic charging pattern.
+
+For Typing, select **Enable or retry typing access** and follow macOS’s Input Monitoring instructions. Secure Input can suppress typing response. With the lid closed, typing requires an external keyboard and Trackpad requires a compatible external trackpad.
 
 The logo supports white light. Brightness and timing are adjustable; RGB colors and pixel animations are not supported.
 
 <details>
-<summary>Music and Trackpad screenshots</summary>
+<summary>Music, Trackpad and Typing screenshots</summary>
 
 <img src="docs/media/music-light.png" width="280" alt="Native Music controls with Automatic level and response presets">
 <img src="docs/media/trackpad-light.png" width="280" alt="Native Trackpad controls with optional typing response switched off">
+<img src="docs/media/typing-light.png" width="280" alt="Native standalone Typing controls and Input Monitoring access guidance">
 
 </details>
 

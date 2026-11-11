@@ -58,6 +58,11 @@ final class LidSessionDurationTests: XCTestCase {
             XCTAssertEqual(request.durationSeconds, duration.durationSeconds)
         }
         XCTAssertEqual(LidWatcherArguments(arguments: ["--watch-lid", "123", lease.path, "0.5"])?.durationSeconds, 0.5)
+        let token = UUID(), duration = LidSessionDuration(amount: 2, unit: .hours)
+        let retained = try XCTUnwrap(LidWatcherArguments(arguments: ["Backlit"] + duration.watcherArguments(parent: 123, lease: lease, intent: token)))
+        XCTAssertEqual(retained.intent, token)
+        XCTAssertEqual(retained.durationSeconds, 7200)
+        XCTAssertNil(legacy.intent)
     }
 
     func testInvalidWatcherArgumentsAreRejected() {

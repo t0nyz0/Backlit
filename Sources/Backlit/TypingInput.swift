@@ -2,6 +2,16 @@ import Foundation
 import CoreGraphics
 import CoreFoundation
 
+struct TypingPermissionCheck: Equatable {
+    let before: Bool
+    let requestResult: Bool?
+    let after: Bool
+    var diagnostic: String {
+        let request = requestResult.map { $0 ? "granted" : "not granted" } ?? "not needed"
+        return "This running app: access before = \(before ? "allowed" : "denied"); request = \(request); access after = \(after ? "allowed" : "denied")."
+    }
+}
+
 /// A short inactivity window. It contains timing only, never keyboard content.
 struct TypingActivity {
     static let defaultHoldDuration:TimeInterval = 0.18
@@ -54,7 +64,14 @@ struct TypingActivity {
     private(set) var status="Typing response is off" {
         didSet {if status != oldValue {onStatus?(status)}}
     }
-    var permissionGranted:Bool {CGPreflightListenEventAccess()}
+    private let preflightAccess: () -> Bool
+    private let requestAccess: () -> Bool
+    var permissionGranted:Bool {preflightAccess()}
+    init(preflightAccess: @escaping () -> Bool = { CGPreflightListenEventAccess() },
+         requestAccess: @escaping () -> Bool = { CGRequestListenEventAccess() }) {
+        self.preflightAccess = preflightAccess
+        self.requestAccess = requestAccess
+    }
     var holdDuration:TimeInterval {
         get {activity.holdDuration}
         set {activity.holdDuration=newValue}
@@ -69,9 +86,16 @@ struct TypingActivity {
 
     /// Call only from a deliberate user permission action, never during startup.
     @discardableResult func requestPermission()->Bool {
-        let allowed=CGRequestListenEventAccess()
-        status=allowed ? "Typing access is allowed" : "Allow Input Monitoring for Backlit, then reopen the app"
-        return allowed
+        requestPermissionCheck().after
+    }
+    /// Explicit user action only. Report the OS request separately from effective access.
+    func requestPermissionCheck() -> TypingPermissionCheck {
+        let before = permissionGranted
+        let request = before ? nil : Optional(requestAccess())
+        let check = TypingPermissionCheck(before: before, requestResult: request, after: permissionGranted)
+        if !check.after { stop() }
+        status = check.after ? "Typing access is allowed" : "macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit."
+        return check
     }
     /// Preflights permission; this method never asks macOS for new access.
     @discardableResult func start()->Bool {
@@ -91,7 +115,7 @@ struct TypingActivity {
                 }
                 return Unmanaged.passUnretained(event)
             },userInfo:retained.toOpaque()) else {
-            retained.release();status="Typing events are unavailable on this macOS session"
+            retained.release();status="Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry."
             return false
         }
         guard let runLoopSource=CFMachPortCreateRunLoopSource(kCFAllocatorDefault,candidate,0) else {

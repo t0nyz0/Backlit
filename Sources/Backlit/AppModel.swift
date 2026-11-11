@@ -41,9 +41,12 @@ enum MusicCapturePolicy {
     let typing = TypingInput()
     private let powerMonitor = PowerSourceMonitor()
     private var typingDown = false
-    private var typingWanted = false
+    private var typingStartPolicy = TypingStartPolicy()
+    var typingDriver: TypingDriver?
     private var touchWanted = false
     @Published var typingStatus = "Typing response is off"
+    @Published var typingAccessFeedback: String?
+    @Published var typingAccessCheck: TypingPermissionCheck?
     @Published var typingEnabled = false {
         didSet { guard !isLoading else { return }; defaults.set(typingEnabled, forKey: "typing.enabled"); synchronizeTyping() }
     }
@@ -129,13 +132,20 @@ enum MusicCapturePolicy {
     @Published var audioStarting = false
     @Published private(set) var audioStopping = false
     @Published var keepClosed = false
+    @Published private(set) var lidRequested = false
+    @Published private(set) var lidPreferenceStatus = "Off"
+    private let lidIntentController: LidIntentController
+    private let lidIntentEnvironment: LidIntentEnvironment?
+    private var lastLidIntentCheck = -Double.infinity
+    private var lastHardwareResult: FadeApplyResult?
+    private var lidOffPending = false
     @Published private(set) var lidSessionDuration = LidSessionDuration() {
         didSet {
             guard !isLoading, let data = try? JSONEncoder().encode(lidSessionDuration) else { return }
             defaults.set(data, forKey: LidSessionDuration.preferenceKey)
         }
     }
-    var canEditLidDuration: Bool { watcher == nil && !lidStopPending && !lidStopper.hasOutstandingFilesystemWork }
+    var canEditLidDuration: Bool { !lidRequested && watcher == nil && !lidStopPending && !lidStopper.hasOutstandingFilesystemWork }
     @Published var ambientUnlocked = false
     @Published var bridgeEnabled = false
     @Published var bridgeLAN = false
@@ -159,6 +169,7 @@ enum MusicCapturePolicy {
     private var isLoading = true
     private var timer: Timer?
     private var terminationApproved = false
+    private let quitRunLoop = QuitRunLoop()
     private var isStopping = false
     private(set) var hardwareRecoveryInProgress = false
     private(set) var hardwareApplyInProgress = false
@@ -166,6 +177,7 @@ enum MusicCapturePolicy {
     private(set) var lidCleanupInProgress = false
     var lifecycleAllowsFrames: Bool { !isStopping && !hardwareOperationInProgress && !lidCleanupInProgress && !lidStopFailed }
     private let hardwareRestore: (() throws -> Void)?
+    private let hardwareApply: ((Double, Bool) throws -> FadeApplyResult)?
     private var tickCount = 0
     private var lastSourceSample = -Double.infinity
     private var lastBatterySample = -Double.infinity
@@ -241,18 +253,26 @@ enum MusicCapturePolicy {
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
         case .touch:return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
+        case .typing:return typingDown ? "Typing active · light on" : typingStatus
         }
     }
     var colorScheme: ColorScheme? { appearance == "dark" ? .dark : appearance == "light" ? .light : nil }
 
     init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil,
          musicCaptureObservation: (() -> MusicCaptureObservation)? = nil,
-         hardwareRestore: (() throws -> Void)? = nil) {
+         hardwareRestore: (() throws -> Void)? = nil, lidIntentEnvironment: LidIntentEnvironment? = nil,
+         hardwareApply: ((Double, Bool) throws -> FadeApplyResult)? = nil) {
         self.hardwareRestore = hardwareRestore
+        self.hardwareApply = hardwareApply
+        self.lidIntentEnvironment = lidIntentEnvironment
         self.musicCaptureObservation = musicCaptureObservation
         self.lidStopper = lidStopper ?? LidWatcherStopper()
         self.demo = demo
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
+        lidIntentController = LidIntentController(defaults: self.defaults)
+        let requested = lidIntentController.intent != nil
+        lidRequested = requested
+        lidPreferenceStatus = requested ? "Remembered. Waiting for your Mac and light to be ready." : "Off"
         if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
         if let data = self.defaults.data(forKey: LidSessionDuration.preferenceKey),
            let duration = try? JSONDecoder().decode(LidSessionDuration.self, from: data) { lidSessionDuration = duration }
@@ -306,7 +326,7 @@ enum MusicCapturePolicy {
             if active && RuntimeServices.locked {
                 self.cachedLocked = true
                 self.typing.stop()
-                self.typingWanted = false
+                self.typingStartPolicy = TypingStartPolicy()
                 return
             }
             self.typingDown = active
@@ -346,7 +366,11 @@ enum MusicCapturePolicy {
             }
             self.lidStopPending = false
             self.lidCleanupInProgress = false
-            if !safe { self.controlWanted = false; self.cancelStopping() }
+            if !safe {
+                self.lidIntentController.block(); self.controlWanted = false; self.cancelStopping()
+                self.lidPreferenceStatus = "Paused after an error. Restore your light before retrying."
+            } else if self.lidRequested { self.lidPreferenceStatus = "Remembered. Waiting for your Mac and light to be ready." }
+            self.lastLidIntentCheck = -Double.infinity
             if !self.isStopping { self.configureTimer(); self.requestFrame() }
             self.onLidStopCompleted?(safe)
         }
@@ -382,6 +406,7 @@ enum MusicCapturePolicy {
     }
     func tick() {
         guard lifecycleAllowsFrames else { return }
+        if lidOffPending { stopLid(); return }
         if let watcher, !watcher.isRunning, !lidStopPending { stopLid(); return }
         tickCount += 1
         let now = ProcessInfo.processInfo.systemUptime
@@ -402,15 +427,23 @@ enum MusicCapturePolicy {
             cachedLocked = demo ? false : RuntimeServices.locked
             cachedAway = demo ? false : RuntimeServices.away
         }
-        let allowClosed = keepClosed && cachedLid
+        if let lidIntentEnvironment {
+            cachedLid = lidIntentEnvironment.closed() ?? false
+            cachedLocked = !lidIntentEnvironment.safety().unlocked
+        }
+        synchronizeLidIntent(preflightOnly: true)
+        guard lifecycleAllowsFrames else { return }
+        // A remembered choice can prepare ownership while closed; the helper
+        // itself still waits for fresh safety checks and its original deadline.
+        let allowClosed = cachedLid && (keepClosed || (lidRequested && lidIntentController.intent?.blocked == false && !cachedLocked))
         let lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
         var nextPause: String?
         if systemSleeping { nextPause = "Mac is sleeping" }
         else if let competingController { nextPause = "Quit \(competingController) to use Backlit" }
         else if !consoleActive { nextPause = "User session inactive" }
         else if ProcessInfo.processInfo.thermalState == .critical { nextPause = "Paused while your Mac cools down" }
-        else if !demo && mode != .agents && !allowClosed && (screenSleeping || cachedLocked) { nextPause = "Paused with your display" }
-        else if !demo && lowPower && mode != .agents && mode != .battery { nextPause = "Paused in Low Power Mode" }
+        else if (!demo || hardwareApply != nil) && mode != .agents && !allowClosed && (screenSleeping || cachedLocked) { nextPause = "Paused with your display" }
+        else if (!demo || hardwareApply != nil) && lowPower && mode != .agents && mode != .battery { nextPause = "Paused in Low Power Mode" }
         else { nextPause = nil }
         if pausedReason != nextPause {
             pausedReason = nextPause
@@ -425,19 +458,21 @@ enum MusicCapturePolicy {
         // Capture pauses independently of hardware ownership: losing the
         // device must not keep audio active after display sleep or lock.
         if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }
-        if controlWanted && !demo {
+        if controlWanted && (!demo || hardwareApply != nil) {
             if pausedReason != nil { releaseHardware() }
             else {
                 do {
                     try withHardwareApply {
                         try updateMusicHardwareReadiness {
+                            if let hardwareApply { controlling = true; return try hardwareApply(output, keepClosed) }
                             if !controlling { try device.begin(); controlling = true }
                             return try device.apply(output, closedLid: keepClosed, frameInterval: EffectCadence.animationInterval(for:mode))
                         }
                     }
-                } catch { self.error = error.localizedDescription; controlWanted = false; stopLid(); releaseHardware() }
+                } catch { self.error = error.localizedDescription; lidIntentController.block(); controlWanted = false; stopLid(); releaseHardware() }
             }
         }
+        synchronizeLidIntent()
         // Capture starts only after ownership and the first output request
         // succeed, and stops if that work failed or the session became unsafe.
         synchronizeMusicCapture()
@@ -457,6 +492,9 @@ enum MusicCapturePolicy {
             input.audio = musicResponse.update(energy: energy, at: now, automatic: musicAutomatic, preset: musicPreset)
         }
         input.intensity = intensity; input.strobe = strobe
+        input.agent = agentState; input.away = cachedAway
+        input.touchDown = (touchDown && !touchBlinking) || typingDown
+        input.typingDown = typingDown
         return pausedReason == nil ? Effects.level(at: now - epoch, input: input) : 0
     }
     func requestFrame() {
@@ -474,8 +512,14 @@ enum MusicCapturePolicy {
         next.tolerance=animated ? min(0.005,interval*0.06) : 0.1
         RunLoop.main.add(next,forMode:.common);timer=next
     }
+    var inputSessionEligible: Bool {
+        let allowedClosed = keepClosed && cachedLid
+        return lifecycleAllowsFrames && controlWanted && (mode == .touch || mode == .typing) && enabled &&
+            pausedReason == nil && !cachedLocked && !systemSleeping && consoleActive &&
+            (!screenSleeping || allowedClosed)
+    }
     private func synchronizeTouch(forceRestart: Bool = false) {
-        let shouldRun = !demo && lifecycleAllowsFrames && controlWanted && mode == .touch && enabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
+        let shouldRun = !demo && mode == .touch && inputSessionEligible
         let previous = touchWanted
         touchWanted = shouldRun
         if shouldRun && (!previous || forceRestart) {
@@ -490,12 +534,55 @@ enum MusicCapturePolicy {
             self?.requestFrame()
         }
     }
-    private func synchronizeTyping(forceRestart: Bool = false) {
-        let shouldRun = !demo && lifecycleAllowsFrames && controlWanted && mode == .touch && enabled && typingEnabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
-        if shouldRun && (!typingWanted || forceRestart) { _ = typing.start() }
-        else if !shouldRun && typing.running { typing.stop() }
-        typingWanted = shouldRun
-        if !shouldRun { typingDown = false }
+    func synchronizeTyping(forceRestart: Bool = false) {
+        let shouldRun = !demo && typingInputEligible
+        let driver = demo ? typingDriver : nil
+        let eligible = driver?.eligible() ?? shouldRun
+        let action = typingStartPolicy.action(eligible: eligible, force: forceRestart,
+            now: driver?.now() ?? ProcessInfo.processInfo.systemUptime,
+            permission: { driver?.permission() ?? self.typing.permissionGranted })
+        if action == .start {
+            if let driver { _ = driver.start() } else { _ = typing.start() }
+        } else if action == .stop {
+            if driver?.running() ?? typing.running {
+                if let driver { driver.stop() } else { typing.stop() }
+            }
+            typingDown = false
+            typingStatus = eligible ? "Input Monitoring permission is required for typing response" : "Typing response is off"
+        }
+        if !eligible { typingDown = false }
+    }
+    var typingInputEligible: Bool {
+        inputSessionEligible && (mode == .typing || (mode == .touch && typingEnabled))
+    }
+    /// Deliberate access action shared by the standalone behavior and Trackpad option.
+    func retryTypingAccess() {
+        guard !demo else { notice = "Typing input is disabled in preview."; return }
+        let check = typing.requestPermissionCheck()
+        typingAccessCheck = check
+        typingAccessFeedback = check.diagnostic
+        guard check.after else {
+            typingStatus = typing.status
+            return
+        }
+        guard typingInputEligible else {
+            typingAccessFeedback = check.diagnostic + " Typing is paused: \(pausedReason ?? (!enabled ? "turn the logo on" : "select Typing with the Mac awake, unlocked and light control active"))."
+            return
+        }
+        synchronizeTyping(forceRestart: true)
+        typingAccessFeedback = check.diagnostic + " " + typing.status
+    }
+    /// Supply synthetic state only in previews/tests, without registering input taps.
+    func setPreviewInput(typing: Bool, blinking: Bool, away: Bool) {
+        guard demo else { return }
+        typingDown = typing; touchBlinking = blinking; cachedAway = away
+    }
+    func setPreviewInputSession(lidClosed: Bool, locked: Bool = false,
+                                screenAsleep: Bool, systemAsleep: Bool = false,
+                                sessionActive: Bool = true) {
+        guard demo else { return }
+        cachedLid = lidClosed; cachedLocked = locked; screenSleeping = screenAsleep
+        systemSleeping = systemAsleep; consoleActive = sessionActive
     }
     func setTypingEnabled(_ enabled: Bool) {
         guard !demo else { notice = "Typing input is disabled in preview."; return }
@@ -544,6 +631,7 @@ enum MusicCapturePolicy {
     @discardableResult func withHardwareRecovery(_ operation: () throws -> Void) rethrows -> Bool {
         guard !hardwareOperationInProgress else { return false }
         hardwareRecoveryInProgress = true
+        lastHardwareResult = nil
         musicHardwareReady = false
         if audioRunning || audioStarting { stopAudio() }
         defer { hardwareRecoveryInProgress = false; requestFrame() }
@@ -553,7 +641,7 @@ enum MusicCapturePolicy {
     func releaseHardware() {
         guard controlling, !hardwareOperationInProgress, !lidCleanupInProgress else { return }
         do { try restoreOwnedHardware() }
-        catch { self.error = error.localizedDescription; controlWanted = false }
+        catch { lidIntentController.block(); self.error = error.localizedDescription; controlWanted = false }
     }
     private func restoreOwnedHardware() throws {
         let restored = try withHardwareRecovery {
@@ -585,7 +673,10 @@ enum MusicCapturePolicy {
     /// requires an applied frame, not a waiting helper or a safely paused fade.
     func updateMusicHardwareReadiness(_ operation: () throws -> FadeApplyResult) rethrows {
         musicHardwareReady = false
-        if case .applied = try operation() { musicHardwareReady = true }
+        lastHardwareResult = nil
+        let result = try operation()
+        lastHardwareResult = result
+        if case .applied = result { musicHardwareReady = true }
     }
     var musicCaptureAllowed: Bool {
         let observed = musicCaptureObservation?() ?? .init(deviceAvailable: device.available,
@@ -636,22 +727,107 @@ enum MusicCapturePolicy {
             amount: amount ?? lidSessionDuration.amount, unit: unit ?? lidSessionDuration.unit)
     }
     func setLid(_ enabled: Bool) {
+        // Off withdraws future resume intent even if a hardware operation is
+        // currently pumping callbacks. Cleanup begins once that batch returns.
+        if !enabled {
+            lidIntentController.disable(); lidRequested = false; lidPreferenceStatus = "Off"
+            lidOffPending = true
+            stopLid(); requestFrame(); return
+        }
         guard !hardwareOperationInProgress, !lidCleanupInProgress else { notice = "Light recovery is still in progress."; return }
-        guard !demo else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
-        if !enabled { stopLid(); return }
+        guard !demo || hardwareApply != nil else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
         guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else {
             error = "Finish the previous closed-lid session cleanup before starting another."; return
         }
-        guard controlling, device.competingApp == nil else { error = "Your logo needs to be ready before starting a closed-lid session."; return }
         do {
-            try FileManager.default.createDirectory(at:AgentBridge.directory,withIntermediateDirectories:true)
-            let file = AgentBridge.directory.appendingPathComponent("lid-lease-\(UUID().uuidString)")
-            try Data().write(to:file,options:.atomic)
+            try lidIntentController.enable(duration: lidSessionDuration, environment: currentLidIntentEnvironment())
+            lidRequested = true
+            synchronizeLidIntent(force: true)
+        } catch {
+            lidRequested = lidIntentController.intent != nil; self.error = error.localizedDescription
+            lidPreferenceStatus = "Paused after an error. Restore your light before retrying."
+        }
+    }
+    private func currentLidIntentEnvironment() -> LidIntentEnvironment {
+        if let lidIntentEnvironment { return lidIntentEnvironment }
+        return LidIntentEnvironment(clock: { LidContinuousClock.live() }, closed: { RuntimeServices.physicalLidClosed }, safety: { [weak self] in
+            let power = RuntimeServices.batterySnapshot()
+            let closed = RuntimeServices.physicalLidClosed
+            return LidResumeSafety(preview: self?.demo != false, enabled: self?.enabled == true,
+                owned: self?.controlWanted == true && self?.controlling == true && self?.device.available == true &&
+                    (self?.watcher != nil || self?.lastHardwareResult == .applied || self?.lastHardwareResult == .paused),
+                cleanupClear: self?.hardwareOperationInProgress == false && self?.lidCleanupInProgress == false &&
+                    self?.lidStopPending == false && self?.lidStopFailed == false &&
+                    (self?.watcher != nil || !LidWatcherStopper.journalNeedsRecovery(AgentBridge.directory.appendingPathComponent("lid-recovery.json"))),
+                awake: self?.systemSleeping == false && self?.consoleActive == true && (closed == true || self?.screenSleeping == false),
+                unlocked: LidResumeSafety.sessionUnlocked(), externalPower: power?.externalPower == true,
+                battery: power?.level, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: ProcessInfo.processInfo.thermalState)
+        }, checkpoints: .init(directory: AgentBridge.directory), start: { intent, lease in
+            try FileManager.default.createDirectory(at: lease.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try Data().write(to: lease, options: .atomic)
             let process = Process(); process.executableURL = Bundle.main.executableURL
-            process.arguments = lidSessionDuration.watcherArguments(parent: getpid(), lease: file)
+            process.arguments = ["--watch-lid", String(getpid()), lease.path, String(intent.durationSeconds), intent.id.uuidString]
             process.standardOutput = FileHandle.nullDevice; process.standardError = FileHandle.nullDevice
-            try process.run(); adoptLidWatcher(process, lease: file)
-        } catch { self.error = error.localizedDescription }
+            do { try process.run(); return process }
+            catch { try? FileManager.default.removeItem(at: lease); throw error }
+        })
+    }
+    func synchronizeLidIntent(force: Bool = false, preflightOnly: Bool = false) {
+        guard !hardwareOperationInProgress else { return }
+        let intent = lidIntentController.intent
+        if lidRequested && intent == nil { lidOffPending = true }
+        lidRequested = intent != nil
+        if intent == nil {
+            lidPreferenceStatus = "Off"
+            if lidOffPending { stopLid() }
+            return
+        }
+        guard !demo || hardwareApply != nil else { lidPreferenceStatus = "Remembered. Preview never starts a closed-lid session."; return }
+        guard !isStopping, !lidCleanupInProgress, !lidStopPending else { return }
+        let environment = currentLidIntentEnvironment()
+        let now = environment.clock()?.seconds ?? ProcessInfo.processInfo.systemUptime
+        guard force || now < lastLidIntentCheck || now - lastLidIntentCheck >= 1 else { return }
+        if let intent, watcher != nil {
+            lastLidIntentCheck = now
+            guard !intent.blocked else { lidPreferenceStatus = "Paused after an error. Turn this setting off and on after recovery."; stopLid(); return }
+            guard environment.safety().eligible else {
+                lidPreferenceStatus = "Remembered. Paused for your Mac’s safety settings."
+                stopLid(); return
+            }
+            let closed = environment.closed()
+            let checkpoint = environment.checkpoints.read(intent.id), clock = environment.clock()
+            switch LidIntentPolicy.timer(intent: intent, checkpoint: checkpoint, clock: clock, closed: closed) {
+            case .expired:
+                lidPreferenceStatus = "Timer finished. Reopen the lid to begin another timed session."; stopLid()
+            case .needsOpen:
+                lidPreferenceStatus = "Remembered. Open the lid before starting another timed session."
+                // An active helper may be between its observed open and first
+                // closed poll. It must write the deadline before granting light.
+                if !(clock.map { checkpoint?.valid(for: intent, clock: $0) == true && checkpoint?.closedAt == nil } ?? false) { stopLid() }
+            case .unavailable:
+                lidPreferenceStatus = "Remembered. Waiting for a verified lid and timer state."; stopLid()
+            case .ready:
+                lidPreferenceStatus = closed == false ? "Ready for the next lid closure." :
+                    (ClosedEffectSession.permitted() ? "Active. Safety limits still apply." : "Waiting for closed-lid safety checks.")
+            }
+            return
+        }
+        guard !preflightOnly else { return }
+        lastLidIntentCheck = now
+        do {
+            switch try lidIntentController.resume(environment: environment) {
+            case .off: lidRequested = lidIntentController.intent != nil; lidPreferenceStatus = "Off"
+            case let .paused(message): lidPreferenceStatus = message
+            case let .started(started, process, lease):
+                guard adoptLidWatcher(process, lease: lease) else { throw RuntimeServices.failure("The closed-lid helper could not be adopted.") }
+                if lidIntentController.intent?.id != started.id { stopLid() }
+                else { lidPreferenceStatus = "Starting closed-lid safety checks…" }
+            }
+        } catch { lidIntentController.block(); self.error = error.localizedDescription; lidPreferenceStatus = "Paused after an error. Restore your light before retrying." }
+    }
+    func setPreviewLidSleep(_ sleeping: Bool) {
+        guard demo else { return }
+        screenSleeping = sleeping
     }
     /// Retain one owned helper until its exit and recovery record are checked.
     @discardableResult func adoptLidWatcher(_ process: any LidWatcherProcess, lease: URL) -> Bool {
@@ -661,11 +837,13 @@ enum MusicCapturePolicy {
     }
     func stopLid() {
         guard !hardwareOperationInProgress else { return }
+        lidOffPending = false
         keepClosed = false
         guard let watcher, !lidStopPending else { return }
         // Stop producing frames before revoking the helper's permission. The
         // fade watchdog and this process must not race ordinary animation.
         lidCleanupInProgress = true
+        if lidRequested { lidPreferenceStatus = "Cleaning up. Your choice is remembered." }
         musicHardwareReady = false
         synchronizeTouch(); synchronizeTyping(); stopAudio(); timer?.invalidate()
         if lidStopper.requestStop(process: watcher, lease: lease,
@@ -750,7 +928,7 @@ enum MusicCapturePolicy {
     }
     func quit() {
         guard updater.allowsTermination() else { error = updater.message; return }
-        NSApp.terminate(nil)
+        quitRunLoop.request { NSApp.terminate(nil) }
     }
     func prepareQuit(confirmOff: (() -> NSApplication.ModalResponse)? = nil) -> Bool {
         guard !hardwareOperationInProgress else { notice = "Light recovery is still in progress. Retry Quit when it finishes."; return false }

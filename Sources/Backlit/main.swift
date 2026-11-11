@@ -32,7 +32,7 @@ if arguments.contains("--watch-lid") {
     guard let request = LidWatcherArguments(arguments: arguments) else {
         FileHandle.standardError.write(Data("Invalid closed-lid helper arguments.\n".utf8)); exit(2)
     }
-    exit(RuntimeServices.watchLid(parent: request.parent, lease: request.lease, durationSeconds: request.durationSeconds))
+    exit(RuntimeServices.watchLid(parent: request.parent, lease: request.lease, durationSeconds: request.durationSeconds, intentID: request.intent))
 }
 if let operation = option("--ambient-helper") {
     do { guard ["enable","restore"].contains(operation) else { exit(2) }; try RuntimeServices.ambientHelper(enabled:operation == "enable"); exit(0) }
@@ -206,6 +206,9 @@ if arguments.contains("--verify-hardware") {
     func captureSuite(_ directory:URL) async {
         do {
             try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
+            // Documentation captures include the full settings panel without
+            // changing the normal app's window size.
+            window.setContentSize(NSSize(width: 1100, height: 1120))
             model.language="en"
             model.mode = .battery; model.batteryOptions = BatteryResponseOptions(); model.enabled = true
             try await Task.sleep(nanoseconds:2_200_000_000)
@@ -234,7 +237,7 @@ if arguments.contains("--verify-hardware") {
             let owned=NSWindow(contentRect:menu.frame,styleMask:.borderless,backing:.buffered,defer:false);owned.contentView=menu;owned.orderFront(nil)
             try await Task.sleep(nanoseconds:400_000_000)
             try capture(owned.contentView!.superview!,to:directory.appendingPathComponent("menu-light.png"));owned.orderOut(nil)
-            for (behavior, filename) in [(GlowMode.music, "music-light.png"), (.touch, "trackpad-light.png")] {
+            for (behavior, filename) in [(GlowMode.music, "music-light.png"), (.touch, "trackpad-light.png"), (.typing, "typing-light.png")] {
                 model.mode = behavior; model.selectedPage = "light"; model.notice = nil
                 try await Task.sleep(nanoseconds: 500_000_000)
                 try capture(window.contentView!.superview!, to: directory.appendingPathComponent(filename))

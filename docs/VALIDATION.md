@@ -34,9 +34,9 @@ Settings offers Download Latest Version when trusted in-app updating is unavaila
 
 ## Executed local checks
 
-- 355 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 380 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 17 Python tests cover Home Assistant Core/client fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
-- 15 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
+- 16 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, four-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
 
 Battery tests use saved manual levels of 0%, 25%, 50%, and other values; every unplugged percentage including zero is tested. Default/migrated preferences, active/full/paused/unplugged transitions, optional styles/cues, mode switching and preserved manual settings are covered. The corrected tests exercise the production model, rather than treating a manual-brightness multiplier as the expected result. Native captures show the workspace and menu output without a Battery manual slider.
@@ -66,3 +66,15 @@ Screenshots are captured from current native views in isolated preview; they ill
 Music and interactive effects use a capped 20 Hz feedback loop; Breathe, Battery and interior static levels use 10 Hz. Exact settled endpoints and paused states use one-second housekeeping. Previews publish at most 10 Hz, cache static artwork, and skip occluded windows. The independent recovery helper uses event-woken polling with a nominal 250 ms idle interval; this is not a hard scheduling guarantee. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
 
 The app targets Apple silicon/macOS 14+ and uses compatibility-sensitive private hardware/audio interfaces. Global screen-touch is unsupported. It is ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.
+
+## Current candidate follow-up checks
+
+Saved closed-lid intent tests cover explicit opt-in, separate-instance relaunch/upgrade, remaining continuous-time deadlines, invalid or expired records, startup while already closed, and expiry before another effect frame. Input tests cover production agent/contact/typing output and a 64-combination locked/sleeping/console/closed-lid eligibility matrix. These are isolated tests, not physical upgrade or external-input acceptance.
+
+Physically confirmed during candidate development: Steady/On, exact Off, Breathe and Music with the lid closed. Battery at full charge and Agents idle, working, and present-attention states were subsequently confirmed by the user with the lid closed. External Trackpad/typing still need final physical validation; compatible external input hardware and required macOS permissions are prerequisites. No claim that an inaccessible built-in trackpad works with a closed lid.
+
+The installer-style quit/relaunch path was physically checked after the run-loop scheduling fix: the first quit completed, recovery journals were removed, and relaunch connected without a recovery warning. The remembered closed-lid choice resumed.
+
+Ad-hoc replacement builds can invalidate macOS Input Monitoring grants. A visible enabled entry does not prove the current binary is authorized. Typing requires a successful current-process access check; no permission bypass is attempted.
+
+The user subsequently confirmed standalone Typing works with the lid closed after reauthorizing the installed build; the app reported Ready for typing. Permission-feedback follow-up tests use inert access APIs and do not request live permissions. External Trackpad contact has not been physically verified.
