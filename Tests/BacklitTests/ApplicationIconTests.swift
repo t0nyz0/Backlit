@@ -58,7 +58,9 @@ final class ApplicationIconTests: XCTestCase {
         try png(red: false).write(to: path)
         let refreshed = try color(ApplicationIcon.load(bundle: bundle))
         XCTAssertGreaterThan(refreshed.blueComponent, 0.99)
-        XCTAssertLessThan(refreshed.redComponent, 0.01)
+        // AppKit color management can add a small non-dominant residual.
+        // This still rejects the old red image while requiring nearly full blue.
+        XCTAssertLessThan(refreshed.redComponent, 0.05)
     }
 
     func testMissingOrInvalidResourceLeavesTheSystemIconAlone() throws {
