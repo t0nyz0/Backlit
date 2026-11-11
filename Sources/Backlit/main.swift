@@ -83,6 +83,10 @@ if arguments.contains("--verify-hardware") {
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
         NSApp.setActivationPolicy(.regular)
+        if let icon = ApplicationIcon.load() {
+            NSApp.applicationIconImage = icon
+            NSApp.dockTile.display()
+        }
         buildMenus()
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:860),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
         window.title = model.demo ? "Backlit — Preview" : "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
