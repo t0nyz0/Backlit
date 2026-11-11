@@ -37,6 +37,19 @@ final class LiveFadeHardware {
     func currentContext() -> FadeSafetyContext? { io.context() }
     func waitForSafetyEvent(_ interval:Double) {io.wait(interval)}
 
+    /// DisplayLogicalState is only populated after a corresponding write on
+    /// some macOS builds. Read the keyboard's current user-activity property,
+    /// which the native logical setter maps to Blank (false) or Unblank (true).
+    /// This is the latest native user-activity event cached by the keyboard
+    /// container. Synthetic DisplayLogicalState commands update a separate
+    /// cache, so they do not overwrite this native-policy restore source.
+    /// Do not infer activity from brightness or idle-dim state.
+    static func keyboardLogicalState(readProperty: (String) -> Any?) -> NSNumber? {
+        guard let activity = readProperty("CBUserActivityUpdate") as? NSNumber,
+              CFGetTypeID(activity) == CFBooleanGetTypeID() else { return nil }
+        return NSNumber(value: activity.boolValue ? 2 : 1)
+    }
+
     func keyboardStates() -> [UInt64: Int]? {
         guard let ids = io.keyboardIDs(), !ids.isEmpty,
               Set(ids).count == ids.count else { return nil }
@@ -239,7 +252,9 @@ final class LiveFadeHardware {
             return ids
         }, keyboardState: { id in
             // copy-family ownership, including the keyboard-specific getter.
-            read(client, reader, "DisplayLogicalState", id)?.takeRetainedValue() as? NSNumber
+            Self.keyboardLogicalState { key in
+                read(client, reader, key as NSString, id)?.takeRetainedValue()
+            }
         }, duration: { value in
             globalSet(client, globalWriter, NSNumber(value: value), "LEPWMFactorFadeDuration")
         }, logicalState: { state in

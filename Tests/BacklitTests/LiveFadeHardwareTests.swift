@@ -19,9 +19,10 @@ final class LiveFadeHardwareTests: XCTestCase {
         func write(_ event: String) -> Bool {
             events.append(event); onWrite?(event); return rejected != event
         }
-        func adapter() -> LiveFadeHardware {
-            .init(interface: .init(context: { self.context }, keyboardIDs: { self.ids },
-                keyboardState: { self.states[$0] },
+        func adapter(keyboardState: ((UInt64) -> NSNumber?)? = nil,
+                     keyboardIDs: (() -> [UInt64]?)? = nil) -> LiveFadeHardware {
+            .init(interface: .init(context: { self.context }, keyboardIDs: keyboardIDs ?? { self.ids },
+                keyboardState: keyboardState ?? { self.states[$0] },
                 duration: { self.write("duration:\($0)") },
                 logicalState: { self.write("global:\($0)") },
                 keyboardLogicalState: { self.write("key:\($0):\($1)") },
@@ -38,6 +39,65 @@ final class LiveFadeHardwareTests: XCTestCase {
                          effectsAllowed: false,
                          pendingBatch: pending ? .init(context: context, keyboardStates: [13: 2, 42: 2]) : nil)
         }
+    }
+
+    func testColdLogicalCacheUsesCurrentNativeActivityForEachKeyboard() {
+        let f = Fixture()
+        let activity: [UInt64: NSNumber] = [13: NSNumber(value: true), 42: NSNumber(value: false)]
+        var keys: [String] = []
+        let adapter = f.adapter(keyboardState: { id in
+            LiveFadeHardware.keyboardLogicalState { key in
+                keys.append(key)
+                return key == "CBUserActivityUpdate" ? activity[id] : nil
+            }
+        })
+        XCTAssertEqual(adapter.keyboardStates(), [13: 2, 42: 1])
+        XCTAssertEqual(keys, ["CBUserActivityUpdate", "CBUserActivityUpdate"],
+            "A cold DisplayLogicalState cache must not be needed or initialized by a write")
+        XCTAssertTrue(f.events.isEmpty)
+    }
+
+    func testCurrentActivityDoesNotUseStaleLogicalCache() {
+        for active in [false, true] {
+            var keys: [String] = []
+            let state = LiveFadeHardware.keyboardLogicalState { key in
+                keys.append(key)
+                if key == "CBUserActivityUpdate" { return NSNumber(value: active) }
+                if key == "DisplayLogicalState" { return NSNumber(value: active ? 1 : 2) }
+                return nil
+            }
+            XCTAssertEqual(state?.intValue, active ? 2 : 1)
+            XCTAssertEqual(keys, ["CBUserActivityUpdate"])
+        }
+    }
+
+    func testMissingOrMalformedNativeActivityCannotAuthorizeWrites() {
+        let invalid: [Any?] = [nil, NSNull(), "true", ["active": true], [],
+            NSNumber(value: 0), NSNumber(value: 1), NSNumber(value: 2),
+            NSNumber(value: -1), NSNumber(value: 0.5), NSNumber(value: Double.nan)]
+        for value in invalid {
+            let f = Fixture()
+            let adapter = f.adapter(keyboardState: { _ in
+                LiveFadeHardware.keyboardLogicalState { _ in value }
+            })
+            XCTAssertNil(adapter.keyboardStates())
+            XCTAssertThrowsError(try adapter.guardedFadeWrite { f.events.append("unexpected global write") })
+            XCTAssertTrue(f.events.isEmpty)
+        }
+    }
+
+    func testActivitySnapshotRejectsKeyboardSetChangedDuringRead() {
+        let f = Fixture()
+        var reads = 0
+        let adapter = f.adapter(keyboardState: { _ in
+            LiveFadeHardware.keyboardLogicalState { _ in NSNumber(value: true) }
+        }, keyboardIDs: {
+            reads += 1
+            return reads == 1 ? [13, 42] : [13, 99]
+        })
+        XCTAssertNil(adapter.keyboardStates())
+        XCTAssertEqual(reads, 2)
+        XCTAssertTrue(f.events.isEmpty)
     }
 
     func testKeyboardSnapshotAcceptsEveryValidLogicalStateWithoutWrites() {
