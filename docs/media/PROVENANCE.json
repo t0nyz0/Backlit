@@ -1,5 +1,5 @@
 {
-  "app_version": "0.2.4",
+  "app_version": "0.2.5",
   "native_capture": true,
   "isolated_preview": true,
   "source": "Backlit --capture-suite docs/media",
@@ -11,64 +11,64 @@
       "sha256": "a72341bd3e0d51568e4c621bfb4bd315f6e71cf39fd3e71f7daf4a93f00425a7"
     },
     "connections-automation-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "91f91e69b064ae4bb7a2d39c80ba05181faa6ee18106a8be8a876b56238eadaf"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "1c6c536f3ad1be75ac7e8bc4644e77983085b6ea7e8dddb9e05e1835437f4e2c"
     },
     "connections-dark.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "ac4517e8412c96e1915a82b44907ff3cc6667d14ab12ccded5adf30029a3d0f9"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "3ed84fc582731959ac4a18bb168a7587a97a233a40f27aebc412c5c7339a66d1"
     },
     "connections-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "d26dca606791fbe4764767b0333562156256c6e2dfaeb98a9cf50a26e4ce730c"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "3400e9d391ae957f57dbca69f9eb56d3904677a1886eadca2e3d25ea5f92608a"
     },
     "icon.png": {
-      "width": 512,
-      "height": 512,
-      "sha256": "41848ce3ae82c12d3c9a7379f65008c23af63f216f9ef9e9bff73f1f17f72c08"
+      "width": 2048,
+      "height": 2048,
+      "sha256": "3804da30b839081d40118da271ea14c1886384e965a32d95b3b79ec96e9b52fa"
     },
     "light-dark.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "cd5013a0006f5ec44527180f52f779d0edfc71aedc5fb7f531a14a1f982a8239"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "07ff78d95f375dc41cb4b5323b45d878967c76ddae71f62d87f547267a07fab4"
     },
     "light-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "75fbd833d5959d4e12cb519247d410aa21ab56fdfc0c0384259d51bc4d4c216f"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "2692558b4243f85b8b286e201779880fbfdbdb0881d2f617dacbb9a53686eada"
     },
     "menu-light.png": {
-      "width": 320,
-      "height": 386,
-      "sha256": "9394eb0c89823ccf1f2699dc13ab2d87bc68b9c33e9a55c0e4b1777bb26f2d27"
+      "width": 640,
+      "height": 772,
+      "sha256": "41e1af1b3889af484450f28503a44fb2e3f37eaf39240d884a445655650dd7e7"
     },
     "music-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "9af076a30292309312982d9f09cf6692df56d5d283b01a870054640ed4c7cbe5"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "2757d42f18477390e2ddf5e48fc49fa079cdaac3dbb42e6880da4eba98da70fa"
     },
     "settings-dark.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "cdab40127c0c35bd927e77f64d6790661a65ddb45f5548f3e990f7ec092e15a1"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "74bc610d88a904b8f4728c15a15b878b284a188fcd0be290a787fef6c062b3bb"
     },
     "settings-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "e04125edce33ea841f88635b601892143a6aaf6c3b0d29882f841077667186a9"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "b37286b08e0c5186f5457f470518e1f4fa65ea47dd2b40b12895443522fe7a58"
     },
     "trackpad-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "8395c82c136a8179cf12d88ce6119b335afff1e071c992e2366734e5ebdafa57"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "5aa4f6714f91fd5b1b3cc59c7c33b8f9c9436e43dc965c1e808eff2cb2c92a38"
     },
     "typing-light.png": {
-      "width": 1100,
-      "height": 1148,
-      "sha256": "35acdd0ee4cfb4c393a7449f662780ea35ecb0567040a7a9774f2439a2f876a7"
+      "width": 2200,
+      "height": 2296,
+      "sha256": "86804129e53ec0d966567604e4100b6bf3d29fa209db30b3e41fba453a567d5c"
     }
   }
 }
