@@ -1,4 +1,5 @@
 import XCTest
+import CoreGraphics
 @testable import Backlit
 
 final class LiveFadeHardwareTests: XCTestCase {
@@ -324,5 +325,104 @@ final class LiveFadeHardwareTests: XCTestCase {
         let after = try XCTUnwrap(observer.context { state })
         XCTAssertFalse(after.sleeping)
         XCTAssertGreaterThan(after.generation, before.generation)
+    }
+
+    private final class SnapshotFixture {
+        var lid: Any? = false
+        var cycle: Any?
+        var session: Any? = ["kCGSSessionOnConsoleKey": true, "kCGSessionLoginDoneKey": true]
+        var displays: [UInt32] = [11, 22]
+        var count: UInt32 = 2
+        var result: CGError = .success
+        var sleeping: Set<UInt32> = []
+        var checkedDisplays: [UInt32] = []
+        func parse() -> FadeSafetyObservation.State? {
+            FadeSafetySnapshot.parse(lid: lid, sleepCycle: cycle, session: session,
+                displays: displays, displayCount: count, displayResult: result, isAsleep: { id in
+                    self.checkedDisplays.append(id); return self.sleeping.contains(id)
+                })
+        }
+    }
+
+    func testSnapshotParserAllowsValidatedUnlockedSessionWithoutOptionalKeys() throws {
+        let f = SnapshotFixture()
+        XCTAssertEqual(try XCTUnwrap(f.parse()), .init(lidClosed: false, sleeping: false, locked: false))
+        f.cycle = "cycle-one"
+        let state = try XCTUnwrap(f.parse())
+        XCTAssertEqual(state.sleepCycle, "cycle-one")
+        XCTAssertFalse(state.sleeping, "UUID presence alone never means asleep")
+    }
+
+    func testSnapshotParserRejectsUnknownOrMalformedRequiredFields() {
+        let invalid: [Any?] = [nil, "false", [String: Bool]()]
+        for value in invalid {
+            let f = SnapshotFixture(); f.lid = value
+            XCTAssertNil(f.parse()); XCTAssertTrue(f.checkedDisplays.isEmpty)
+        }
+        for value: Any? in [nil, "session", [String: Bool](),
+                           ["kCGSSessionOnConsoleKey": true], ["kCGSessionLoginDoneKey": true],
+                           ["kCGSSessionOnConsoleKey": "yes", "kCGSessionLoginDoneKey": true]] {
+            let f = SnapshotFixture(); f.session = value
+            XCTAssertNil(f.parse()); XCTAssertTrue(f.checkedDisplays.isEmpty)
+        }
+    }
+
+    func testSnapshotParserRejectsMalformedOptionalFields() {
+        let f = SnapshotFixture(); f.cycle = 123
+        XCTAssertNil(f.parse()); XCTAssertTrue(f.checkedDisplays.isEmpty)
+        f.cycle = nil
+        f.session = ["kCGSSessionOnConsoleKey": true, "kCGSessionLoginDoneKey": true, "CGSSessionScreenIsLocked": "no"]
+        XCTAssertNil(f.parse()); XCTAssertTrue(f.checkedDisplays.isEmpty)
+    }
+
+    func testSnapshotParserPreservesExplicitLockInactiveAndIncompleteLogin() throws {
+        for (onConsole, loginDone, locked) in [(true, true, true), (false, true, false), (true, false, false)] {
+            let f = SnapshotFixture()
+            f.session = ["kCGSSessionOnConsoleKey": onConsole, "kCGSessionLoginDoneKey": loginDone,
+                         "CGSSessionScreenIsLocked": locked]
+            XCTAssertTrue(try XCTUnwrap(f.parse()).locked)
+        }
+    }
+
+    func testSnapshotParserRejectsDisplayErrorEmptyOverflowAndShortBuffer() {
+        let f = SnapshotFixture(); f.result = .failure
+        XCTAssertNil(f.parse()); XCTAssertTrue(f.checkedDisplays.isEmpty)
+        f.result = .success
+        for count: UInt32 in [0, 3, 65, .max] {
+            f.count = count
+            XCTAssertNil(f.parse()); XCTAssertTrue(f.checkedDisplays.isEmpty)
+        }
+    }
+
+    func testSnapshotParserAcceptsCapacityBoundaryAndIgnoresUnusedTail() throws {
+        let f = SnapshotFixture()
+        f.displays = Array(1...64); f.count = 64; f.sleeping = Set(f.displays)
+        XCTAssertTrue(try XCTUnwrap(f.parse()).sleeping)
+        XCTAssertEqual(f.checkedDisplays, f.displays)
+        f.displays = [11] + Array(repeating: 0, count: 63)
+        f.count = 1; f.sleeping = [11]; f.checkedDisplays = []
+        XCTAssertTrue(try XCTUnwrap(f.parse()).sleeping)
+        XCTAssertEqual(f.checkedDisplays, [11])
+    }
+
+    func testSnapshotParserUsesFreshDisplayStatusAndLidOnEveryCall() throws {
+        let f = SnapshotFixture(); f.sleeping = [11, 22]
+        let observer = FadeSafetyObservation()
+        let before = try XCTUnwrap(observer.context { f.parse() })
+        XCTAssertTrue(before.sleeping)
+        f.lid = true; f.sleeping = [11]; f.checkedDisplays = []
+        let after = try XCTUnwrap(observer.context { f.parse() })
+        XCTAssertFalse(after.sleeping); XCTAssertTrue(after.lidClosed)
+        XCTAssertGreaterThan(after.generation, before.generation)
+        XCTAssertEqual(f.checkedDisplays, [11, 22])
+    }
+
+    func testSnapshotParserStillInvalidatesReadInterruptedByObservedEvent() {
+        let f = SnapshotFixture(), observer = FadeSafetyObservation()
+        XCTAssertNil(observer.context {
+            let state = f.parse()
+            observer.observe(.changed)
+            return state
+        })
     }
 }

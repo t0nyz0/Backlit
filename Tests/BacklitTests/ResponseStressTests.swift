@@ -38,7 +38,7 @@ final class ResponseStressTests: XCTestCase {
             let envelope = music.update(energy: generator.adversarial(), at: suppliedTime, automatic: generator.bit(), preset: MusicResponsePreset.allCases[generator.index(MusicResponsePreset.allCases.count)])
             XCTAssertTrue(multiplier.isFinite && (0...1).contains(multiplier), "battery frame \(frame)")
             XCTAssertTrue(envelope.isFinite && (0...1).contains(envelope), "music frame \(frame)")
-            XCTAssertTrue(music.adaptiveGain.isFinite && (0.75...12.5).contains(music.adaptiveGain))
+            XCTAssertTrue(music.adaptiveGain.isFinite && (0.5...12.5).contains(music.adaptiveGain))
             var input = EffectInput()
             input.enabled = generator.bit()
             input.brightness = generator.adversarial()

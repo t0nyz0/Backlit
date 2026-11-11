@@ -149,14 +149,9 @@ struct LightPage: View {
                     } else if model.mode == .music {
                         MusicResponseControls(model: model)
                         HStack {Text(model.t("Beat intensity","節拍強度")).fontWeight(.medium);Spacer();Image(systemName:"waveform")}
-                        Slider(value:$model.intensity,in:0.25...3).tint(.primary).accessibilityLabel("Music intensity")
+                        Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel("Music intensity")
                         Toggle(model.t("Dark between beats","節拍之間熄滅"),isOn:$model.strobe).toggleStyle(.switch).controlSize(.small)
-                        Button(model.audioRunning ? "Stop System Audio" : model.audioStarting ? "Connecting…" : "Start System Audio") {if model.audioRunning {model.stopAudio()} else {model.startAudio()}}.disabled(model.audioStarting)
-                        if model.audioPermissionHelp {
-                            Text("Allow Backlit in Privacy & Security → Screen & System Audio Recording. Then reopen Backlit and retry.").font(.system(size:11)).foregroundStyle(.secondary)
-                            Button("Open Privacy Settings"){model.openAudioPrivacy()}
-                        }
-                        Text("Playback only. No microphone. Nothing recorded.").font(.system(size:10)).foregroundStyle(.secondary)
+                        MusicCaptureStatus(model: model)
                     } else if model.mode == .battery {
                         Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
@@ -399,7 +394,7 @@ struct MenuView: View {
                 VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(String(format:"%.1f seconds",model.period)).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:3...10).tint(.primary).accessibilityLabel("Breathing cycle seconds")}
             } else if model.mode == .music {
                 MusicResponseControls(model: model).font(.system(size:11))
-                VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.intensity,in:0.25...3).tint(.primary)};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);Button(model.audioRunning ? "Stop System Audio" : "Start System Audio"){if model.audioRunning {model.stopAudio()} else {model.startAudio()}}}.font(.system(size:11))
+                VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel("Music intensity")};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);MusicCaptureStatus(model: model)}.font(.system(size:11))
             } else if model.mode == .battery {
                 Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
             } else if model.mode == .touch {

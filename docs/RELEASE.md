@@ -2,7 +2,7 @@ Backlit 0.2.4 (build 29) for MacBook PROLED.
 
 Fixes white points around the app icon in Finder by regenerating the smaller icon sizes. The original artwork is unchanged.
 
-Adds hardware-feedback control for closed-lid effects and serialized cleanup between the app and its lid watchdog. Saved preferences remain intact. This is a local test candidate; physical close-from-Off, low-brightness transitions, Music and lifecycle acceptance must finish before publication.
+Adds hardware-feedback control for closed-lid effects and serialized cleanup between the app and its lid watchdog. Music starts automatically when selected and stops when you leave it; its intensity control has a more gradual range. Static preview artwork is cached to reduce redraw work. Saved preferences remain intact. This is a local test candidate; physical close-from-Off, low-brightness transitions, Music and lifecycle acceptance must finish before publication.
 
 Download the Apple silicon ZIP or DMG, quit Backlit, and replace it in Applications.
 

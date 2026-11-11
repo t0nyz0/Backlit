@@ -78,7 +78,18 @@ struct FadeRecoveryRecord: Codable, Equatable {
 final class FadeRecoveryStore {
     let directory: URL
     var url: URL { directory.appendingPathComponent("fade-recovery.json") }
-    init(directory: URL) { self.directory=directory }
+    private struct Completion: Codable { let token: UUID; let unusedSession: Bool }
+    private var completionURL: URL {directory.appendingPathComponent("fade-completed.json")}
+    private let receiptWriter: (Data,URL) throws -> Void
+    private let journalRemover: (URL) throws -> Void
+    init(directory: URL, receiptWriter: @escaping (Data,URL)throws->Void = {try $0.write(to:$1,options:.atomic)},
+         journalRemover: @escaping (URL)throws->Void = {try FileManager.default.removeItem(at:$0)}) {
+        self.directory=directory;self.receiptWriter=receiptWriter;self.journalRemover=journalRemover
+    }
+    func completed(token: UUID) -> Bool {
+        guard let data=try? Data(contentsOf:completionURL),let receipt=try? JSONDecoder().decode(Completion.self,from:data) else {return false}
+        return receipt.token==token
+    }
     func read() throws -> FadeRecoveryRecord {
         try JSONDecoder().decode(FadeRecoveryRecord.self,from:Data(contentsOf:url))
     }
@@ -116,11 +127,19 @@ final class FadeRecoveryStore {
         }
     }
     func withPermission<T>(token: UUID, watchdogAlive: (Int32)->Bool, snapshot: FadeBatchSnapshot, _ body: () throws -> T) throws -> T? {
-        try ClosedEffectSession.locked(directory:directory,wait:false) {
+        try withPermission(token:token,watchdogAlive:watchdogAlive,snapshotProvider:{snapshot},body)
+    }
+    func withPermission<T>(token: UUID, watchdogAlive: (Int32)->Bool,
+                           snapshotProvider: () throws -> FadeBatchSnapshot,
+                           shouldWrite: () throws -> Bool = {true},
+                           _ body: () throws -> T) throws -> T? {
+        let result: T?? = try ClosedEffectSession.locked(directory:directory,wait:false) { () throws -> T? in
             var record=try self.read()
             guard record.token==token,record.effectsAllowed,let pid=record.watchdogPID,watchdogAlive(pid) else {
                 throw RuntimeServices.failure("Fade watchdog is not ready; no light changes were made.")
             }
+            guard try shouldWrite() else {return nil}
+            let snapshot=try snapshotProvider()
             guard !snapshot.keyboardStates.isEmpty, snapshot.keyboardStates.values.allSatisfy({(0...6).contains($0)}),
                   !snapshot.context.sleeping, !snapshot.context.locked else {
                 throw RuntimeServices.failure("Cannot write a fade without a current safe keyboard snapshot.")
@@ -131,17 +150,33 @@ final class FadeRecoveryStore {
             if record.pendingBatch != snapshot { record.pendingBatch=snapshot;try self.write(record) }
             return try body()
         }
+        return result ?? nil
     }
     /// The watchdog revokes under the very lock used by effect batches, then
     /// restores. Failed cleanup retains a revoked record for explicit recovery.
     func recover(token: UUID, restore: (FadeRecoveryRecord) throws -> Void) throws {
         _ = try ClosedEffectSession.locked(directory:directory,wait:true) {
-            var record=try self.read()
-            guard record.token==token else { throw RuntimeServices.failure("Fade recovery owner changed.") }
+            let current:FadeRecoveryRecord
+            do {current=try self.read()}
+            catch {
+                let error=error as NSError
+                let missing=(error.domain==NSCocoaErrorDomain && [NSFileNoSuchFileError,NSFileReadNoSuchFileError].contains(error.code)) || (error.domain==NSPOSIXErrorDomain && error.code==Int(ENOENT))
+                guard missing,self.completed(token:token) else {throw error}
+                return // Another verified owner completed this exact session.
+            }
+            var record=current
+            guard record.token==token else {throw RuntimeServices.failure("Fade recovery owner changed.")}
+            if self.completed(token:token), !record.effectsAllowed {
+                try self.journalRemover(self.url);return
+            }
             record.effectsAllowed=false;try self.write(record)
             try restore(record)
-            guard try self.read().token==token else { throw RuntimeServices.failure("Fade recovery owner changed during cleanup.") }
-            try FileManager.default.removeItem(at:self.url)
+            guard try self.read().token==token else {throw RuntimeServices.failure("Fade recovery owner changed during cleanup.")}
+            // A receipt is proof of verified cleanup (or an explicitly unused
+            // session), never merely proof that the helper process exited.
+            let completion=Completion(token:token,unusedSession:record.pendingBatch==nil)
+            try self.receiptWriter(JSONEncoder().encode(completion),self.completionURL)
+            try self.journalRemover(self.url)
         }
     }
 }

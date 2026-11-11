@@ -23,6 +23,86 @@ import XCTest
         }
         XCTFail("The isolated backend did not enter its suspended operation")
     }
+    private func waitUntil(_ condition: () -> Bool) async {
+        for _ in 0..<200 {
+            if condition() { return }
+            try? await Task.sleep(nanoseconds: 1_000_000)
+        }
+        XCTFail("The isolated lifecycle did not reach its expected state")
+    }
+
+    func testStartupDeadlineKeepsWorkerUntilLateSuccessAndCleanupFinish() async {
+        let backend = Suspension(), deadline = Suspension(), cleanup = Suspension()
+        var starts = 0, stops = 0, errors = 0, states: [AudioSessionDriver.State] = []
+        let driver = AudioSessionDriver(start: {
+            starts += 1
+            if starts == 1 { await backend.pause() }
+        }, stop: { stops += 1; await cleanup.pause() }, eligible: { true },
+            changed: { states.append($0) }, failed: { _ in errors += 1 },
+            waitForStartupDeadline: { await deadline.pause() })
+        driver.requestStart(); await waitForEntry(backend); await waitForEntry(deadline)
+        deadline.release(); await waitUntil { errors == 1 }
+        XCTAssertEqual(driver.state, .stopping)
+        XCTAssertTrue(driver.hasPendingWork); XCTAssertEqual(stops, 0)
+        for _ in 0..<1_000 { driver.requestStart() }
+        XCTAssertEqual(starts, 1); XCTAssertEqual(driver.workerCount, 1)
+        backend.release(); await waitForEntry(cleanup)
+        XCTAssertTrue(driver.hasPendingWork, "Returning from start is not cleanup completion")
+        for _ in 0..<1_000 { driver.requestStart() }
+        XCTAssertEqual(starts, 1); XCTAssertFalse(states.contains(.running))
+        cleanup.release(); await driver.waitForCurrentWork()
+        XCTAssertEqual(stops, 1); XCTAssertEqual(errors, 1)
+        XCTAssertEqual(driver.state, .idle); XCTAssertFalse(driver.hasPendingWork)
+        // An explicit retry is possible only after the old session is gone.
+        driver.requestStart(); await driver.waitForCurrentWork()
+        XCTAssertEqual(starts, 2); XCTAssertEqual(driver.state, .running)
+        driver.requestStop(); await driver.waitForCurrentWork()
+    }
+
+    func testStartupDeadlineReportsOnceWhenBackendEventuallyThrows() async {
+        let backend = Suspension(), deadline = Suspension()
+        var stops = 0, errors = 0, runningEvents = 0
+        let driver = AudioSessionDriver(start: { await backend.pause(); throw FixtureError.startup },
+            stop: { stops += 1 }, eligible: { true },
+            changed: { if $0 == .running { runningEvents += 1 } },
+            failed: { _ in errors += 1 }, waitForStartupDeadline: { await deadline.pause() })
+        driver.requestStart(); await waitForEntry(backend); await waitForEntry(deadline)
+        deadline.release(); await waitUntil { errors == 1 }
+        backend.release(); await driver.waitForCurrentWork()
+        XCTAssertEqual(errors, 1); XCTAssertEqual(stops, 1); XCTAssertEqual(runningEvents, 0)
+        XCTAssertEqual(driver.state, .idle); XCTAssertFalse(driver.hasPendingWork)
+    }
+
+    func testCompletedStartupIgnoresItsLateDeadline() async {
+        let backend = Suspension(), deadline = Suspension()
+        var errors = 0
+        let driver = AudioSessionDriver(start: { await backend.pause() }, stop: {},
+            eligible: { true }, changed: { _ in }, failed: { _ in errors += 1 },
+            waitForStartupDeadline: { await deadline.pause() })
+        driver.requestStart(); await waitForEntry(backend); await waitForEntry(deadline)
+        backend.release(); await driver.waitForCurrentWork()
+        deadline.release()
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(driver.state, .running); XCTAssertEqual(errors, 0)
+        driver.requestStop(); await driver.waitForCurrentWork()
+    }
+
+    func testCancelledBlockedStartShowsPendingCleanupWithoutSpuriousFailure() async {
+        let backend = Suspension(), deadline = Suspension()
+        var errors = 0, stops = 0, runningEvents = 0
+        let driver = AudioSessionDriver(start: { await backend.pause() }, stop: { stops += 1 },
+            eligible: { true }, changed: { if $0 == .running { runningEvents += 1 } },
+            failed: { _ in errors += 1 }, waitForStartupDeadline: { await deadline.pause() })
+        driver.requestStart(); await waitForEntry(backend); await waitForEntry(deadline)
+        driver.requestStop()
+        XCTAssertEqual(driver.state, .stopping); XCTAssertTrue(driver.hasPendingWork)
+        deadline.release()
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(errors, 0); XCTAssertEqual(stops, 0)
+        backend.release(); await driver.waitForCurrentWork()
+        XCTAssertEqual(stops, 1); XCTAssertEqual(runningEvents, 0)
+        XCTAssertEqual(driver.state, .idle); XCTAssertFalse(driver.hasPendingWork)
+    }
 
     func testIdleStopsAndIneligibleStartsAllocateNoWorkersOrBackendCalls() async {
         var starts = 0, stops = 0

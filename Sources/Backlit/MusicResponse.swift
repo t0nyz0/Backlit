@@ -1,5 +1,17 @@
 import Foundation
 
+/// Slider position changes perceptually while the saved intensity remains the
+/// same 0.25...3 multiplier used by the effect engine.
+enum MusicIntensity {
+    static func multiplier(at position: Double) -> Double {
+        0.25 * pow(12, Effects.clamp(position))
+    }
+    static func position(for multiplier: Double) -> Double {
+        let value = multiplier.isFinite ? min(3, max(0.25, multiplier)) : 1
+        return log(value / 0.25) / log(12)
+    }
+}
+
 enum MusicResponsePreset: String, Codable, CaseIterable, Identifiable {
     case smooth, balanced, punchy
     var id: String { rawValue }
@@ -53,7 +65,9 @@ struct MusicResponse {
         // Catch a new peak immediately, release its reference over seconds.
         // The gain bound and floor prevent quiet noise from chasing full output.
         reference = max(raw, max(0.04, reference * exp(-dt / 3)))
-        adaptiveGain = automatic ? min(12.5, max(0.75, 0.9 / reference)) : 1
+        // Leave headroom for the intensity control instead of normalizing
+        // ordinary playback almost to the brightness ceiling immediately.
+        adaptiveGain = automatic ? min(12.5, max(0.5, 0.6 / reference)) : 1
         let target = raw <= 0.008 ? 0 : pow(min(1, raw * adaptiveGain), preset.exponent)
         let constant = target > filtered ? preset.attack : preset.release
         filtered += (target - filtered) * (1 - exp(-dt / constant))

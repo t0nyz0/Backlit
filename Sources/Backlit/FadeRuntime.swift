@@ -27,7 +27,7 @@ struct FadeHelperArguments {
 
 /// Unified fade lifecycle. Merely compiling this adapter performs no hardware
 /// writes. A separate helper is ready before the first owned effect batch.
-final class FadeRuntime {
+final class FadeRuntime: FadeEffectSession {
     private let hardware:LiveFadeHardware
     private let store:FadeRecoveryStore
     private let token:UUID
@@ -50,7 +50,12 @@ final class FadeRuntime {
         token=try store.prepare(parentPID:parent.pid,context:context,keyboards:keyboards,closedLidRequested:closedLidRequested)
         requestedClosed=closedLidRequested
         leaseURL=AgentBridge.directory.appendingPathComponent("fade-lease-\(token.uuidString)")
-        effect=ClosedLidEffect(interface:io)
+        // Every execution and healthy restore below is enclosed by the full
+        // keyboard guard. Avoid duplicate per-command closed notifications;
+        // standalone/diagnostic interfaces retain their own safe callback.
+        var guardedIO=io
+        guardedIO.keepKeyboardDark={true}
+        effect=ClosedLidEffect(interface:guardedIO)
         let process=Process();child=process
         process.executableURL=Bundle.main.executableURL
         process.arguments=["--watch-fade",token.uuidString,String(parent.pid),String(parent.seconds),String(parent.microseconds)]
@@ -70,39 +75,63 @@ final class FadeRuntime {
         }
     }
 
-    func apply(_ brightness:Double, closedLidRequested:Bool) throws {
+    func apply(_ brightness:Double, closedLidRequested:Bool, frameInterval:Double = 0.05) throws -> FadeApplyResult {
+        guard let initialContext=hardware.currentContext() else {throw RuntimeServices.failure("Logo safety state is unavailable.")}
+        if initialContext.lidClosed && !closedLidRequested {return .paused}
         guard childIdentity.isAlive else {throw RuntimeServices.failure("The fade recovery helper stopped; logo control was paused.")}
         let record=try store.read()
         guard record.token==token else {throw RuntimeServices.failure("Logo fade ownership changed.")}
         guard record.effectsAllowed else {
             if record.watchdogPID != nil {throw RuntimeServices.failure("Fade recovery is in progress. Logo control was paused.")}
             guard ProcessInfo.processInfo.systemUptime-started<3 else {throw RuntimeServices.failure("The fade recovery helper did not become ready.")}
-            return
+            return .waiting
         }
         if requestedClosed != closedLidRequested {
             try store.setClosedLidRequested(token:token,value:closedLidRequested)
             requestedClosed=closedLidRequested
         }
-        guard let context=hardware.currentContext(),let keyboards=hardware.keyboardStates() else {
+        guard let context=hardware.currentContext() else {
             throw RuntimeServices.failure("Logo or keyboard safety state is unavailable.")
         }
         if context.lidClosed {
-            guard closedLidRequested else {return}
+            guard closedLidRequested else {return .paused}
             // The existing lid helper alone owns the global lid override and its
             // battery/thermal/time limits. Never animate before it grants access.
-            guard ClosedEffectSession.permitted() else{return}
+            guard ClosedEffectSession.permitted() else{return .waiting}
         }
-        _ = try store.withPermission(token:token,watchdogAlive:{ $0==self.childIdentity.pid && self.childIdentity.isAlive },snapshot:.init(context:context,keyboardStates:keyboards)) {
-            // The lid helper revokes under this same lock. A check made only
-            // before acquiring it could otherwise race completed lid cleanup.
-            guard let fresh=hardware.currentContext(),Self.frameAllowed(context:fresh,closedRequested:closedLidRequested,lidPermission:ClosedEffectSession.permitted()) else {return}
-            do { try hardware.guardedFadeWrite { try effect.apply(brightness) } }
-            catch {hadWriteFailure=true;throw error}
+        var result=FadeApplyResult.waiting
+        var plan:ClosedLidEffect.Plan?
+        var planContext:FadeSafetyContext?
+        _ = try store.withPermission(token:token,watchdogAlive:{ $0==self.childIdentity.pid && self.childIdentity.isAlive },snapshotProvider:{
+            guard let context=hardware.currentContext(), context==planContext,
+                  let keyboards=hardware.keyboardStates() else {
+                throw RuntimeServices.failure("Safety state changed before the logo frame.")
+            }
+            return .init(context:context,keyboardStates:keyboards)
+        },shouldWrite:{
+            guard let fresh=hardware.currentContext(),Self.frameAllowed(context:fresh,closedRequested:closedLidRequested,lidPermission:ClosedEffectSession.permitted()) else {return false}
+            planContext=fresh
+            let next=try effect.plan(brightness,frameInterval:frameInterval)
+            if !next.hasWrites {try effect.execute(next);result = .applied;return false}
+            plan=next;return true
+        }) {
+            guard let plan else {return}
+            do {
+                try hardware.guardedFadeWrite {
+                    guard hardware.currentContext()==planContext,
+                          Self.frameAllowed(context:planContext!,closedRequested:closedLidRequested,lidPermission:ClosedEffectSession.permitted()) else {
+                        throw RuntimeServices.failure("Safety state changed before the logo frame.")
+                    }
+                    try effect.execute(plan)
+                    result = .applied
+                }
+            } catch {hadWriteFailure=true;throw error}
         }
+        return result
     }
 
     func restore() throws {
-        if FileManager.default.fileExists(atPath:store.url.path) {
+        if FileManager.default.fileExists(atPath:store.url.path) || store.completed(token:token) {
             try store.recover(token:token) { record in
                 guard record.pendingBatch != nil else {return}
                 if !hadWriteFailure, hardware.currentContext()?.permitsOpenKeyboardRestore == true {
@@ -114,6 +143,8 @@ final class FadeRuntime {
                     try hardware.restore(record)
                 }
             }
+        } else {
+            throw RuntimeServices.failure("Fade recovery completion could not be verified. Recovery is still required.")
         }
         effect.relinquish()
         if FileManager.default.fileExists(atPath:leaseURL.path) {try FileManager.default.removeItem(at:leaseURL)}
@@ -156,7 +187,7 @@ final class FadeRuntime {
             let now=ProcessInfo.processInfo.systemUptime
             if awaitingGateSince==nil {awaitingGateSince=now}
             return now-awaitingGateSince!<3
-        },wait:{RunLoop.current.run(until:Date(timeIntervalSinceNow:0.05))},retryWait:{RunLoop.current.run(until:Date(timeIntervalSinceNow:$0))},reportFailure:{ error in
+        },wait:{hardware.waitForSafetyEvent(0.25)},retryWait:{hardware.waitForSafetyEvent($0)},reportFailure:{ error in
             FileHandle.standardError.write(Data(("Fade recovery pending: "+error.localizedDescription+"\n").utf8))
         },restore:{try hardware.restore($0)})
     }

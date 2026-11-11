@@ -79,7 +79,7 @@ final class SystemAudio: NSObject, SCStreamOutput, SCStreamDelegate {
     static func friendly(_ error:Error)->Error {
         let value=error as NSError
         if value.code == -3801 || value.localizedDescription.localizedCaseInsensitiveContains("declined TCC") {
-            return RuntimeServices.failure("System audio access is off for Backlit. Allow it in System Settings → Privacy & Security → Screen & System Audio Recording, then reopen Backlit and try Start System Audio again. Backlit does not record your screen or microphone.")
+            return RuntimeServices.failure("System audio access is off for Backlit. Allow it in System Settings → Privacy & Security → Screen & System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.")
         }
         return error
     }

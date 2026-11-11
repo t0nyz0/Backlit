@@ -185,7 +185,8 @@ final class BatteryMusicTests: XCTestCase {
             XCTAssertEqual(response.update(energy: 0.005, at: Double(frame) / 20,
                                            automatic: true, preset: .smooth), 0)
         }
-        XCTAssertGreaterThan(response.update(energy: 1, at: 10, automatic: true, preset: .balanced), 0.8)
+        let peak = response.update(energy: 1, at: 10, automatic: true, preset: .balanced)
+        XCTAssertGreaterThan(peak, 0.58); XCTAssertLessThanOrEqual(peak, 0.6)
         XCTAssertEqual(response.update(energy: 0, at: 20, automatic: true, preset: .balanced), 0)
         XCTAssertEqual(response.update(energy: 0, at: 1, automatic: true, preset: .balanced), 0)
         XCTAssertEqual(response.update(energy: .nan, at: 2, automatic: true, preset: .balanced), 0)

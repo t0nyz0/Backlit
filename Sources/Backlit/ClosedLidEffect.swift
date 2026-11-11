@@ -11,6 +11,7 @@ final class ClosedLidEffect {
         var logicalState: (Int) -> Bool
         var keepKeyboardDark: () -> Bool
         var now: () -> Double = { ProcessInfo.processInfo.systemUptime }
+        var frameInterval: Double = 0.05
     }
     private let io: Interface
     private(set) var active = false
@@ -19,15 +20,61 @@ final class ClosedLidEffect {
     private var holding = false
     private var zeroRiseStartedAt: Double?
     private var zeroBaselineStartedAt: Double?
-    var needsAnimation: Bool { active && (moving || holding) }
-    func relinquish() { active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil; zeroBaselineStartedAt = nil }
+    private struct EndpointRequest { let target: Double; let startedAt: Double }
+    private var pendingEndpoint: EndpointRequest?
+    var needsAnimation: Bool { active && (moving || holding || pendingEndpoint != nil) }
+    func relinquish() { revision &+= 1; active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil; zeroBaselineStartedAt = nil; pendingEndpoint = nil }
     init(interface: Interface) { io = interface }
 
+    private var revision: UInt64 = 0
+    struct Command { let duration: Double; let state: Int }
+    struct Plan {
+        fileprivate let owner: ObjectIdentifier
+        fileprivate let revision: UInt64
+        fileprivate let next: ClosedLidEffect
+        let commands: [Command]
+        var hasWrites: Bool { !commands.isEmpty }
+    }
+    /// Capture one sample/time and run the same controller against an inert
+    /// recorder. No keyboard or hardware setter can run during planning.
+    func plan(_ level: Double, frameInterval: Double = 0.05) throws -> Plan {
+        guard frameInterval.isFinite, (0.02...0.2).contains(frameInterval) else {throw RuntimeServices.failure("Invalid effect sampling interval.")}
+        let sample=io.sample(), now=io.now()
+        var duration=0.0, commands:[Command]=[]
+        let next=ClosedLidEffect(interface:.init(sample:{sample},duration:{duration=$0;return true},logicalState:{commands.append(.init(duration:duration,state:$0));return true},keepKeyboardDark:{true},now:{now},frameInterval:frameInterval))
+        copyState(to:next)
+        try next.apply(level)
+        return .init(owner:ObjectIdentifier(self),revision:revision,next:next,commands:commands)
+    }
+    func execute(_ plan: Plan) throws {
+        guard plan.owner == ObjectIdentifier(self), plan.revision == revision else {
+            throw RuntimeServices.failure("The planned logo frame is stale.")
+        }
+        revision &+= 1
+        if plan.hasWrites {active=true}
+        for command in plan.commands {try write(duration:command.duration,state:command.state)}
+        plan.next.copyState(to:self)
+    }
+    private func copyState(to other: ClosedLidEffect) {
+        other.active=active;other.direction=direction;other.moving=moving;other.holding=holding
+        other.zeroRiseStartedAt=zeroRiseStartedAt;other.zeroBaselineStartedAt=zeroBaselineStartedAt
+        other.pendingEndpoint=pendingEndpoint
+    }
+
     func apply(_ level: Double) throws {
+        revision &+= 1
         guard level.isFinite, let sample = io.sample(), sample.factor.isFinite,
               (0...1).contains(sample.factor), sample.appliedNits.isFinite,
               sample.multiplier.isFinite, sample.appliedNits >= 0, sample.multiplier >= 0, (sample.appliedNits * sample.multiplier).isFinite else {
             throw RuntimeServices.failure("Closed-lid light output is unavailable.")
+        }
+        let target = Effects.clamp(level)
+        if pendingEndpoint?.target != target { pendingEndpoint = nil }
+        if let pending = pendingEndpoint {
+            let now = io.now()
+            guard now.isFinite, now >= pending.startedAt, now - pending.startedAt < 3 else {
+                throw RuntimeServices.failure("The requested logo endpoint was not confirmed. Logo control was stopped.")
+            }
         }
         // Effects are normalized brightness, not an absolute photometric promise.
         // Retain macOS ambient limits; never divide by a low/zero baseline.
@@ -41,23 +88,36 @@ final class ClosedLidEffect {
             return
         }
         zeroBaselineStartedAt=nil
-        let target = Effects.clamp(level)
         let difference = target - sample.factor
         if sample.factor > 0 || target == 0 { zeroRiseStartedAt = nil; zeroBaselineStartedAt = nil }
         // Mark ownership before writes so a partial failure is restored too.
         active = true
-        let atEndpoint = (target == 0 && sample.factor == 0) || (target == 1 && sample.factor == 1)
         let nearInterior = target > 0 && target < 1 && sample.factor > 0 && abs(difference) <= 0.012
-        if atEndpoint {
+        if target == 0 || target == 1 {
+            if pendingEndpoint != nil {
+                // Wait for an exact observed endpoint after the command. Never
+                // keep restarting an eased fade near zero/one: it can approach
+                // the endpoint forever without actually reaching it.
+                if sample.factor == target {
+                    pendingEndpoint = nil; moving = false; holding = false
+                }
+                return
+            }
             let endpoint = target == 0 ? 1 : 2
-            if direction == nil {
+            if sample.factor == target, direction == endpoint, !moving, !holding { return }
+            let now = io.now()
+            guard now.isFinite, now >= 0 else {
+                throw RuntimeServices.failure("The logo endpoint deadline is unavailable.")
+            }
+            // CoreBrightness may ignore a repeated logical state. Prime only
+            // when that state is already selected or its direction is unknown.
+            if direction == nil || direction == endpoint {
                 try write(duration: 5, state: endpoint == 2 ? 1 : 2)
             }
-            if direction != endpoint || moving || holding {
-                try write(duration: 0, state: endpoint)
-                direction=endpoint
-            }
-            moving=false;holding=false
+            try write(duration: 0, state: endpoint)
+            direction = endpoint; moving = true; holding = false
+            zeroRiseStartedAt = nil
+            pendingEndpoint = .init(target: target, startedAt: now)
             return
         }
         if nearInterior {
@@ -83,7 +143,7 @@ final class ClosedLidEffect {
         }
         // Re-target a short eased step rather than let a full-range fade
         // overshoot a moving peak. A frame takes roughly 17 ms to begin;
-        // budget the remaining 35 ms of the 20 Hz effect tick for movement.
+        // budget the remaining frame interval for continuous native movement.
         if direction == nil || direction == next {
             try write(duration: 5, state: next == 2 ? 1 : 2)
         }
@@ -95,7 +155,7 @@ final class ClosedLidEffect {
             let p = 1 - (1 + 6.51 * mid) * exp(-6.51 * mid)
             if p < fraction { lo = mid } else { hi = mid }
         }
-        let calculated = max(0.04, min(5, 0.035 / max(0.001, (lo + hi) / 2)))
+        let calculated = max(0.04, min(5, max(0.005,io.frameInterval-0.015) / max(0.001, (lo + hi) / 2)))
         // The first hardware-ready frame can arrive between polls. Start that
         // rise gently so a low steady target does not briefly flash full scale.
         let duration = sample.factor == 0 && next == 2 ? max(0.5,calculated) : calculated
@@ -112,10 +172,11 @@ final class ClosedLidEffect {
         }
     }
     func restore() throws {
+        revision &+= 1
         guard active else { return }
         try write(duration: 5, state: 1)
         try write(duration: 0, state: 2)
-        active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil
+        active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil; pendingEndpoint = nil
     }
 
     static func liveInterface(client existingClient: NSObject? = nil) -> Interface? {

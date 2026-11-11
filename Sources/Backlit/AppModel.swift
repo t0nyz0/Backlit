@@ -3,11 +3,27 @@ import SwiftUI
 import ServiceManagement
 import Combine
 
+/// Pure decision seam for mode-driven capture; the existing driver still owns
+/// asynchronous starts, cancellation and all operating-system authorization.
+enum MusicCapturePolicy {
+    enum Action: Equatable { case start, stop, none }
+    static func action(mode: GlowMode, enabled: Bool, eligible: Bool,
+                       preview: Bool, failed: Bool, active: Bool) -> Action {
+        guard !preview, mode == .music, enabled, eligible else { return active ? .stop : .none }
+        return !failed && !active ? .start : .none
+    }
+}
+
 @MainActor final class LightPresentation: ObservableObject {
     @Published var level = 0.0
 }
 
 @MainActor final class AppModel: ObservableObject {
+    struct MusicCaptureObservation {
+        let deviceAvailable: Bool
+        let locked: Bool
+        let lidClosed: Bool
+    }
     let updater = AppUpdater()
     let demo: Bool
     let defaults: UserDefaults
@@ -65,7 +81,7 @@ import Combine
     @Published var touchStatus = "Waiting for touch"
     var availableModes:[GlowMode] {GlowMode.allCases.filter{$0 != .touch || touchAvailable}}
     let bridge = HomeBridge()
-    @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if audioConsent { startAudio() }
+    @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if oldValue != .music { clearAudioFailure() }
         synchronizeTouch()
         batteryResponse.reset(); musicResponse.reset(); synchronizeTyping(); configureTimer(); requestFrame() } }
     @Published var enabled = true { didSet {
@@ -74,12 +90,15 @@ import Combine
         if !demo && device.available && !device.needsRecovery { controlWanted = true }
         synchronizeTouch()
         if !enabled && (audioRunning || audioStarting) {stopAudio()}
-        else if enabled && mode == .music && audioConsent {startAudio()}
         synchronizeTyping(); requestFrame(); configureTimer()
     } }
     @Published var brightness = 0.68 { didSet { save(); requestFrame() } }
     @Published var period = 6.0 { didSet { save(); requestFrame() } }
     @Published var intensity = 1.0 { didSet { save(); requestFrame() } }
+    var musicIntensityPosition: Double {
+        get { MusicIntensity.position(for: intensity) }
+        set { intensity = MusicIntensity.multiplier(at: newValue) }
+    }
     @Published var strobe = false { didSet { save(); requestFrame() } }
     @Published var controlWanted = false
     @Published var controlling = false
@@ -106,7 +125,9 @@ import Combine
     @Published var agents: [AgentEvent] = []
     @Published var audioRunning = false
     @Published var audioPermissionHelp = false
+    @Published private(set) var audioCaptureError: String?
     @Published var audioStarting = false
+    @Published private(set) var audioStopping = false
     @Published var keepClosed = false
     @Published private(set) var lidSessionDuration = LidSessionDuration() {
         didSet {
@@ -140,6 +161,11 @@ import Combine
     private var terminationApproved = false
     private var isStopping = false
     private(set) var hardwareRecoveryInProgress = false
+    private(set) var hardwareApplyInProgress = false
+    var hardwareOperationInProgress: Bool { hardwareRecoveryInProgress || hardwareApplyInProgress }
+    private(set) var lidCleanupInProgress = false
+    var lifecycleAllowsFrames: Bool { !isStopping && !hardwareOperationInProgress && !lidCleanupInProgress && !lidStopFailed }
+    private let hardwareRestore: (() throws -> Void)?
     private var tickCount = 0
     private var lastSourceSample = -Double.infinity
     private var lastBatterySample = -Double.infinity
@@ -156,6 +182,8 @@ import Combine
     private var cachedLocked = false
     private var cachedAway = false
     private var audioConsent = false
+    private var musicHardwareReady = false
+    private let musicCaptureObservation: (() -> MusicCaptureObservation)?
     private lazy var audioSession = AudioSessionDriver(
         start: { [audio = self.audio] in try await audio.start() },
         stop: { [audio = self.audio] in await audio.stop() },
@@ -167,13 +195,15 @@ import Combine
             guard let self else { return }
             self.audioStarting = state == .starting
             self.audioRunning = state == .running
+            self.audioStopping = state == .stopping
             if state == .running { self.audioConsent = true }
             self.requestFrame()
         },
         failed: { [weak self] error in
             guard let self else { return }
             self.audioPermissionHelp = true
-            self.error = SystemAudio.friendly(error).localizedDescription
+            self.audioCaptureError = SystemAudio.friendly(error).localizedDescription
+            self.error = self.audioCaptureError
             self.requestFrame()
         })
     private var screenSleeping = false
@@ -215,7 +245,11 @@ import Combine
     }
     var colorScheme: ColorScheme? { appearance == "dark" ? .dark : appearance == "light" ? .light : nil }
 
-    init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil) {
+    init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil,
+         musicCaptureObservation: (() -> MusicCaptureObservation)? = nil,
+         hardwareRestore: (() throws -> Void)? = nil) {
+        self.hardwareRestore = hardwareRestore
+        self.musicCaptureObservation = musicCaptureObservation
         self.lidStopper = lidStopper ?? LidWatcherStopper()
         self.demo = demo
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
@@ -282,13 +316,14 @@ import Combine
         audio.onFailure = { [weak self] text, token in Task { @MainActor in
             guard let self, self.audioRunning, self.audio.acceptsFailure(token) else { return }
             self.audioSession.requestStop()
-            self.audioRunning = false; self.error = text; self.requestFrame()
+            self.audioRunning = false; self.audioPermissionHelp = true
+            self.audioCaptureError = text; self.error = text; self.requestFrame()
         } }
         bridge.state = { [weak self] in self?.apiState() ?? [:] }
         bridge.command = { [weak self] command in
             guard let self else { return }
             guard self.controlling, self.pausedReason == nil else { throw RuntimeServices.failure("Open Backlit on the Mac and restore its light if a recovery message is shown.") }
-            if command.mode == .music && !self.audioConsent { throw RuntimeServices.failure("Start System Audio in Backlit before selecting Music remotely.") }
+            if command.mode == .music && !self.audioConsent { throw RuntimeServices.failure("Select Music in Backlit and allow system audio before selecting it remotely.") }
             if let mode = command.mode { guard self.availableModes.contains(mode) else { throw RuntimeServices.failure("That mode is unavailable on this Mac.") }; self.mode = mode }
             if let brightness = command.brightness { self.brightness = brightness }
             if let enabled = command.enabled { self.enabled = enabled }
@@ -297,15 +332,23 @@ import Combine
         bridge.onStatus = { [weak self] text in self?.bridgeStatus = text }
         self.lidStopper.onResult = { [weak self] result in
             guard let self else { return }
-            self.lidStopPending = false
             self.lidStopFailed = !result.safeToQuit
+            var safe = result.safeToQuit
             if result.safeToQuit {
                 self.watcher = nil; self.lease = nil
                 if result.leaseRemovalError != nil { self.notice = "Normal lid sleep was restored. A leftover session file could not be removed." }
+                // The lid helper may have triggered fade recovery. Retire that
+                // session before another frame or the pending quit can proceed.
+                do { if self.controlling { try self.restoreOwnedHardware() } }
+                catch { self.error = error.localizedDescription; safe = false }
             } else {
                 self.error = "Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry."
             }
-            self.onLidStopCompleted?(result.safeToQuit)
+            self.lidStopPending = false
+            self.lidCleanupInProgress = false
+            if !safe { self.controlWanted = false; self.cancelStopping() }
+            if !self.isStopping { self.configureTimer(); self.requestFrame() }
+            self.onLidStopCompleted?(safe)
         }
         isLoading = false
     }
@@ -338,7 +381,8 @@ import Combine
         defaults.set(musicPreset.rawValue, forKey: "music.preset")
     }
     func tick() {
-        guard !isStopping, !hardwareRecoveryInProgress else { return }
+        guard lifecycleAllowsFrames else { return }
+        if let watcher, !watcher.isRunning, !lidStopPending { stopLid(); return }
         tickCount += 1
         let now = ProcessInfo.processInfo.systemUptime
         if now-lastSourceSample >= 1 {
@@ -370,7 +414,6 @@ import Combine
         else { nextPause = nil }
         if pausedReason != nextPause {
             pausedReason = nextPause
-            if nextPause == nil && enabled && mode == .music && audioConsent { startAudio() }
         }
         synchronizeTouch()
         synchronizeTyping()
@@ -386,14 +429,20 @@ import Combine
             if pausedReason != nil { releaseHardware() }
             else {
                 do {
-                    if !controlling { try device.begin(); controlling = true }
-                    try device.apply(output, closedLid: keepClosed)
+                    try withHardwareApply {
+                        try updateMusicHardwareReadiness {
+                            if !controlling { try device.begin(); controlling = true }
+                            return try device.apply(output, closedLid: keepClosed, frameInterval: EffectCadence.animationInterval(for:mode))
+                        }
+                    }
                 } catch { self.error = error.localizedDescription; controlWanted = false; stopLid(); releaseHardware() }
             }
         }
+        // Capture starts only after ownership and the first output request
+        // succeed, and stops if that work failed or the session became unsafe.
+        synchronizeMusicCapture()
         onIconChange?()
         configureTimer()
-        if let watcher, !watcher.isRunning, !lidStopPending, !lidStopFailed { stopLid() }
     }
     func effectOutput(at now: Double) -> Double {
         var input = EffectInput()
@@ -416,16 +465,17 @@ import Combine
         DispatchQueue.main.async { [weak self] in self?.framePending=false;self?.tick() }
     }
     func configureTimer() {
+        guard lifecycleAllowsFrames else { timer?.invalidate(); return }
         let animated = pausedReason == nil && (device.closedEffectNeedsAnimation || (enabled && (mode == .breathe || (mode == .music && (audioRunning || demo)) || (mode == .agents && agentState != .waiting) || (mode == .battery && batteryResponse.requiresAnimation))))
-        let interval = animated ? 0.05 : 1.0
+        let interval = animated ? EffectCadence.animationInterval(for:mode) : 1.0
         guard timerInterval != interval || timer?.isValid != true else { return }
         timer?.invalidate(); timerInterval = interval
         let next=Timer(timeInterval:interval,repeats:true){[weak self] _ in MainActor.assumeIsolated{self?.tick()}}
-        next.tolerance=animated ? 0.003 : 0.1
+        next.tolerance=animated ? min(0.005,interval*0.06) : 0.1
         RunLoop.main.add(next,forMode:.common);timer=next
     }
     private func synchronizeTouch(forceRestart: Bool = false) {
-        let shouldRun = !demo && !isStopping && controlWanted && mode == .touch && enabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
+        let shouldRun = !demo && lifecycleAllowsFrames && controlWanted && mode == .touch && enabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
         let previous = touchWanted
         touchWanted = shouldRun
         if shouldRun && (!previous || forceRestart) {
@@ -441,7 +491,7 @@ import Combine
         }
     }
     private func synchronizeTyping(forceRestart: Bool = false) {
-        let shouldRun = !demo && !isStopping && controlWanted && mode == .touch && enabled && typingEnabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
+        let shouldRun = !demo && lifecycleAllowsFrames && controlWanted && mode == .touch && enabled && typingEnabled && pausedReason == nil && !cachedLocked && !screenSleeping && !systemSleeping && consoleActive
         if shouldRun && (!typingWanted || forceRestart) { _ = typing.start() }
         else if !shouldRun && typing.running { typing.stop() }
         typingWanted = shouldRun
@@ -470,12 +520,12 @@ import Combine
         tick()
     }
     func repairAndResume() {
-        guard !hardwareRecoveryInProgress else { return }
+        guard !hardwareOperationInProgress else { return }
         restore()
         if !device.needsRecovery { controlWanted = !demo && device.available; notice = "Your light is ready."; tick() }
     }
     func setControl(_ wanted: Bool) {
-        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress."; return }
+        guard !hardwareOperationInProgress, !lidCleanupInProgress else { notice = "Light recovery is still in progress."; return }
         if demo { notice = "This is an isolated preview. Your real logo is unchanged."; return }
         controlWanted = wanted
         if !wanted { stopLid(); releaseHardware() }
@@ -483,21 +533,41 @@ import Combine
     }
     /// Terminal verification pumps the run loop for safety notifications. Keep
     /// timer/user callbacks from entering another hardware operation meanwhile.
+    /// Routine applies do not stop capture or schedule another frame.
+    @discardableResult func withHardwareApply(_ operation: () throws -> Void) rethrows -> Bool {
+        guard !hardwareOperationInProgress else { return false }
+        hardwareApplyInProgress = true
+        defer { hardwareApplyInProgress = false }
+        try operation()
+        return true
+    }
     @discardableResult func withHardwareRecovery(_ operation: () throws -> Void) rethrows -> Bool {
-        guard !hardwareRecoveryInProgress else { return false }
+        guard !hardwareOperationInProgress else { return false }
         hardwareRecoveryInProgress = true
+        musicHardwareReady = false
+        if audioRunning || audioStarting { stopAudio() }
         defer { hardwareRecoveryInProgress = false; requestFrame() }
         try operation()
         return true
     }
     func releaseHardware() {
-        guard controlling, !hardwareRecoveryInProgress else { return }
-        do { try withHardwareRecovery { try device.restore(); controlling = false } }
+        guard controlling, !hardwareOperationInProgress, !lidCleanupInProgress else { return }
+        do { try restoreOwnedHardware() }
         catch { self.error = error.localizedDescription; controlWanted = false }
     }
+    private func restoreOwnedHardware() throws {
+        let restored = try withHardwareRecovery {
+            if let hardwareRestore { try hardwareRestore() }
+            else { try device.restore() }
+            controlling = false
+        }
+        guard restored else { throw RuntimeServices.failure("Light recovery is still in progress.") }
+    }
     func restore() {
-        guard !demo, !hardwareRecoveryInProgress else { return }
+        guard !demo, !hardwareOperationInProgress else { return }
         controlWanted = false
+        musicHardwareReady = false
+        if audioRunning || audioStarting { stopAudio() }
         if lidStopPending || watcher?.isRunning == true {
             stopLid(); notice = "Closed-lid cleanup is in progress. Retry Restore Light when it finishes."; return
         }
@@ -505,20 +575,43 @@ import Combine
             try withHardwareRecovery {
                 try device.restore(); controlling = false
                 let verify = watcher != nil
-                guard try completePowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
+                guard try finishPowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
                 notice = "The saved logo and lid settings were restored."
             }
         }
         catch { self.error = error.localizedDescription }
     }
-    private var musicCaptureAllowed: Bool {
-        let allowedClosed = keepClosed && cachedLid
-        return !isStopping && mode == .music && enabled && pausedReason == nil && !systemSleeping && consoleActive && (!screenSleeping || allowedClosed) && (!cachedLocked || allowedClosed)
+    /// Owned journals exist during healthy operation too. Readiness therefore
+    /// requires an applied frame, not a waiting helper or a safely paused fade.
+    func updateMusicHardwareReadiness(_ operation: () throws -> FadeApplyResult) rethrows {
+        musicHardwareReady = false
+        if case .applied = try operation() { musicHardwareReady = true }
+    }
+    var musicCaptureAllowed: Bool {
+        let observed = musicCaptureObservation?() ?? .init(deviceAvailable: device.available,
+                                                         locked: cachedLocked, lidClosed: cachedLid)
+        let allowedClosed = keepClosed && observed.lidClosed
+        return lifecycleAllowsFrames && controlWanted && controlling &&
+            musicHardwareReady && observed.deviceAvailable && !observed.locked &&
+            mode == .music && enabled && pausedReason == nil && !systemSleeping && consoleActive &&
+            (!screenSleeping || allowedClosed)
+    }
+    private func synchronizeMusicCapture() {
+        switch MusicCapturePolicy.action(mode: mode, enabled: enabled, eligible: musicCaptureAllowed,
+            preview: demo, failed: audioPermissionHelp, active: audioRunning || audioStarting) {
+        case .start: startAudio()
+        case .stop: stopAudio()
+        case .none: break
+        }
+    }
+    private func clearAudioFailure() {
+        if let audioCaptureError, error == audioCaptureError { error = nil }
+        audioCaptureError = nil; audioPermissionHelp = false
     }
     func startAudio() {
-        guard musicCaptureAllowed, !audioStarting, !audioRunning else { return }
         if demo { notice = "Preview uses a sample waveform. Live system audio is never started in preview."; return }
-        audioPermissionHelp = false
+        guard musicCaptureAllowed, !audioStarting, !audioRunning, !audioStopping else { return }
+        clearAudioFailure()
         audioSession.requestStart()
     }
     func openAudioPrivacy() {
@@ -530,7 +623,7 @@ import Combine
         audioRunning = false; audioStarting = false
         requestFrame()
     }
-    private func resumeAudioAfterUpdateFailure() {
+    private func resumeAudioAfterInterruption() {
         guard audioSession.hasResumeIntent else { return }
         // Refresh sleep/lock/session policy before considering the saved intent.
         lastSourceSample = -Double.infinity
@@ -543,7 +636,7 @@ import Combine
             amount: amount ?? lidSessionDuration.amount, unit: unit ?? lidSessionDuration.unit)
     }
     func setLid(_ enabled: Bool) {
-        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress."; return }
+        guard !hardwareOperationInProgress, !lidCleanupInProgress else { notice = "Light recovery is still in progress."; return }
         guard !demo else { notice = "Closed-lid operation is unavailable in isolated preview."; return }
         if !enabled { stopLid(); return }
         guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else {
@@ -562,28 +655,41 @@ import Combine
     }
     /// Retain one owned helper until its exit and recovery record are checked.
     @discardableResult func adoptLidWatcher(_ process: any LidWatcherProcess, lease: URL) -> Bool {
-        guard watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else { return false }
+        guard !hardwareOperationInProgress, watcher == nil, !lidStopPending, !lidStopper.hasOutstandingFilesystemWork else { return false }
         watcher = process; self.lease = lease; keepClosed = true; lidStopFailed = false
         return true
     }
     func stopLid() {
+        guard !hardwareOperationInProgress else { return }
         keepClosed = false
-        guard let watcher else { return }
+        guard let watcher, !lidStopPending else { return }
+        // Stop producing frames before revoking the helper's permission. The
+        // fade watchdog and this process must not race ordinary animation.
+        lidCleanupInProgress = true
+        musicHardwareReady = false
+        synchronizeTouch(); synchronizeTyping(); stopAudio(); timer?.invalidate()
         if lidStopper.requestStop(process: watcher, lease: lease,
             journal: AgentBridge.directory.appendingPathComponent("lid-recovery.json")) {
             lidStopPending = true; lidStopFailed = false
+        } else {
+            lidCleanupInProgress = false
+            synchronizeTouch(); synchronizeTyping(); configureTimer(); requestFrame()
         }
     }
     /// Only an explicit successful power repair can retire a failed helper.
     /// The caller must verify the normal power state, not merely delete a file.
     @discardableResult func completePowerRecovery(_ repair: () throws -> Void) rethrows -> Bool {
+        guard !hardwareOperationInProgress else { return false }
+        return try finishPowerRecovery(repair)
+    }
+    private func finishPowerRecovery(_ repair: () throws -> Void) rethrows -> Bool {
         guard !lidStopPending, !lidStopper.hasOutstandingFilesystemWork, watcher?.isRunning != true else { return false }
         try repair()
         watcher = nil; lease = nil; lidStopFailed = false
         return true
     }
     func setAmbient(_ enabled: Bool) {
-        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress."; return }
+        guard !hardwareOperationInProgress else { notice = "Light recovery is still in progress."; return }
         guard !demo, device.available else { error = "A compatible live Mac is required."; return }
         if let app = device.competingApp { error = "Quit \(app) before changing logo settings."; return }
         let resume = controlWanted; controlWanted = false; releaseHardware()
@@ -640,31 +746,46 @@ import Combine
         startPowerMonitoring()
         if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
         configureTimer(); requestFrame()
-        resumeAudioAfterUpdateFailure()
+        resumeAudioAfterInterruption()
     }
     func quit() {
         guard updater.allowsTermination() else { error = updater.message; return }
         NSApp.terminate(nil)
     }
-    func prepareQuit() -> Bool {
-        guard !hardwareRecoveryInProgress else { notice = "Light recovery is still in progress. Retry Quit when it finishes."; return false }
+    func prepareQuit(confirmOff: (() -> NSApplication.ModalResponse)? = nil) -> Bool {
+        guard !hardwareOperationInProgress else { notice = "Light recovery is still in progress. Retry Quit when it finishes."; return false }
         if terminationApproved { return true }
+        if !isStopping {
+            audioSession.retainResumeIntent(consented: audioConsent)
+            isStopping = true
+            synchronizeTouch(); synchronizeTyping(); powerMonitor.stop(); timer?.invalidate(); stopAudio()
+            if controlling && !enabled {
+                let result: NSApplication.ModalResponse
+                if let confirmOff { result = confirmOff() }
+                else {
+                    let alert = NSAlert(); alert.messageText = "Restore the logo and quit?"; alert.informativeText = "Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again."
+                    alert.addButton(withTitle:"Restore and Quit"); alert.addButton(withTitle:"Cancel")
+                    result = alert.runModal()
+                }
+                guard result == .alertFirstButtonReturn else { cancelStopping(); return false }
+            }
+        }
         // Cocoa's terminateLater path keeps the run loop responsive while the
         // owned helper restores power. No hardware/quit decision is discarded.
         if watcher != nil || lidStopPending {
             stopLid()
+            if !lidStopPending { cancelStopping() }
             return false
         }
-        if controlling && !enabled {
-            let alert = NSAlert(); alert.messageText = "Leave the logo off?"; alert.informativeText = "You can leave it dark or restore the settings from before this Backlit session. A saved recovery remains available on the next launch."
-            alert.addButton(withTitle:"Restore and Quit"); alert.addButton(withTitle:"Leave Off and Quit"); alert.addButton(withTitle:"Cancel")
-            let result = alert.runModal(); if result == .alertThirdButtonReturn { return false }
-            if result == .alertSecondButtonReturn { controlling = false }
-        }
-        audioSession.retainResumeIntent(consented: audioConsent)
-        isStopping = true; synchronizeTouch(); synchronizeTyping(); powerMonitor.stop(); timer?.invalidate()
         stopLid(); releaseHardware()
-        if controlling { isStopping=false; startPowerMonitoring(); synchronizeTouch(forceRestart: true); synchronizeTyping(forceRestart: true); configureTimer(); return false }
+        if controlling { cancelStopping(); return false }
         timer?.invalidate(); bridge.stop(); stopAudio(); terminationApproved = true; return true
+    }
+    private func cancelStopping() {
+        guard isStopping else { return }
+        isStopping = false
+        startPowerMonitoring(); synchronizeTouch(forceRestart: true); synchronizeTyping(forceRestart: true)
+        configureTimer(); requestFrame()
+        resumeAudioAfterInterruption()
     }
 }

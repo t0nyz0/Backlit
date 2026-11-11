@@ -35,6 +35,7 @@ final class LiveFadeHardware {
     init(interface: Interface) { io = interface }
 
     func currentContext() -> FadeSafetyContext? { io.context() }
+    func waitForSafetyEvent(_ interval:Double) {io.wait(interval)}
 
     func keyboardStates() -> [UInt64: Int]? {
         guard let ids = io.keyboardIDs(), !ids.isEmpty,
@@ -253,7 +254,7 @@ final class LiveFadeHardware {
             return factor.doubleValue
         }, logoEnabled: {
             LogoDevice.enabledState()
-        }))
+        },wait:{monitor.wait($0)}))
         guard hardware.currentContext() != nil, hardware.keyboardStates() != nil else {
             throw RuntimeServices.failure("Current lid, sleep, lock and keyboard state must be known before using fades.")
         }
@@ -317,13 +318,49 @@ final class FadeSafetyObservation {
     }
 }
 
+/// Pure validation for each newly read safety snapshot. This holds no cached
+/// state; the observation tracker still rejects transitions during the reads.
+enum FadeSafetySnapshot {
+    static let displayCapacity: UInt32 = 64
+
+    static func parse(lid: Any?, sleepCycle: Any?, session: Any?,
+                      displays: [CGDirectDisplayID], displayCount: UInt32,
+                      displayResult: CGError,
+                      isAsleep: (CGDirectDisplayID) -> Bool) -> FadeSafetyObservation.State? {
+        guard let lid = lid as? Bool,
+              let session = session as? [String: Any],
+              let onConsole = session[kCGSessionOnConsoleKey as String] as? Bool,
+              let loginDone = session[kCGSessionLoginDoneKey as String] as? Bool else { return nil }
+        // The lock key is normally absent for a validated unlocked console
+        // session. A missing/malformed session itself remains unknown.
+        let lockValue = session["CGSSessionScreenIsLocked"]
+        guard lockValue == nil || lockValue is Bool,
+              sleepCycle == nil || sleepCycle is String,
+              displayResult == .success, displayCount > 0,
+              displayCount <= displayCapacity, displayCount <= displays.count else { return nil }
+        // Inspect only entries the API returned, never the unused buffer tail.
+        // An observed awake display is sufficient; treating an all-asleep
+        // bounded list as asleep remains conservative if a list is truncated.
+        let sleeping = displays.prefix(Int(displayCount)).allSatisfy(isAsleep)
+        return .init(lidClosed: lid, sleeping: sleeping,
+                     locked: (lockValue as? Bool ?? false) || !onConsole || !loginDone,
+                     sleepCycle: sleepCycle as? String)
+    }
+}
+
 private final class LiveFadeSafetyMonitor {
     // The callback owns only this relay, not the monitor. Port teardown drains
     // callbacks before releasing it; notification closures capture it strongly.
     private final class Relay {
         let observation = FadeSafetyObservation()
+        let wake:FadeSafetyWake
+        init() throws {wake=try FadeSafetyWake()}
+        func observe(_ event:FadeSafetyObservation.Event) {
+            observation.observe(event)
+            wake.signal()
+        }
     }
-    private let relay = Relay()
+    private let relay:Relay
     private let queue = DispatchQueue(label: "Backlit.fade-safety-observations")
     private var port: IONotificationPortRef?
     private var interest: io_object_t = 0
@@ -331,6 +368,7 @@ private final class LiveFadeSafetyMonitor {
     private var notifications: [(NotificationCenter, NSObjectProtocol)] = []
 
     init() throws {
+        relay=try Relay()
         root = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
         guard root != 0, let port = IONotificationPortCreate(kIOMainPortDefault) else {
             throw RuntimeServices.failure("Power-state observation is unavailable.")
@@ -345,7 +383,7 @@ private final class LiveFadeSafetyMonitor {
             let powerMessages: UInt32 = 0xe0000000 | (13 << 14)
             if message == (powerMessages | 0x100) ||
                message == (powerMessages | 0x140) {
-                relay.observation.observe(.changed)
+                relay.observe(.changed)
             }
         }, Unmanaged.passUnretained(relay).toOpaque(), &interest)
         guard result == KERN_SUCCESS else {
@@ -363,7 +401,7 @@ private final class LiveFadeSafetyMonitor {
         ]
         for (name, event) in events {
             let relay = self.relay
-            let token = workspace.addObserver(forName: name, object: nil, queue: nil) { _ in relay.observation.observe(event) }
+            let token = workspace.addObserver(forName: name, object: nil, queue: nil) { _ in relay.observe(event) }
             notifications.append((workspace, token))
         }
         let distributed = DistributedNotificationCenter.default()
@@ -371,7 +409,7 @@ private final class LiveFadeSafetyMonitor {
             ("com.apple.screenIsLocked", .locked), ("com.apple.screenIsUnlocked", .unlocked)
         ] {
             let relay = self.relay
-            let token = distributed.addObserver(forName: Notification.Name(name), object: nil, queue: nil) { _ in relay.observation.observe(event) }
+            let token = distributed.addObserver(forName: Notification.Name(name), object: nil, queue: nil) { _ in relay.observe(event) }
             notifications.append((distributed, token))
         }
     }
@@ -384,40 +422,29 @@ private final class LiveFadeSafetyMonitor {
             IONotificationPortDestroy(port)
             queue.sync {} // The callback does not retain/call this monitor.
         }
+        relay.wake.invalidate()
         if root != 0 { IOObjectRelease(root) }
     }
 
+    func wait(_ interval:Double) {relay.wake.wait(interval)}
     func context() -> FadeSafetyContext? {
         relay.observation.context {
-            var properties: Unmanaged<CFMutableDictionary>?
-            guard IORegistryEntryCreateCFProperties(root, &properties, kCFAllocatorDefault, 0) == KERN_SUCCESS,
-                  let dictionary = properties?.takeRetainedValue() as? [String: Any],
-                  let lid = dictionary[kAppleClamshellStateKey] as? Bool,
-                  let session = CGSessionCopyCurrentDictionary() as? [String: Any],
-                  let onConsole = session[kCGSessionOnConsoleKey as String] as? Bool,
-                  let loginDone = session[kCGSessionLoginDoneKey as String] as? Bool else { return nil }
-            // This key is normally absent for a validated unlocked console
-            // session. Absence is distinct from a failed/malformed dictionary.
-            let lockValue = session["CGSSessionScreenIsLocked"]
-            guard lockValue == nil || lockValue is Bool else { return nil }
-            let locked = lockValue as? Bool ?? false
-            // UUID changes invalidate snapshots, but UUID presence by itself is
-            // not a sufficiently reliable indication of current sleep status.
-            let cycle = dictionary[kIOPMSleepWakeUUIDKey]
-            guard cycle == nil || cycle is String else { return nil }
-            var count: UInt32 = 0
-            guard CGGetOnlineDisplayList(0, nil, &count) == .success,
-                  count > 0, count <= 64 else { return nil }
-            var displays = [CGDirectDisplayID](repeating: 0, count: Int(count))
+            // Read only the two properties used here, from the retained root.
+            // Copying every root-domain property on each guard is expensive.
+            guard let lid = IORegistryEntryCreateCFProperty(root, kAppleClamshellStateKey as CFString,
+                    kCFAllocatorDefault, 0)?.takeRetainedValue() as? Bool else { return nil }
+            let cycle = IORegistryEntryCreateCFProperty(root, kIOPMSleepWakeUUIDKey as CFString,
+                    kCFAllocatorDefault, 0)?.takeRetainedValue()
+            let session = CGSessionCopyCurrentDictionary()
+            var displays = [CGDirectDisplayID](repeating: 0, count: Int(FadeSafetySnapshot.displayCapacity))
             var actual: UInt32 = 0
-            guard CGGetOnlineDisplayList(count, &displays, &actual) == .success,
-                  actual > 0, actual <= count else { return nil }
+            let result = CGGetOnlineDisplayList(FadeSafetySnapshot.displayCapacity, &displays, &actual)
             // No validated awake display is unsafe. This intentionally blocks
             // a closed/no-external-display configuration until a separate,
             // trustworthy initial system-awake source has been verified.
-            let sleeping = displays.prefix(Int(actual)).allSatisfy { CGDisplayIsAsleep($0) != 0 }
-            return .init(lidClosed: lid, sleeping: sleeping, locked: locked || !onConsole || !loginDone,
-                         sleepCycle: cycle as? String)
+            return FadeSafetySnapshot.parse(lid: lid, sleepCycle: cycle, session: session,
+                displays: displays, displayCount: actual, displayResult: result,
+                isAsleep: { CGDisplayIsAsleep($0) != 0 })
         }
     }
 }

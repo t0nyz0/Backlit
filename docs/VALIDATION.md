@@ -8,9 +8,9 @@ The 0.2.4 icon uses unchanged master artwork with regenerated smaller ICNS repre
 
 ## Closed-lid effects candidate
 
-Requested mapping values could change while actual hardware output stayed fixed with the lid closed. The candidate uses feedback from the hardware fade factor, preserves ambient limits and keeps the keyboard dark. Effect batches and watchdog cleanup share an exclusive lock; cleanup revokes frame permission before resetting hardware. Static levels use fast ticks only until settled.
+Requested mapping values could change while actual hardware output stayed fixed with the lid closed. The candidate uses feedback from the hardware fade factor, preserves ambient limits and keeps the keyboard dark. Effect batches and watchdog cleanup share an exclusive lock; cleanup revokes frame permission before resetting hardware. Exact endpoints can settle to one-second housekeeping. Interior levels retain bounded periodic feedback so abandoned native ramps cannot remain indefinitely.
 
-Local bounded probes verified a Breathe cycle and stable 30%/70% levels. These are probe results, not completed installed-app acceptance. Close-from-Off, close-at-low-brightness, real Music input, repeated physical reopening, timeout and full-app efficiency remain release blockers until tested. No broad compatibility claim is made.
+On the test Mac, user-assisted installed-app checks verified closed-lid On, Breathe, and Music, including closing from Off before turning On. Exact Off was separately confirmed by zero hardware factor and disabled PWM. Earlier bounded probes also checked 30%/70% levels. The latest lifecycle and performance revisions still require final installed-app acceptance, including ordinary lid-policy transitions and graceful quit. Sleep/lock/crash recovery, external-display color preservation, and broader hardware compatibility are not established by these checks.
 
 ## Clamshell indicator regression
 
@@ -24,13 +24,17 @@ Regression tests cover durable-before-write ordering, repeated-poll suppression,
 
 The private global notification also reaches display/color modules. Unchanged True Tone and color behavior has not been established. Broader compatibility, repeated physical lid transitions and keyboard restoration, external-display hotplug, real thermal/low-battery cutoffs and force-killed helper recovery remain hardware acceptance limits. No optical brightness measurement or broader hardware-compatibility claim is implied. No persistent brightness or security setting is changed by this option.
 
+## Music capture
+
+Selecting Music starts system playback capture when the app owns a ready light and the session is unlocked. Leaving Music stops capture. Failed requests do not retry automatically. A 30-second startup deadline reports a stalled native request while retaining its single worker until macOS returns and cleanup finishes; it does not forcibly cancel native audio work. One live setup was unusually slow before eventually succeeding, so timely startup across audio devices remains unverified. No audio is recorded.
+
 ## Manual-download controls
 
 Settings offers Download Latest Version when trusted in-app updating is unavailable. It opens the installer page and explains manual replacement; internal publisher-configuration diagnostics stay hidden. Valid strict configuration retains Check for Updates. Preview disables downloads and in-app update checks. Six presentation regressions cover missing, invalid and valid configurations, policy flags, the destination and preview safety.
 
 ## Executed local checks
 
-- 204 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
+- 355 Swift tests cover effects, Battery requirements through the production model, preferences/migration, charge transitions, Music responses and malformed PCM, passive input timing, local bridge lifecycles, automation validation, update configuration/consent and device leases/recovery values.
 - 17 Python tests cover Home Assistant Core/client fixtures, plugin archive validation, signed update payload/feed tampering, and disposable-filesystem local installer rollback cases.
 - 15 Stream Deck tests cover command/settings validation, bounded ordering and failure recovery, inspector context/persistence, and package freshness. Typecheck/schema/license checks and dependency audit also pass locally.
 - Optimized arm64 build, four-action AppIntents metadata extraction, nested framework/helper code-signature verification, source exclusions, artifact hashes/ZIP CRCs/DMG, documentation/media integrity and privacy/secret scans are checked locally.
@@ -59,6 +63,6 @@ Screenshots are captured from current native views in isolated preview; they ill
 
 ## Efficiency and distribution
 
-Animated effects use a capped 20 Hz loop and previews a capped 10 Hz publication rate. Settled static/off/paused states use one-second housekeeping; a closed-lid static target retains the fast loop only while settling. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
+Music and interactive effects use a capped 20 Hz feedback loop; Breathe, Battery and interior static levels use 10 Hz. Exact settled endpoints and paused states use one-second housekeeping. Previews publish at most 10 Hz, cache static artwork, and skip occluded windows. The independent recovery helper uses event-woken polling with a nominal 250 ms idle interval; this is not a hard scheduling guarantee. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
 
 The app targets Apple silicon/macOS 14+ and uses compatibility-sensitive private hardware/audio interfaces. Global screen-touch is unsupported. It is ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.

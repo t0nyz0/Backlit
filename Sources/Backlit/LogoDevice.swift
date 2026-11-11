@@ -16,7 +16,7 @@ final class LogoDevice {
     private var lastWritten: [[Double]]?
     private var pendingWritten: [[Double]]?
     private var closedEffect: ClosedLidEffect?
-    private var fadeRuntime: FadeRuntime?
+    private let fadeSession = FadeSessionCoordinator(physicalLid: {RuntimeServices.physicalLidClosed}, makeSession: {try FadeRuntime(closedLidRequested:$0)})
     private var lease: FileLease?
     private let recovery: URL
     private(set) var available = false
@@ -81,7 +81,7 @@ final class LogoDevice {
         // The exact off endpoint must not be swallowed by normal coalescing.
         (next == 0 && previous != 0) || abs(previous - next) >= 0.5
     }
-    func apply(_ brightness: Double, closedLid: Bool = false) throws {
+    func apply(_ brightness: Double, closedLid: Bool = false, frameInterval:Double = 0.05) throws -> FadeApplyResult {
         guard saved != nil else {throw failure("Logo control has not been enabled.")}
         guard brightness.isFinite else {throw failure("Invalid brightness.")}
         guard let current=mapping(),let original=saved,Self.equivalent(current,original) else {
@@ -89,8 +89,7 @@ final class LogoDevice {
         }
         // Keep the original usable source instead of writing zero/low mappings
         // that can remain latched after the panel stops updating in clamshell.
-        if fadeRuntime == nil {fadeRuntime=try FadeRuntime(closedLidRequested:closedLid)}
-        try fadeRuntime?.apply(brightness,closedLidRequested:closedLid)
+        return try fadeSession.apply(brightness,closedLidRequested:closedLid,frameInterval:frameInterval)
     }
 
     /// Explicit diagnostic only. Normal app behavior uses the owned fade path.
@@ -115,7 +114,7 @@ final class LogoDevice {
         lastWritten = rows; pendingWritten = nil
     }
 
-    var closedEffectNeedsAnimation: Bool { fadeRuntime?.needsAnimation == true || closedEffect?.needsAnimation == true }
+    var closedEffectNeedsAnimation: Bool { fadeSession.needsAnimation || closedEffect?.needsAnimation == true }
     private func restoreClosedEffect() throws {
         guard closedEffect?.active == true else { return }
         _ = try ClosedEffectSession.locked(wait: true) {
@@ -129,7 +128,7 @@ final class LogoDevice {
         guard needsRecovery || saved != nil else { return }
         if lease == nil { lease = try FileLease(url:AgentBridge.directory.appendingPathComponent("logo.lock")) }
         // Acquire global ownership before touching a prior process's recovery.
-        if let fadeRuntime {try fadeRuntime.restore();self.fadeRuntime=nil}
+        if fadeSession.hasSession {try fadeSession.restore()}
         else {try FadeRuntime.recoverPending()}
         try restoreClosedEffect()
         let original: [[Double]]

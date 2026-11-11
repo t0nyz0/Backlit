@@ -93,7 +93,7 @@ if arguments.contains("--verify-hardware") {
         model.onIconChange = { [weak self] in self?.updateIcon() }
         model.isPreviewVisible = { [weak self] in
             guard let self else{return false}
-            return !NSApp.isHidden && ((self.window.isVisible && !self.window.isMiniaturized && self.model.selectedPage == "light") || self.popover.isShown)
+            return !NSApp.isHidden && ((self.window.isVisible && !self.window.isMiniaturized && self.window.occlusionState.contains(.visible) && self.model.selectedPage == "light") || self.popover.isShown)
         }
         model.onMenuBarIconVisibilityChange = { [weak self] in self?.updateMenuBarVisibility() }
         updateMenuBarVisibility()

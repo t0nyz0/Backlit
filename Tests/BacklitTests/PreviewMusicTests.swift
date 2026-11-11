@@ -16,7 +16,8 @@ final class PreviewMusicTests: XCTestCase {
         model.musicAutomatic = true
         model.tick()
         let automatic = model.output
-        XCTAssertGreaterThan(automatic, 0.85)
+        XCTAssertGreaterThan(automatic, 0.58)
+        XCTAssertLessThan(automatic, 0.62, "Automatic level leaves intensity headroom")
 
         model.musicAutomatic = false
         model.tick()

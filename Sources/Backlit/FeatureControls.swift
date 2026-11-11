@@ -13,6 +13,36 @@ struct MusicResponseControls: View {
     }
 }
 
+struct MusicCaptureStatus: View {
+    @ObservedObject var model: AppModel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if model.demo {
+                Text("Preview uses a sample waveform.")
+            } else if model.audioStarting {
+                Text("Connecting to system audio…")
+            } else if model.audioStopping {
+                if let error = model.audioCaptureError { Text(error) }
+                Text("Waiting for macOS to finish the system audio request and cleanup.")
+                Text("You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.")
+                if model.audioPermissionHelp {
+                    Button("Retry System Audio") { model.startAudio() }.disabled(true)
+                }
+            } else if model.audioPermissionHelp {
+                Text(model.audioCaptureError ?? "System audio is unavailable.")
+                Text("If access is off, allow Backlit in Privacy & Security → Screen & System Audio Recording.")
+                HStack {
+                    Button("Retry System Audio") { model.startAudio() }.disabled(!model.enabled || model.pausedReason != nil)
+                    Button("Open Privacy Settings") { model.openAudioPrivacy() }
+                }
+            } else {
+                Text(model.audioRunning ? "System audio follows Music mode." : "System audio starts with Music when your light is on and your Mac is active.")
+            }
+            Text("Playback only. No microphone. Nothing recorded.")
+        }.font(.system(size: 10)).foregroundStyle(.secondary)
+    }
+}
+
 struct TypingResponseControls: View {
     @ObservedObject var model: AppModel
     var body: some View {

@@ -6,8 +6,16 @@ final class ClosedLidEffectTests: XCTestCase {
         var events: [String] = []
         var keyboardOK = true
         var writesOK = true
+        var failedEvent: String?
+        var onDuration: ((Double) -> Void)?
+        var onState: ((Int) -> Void)?
         var now = 0.0
-        func make() -> ClosedLidEffect { .init(interface: .init(sample: { self.sample }, duration: { self.events.append("duration:\($0)"); return self.writesOK }, logicalState: { self.events.append("state:\($0)"); return self.writesOK }, keepKeyboardDark: { self.events.append("keyboard"); return self.keyboardOK }, now: { self.now })) }
+        func write(_ event: String) -> Bool { events.append(event); return writesOK && failedEvent != event }
+        func make() -> ClosedLidEffect { .init(interface: .init(sample: { self.sample }, duration: {
+            guard self.write("duration:\($0)") else { return false }; self.onDuration?($0); return true
+        }, logicalState: {
+            guard self.write("state:\($0)") else { return false }; self.onState?($0); return true
+        }, keepKeyboardDark: { self.events.append("keyboard"); return self.keyboardOK }, now: { self.now })) }
     }
     func testFadeStartsWithKnownOppositeStateAndDarkKeyboard() throws {
         let f=Fake(), c=f.make(); try c.apply(0.3)
@@ -25,10 +33,12 @@ final class ClosedLidEffectTests: XCTestCase {
         let n=f.events.count;try c.apply(0.3);XCTAssertEqual(n,f.events.count)
         try c.apply(0.7);XCTAssertEqual(Array(f.events.suffix(2)),["state:2","keyboard"])
     }
-    func testOffDoesNotStopAboveZero() throws {
+    func testOffWaitsForExactZeroWithoutRetargeting() throws {
         let f=Fake(),c=f.make();try c.apply(0)
-        f.sample = .init(factor:0.005,appliedNits:1000,multiplier:1);let n=f.events.count;try c.apply(0);XCTAssertGreaterThan(f.events.count,n)
-        f.sample = .init(factor:0,appliedNits:1000,multiplier:1);try c.apply(0);XCTAssertGreaterThan(f.events.count,n)
+        f.sample = .init(factor:0.005,appliedNits:1000,multiplier:1);let n=f.events.count;try c.apply(0)
+        XCTAssertEqual(f.events.count,n);XCTAssertTrue(c.needsAnimation)
+        f.sample = .init(factor:0,appliedNits:1000,multiplier:1);try c.apply(0)
+        XCTAssertEqual(f.events.count,n);XCTAssertFalse(c.needsAnimation)
     }
     func testInteriorHoldHasBoundedDarkTargetAndContinuesSampling() throws {
         let f=Fake(),c=f.make()
@@ -50,11 +60,15 @@ final class ClosedLidEffectTests: XCTestCase {
         let f=Fake(),c=f.make();f.sample = .init(factor:0,appliedNits:856,multiplier:1)
         try c.apply(0.7);try c.apply(0)
         XCTAssertEqual(Array(f.events.suffix(3)),["duration:0.0","state:1","keyboard"])
+        XCTAssertTrue(c.needsAnimation)
+        let count=f.events.count;try c.apply(0);XCTAssertEqual(f.events.count,count)
         XCTAssertFalse(c.needsAnimation)
     }
     func testOnCancelsPendingFallBeforeFirstHardwareFrame() throws {
         let f=Fake(),c=f.make();try c.apply(0.3);try c.apply(1)
         XCTAssertEqual(Array(f.events.suffix(3)),["duration:0.0","state:2","keyboard"])
+        XCTAssertTrue(c.needsAnimation)
+        let count=f.events.count;try c.apply(1);XCTAssertEqual(f.events.count,count)
         XCTAssertFalse(c.needsAnimation)
     }
     func testNoTelemetryFailsBeforeWrite() {
@@ -111,6 +125,8 @@ final class ClosedLidEffectTests: XCTestCase {
         let f=Fake(),c=f.make();f.sample = .init(factor:0,appliedNits:1000,multiplier:1)
         try c.apply(0)
         XCTAssertEqual(Array(f.events.suffix(3)),["duration:0.0","state:1","keyboard"])
+        XCTAssertTrue(c.needsAnimation)
+        let count=f.events.count;try c.apply(0);XCTAssertEqual(f.events.count,count)
         XCTAssertFalse(c.needsAnimation)
     }
     // These replay observed telemetry, not a substitute for physical lid QA.
@@ -170,6 +186,105 @@ final class ClosedLidEffectTests: XCTestCase {
         let f=Fake(),c=f.make();f.sample = .init(factor:0,appliedNits:0,multiplier:1)
         XCTAssertNoThrow(try c.apply(0.7));f.now=3
         XCTAssertThrowsError(try c.apply(0.7));XCTAssertTrue(f.events.isEmpty)
+    }
+
+    func testNearZeroAndNearOneUseOneExplicitEndpointRequest() throws {
+        for (factor,target,state) in [(0.0000009,0.0,1),(0.9999991,1.0,2)] {
+            let f=Fake(),c=f.make();f.sample = .init(factor:factor,appliedNits:856,multiplier:1)
+            try c.apply(target)
+            XCTAssertEqual(f.events,["duration:5.0","state:\(state == 1 ? 2 : 1)","keyboard","duration:0.0","state:\(state)","keyboard"])
+            let count=f.events.count
+            for tick in 1...20 {f.now=Double(tick)*0.05;try c.apply(target)}
+            XCTAssertEqual(f.events.count,count);XCTAssertTrue(c.needsAnimation)
+            f.sample = .init(factor:target,appliedNits:856,multiplier:1);try c.apply(target)
+            XCTAssertEqual(f.events.count,count);XCTAssertFalse(c.needsAnimation)
+            try c.apply(target);XCTAssertEqual(f.events.count,count)
+        }
+    }
+
+    func testSameNativeStateIsPrimedBeforeZeroDurationEndpoint() throws {
+        for target in [0.0,1.0] {
+            let f=Fake(),c=f.make()
+            var nativeState=target == 0 ? 1 : 2
+            var duration=5.0
+            f.sample = .init(factor:target == 0 ? 0.0000009 : 0.9999991,appliedNits:856,multiplier:1)
+            f.onDuration = {duration=$0}
+            f.onState = {state in
+                // Faithful to the observed same-state no-op, not a hardware
+                // timing claim: only a logical transition consumes duration.
+                guard state != nativeState else {return}
+                nativeState=state
+                if duration == 0 {f.sample = .init(factor:state == 1 ? 0 : 1,appliedNits:856,multiplier:1)}
+            }
+            try c.apply(target);XCTAssertEqual(f.sample?.factor,target)
+            XCTAssertTrue(c.needsAnimation)
+            try c.apply(target);XCTAssertFalse(c.needsAnimation)
+            XCTAssertEqual(f.events.filter{$0.hasPrefix("state:")}.count,2)
+        }
+    }
+
+    func testKnownSameDirectionPrimesButOppositeDirectionDoesNot() throws {
+        let f=Fake(),c=f.make();f.sample = .init(factor:0.8,appliedNits:856,multiplier:1)
+        try c.apply(0.3) // Known downward direction.
+        let count=f.events.count;try c.apply(0)
+        XCTAssertEqual(Array(f.events.dropFirst(count)),["duration:5.0","state:2","keyboard","duration:0.0","state:1","keyboard"])
+        let next=f.events.count;try c.apply(1)
+        XCTAssertEqual(Array(f.events.dropFirst(next)),["duration:0.0","state:2","keyboard"])
+    }
+
+    func testEndpointReversalWhileWaitingStartsNewBoundedRequest() throws {
+        let f=Fake(),c=f.make();f.sample = .init(factor:0.5,appliedNits:856,multiplier:1)
+        try c.apply(0);let count=f.events.count
+        f.now=2.9;try c.apply(1)
+        XCTAssertEqual(Array(f.events.dropFirst(count)),["duration:0.0","state:2","keyboard"])
+        let reversed=f.events.count;f.now=3.1;try c.apply(1)
+        XCTAssertEqual(f.events.count,reversed);XCTAssertTrue(c.needsAnimation)
+        f.sample = .init(factor:1,appliedNits:856,multiplier:1);try c.apply(1)
+        XCTAssertFalse(c.needsAnimation)
+    }
+
+    func testInteriorTargetCancelsPendingEndpointAndUsesNormalFeedback() throws {
+        let f=Fake(),c=f.make();f.sample = .init(factor:0.6,appliedNits:856,multiplier:1)
+        try c.apply(0);let count=f.events.count
+        f.now=2.9;try c.apply(0.4)
+        XCTAssertGreaterThan(f.events.count,count)
+        f.now=3.1;try c.apply(0.4);XCTAssertTrue(c.needsAnimation)
+    }
+
+    func testEndpointPrimeAndFinalFailuresRetainOwnershipAndKeyboardSafety() throws {
+        for event in ["duration:5.0","state:2","duration:0.0","state:1"] {
+            let f=Fake(),c=f.make();f.failedEvent=event
+            XCTAssertThrowsError(try c.apply(0))
+            XCTAssertTrue(c.active);XCTAssertEqual(f.events.last,"keyboard")
+            if event == "duration:5.0" || event == "state:2" {
+                XCTAssertFalse(f.events.contains("duration:0.0"),"Do not continue after a failed prime")
+            }
+            f.failedEvent=nil;try c.restore();XCTAssertFalse(c.active)
+        }
+    }
+
+    func testEndpointTimeoutDoesNotReprimeOrReleaseRecovery() throws {
+        for target in [0.0,1.0] {
+            let f=Fake(),c=f.make();f.sample = .init(factor:0.5,appliedNits:856,multiplier:1)
+            try c.apply(target);let count=f.events.count
+            f.now=2.99;try c.apply(target);f.now=3
+            XCTAssertThrowsError(try c.apply(target))
+            XCTAssertEqual(f.events.count,count);XCTAssertTrue(c.active);XCTAssertTrue(c.needsAnimation)
+        }
+    }
+
+    func testLostBaselineDoesNotExtendPendingEndpointDeadline() throws {
+        let f=Fake(),c=f.make();try c.apply(0);let count=f.events.count
+        f.now=2.5;f.sample = .init(factor:0.0000009,appliedNits:0,multiplier:1)
+        try c.apply(0);XCTAssertTrue(c.needsAnimation)
+        f.now=3;XCTAssertThrowsError(try c.apply(0));XCTAssertEqual(f.events.count,count)
+    }
+
+    func testRelinquishAndRestoreClearPendingEndpointState() throws {
+        let f=Fake(),c=f.make();try c.apply(0);c.relinquish()
+        f.now=10;try c.apply(1);try c.restore()
+        f.now=20;try c.apply(0)
+        XCTAssertTrue(c.active);XCTAssertTrue(c.needsAnimation)
     }
 
 }
