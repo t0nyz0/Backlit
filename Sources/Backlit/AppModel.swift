@@ -153,6 +153,7 @@ enum MusicCapturePolicy {
     @Published var language = "en" { didSet { save() } }
     @Published var appearance = "system" { didSet { save() } }
     @Published var error: String?
+    @Published private(set) var hardwareFailure: String?
     @Published var notice: String?
     @Published var pausedReason: String?
     @Published var shortcutKey: UInt32 = 11
@@ -234,6 +235,7 @@ enum MusicCapturePolicy {
     var isChinese: Bool { language == "zh-Hant" }
     func t(_ english: String, _ chinese: String) -> String { isChinese ? chinese : english }
     var status: String {
+        if let hardwareFailure { return "Logo control unavailable: \(hardwareFailure)" }
         if let pausedReason { return pausedReason }
         if demo { return t("Preview · logo unchanged","預覽・不會更改標誌") }
         if !device.available { return t("Preview · compatible logo not found","預覽・未找到相容標誌") }
@@ -469,7 +471,8 @@ enum MusicCapturePolicy {
                             return try device.apply(output, closedLid: keepClosed, frameInterval: EffectCadence.animationInterval(for:mode))
                         }
                     }
-                } catch { self.error = error.localizedDescription; lidIntentController.block(); controlWanted = false; stopLid(); releaseHardware() }
+                    hardwareFailure = nil
+                } catch { hardwareFailure = error.localizedDescription; self.error = error.localizedDescription; lidIntentController.block(); controlWanted = false; stopLid(); releaseHardware() }
             }
         }
         synchronizeLidIntent()
@@ -609,7 +612,7 @@ enum MusicCapturePolicy {
     func repairAndResume() {
         guard !hardwareOperationInProgress else { return }
         restore()
-        if !device.needsRecovery { controlWanted = !demo && device.available; notice = "Your light is ready."; tick() }
+        if !device.needsRecovery { controlWanted = !demo && device.available; tick(); if controlling && hardwareFailure == nil { notice = "Your light is ready." } }
     }
     func setControl(_ wanted: Bool) {
         guard !hardwareOperationInProgress, !lidCleanupInProgress else { notice = "Light recovery is still in progress."; return }

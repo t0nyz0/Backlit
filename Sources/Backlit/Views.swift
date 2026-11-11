@@ -66,7 +66,7 @@ struct RootView: View {
                 }
                 Spacer()
                 VStack(alignment:.leading,spacing:8) {
-                    Label(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : "PREVIEW MODE",systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
+                    Label(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : model.hardwareFailure != nil ? "LOGO UNAVAILABLE" : "PREVIEW MODE",systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
                     Text("Backlit \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development")").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
                 }.padding(.bottom,8)
             }.padding(22).frame(width:200).background(Color(nsColor:.windowBackgroundColor))
@@ -180,7 +180,7 @@ struct LightPage: View {
             Circle().fill(model.controlling ? Color.green : Color.secondary.opacity(0.4)).frame(width:7,height:7)
             VStack(alignment:.leading,spacing:3) {Text(model.status).font(.system(size:12,weight:.medium)); Text(model.device.available ? "Compatible illuminated logo detected" : model.device.explanation).font(.system(size:10)).foregroundStyle(.secondary)}
             Spacer()
-            if !model.demo && model.device.needsRecovery && (!model.controlWanted || !model.controlling) {
+            if !model.demo && (model.device.needsRecovery || model.hardwareFailure != nil) && (!model.controlWanted || !model.controlling) {
                 Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}.buttonStyle(.borderedProminent).tint(.primary)
             }
         }.padding(.top,1)
