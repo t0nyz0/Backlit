@@ -1,6 +1,6 @@
 # Backlit native media
 
-Workspace, Connections, Settings, menu, Music, Trackpad and Typing views are refreshed for **0.2.4 (29)**. The captures include standalone Typing, automatic Music capture controls, and remembered closed-lid settings. Battery uses the isolated 82% fixture. The original photographic header and app icon artwork are unchanged. These previews illustrate controls, not physical output.
+Workspace, Connections, Settings, menu, Music, Trackpad and Typing views are refreshed for **0.2.4 (29)**. The captures include standalone Typing, automatic Music capture controls, and remembered closed-lid settings. Battery uses the isolated 82% fixture. The original photographic header is unchanged. The standalone app icon is generated from the [centered-square native artwork](../ICON.md); these window captures retain the earlier small header glyph. These previews illustrate controls, not physical output.
 
 These are real native SwiftUI/AppKit views captured from the running Backlit executable using an owned-window capture path. They are not image-generated app mockups or borrowed screenshots.
 
