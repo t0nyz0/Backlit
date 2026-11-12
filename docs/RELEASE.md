@@ -1,7 +1,8 @@
-**Backlit 0.2.6, build 36: stability candidate**
+**Backlit 0.2.6, build 37: stability candidate**
 
 This candidate is prepared for review, not published or installed automatically.
 
+- Closing or opening the lid with closed-lid lighting on no longer stops light control when the first cleanup check runs while the lid and display are still settling. The same verified cleanup is retried up to six times over about twelve seconds; nothing is replaced until it succeeds.
 - Signed the app with the hardened runtime, so other processes can no longer load code into Backlit to borrow its Input Monitoring or audio permissions. It remains ad-hoc signed; one entitlement is needed for the bundled Sparkle framework.
 - Opening or closing the lid with closed-lid lighting on no longer uses up the automatic-recovery budget, and a session created during sleep or lock now pauses instead of counting as a failure.
 - Stale agent status files, old agent-settings backups, superseded closed-lid timer files and orphaned fade lease files are now removed. Recovery records are never touched.

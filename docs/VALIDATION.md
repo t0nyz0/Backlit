@@ -1,6 +1,6 @@
 # Backlit 0.2.6 stability candidate validation
 
-Version 0.2.6, build 36 is a prepared stability candidate, not a published release. Build 34 was verified on the test Mac; build 35 added the 30-minute cap; build 36 adds hardened-runtime signing and the housekeeping, lid-transition, interface-check and pairing-key changes listed in the release notes. Build 36 has not been physically accepted.
+Version 0.2.6, build 36 is a prepared stability candidate, not a published release. Build 34 was verified on the test Mac; build 35 added the 30-minute cap; build 36 adds hardened-runtime signing and the housekeeping, lid-transition, interface-check and pairing-key changes listed in the release notes. Build 36 was installed on the test Mac and started normally, but with closed-lid lighting on, closing the lid stopped light control with "Fade output or safety state is unknown" and the logo did not stay lit. Build 37 retries that lid-transition cleanup instead of stopping. Build 37 has not been physically accepted, and closed-lid lighting itself remains unverified.
 
 ## Current limits
 
@@ -11,7 +11,7 @@ Version 0.2.6, build 36 is a prepared stability candidate, not a published relea
 
 ## Candidate checks
 
-Build 36 source passed 561 Swift tests with zero failures, including 15 new cases for lid-transition session replacement, support-file pruning and signature matching, and 19 Python tests with three optional signing fixtures skipped. Stream Deck checks were not rerun. Hardened-runtime signing was checked on a copy of the app: it loads, strict signature verification passes and an injected library is refused. Music capture, the administrator prompt and Typing have not been exercised under the hardened runtime. The pairing-key change uses the real Keychain and has no automated test. With library validation disabled for Sparkle, the bundled framework is not protected against replacement.
+Build 37 source passed 563 Swift tests with zero failures, including 17 new cases for lid-transition session replacement, support-file pruning and signature matching, and 19 Python tests with three optional signing fixtures skipped. Stream Deck checks were not rerun. Hardened-runtime signing was checked on a copy of the app: it loads, strict signature verification passes and an injected library is refused. Music capture, the administrator prompt and Typing have not been exercised under the hardened runtime. The pairing-key change uses the real Keychain and has no automated test. With library validation disabled for Sparkle, the bundled framework is not protected against replacement.
 
 The main-project source passed 546 Swift tests with zero failures, including 14 independent-brightness cases and nine new duration-cap migration and clock cases. Coverage includes bounded requested nits even if refresh resets the fade, zero-to-positive reapplication, previous/intended mapping ownership, original-curve restoration before Unblank, failed refresh retry, closed recovery without wake, and safety changes. Cap tests cover legacy hours/unlimited settings, exact deadlines, sleep/relaunch continuity, corrupted checkpoints, clock failure/regression and preservation of fault metadata.
 

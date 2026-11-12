@@ -88,13 +88,68 @@ final class LidTransitionSessionTests: XCTestCase {
         XCTAssertThrowsError(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1))
     }
 
-    func testFailedRetirementDuringLidTransitionKeepsTheOldSession() {
-        var made = 0
+    func testUnverifiedCleanupDuringLidTransitionIsRetriedThenReplaced() throws {
+        var time = 0.0, made = 0
         let first = Session(failure: FadeSessionInterruption.sourceMode); first.restoreFails = true
-        let owner = FadeSessionCoordinator(physicalLid: { false }, makeSession: { _ in made += 1; return first })
-        for _ in 0..<3 { XCTAssertThrowsError(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1)) }
+        let next = Session()
+        let owner = FadeSessionCoordinator(physicalLid: { false }, now: { time }, makeSession: { _ in made += 1; return made == 1 ? first : next })
+        // The lid is still settling: cleanup cannot be verified yet.
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting)
+        XCTAssertEqual(first.restores, 1); XCTAssertTrue(owner.hasSession); XCTAssertTrue(owner.needsAnimation)
+        // No hardware is touched again before the retry delay.
+        time = 0.4
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting)
+        XCTAssertEqual(first.restores, 1)
+        time = 0.5
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting)
+        XCTAssertEqual(first.restores, 2); XCTAssertEqual(made, 1, "Never replaced before verified cleanup")
+        // Cleanup now verifies; the replacement starts after the settle delay.
+        first.restoreFails = false
+        time = 1.5
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting)
+        XCTAssertEqual(first.restores, 3); XCTAssertFalse(owner.hasSession); XCTAssertEqual(made, 1)
+        time = 2.0
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting)
+        XCTAssertEqual(made, 1)
+        time = 2.5
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .applied)
+        XCTAssertEqual(made, 2); XCTAssertFalse(owner.automaticRecoveryPending)
+    }
+
+    func testCleanupThatNeverVerifiesStopsAfterABoundedNumberOfAttempts() throws {
+        var time = 0.0, made = 0
+        let first = Session(failure: FadeSessionInterruption.sourceMode); first.restoreFails = true
+        let owner = FadeSessionCoordinator(physicalLid: { false }, now: { time }, makeSession: { _ in made += 1; return first })
+        for attempt in 1..<FadeSessionCoordinator.swapRetirementLimit {
+            XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting, "attempt \(attempt)")
+            XCTAssertEqual(first.restores, attempt)
+            time += 4
+        }
+        XCTAssertThrowsError(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1)) {
+            XCTAssertFalse($0 is FadeSessionInterruption, "The real cleanup error is reported")
+        }
+        XCTAssertEqual(first.restores, FadeSessionCoordinator.swapRetirementLimit)
         XCTAssertTrue(owner.hasSession, "An unverified cleanup must never be replaced")
         XCTAssertEqual(made, 1)
+        // Explicit restoration is still the only way past a failed cleanup.
+        first.restoreFails = false
+        try owner.restore()
+        XCTAssertFalse(owner.hasSession)
+    }
+
+    func testPendingLidCleanupIsNotBypassedByALidPause() throws {
+        var time = 0.0, closed = false
+        let first = Session(failure: FadeSessionInterruption.sourceMode); first.restoreFails = true
+        let owner = FadeSessionCoordinator(physicalLid: { closed }, now: { time }, makeSession: { _ in first })
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: true, frameInterval: 0.1), .waiting)
+        // Closed-lid lighting is withdrawn while cleanup is still pending.
+        closed = true; time = 0.1
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: false, frameInterval: 0.1), .waiting)
+        XCTAssertEqual(first.restores, 1, "Still inside the retry delay")
+        first.restoreFails = false; time = 0.5
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: false, frameInterval: 0.1), .waiting)
+        XCTAssertFalse(owner.hasSession)
+        XCTAssertEqual(try owner.apply(1, closedLidRequested: false, frameInterval: 0.1), .paused)
     }
 
     func testInvalidClockDuringLidTransitionFailsClosed() {
