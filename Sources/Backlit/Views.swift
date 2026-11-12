@@ -260,6 +260,8 @@ struct ConnectionsPage: View {
                     Text(model.bridgeEnabled ? model.bridgeStatus + " · port 48261" : "Off by default. Enable network access for Home Assistant on another device.").font(.system(size:11)).foregroundStyle(.secondary)
                     HStack {
                         Button("Copy Pairing Key"){model.copyPairingKey()}.disabled(!model.bridgeEnabled)
+                        Button("New Pairing Key"){model.regeneratePairingKey()}.disabled(!model.bridgeEnabled)
+                            .help("Replace the pairing key if it may have been seen by someone else")
                         Button("Integration Folder") {if let folder=Bundle.main.resourceURL?.appendingPathComponent("HomeAssistant"){NSWorkspace.shared.open(folder)}}
                         Spacer();Link("Setup guide",destination:URL(string:"https://github.com/t0nyz0/Backlit/blob/main/docs/HOME-ASSISTANT.md")!)
                     }.font(.system(size:11))

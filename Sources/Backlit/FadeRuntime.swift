@@ -100,9 +100,26 @@ final class FadeRuntime: FadeEffectSession {
         return before != after
     }
 
+    enum FrameEntry: Equatable { case proceed, paused, switchSource }
+
+    /// Ordinary pause policy is decided first, so a session created during
+    /// sleep or lock pauses instead of being treated as a failed session.
+    /// Never carry an independent open-lid source into the closed path, or a
+    /// closed-only session into the open path: retirement must restore the
+    /// old session before a replacement of the other kind can start.
+    static func frameEntry(context: FadeSafetyContext, ownsIndependentSource: Bool, closedLidRequested: Bool) -> FrameEntry {
+        if context.sleeping || context.locked || (context.lidClosed && !closedLidRequested) { return .paused }
+        return ownsIndependentSource == context.lidClosed ? .switchSource : .proceed
+    }
+
     func apply(_ brightness:Double, closedLidRequested:Bool, frameInterval:Double = 0.05) throws -> FadeApplyResult {
         let before = hardware.currentContext()
         do { return try applyFrame(brightness, closedLidRequested: closedLidRequested, frameInterval: frameInterval) }
+        catch FadeSessionInterruption.sourceMode {
+            // An expected lid transition, decided before any journal or
+            // hardware access. Keep it distinct from a lifecycle fault.
+            throw FadeSessionInterruption.sourceMode
+        }
         catch {
             let record = try? store.read()
             // The keyboard guard can detect a completed power/session change
@@ -120,11 +137,11 @@ final class FadeRuntime: FadeEffectSession {
 
     private func applyFrame(_ brightness:Double, closedLidRequested:Bool, frameInterval:Double) throws -> FadeApplyResult {
         guard let initialContext=hardware.currentContext() else {throw RuntimeServices.failure("Logo safety state is unavailable.")}
-        // Never carry an independent open-lid source into the closed path.
-        // Retirement must restore it before a replacement session can start.
-        if independentSource != nil && initialContext.lidClosed { throw FadeSessionInterruption.lifecycle }
-        if independentSource == nil && !initialContext.lidClosed { throw FadeSessionInterruption.lifecycle }
-        if initialContext.sleeping || initialContext.locked || (initialContext.lidClosed && !closedLidRequested) {return .paused}
+        switch Self.frameEntry(context: initialContext, ownsIndependentSource: independentSource != nil, closedLidRequested: closedLidRequested) {
+        case .paused: return .paused
+        case .switchSource: throw FadeSessionInterruption.sourceMode
+        case .proceed: break
+        }
         guard childIdentity.isAlive else {throw RuntimeServices.failure("The fade recovery helper stopped; logo control was paused.")}
         let record=try store.read()
         guard record.token==token else {throw RuntimeServices.failure("Logo fade ownership changed.")}

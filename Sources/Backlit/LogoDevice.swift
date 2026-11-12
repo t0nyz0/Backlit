@@ -34,7 +34,11 @@ final class LogoDevice {
             return
         }
         let object = kind.init()
-        guard object.responds(to: reader), object.responds(to: writer) else { return }
+        guard PrivateInterface.matches(object, reader, PrivateInterface.copyProperty),
+              PrivateInterface.matches(object, writer, PrivateInterface.setProperty) else {
+            explanation = "The logo control service has an unsupported interface on this version of macOS."
+            return
+        }
         client = object
         guard mapping() != nil else { client = nil; return }
         available = true
@@ -185,7 +189,8 @@ final class LogoDevice {
             if let high=number("high-period")?.doubleValue,let low=number("low-period")?.doubleValue,high+low>0 {
                 values["logo_pwm_duty"]=high/(high+low)
             }
-            values["logo_enabled"]=number("enabled")?.boolValue ?? false
+            // Missing telemetry is unknown; omit it rather than report "off".
+            if let enabled=number("enabled")?.boolValue {values["logo_enabled"]=enabled}
             IOObjectRelease(node)
         }
         let screen=IOServiceGetMatchingService(kIOMainPortDefault,IOServiceMatching("AppleARMBacklight"))

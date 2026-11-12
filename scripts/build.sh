@@ -98,5 +98,10 @@ strip -S "$app_bundle/Contents/MacOS/Backlit"
 # framework have no team ID; drop it if Sparkle is ever removed. Keep the
 # entitlements file free of XML comments.
 codesign --force --sign - --options runtime --entitlements assets/Backlit.entitlements --identifier local.backlit "$app_bundle"
-codesign -dvv "$app_bundle" 2>&1 | grep -q 'flags=.*runtime' || { echo 'The app was signed without the hardened runtime.' >&2; exit 1; }
+# Capture first: with pipefail, `grep -q` closing the pipe early fails the check.
+signature_details="$(codesign -dvv "$app_bundle" 2>&1)"
+case "$signature_details" in
+  *flags=*runtime*) ;;
+  *) echo 'The app was signed without the hardened runtime.' >&2; exit 1 ;;
+esac
 echo "$app_bundle"

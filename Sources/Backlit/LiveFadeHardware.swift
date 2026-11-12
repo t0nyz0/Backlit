@@ -282,17 +282,11 @@ final class LiveFadeHardware {
         let writer = NSSelectorFromString("setProperty:withKey:keyboardID:")
         let globalWriter = NSSelectorFromString("setProperty:forKey:")
         let idsReader = NSSelectorFromString("copyKeyboardBacklightIDs")
-        func hasABI(_ object: NSObject, _ selector: Selector, _ encoding: String) -> Bool {
-            guard object.responds(to: selector), let cls = object_getClass(object),
-                  let method = class_getInstanceMethod(cls, selector),
-                  let actual = method_getTypeEncoding(method) else { return false }
-            return String(cString: actual) == encoding
-        }
-        guard hasABI(client, reader, "@32@0:8@16Q24"),
-              hasABI(client, globalReader, "@24@0:8@16"),
-              hasABI(client, writer, "B40@0:8@16@24Q32"),
-              hasABI(client, globalWriter, "B32@0:8@16@24"),
-              hasABI(keyboard, idsReader, "@16@0:8") else {
+        guard PrivateInterface.matches(client, reader, PrivateInterface.copyKeyboardProperty),
+              PrivateInterface.matches(client, globalReader, PrivateInterface.copyProperty),
+              PrivateInterface.matches(client, writer, PrivateInterface.setScopedProperty),
+              PrivateInterface.matches(client, globalWriter, PrivateInterface.setProperty),
+              PrivateInterface.matches(keyboard, idsReader, PrivateInterface.copyKeyboardIDs) else {
             throw RuntimeServices.failure("CoreBrightness keyboard safety controls have an unsupported interface.")
         }
         typealias Reader = @convention(c) (AnyObject, Selector, NSString, UInt64) -> Unmanaged<AnyObject>?

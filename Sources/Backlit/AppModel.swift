@@ -224,6 +224,7 @@ enum MusicCapturePolicy {
     private var tickCount = 0
     private var lastSourceSample = -Double.infinity
     private var lastBatterySample = -Double.infinity
+    private var lastAgentPrune = -Double.infinity
     private var lastPreviewSample = -Double.infinity
     private var timerInterval = 0.0
     private var framePending = false
@@ -469,9 +470,25 @@ enum MusicCapturePolicy {
         if !demo && !controlWanted && device.needsRecovery { notice = "A previous logo session needs restoration. Use Restore Light to pick up where you left off." }
         if !demo && self.defaults.bool(forKey:"bridge.enabled") { configureBridge(enabled:true,lan:self.defaults.bool(forKey:"bridge.lan")) }
         startPowerMonitoring()
+        if !demo {
+            // Before the first tick can create a session: leftovers from
+            // earlier runs only. Recovery journals are never touched.
+            SupportFilePruner.pruneFadeLeases()
+            SupportFilePruner.pruneLidTimers(keeping: lidIntentController.intent?.id)
+            pruneAgentFiles()
+        }
         // The first tick samples lock/power/ownership policy before either
         // input monitor can register. All starts go through synchronization.
         tick()
+    }
+    /// Stale agent files are removed off the main thread; the reader already
+    /// ignores them, so timing here is not important.
+    private func pruneAgentFiles() {
+        lastAgentPrune = ProcessInfo.processInfo.systemUptime
+        DispatchQueue.global(qos: .utility).async {
+            SupportFilePruner.pruneAgentEvents()
+            SupportFilePruner.pruneAgentBackups()
+        }
     }
     func save() {
         guard !isLoading else{return}
@@ -497,6 +514,7 @@ enum MusicCapturePolicy {
                 updateBattery(demo ? .init(level: 0.82, externalPower: false, activelyCharging: false) : RuntimeServices.batterySnapshot())
                 if !batteryAvailable { batteryResponse.reset() }
             }
+            if !demo && now-lastAgentPrune >= 600 { pruneAgentFiles() }
             if mode == .agents || bridgeEnabled {
                 let nextAgents=demo ? [] : AgentBridge.events().sorted{$0.time<$1.time}
                 if agents != nextAgents {agents=nextAgents}
@@ -1180,6 +1198,25 @@ enum MusicCapturePolicy {
         guard !demo else { return }
         do { let token = try BridgeToken.value(); NSPasteboard.general.clearContents(); NSPasteboard.general.setString(token,forType:.string); notice = "Pairing key copied. Paste it into Home Assistant; keep it private." }
         catch { self.error = error.localizedDescription }
+    }
+    /// The key travels over plain HTTP on the local network, so there must be
+    /// a way to replace one that may have been seen. Explicit user action only.
+    func regeneratePairingKey(confirm: (() -> Bool)? = nil) {
+        guard !demo else { return }
+        let approved: Bool
+        if let confirm { approved = confirm() }
+        else {
+            let alert = NSAlert(); alert.messageText = "Create a new pairing key?"
+            alert.informativeText = "The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again."
+            alert.addButton(withTitle:"Create New Key"); alert.addButton(withTitle:"Cancel")
+            approved = alert.runModal() == .alertFirstButtonReturn
+        }
+        guard approved else { return }
+        do {
+            try BridgeToken.regenerate()
+            if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
+            notice = "A new pairing key was created. Copy it and update Home Assistant; the old key no longer works."
+        } catch { self.error = error.localizedDescription }
     }
     func apiState() -> [String:Any] {
         ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),

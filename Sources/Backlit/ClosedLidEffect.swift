@@ -215,7 +215,10 @@ final class ClosedLidEffect {
         let reader = NSSelectorFromString("copyPropertyForKey:"), writer = NSSelectorFromString("setProperty:forKey:")
         let keyboardWriter = NSSelectorFromString("setProperty:withKey:keyboardID:")
         let idsReader = NSSelectorFromString("copyKeyboardBacklightIDs")
-        guard client.responds(to: reader), client.responds(to: writer), client.responds(to: keyboardWriter), keyboard.responds(to: idsReader),
+        guard PrivateInterface.matches(client, reader, PrivateInterface.copyProperty),
+              PrivateInterface.matches(client, writer, PrivateInterface.setProperty),
+              PrivateInterface.matches(client, keyboardWriter, PrivateInterface.setScopedProperty),
+              PrivateInterface.matches(keyboard, idsReader, PrivateInterface.copyKeyboardIDs),
               let ids = keyboard.perform(idsReader)?.takeRetainedValue() as? [NSNumber], !ids.isEmpty else { return nil }
         typealias Setter = @convention(c) (AnyObject, Selector, AnyObject, NSString) -> Bool
         typealias KeyboardSetter = @convention(c) (AnyObject, Selector, AnyObject, NSString, UInt64) -> Bool

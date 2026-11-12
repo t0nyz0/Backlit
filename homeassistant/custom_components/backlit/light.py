@@ -1,4 +1,4 @@
-"""A real brightness-only light with five effects, never RGB."""
+"""A real brightness-only light with the effects the Mac reports, never RGB."""
 from homeassistant.components.light import ATTR_BRIGHTNESS, ATTR_EFFECT, ColorMode, LightEntity, LightEntityFeature
 from homeassistant.exceptions import HomeAssistantError
 from .entity import BacklitEntity

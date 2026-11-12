@@ -18,6 +18,14 @@ enum BridgeToken {
         guard SecItemAdd(item as CFDictionary,nil) == errSecSuccess else { throw RuntimeServices.failure("Keychain could not save the pairing key.") }
         return token
     }
+    /// Replaces the stored key with a new random one. The caller restarts the
+    /// listener so the old key stops working immediately.
+    @discardableResult static func regenerate() throws -> String {
+        let query: [String:Any] = [kSecClass as String:kSecClassGenericPassword,kSecAttrService as String:"local.backlit",kSecAttrAccount as String:account]
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else { throw RuntimeServices.failure("Keychain could not remove the old pairing key (\(status)).") }
+        return try value()
+    }
 }
 
 struct BridgeRequest {

@@ -6,7 +6,7 @@ Your MacBook PROLED's logo can be a local, brightness-only Home Assistant light.
 
 1. Quit other logo controllers and open Backlit. A compatible logo connects automatically.
 2. Open **Connections**, enable the Home Assistant bridge, and enable **Allow connections from your local network** if Home Assistant is on another machine. Port: **48261**.
-3. Choose **Copy Pairing Key**. The key is stored in Keychain and deliberately hidden from screenshots.
+3. Choose **Copy Pairing Key**. The key is stored in Keychain and deliberately hidden from screenshots. If the key may have been seen by someone else, choose **New Pairing Key**: the old key stops working immediately and Home Assistant asks for the new one.
 4. Choose **Open Integration Folder**. Copy its `custom_components/backlit` folder into your Home Assistant configuration's `custom_components` folder. The resulting path is `/config/custom_components/backlit/manifest.json` on typical installations.
 5. Restart Home Assistant. Open **Settings → Devices & services → Add integration → Backlit**.
 6. Enter `http://YOUR-MAC.local:48261` (or its LAN address) and the copied key. If macOS asks for local-network permission, decide whether to allow it for your setup.

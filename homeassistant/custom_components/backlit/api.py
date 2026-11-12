@@ -37,5 +37,5 @@ class BacklitClient:
     async def control(self, **values: Any) -> dict[str, Any]:
         data = await self.request("POST", "/v1/light", values)
         if not data["controlling"]:
-            raise ValueError("Backlit is in preview. Enable Control This Mac in the app first")
+            raise ValueError("Backlit is in preview and is not controlling the logo. Open Backlit on the Mac and restore its light if it shows a recovery message")
         return data

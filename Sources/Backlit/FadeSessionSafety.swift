@@ -1,7 +1,7 @@
 import Foundation
 
-/// Experimental safety primitives for a future unified fade path. Not wired to
-/// live controls until crash recovery and physical keyboard QA are complete.
+/// Safety primitives for the unified fade path. These are live: FadeRuntime
+/// uses them for every frame, and its watchdog uses them for crash recovery.
 struct FadeSafetyContext: Codable, Equatable {
     let lidClosed: Bool
     let sleeping: Bool

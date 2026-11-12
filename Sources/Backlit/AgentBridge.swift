@@ -130,6 +130,8 @@ enum AgentBridge {
             try bytes.write(to:backup,options:.atomic)
             try manager.setAttributes([.posixPermissions:0o600],ofItemAtPath:backup.path)
             guard try Data(contentsOf:file) == bytes else { throw RuntimeServices.failure("Agent settings changed during connection. Try again.") }
+            // Backups can hold sensitive settings; keep only the latest few.
+            SupportFilePruner.pruneAgentBackups(directory:directory)
         }
         try manager.createDirectory(at:file.deletingLastPathComponent(),withIntermediateDirectories:true)
         try output.write(to:file,options:.atomic)

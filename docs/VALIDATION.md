@@ -1,15 +1,17 @@
 # Backlit 0.2.6 stability candidate validation
 
-Version 0.2.6, build 35 is a prepared stability candidate, not a published release. The installed predecessor, build 34, was verified on the test Mac; build 35 adds the 30-minute cap and has not yet been installed or physically accepted.
+Version 0.2.6, build 36 is a prepared stability candidate, not a published release. Build 34 was verified on the test Mac; build 35 added the 30-minute cap; build 36 adds hardened-runtime signing and the housekeeping, lid-transition, interface-check and pairing-key changes listed in the release notes. Build 36 has not been physically accepted.
 
 ## Current limits
 
 - Closed-lid lighting may leave the built-in screen lit. The screen was observed off after Backlit quit. The feature is retained with a 30-minute maximum and an explicit in-app warning; this limits duration but does not guarantee safe temperatures.
 - Independent closed-lid brightness and physical sleep/wake/native handback remain unqualified. The separate finite-output experiments are excluded from this app.
 - Some failed-cleanup paths retain a manual recovery requirement rather than completing automatic recovery. Saved fault pauses are not automatically cleared by the duration migration.
-- The administrator-only ambient override retains the existing full-app elevation route. Its privilege boundary remains unresolved. Other native adapters still have weaker interface checks than the verified fade adapter.
+- The administrator-only ambient override retains the existing full-app elevation route. Its privilege boundary remains unresolved. All native adapters now require exact method signatures; those signatures were read on macOS 27.2.1 only, so another macOS version may report closed-lid controls as unsupported.
 
 ## Candidate checks
+
+Build 36 source passed 561 Swift tests with zero failures, including 15 new cases for lid-transition session replacement, support-file pruning and signature matching, and 19 Python tests with three optional signing fixtures skipped. Stream Deck checks were not rerun. Hardened-runtime signing was checked on a copy of the app: it loads, strict signature verification passes and an injected library is refused. Music capture, the administrator prompt and Typing have not been exercised under the hardened runtime. The pairing-key change uses the real Keychain and has no automated test. With library validation disabled for Sparkle, the bundled framework is not protected against replacement.
 
 The main-project source passed 546 Swift tests with zero failures, including 14 independent-brightness cases and nine new duration-cap migration and clock cases. Coverage includes bounded requested nits even if refresh resets the fade, zero-to-positive reapplication, previous/intended mapping ownership, original-curve restoration before Unblank, failed refresh retry, closed recovery without wake, and safety changes. Cap tests cover legacy hours/unlimited settings, exact deadlines, sleep/relaunch continuity, corrupted checkpoints, clock failure/regression and preservation of fault metadata.
 

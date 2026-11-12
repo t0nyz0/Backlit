@@ -60,8 +60,13 @@ final class ClosedLidLogo {
         let keyboardWriter = NSSelectorFromString("setProperty:withKey:keyboardID:")
         let idsReader = NSSelectorFromString("copyKeyboardBacklightIDs")
         let displayWriter = NSSelectorFromString("setProperty:withKey:andDisplay:")
-        guard client.responds(to: reader), client.responds(to: writer),
-              client.responds(to: keyboardWriter), client.responds(to: displayWriter), keyboard.responds(to: idsReader) else { return nil }
+        // The display setter shares the keyboard setter's signature; both are
+        // called through the same casted function type below.
+        guard PrivateInterface.matches(client, reader, PrivateInterface.copyProperty),
+              PrivateInterface.matches(client, writer, PrivateInterface.setProperty),
+              PrivateInterface.matches(client, keyboardWriter, PrivateInterface.setScopedProperty),
+              PrivateInterface.matches(client, displayWriter, PrivateInterface.setScopedProperty),
+              PrivateInterface.matches(keyboard, idsReader, PrivateInterface.copyKeyboardIDs) else { return nil }
         typealias Setter = @convention(c) (AnyObject, Selector, AnyObject, NSString) -> Bool
         typealias KeyboardSetter = @convention(c) (AnyObject, Selector, AnyObject, NSString, UInt64) -> Bool
         return Interface(

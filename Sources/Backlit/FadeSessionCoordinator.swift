@@ -7,9 +7,13 @@ enum FadeApplyResult: Equatable { case applied, waiting, paused }
 /// Ownership, journal integrity and generic hardware failures remain errors.
 enum FadeSessionInterruption: LocalizedError {
     case lifecycle, outputTimeout(String)
+    /// The lid opened or closed, so the session must be replaced by one of the
+    /// other kind. This is expected behavior, not a fault.
+    case sourceMode
     var errorDescription: String? {
         switch self {
         case .lifecycle: return "Logo control is recovering after a system transition."
+        case .sourceMode: return "Logo control is switching between open-lid and closed-lid lighting."
         case .outputTimeout(let message): return message
         }
     }
@@ -64,8 +68,20 @@ final class FadeSessionCoordinator {
             // A close can race the initial policy read or helper shutdown.
             // Only successful token-verified cleanup converts it into a pause.
             if physicalLid() == true && !closedLidRequested { try retire(); return .paused }
-            guard error is FadeSessionInterruption else { throw error }
+            guard let interruption = error as? FadeSessionInterruption else { throw error }
             healthySince = nil
+            if case .sourceMode = interruption {
+                // Opening or closing the lid is not a failure. Retire the old
+                // session with the usual verified cleanup and wait the same
+                // one second as a first retry, but never spend the bounded
+                // failure budget on it.
+                try retire()
+                let time = now()
+                guard time.isFinite, time >= 0 else { throw RuntimeServices.failure("Logo recovery clock is unavailable.") }
+                retryAfter = time + 1
+                recoveryLogger.notice("Lid position changed; replacing the light session after verified retirement.")
+                return .waiting
+            }
             automaticRecoveryPending = true
             // Restoration must succeed before a replacement can be considered.
             // A failed restore retains the old session and its recovery gate.
