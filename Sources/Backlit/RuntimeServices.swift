@@ -95,7 +95,7 @@ enum RuntimeServices {
             IOServiceClose(connection)
         }
         var logoEnabledAt: Double?
-        var closedAt: Double?
+        var legacyTimer = LidLegacyContinuousTimer(duration: durationSeconds)
         var exhausted = false
         let intent = intentID.flatMap { LidSessionIntent(id: $0, durationSeconds: durationSeconds) }
         let checkpoints = LidTimerCheckpointStore(directory: AgentBridge.directory)
@@ -111,10 +111,9 @@ enum RuntimeServices {
                 do { exhausted = try !timer.update(closed: closed, clock: LidContinuousClock.live()) }
                 catch { return 13 }
             } else {
-                // Legacy explicit helper invocations retain their bounded timer.
-                if !closed { closedAt = nil; exhausted = false }
-                if closed && closedAt == nil { closedAt = ProcessInfo.processInfo.systemUptime }
-                if LidSessionPolicy.timedOut(closedAt: closedAt, now: ProcessInfo.processInfo.systemUptime, duration: durationSeconds) { exhausted = true }
+                // The legacy entry point must count sleep too. Unknown or
+                // regressed continuous time cannot restart a closed session.
+                exhausted = !legacyTimer.permits(closed: closed, clock: LidContinuousClock.live())
             }
             let eligible = LidSessionPolicy.eligible(exhausted: exhausted, externalPower: power.1,
                 battery: power.0, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: thermal) && LidResumeSafety.sessionUnlocked()

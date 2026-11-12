@@ -290,7 +290,7 @@ struct SettingsPage: View {
             settingRow(model.t("Logo shortcut","標誌快捷鍵"),"Toggle the logo from any app. Option-click the menu icon also works.") {Button(model.shortcutLabel){recording=true}.frame(width:150)}
         }
         Surface(model.t("Logo and power","進階控制")) {
-            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake while closed. Stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔上螢幕時讓 Mac 保持喚醒。電量不足、過熱或開啟低耗電模式時停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.lidRequested},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
+            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔蓋時 Mac 保持喚醒，內建螢幕可能仍亮著。最長 30 分鐘；電量不足、過熱或開啟低耗電模式時也會停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.lidRequested},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
             Text(model.lidPreferenceStatus).font(.system(size: 11)).foregroundStyle(.secondary)
             LidDurationControls(model: model)
             Divider()
@@ -319,38 +319,20 @@ struct LidDurationControls: View {
     @ObservedObject var model: AppModel
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(model.t("Closed-lid duration", "闔蓋持續時間")).fontWeight(.medium)
+            Text(model.t("Closed-lid duration", "闔蓋持續時間")).fontWeight(.medium)
+            HStack(spacing: 8) {
+                Text(model.t("Keep on for", "保持開啟"))
                 Spacer()
-                Picker(model.t("Closed-lid duration", "闔蓋持續時間"), selection: Binding(
-                    get: { model.lidSessionDuration.mode }, set: { model.setLidDuration(mode: $0) })) {
-                    Text(model.t("Timer", "計時器")).tag(LidDurationMode.timed)
-                    Text(model.t("Until turned off", "直到手動關閉")).tag(LidDurationMode.untilTurnedOff)
-                }.labelsHidden().frame(width: 180)
+                TextField(model.t("Duration", "持續時間"), value: Binding(
+                    get: { model.lidSessionDuration.amount }, set: { model.setLidDuration(amount: $0) }), format: .number)
+                    .textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing).frame(width: 65)
+                    .accessibilityLabel(model.t("Closed-lid duration amount", "闔蓋持續時間數值"))
+                Stepper(model.t("Duration", "持續時間"), value: Binding(
+                    get: { model.lidSessionDuration.amount }, set: { model.setLidDuration(amount: $0) }), in: 1...30).labelsHidden()
+                Text(model.t("minutes", "分鐘"))
             }
-            if model.lidSessionDuration.mode == .timed {
-                HStack(spacing: 8) {
-                    Text(model.t("Keep on for", "保持開啟"))
-                    Spacer()
-                    TextField(model.t("Duration", "持續時間"), value: Binding(
-                        get: { model.lidSessionDuration.amount }, set: { model.setLidDuration(amount: $0) }), format: .number)
-                        .textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing).frame(width: 65)
-                        .accessibilityLabel(model.t("Closed-lid duration amount", "闔蓋持續時間數值"))
-                    Stepper(model.t("Duration", "持續時間"), value: Binding(
-                        get: { model.lidSessionDuration.amount }, set: { model.setLidDuration(amount: $0) }),
-                        in: 1...model.lidSessionDuration.unit.maximum).labelsHidden()
-                    Picker(model.t("Duration unit", "時間單位"), selection: Binding(
-                        get: { model.lidSessionDuration.unit }, set: { model.setLidDuration(unit: $0) })) {
-                        Text(model.t("Minutes", "分鐘")).tag(LidDurationUnit.minutes)
-                        Text(model.t("Hours", "小時")).tag(LidDurationUnit.hours)
-                    }.labelsHidden().frame(width: 100)
-                }
-                Text(model.t("The timer starts each time you close the lid. Relaunching does not reset it. Maximum 7 days.", "每次闔蓋時開始計時，重新開啟不會重設計時器，最長 7 天。"))
-                    .foregroundStyle(.secondary)
-            } else {
-                Text(model.t("No timer. Your choice is remembered across updates and relaunches. Quitting restores normal sleep; reopening resumes only when safe.", "不設定計時器。更新或重新開啟後仍保留選擇。結束時還原正常睡眠，重新開啟後只在安全時恢復。"))
-                    .foregroundStyle(.secondary)
-            }
+            Text(model.t("Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.", "每次闔蓋最長 30 分鐘。睡眠時間也會計入，重新開啟 App 不會重設計時器。此限制並不保證溫度安全。"))
+                .foregroundStyle(.secondary)
         }
         .font(.system(size: 11))
         .disabled(!model.canEditLidDuration)

@@ -16,7 +16,7 @@ final class LogoDevice {
     private var lastWritten: [[Double]]?
     private var pendingWritten: [[Double]]?
     private var closedEffect: ClosedLidEffect?
-    private let fadeSession = FadeSessionCoordinator(physicalLid: {RuntimeServices.physicalLidClosed}, makeSession: {try FadeRuntime(closedLidRequested:$0)})
+    private lazy var fadeSession = FadeSessionCoordinator(physicalLid: {RuntimeServices.physicalLidClosed}, makeSession: { [unowned self] in try FadeRuntime(closedLidRequested:$0, expectedMapping:self.saved) })
     private var lease: FileLease?
     private let recovery: URL
     private(set) var available = false
@@ -84,11 +84,12 @@ final class LogoDevice {
     func apply(_ brightness: Double, closedLid: Bool = false, frameInterval:Double = 0.05) throws -> FadeApplyResult {
         guard saved != nil else {throw failure("Logo control has not been enabled.")}
         guard brightness.isFinite else {throw failure("Invalid brightness.")}
-        guard let current=mapping(),let original=saved,Self.equivalent(current,original) else {
+        guard let current=mapping(),let original=saved,
+              Self.equivalent(current,original) || (fadeSession.ownsIndependentSource && LogoSourceRecovery.isBoundedCurve(current)) else {
             throw failure("The native logo brightness source changed. Logo control was stopped.")
         }
-        // Keep the original usable source instead of writing zero/low mappings
-        // that can remain latched after the panel stops updating in clamshell.
+        // Open-lid source ownership is checked again under the fade lock.
+        // Closed-lid sessions retain their original native source.
         return try fadeSession.apply(brightness,closedLidRequested:closedLid,frameInterval:frameInterval)
     }
 

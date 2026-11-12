@@ -20,6 +20,28 @@ struct LidSessionIntent: Codable, Equatable {
         guard LidSessionPolicy.validDuration(durationSeconds) else { return nil }
         version = 1; self.id = id; self.durationSeconds = durationSeconds; blocked = false
     }
+    enum CodingKeys: String, CodingKey { case version, id, durationSeconds, blocked, pause }
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        version = try values.decode(Int.self, forKey: .version)
+        id = try values.decode(UUID.self, forKey: .id)
+        let previous = try values.decode(Double.self, forKey: .durationSeconds)
+        guard previous.isFinite, previous >= 0, previous <= LidSessionDuration.legacyMaximumSeconds else {
+            throw DecodingError.dataCorruptedError(forKey: .durationSeconds, in: values, debugDescription: "Invalid saved duration")
+        }
+        durationSeconds = previous == 0 ? LidSessionDuration.maximumSeconds : min(previous, LidSessionDuration.maximumSeconds)
+        blocked = try values.decode(Bool.self, forKey: .blocked)
+        pause = try values.decodeIfPresent(LidSavedPause.self, forKey: .pause)
+    }
+    /// Only the duration changes. Identity, faults and retry history survive.
+    static func migrateStoredDuration(_ defaults: UserDefaults) {
+        guard let data = defaults.data(forKey: preferenceKey),
+              let raw = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let previous = raw["durationSeconds"] as? Double,
+              let value = try? JSONDecoder().decode(Self.self, from: data), value.valid,
+              previous != value.durationSeconds else { return }
+        try? value.save(defaults)
+    }
     var valid: Bool {
         version == 1 && LidSessionPolicy.validDuration(durationSeconds) &&
             (pause?.valid ?? true) && (blocked || pause == nil)
@@ -126,6 +148,22 @@ struct LidTimerCheckpoint: Codable, Equatable {
         .init(version: 1, intent: intent.id, boot: clock.boot, duration: intent.durationSeconds,
               closedAt: clock.seconds, deadline: clock.seconds + intent.durationSeconds)
     }
+    /// Shorten a valid legacy cycle without earning time from an upgrade.
+    func capped(for intent: LidSessionIntent, clock: LidContinuousClock) -> Self {
+        guard duration > LidSessionDuration.maximumSeconds,
+              duration <= LidSessionDuration.legacyMaximumSeconds,
+              intent.durationSeconds == LidSessionDuration.maximumSeconds,
+              version == 1, self.intent == intent.id, boot == clock.boot, clock.valid else { return self }
+        switch (closedAt, deadline) {
+        case (nil, nil): return .open(intent, clock: clock)
+        case let (start?, end?):
+            guard start.isFinite, end.isFinite, start >= 0, clock.seconds >= start,
+                  end > start, abs((end - start) - duration) <= 0.000_001 else { return self }
+            return .init(version: version, intent: self.intent, boot: boot, duration: intent.durationSeconds,
+                         closedAt: start, deadline: start + intent.durationSeconds)
+        default: return self
+        }
+    }
     func valid(for intent: LidSessionIntent, clock: LidContinuousClock) -> Bool {
         guard version == 1, self.intent == intent.id, boot == clock.boot, duration == intent.durationSeconds,
               duration > 0, LidSessionPolicy.validDuration(duration), clock.valid else { return false }
@@ -167,14 +205,13 @@ enum LidIntentPolicy {
     static func timer(intent: LidSessionIntent, checkpoint: LidTimerCheckpoint?,
                       clock: LidContinuousClock?, closed: Bool?, newCycle: Bool = false) -> LidTimerDecision {
         guard intent.valid, !intent.blocked, let closed else { return .unavailable }
-        if intent.durationSeconds == 0 { return .ready(nil) }
         guard let clock, clock.valid else { return .unavailable }
         if !closed { return .ready(.open(intent, clock: clock)) }
         if newCycle {
             let fresh = LidTimerCheckpoint.closed(intent, clock: clock)
             return fresh.valid(for: intent, clock: clock) ? .ready(fresh) : .unavailable
         }
-        guard let checkpoint, checkpoint.valid(for: intent, clock: clock), let end = checkpoint.deadline else { return .needsOpen }
+        guard let checkpoint = checkpoint?.capped(for: intent, clock: clock), checkpoint.valid(for: intent, clock: clock), let end = checkpoint.deadline else { return .needsOpen }
         return clock.seconds < end ? .ready(checkpoint) : .expired
     }
 }

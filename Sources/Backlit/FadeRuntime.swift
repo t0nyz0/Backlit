@@ -35,19 +35,28 @@ final class FadeRuntime: FadeEffectSession {
     private let child:Process
     private let childIdentity:FadeProcessIdentity
     private let started=ProcessInfo.processInfo.systemUptime
+    private let independentSource: IndependentLogoSource?
     private var effect:ClosedLidEffect
     private var requestedClosed=false
     private var hadWriteFailure=false
-    var needsAnimation:Bool { effect.needsAnimation || (try? store.read().effectsAllowed) != true }
+    var ownsIndependentSource: Bool { independentSource != nil }
+    var needsAnimation:Bool { independentSource?.installed == false || effect.needsAnimation || (try? store.read().effectsAllowed) != true }
 
-    init(closedLidRequested:Bool) throws {
+    init(closedLidRequested:Bool, expectedMapping: [[Double]]? = nil) throws {
         hardware=try LiveFadeHardware.makeLive()
         guard let context=hardware.currentContext(),let keyboards=hardware.keyboardStates(),
               let parent=FadeProcessIdentity.read(getpid()),let io=ClosedLidEffect.liveInterface() else {
             throw RuntimeServices.failure("Safe logo fade control is unavailable.")
         }
+        if context.permitsOpenKeyboardRestore {
+            guard let original = hardware.currentMapping(), LogoDevice.valid(original),
+                  expectedMapping.map({ LogoDevice.equivalent(original, $0) }) ?? true else {
+                throw RuntimeServices.failure("The original logo source changed before ownership was established.")
+            }
+            independentSource = IndependentLogoSource(original: original)
+        } else { independentSource = nil }
         store=FadeRecoveryStore(directory:AgentBridge.directory)
-        token=try store.prepare(parentPID:parent.pid,context:context,keyboards:keyboards,closedLidRequested:closedLidRequested)
+        token=try store.prepare(parentPID:parent.pid,context:context,keyboards:keyboards,closedLidRequested:closedLidRequested, logoSource:independentSource?.recovery)
         requestedClosed=closedLidRequested
         leaseURL=AgentBridge.directory.appendingPathComponent("fade-lease-\(token.uuidString)")
         // Every execution and healthy restore below is enclosed by the full
@@ -111,6 +120,10 @@ final class FadeRuntime: FadeEffectSession {
 
     private func applyFrame(_ brightness:Double, closedLidRequested:Bool, frameInterval:Double) throws -> FadeApplyResult {
         guard let initialContext=hardware.currentContext() else {throw RuntimeServices.failure("Logo safety state is unavailable.")}
+        // Never carry an independent open-lid source into the closed path.
+        // Retirement must restore it before a replacement session can start.
+        if independentSource != nil && initialContext.lidClosed { throw FadeSessionInterruption.lifecycle }
+        if independentSource == nil && !initialContext.lidClosed { throw FadeSessionInterruption.lifecycle }
         if initialContext.sleeping || initialContext.locked || (initialContext.lidClosed && !closedLidRequested) {return .paused}
         guard childIdentity.isAlive else {throw RuntimeServices.failure("The fade recovery helper stopped; logo control was paused.")}
         let record=try store.read()
@@ -136,7 +149,7 @@ final class FadeRuntime: FadeEffectSession {
         return try Self.applyPermittedFrame(brightness, closedLidRequested: closedLidRequested,
             frameInterval: frameInterval, effect: effect, hardware: hardware, store: store, token: token,
             watchdogPID: childIdentity.pid, watchdogAlive: { self.childIdentity.isAlive },
-            lidPermission: { ClosedEffectSession.permitted() }, markWriteFailure: { self.hadWriteFailure = true })
+            lidPermission: { ClosedEffectSession.permitted() }, source: independentSource, markWriteFailure: { self.hadWriteFailure = true })
     }
 
     /// Production permission/planning/write path shared with inert fixtures.
@@ -145,10 +158,11 @@ final class FadeRuntime: FadeEffectSession {
                                    effect: ClosedLidEffect, hardware: LiveFadeHardware,
                                    store: FadeRecoveryStore, token: UUID, watchdogPID: Int32,
                                    watchdogAlive: () -> Bool, lidPermission: () -> Bool,
-                                   markWriteFailure: () -> Void) throws -> FadeApplyResult {
+                                   source: IndependentLogoSource? = nil, markWriteFailure: () -> Void) throws -> FadeApplyResult {
         var result=FadeApplyResult.waiting
         var plan:ClosedLidEffect.Plan?
         var planContext:FadeSafetyContext?
+        var sourcePlan: LogoSourceRecovery?
         _ = try store.withPermission(token:token,watchdogAlive:{ $0==watchdogPID && watchdogAlive() },snapshotProvider:{
             guard let context=hardware.currentContext() else {
                 throw RuntimeServices.failure("Logo safety state is unavailable before the frame.")
@@ -161,11 +175,17 @@ final class FadeRuntime: FadeEffectSession {
         },shouldWrite:{
             guard let fresh=hardware.currentContext(),Self.frameAllowed(context:fresh,closedRequested:closedLidRequested,lidPermission:lidPermission()) else {return false}
             planContext=fresh
-            let next=try effect.plan(brightness,frameInterval:frameInterval)
+            if let source {
+                guard fresh.permitsOpenKeyboardRestore else { throw FadeSessionInterruption.lifecycle }
+                sourcePlan = try source.plan(brightness, current: hardware.currentMapping())
+                if sourcePlan != nil { return true }
+            }
+            let target = source == nil ? brightness : (brightness > 0 ? 1.0 : 0.0)
+            let next=try effect.plan(target,frameInterval:frameInterval)
             if !next.hasWrites {try effect.execute(next);result = next.result;return false}
             plan=next;return true
-        }) {
-            guard let plan else {return}
+        }, sourceUpdate: { sourcePlan }) {
+            guard plan != nil || sourcePlan != nil else {return}
             do {
                 try hardware.guardedFadeWrite {
                     guard let current = hardware.currentContext() else {
@@ -175,8 +195,17 @@ final class FadeRuntime: FadeEffectSession {
                           Self.frameAllowed(context:current,closedRequested:closedLidRequested,lidPermission:lidPermission()) else {
                         throw FadeSessionInterruption.lifecycle
                     }
-                    try effect.execute(plan)
-                    result = plan.result
+                    if let sourcePlan, let source {
+                        try hardware.installSource(source, plan: sourcePlan, context: current)
+                        // Never use the pre-mapping sample for the effect plan.
+                        guard hardware.currentContext() == current else { throw FadeSessionInterruption.lifecycle }
+                        let freshPlan = try effect.plan(brightness > 0 ? 1 : 0, frameInterval: frameInterval)
+                        try effect.execute(freshPlan)
+                        result = freshPlan.result
+                    } else if let plan {
+                        try effect.execute(plan)
+                        result = plan.result
+                    }
                 }
             } catch {markWriteFailure();throw error}
         }
@@ -207,6 +236,7 @@ final class FadeRuntime: FadeEffectSession {
             do {
                 // A healthy, still-running owner can preserve a fresh
                 // keyboard snapshot during normal open-lid shutdown.
+                try hardware.restoreSource(record)
                 try hardware.guardedFadeWrite {try effect.restore()}
                 try hardware.confirmTerminal()
             } catch {

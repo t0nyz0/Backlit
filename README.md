@@ -19,7 +19,7 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 
 ## Stability candidate: not a published release
 
-Version 0.2.6, build 33 contains recovery and status fixes. Closed-lid lighting remains present, but a physical test showed the built-in screen staying lit with the lid closed. Brightness can still follow the screen. Keep closed-lid lighting off until those issues are resolved. These issues are not fixed or validated by this candidate. See [release notes](docs/RELEASE.md) and [validation limits](docs/VALIDATION.md).
+Version 0.2.6, build 35 includes the independent open-lid brightness fix and stability updates. Closed-lid lighting is limited to 1–30 minutes, with no unlimited option. It keeps the Mac awake and may leave the built-in screen lit; the cap does not fix that behavior or guarantee safe temperatures. Keep the Mac on a hard, ventilated surface, never in a bag. See [release notes](docs/RELEASE.md) and [validation limits](docs/VALIDATION.md).
 
 ## Behaviors
 
@@ -98,7 +98,7 @@ A physically illuminated, independently controlled logo is required. The macOS 1
 
 Selecting Music starts system audio automatically after macOS permits it; switching to another behavior stops capture. If access fails, use Retry System Audio or open the privacy settings shown in the app. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
 
-Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid lighting keeps the keyboard dark and restores the real lid state when stopped. Choose a duration in minutes or hours, or Until turned off. The default is 30 minutes; low battery, Low Power Mode and heat still stop the session. Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
+Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid lighting keeps the keyboard dark and restores the real lid state when stopped. Choose a duration from 1 to 30 minutes. The default and maximum are 30 minutes; sleep counts toward the timer and relaunching does not reset it. Low battery, Low Power Mode and heat also stop the session. The built-in screen may remain lit while closed. Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
 
 ## Updates
 

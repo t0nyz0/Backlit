@@ -6,26 +6,26 @@ final class LidSessionDurationTests: XCTestCase {
     func testDefaultAndMinuteHourConversions() {
         XCTAssertEqual(LidSessionDuration().durationSeconds, 1800)
         XCTAssertEqual(LidSessionDuration(amount: 1).durationSeconds, 60)
-        XCTAssertEqual(LidSessionDuration(amount: 45).durationSeconds, 2700)
-        XCTAssertEqual(LidSessionDuration(amount: 2, unit: .hours).durationSeconds, 7200)
-        XCTAssertEqual(LidSessionDuration(amount: 10080).durationSeconds, 604800)
-        XCTAssertEqual(LidSessionDuration(amount: 168, unit: .hours).durationSeconds, 604800)
+        XCTAssertEqual(LidSessionDuration(amount: 45).durationSeconds, 1800)
+        XCTAssertEqual(LidSessionDuration(amount: 2, unit: .hours).durationSeconds, 1800)
+        XCTAssertEqual(LidSessionDuration(amount: 10080).durationSeconds, 1800)
+        XCTAssertEqual(LidSessionDuration(amount: 168, unit: .hours).durationSeconds, 1800)
     }
 
     func testTypedExtremesClampWithoutOverflowOrSelectingUnlimited() {
         for unit in LidDurationUnit.allCases {
             XCTAssertEqual(LidSessionDuration(amount: Int.min, unit: unit).amount, 1)
             XCTAssertEqual(LidSessionDuration(amount: 0, unit: unit).amount, 1)
-            XCTAssertEqual(LidSessionDuration(amount: Int.max, unit: unit).amount, unit.maximum)
-            XCTAssertEqual(LidSessionDuration(amount: Int.max, unit: unit).durationSeconds, 604800)
+            XCTAssertEqual(LidSessionDuration(amount: Int.max, unit: unit).amount, 30)
+            XCTAssertEqual(LidSessionDuration(amount: Int.max, unit: unit).durationSeconds, 1800)
         }
     }
 
-    func testUntilTurnedOffHasNoTimerButRetainsSelectedQuantity() throws {
+    func testLegacyUnlimitedNormalizesToThirtyMinutes() throws {
         let duration = LidSessionDuration(mode: .untilTurnedOff, amount: 3, unit: .hours)
-        XCTAssertEqual(duration.durationSeconds, 0)
-        XCTAssertEqual(duration.amount, 3)
-        XCTAssertEqual(duration.unit, .hours)
+        XCTAssertEqual(duration.durationSeconds, 1800)
+        XCTAssertEqual(duration.amount, 30)
+        XCTAssertEqual(duration.unit, .minutes)
         XCTAssertEqual(try JSONDecoder().decode(LidSessionDuration.self, from: JSONEncoder().encode(duration)), duration)
     }
 
@@ -61,7 +61,7 @@ final class LidSessionDurationTests: XCTestCase {
         let token = UUID(), duration = LidSessionDuration(amount: 2, unit: .hours)
         let retained = try XCTUnwrap(LidWatcherArguments(arguments: ["Backlit"] + duration.watcherArguments(parent: 123, lease: lease, intent: token)))
         XCTAssertEqual(retained.intent, token)
-        XCTAssertEqual(retained.durationSeconds, 7200)
+        XCTAssertEqual(retained.durationSeconds, 1800)
         XCTAssertNil(legacy.intent)
     }
 
@@ -74,6 +74,7 @@ final class LidSessionDurationTests: XCTestCase {
             ["--watch-lid", "123", "/tmp/lease", "nan"], ["--watch-lid", "123", "/tmp/lease", "inf"],
             ["--watch-lid", "123", "/tmp/lease", "-1"], ["--watch-lid", "123", "/tmp/lease", "604801"],
             ["--watch-lid", "123", "/tmp/lease", ""], ["--watch-lid", "123", "/tmp/lease", "1e300"],
+            ["--watch-lid", "123", "/tmp/lease", "0"], ["--watch-lid", "123", "/tmp/lease", "1801"],
             ["--watch-lid", "123", "/tmp/lease", "1800", "extra"]
         ] {
             XCTAssertNil(LidWatcherArguments(arguments: values), "Unexpectedly accepted: \(values)")
@@ -106,7 +107,7 @@ final class LidSessionDurationTests: XCTestCase {
         XCTAssertEqual(reopened.brightness, 0.37)
         XCTAssertEqual(defaults.string(forKey: "unrelated.fixture"), "keep")
         reopened.setLidDuration(mode: .timed)
-        XCTAssertEqual(reopened.lidSessionDuration.durationSeconds, 14400)
+        XCTAssertEqual(reopened.lidSessionDuration.durationSeconds, 1800)
         XCTAssertTrue(reopened.prepareQuit())
     }
 
@@ -114,9 +115,9 @@ final class LidSessionDurationTests: XCTestCase {
         let model = AppModel(demo: true, defaults: defaults())
         model.setLidDuration(amount: 10080)
         model.setLidDuration(unit: .hours)
-        XCTAssertEqual(model.lidSessionDuration.amount, 168)
+        XCTAssertEqual(model.lidSessionDuration.amount, 30)
         model.setLidDuration(amount: 0)
-        XCTAssertEqual(model.lidSessionDuration.durationSeconds, 3600)
+        XCTAssertEqual(model.lidSessionDuration.durationSeconds, 60)
         model.setLidDuration(amount: 2, unit: .minutes)
         XCTAssertEqual(model.lidSessionDuration.durationSeconds, 120)
         XCTAssertTrue(model.prepareQuit())
@@ -146,18 +147,18 @@ final class LidSessionDurationTests: XCTestCase {
         XCTAssertTrue(model.adoptLidWatcher(watcher, lease: URL(fileURLWithPath: "/tmp/inert-duration-lease")))
         XCTAssertFalse(model.canEditLidDuration)
         model.setLidDuration(mode: .untilTurnedOff)
-        XCTAssertEqual(model.lidSessionDuration.durationSeconds, 7200)
+        XCTAssertEqual(model.lidSessionDuration.durationSeconds, 1800)
         let stopped = expectation(description: "Inert cleanup completed")
         model.onLidStopCompleted = { safe in XCTAssertTrue(safe); stopped.fulfill() }
         model.stopLid()
         XCTAssertTrue(model.lidStopPending)
         model.setLidDuration(amount: 9)
-        XCTAssertEqual(model.lidSessionDuration.amount, 2)
+        XCTAssertEqual(model.lidSessionDuration.amount, 30)
         watcher.isRunning = false
         await fulfillment(of: [stopped], timeout: 1)
         XCTAssertTrue(model.canEditLidDuration)
         model.setLidDuration(mode: .untilTurnedOff)
-        XCTAssertEqual(model.lidSessionDuration.durationSeconds, 0)
+        XCTAssertEqual(model.lidSessionDuration.durationSeconds, 1800)
         XCTAssertTrue(model.prepareQuit())
     }
 }

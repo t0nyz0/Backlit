@@ -1,24 +1,23 @@
 # Backlit 0.2.6 stability candidate validation
 
-Version 0.2.6, build 33 is a private candidate. It is not installed, published or physically accepted. The candidate package records its exact local source identity and hashes. A local snapshot commit is not a remote release commit or CI pass.
+Version 0.2.6, build 35 is a prepared stability candidate, not a published release. The installed predecessor, build 34, was verified on the test Mac; build 35 adds the 30-minute cap and has not yet been installed or physically accepted.
 
-## Current release blockers
+## Current limits
 
-- The built-in screen was physically observed lit with the lid fully closed while Backlit closed-lid lighting was active, and off after Backlit quit. Keep closed-lid lighting off. The feature is retained without claiming this issue is fixed.
-- Logo brightness can still depend on the screen. Independent closed-lid brightness is unproven.
-- Physical sleep/wake and automatic native handback remain unqualified. A separate finite-output experiment is not application acceptance and is excluded from this build.
+- Closed-lid lighting may leave the built-in screen lit. The screen was observed off after Backlit quit. The feature is retained with a 30-minute maximum and an explicit in-app warning; this limits duration but does not guarantee safe temperatures.
+- Independent closed-lid brightness and physical sleep/wake/native handback remain unqualified. The separate finite-output experiments are excluded from this app.
+- Some failed-cleanup paths retain a manual recovery requirement rather than completing automatic recovery. Saved fault pauses are not automatically cleared by the duration migration.
+- The administrator-only ambient override retains the existing full-app elevation route. Its privilege boundary remains unresolved. Other native adapters still have weaker interface checks than the verified fade adapter.
 
 ## Candidate checks
 
-This revision changes only the status layout relative to build 32: the live state is beside the top Logo Control heading, compatibility details are underneath, and recovery actions remain alongside. Long messages wrap. Control, power and recovery logic are unchanged.
+The main-project source passed 546 Swift tests with zero failures, including 14 independent-brightness cases and nine new duration-cap migration and clock cases. Coverage includes bounded requested nits even if refresh resets the fade, zero-to-positive reapplication, previous/intended mapping ownership, original-curve restoration before Unblank, failed refresh retry, closed recovery without wake, and safety changes. Cap tests cover legacy hours/unlimited settings, exact deadlines, sleep/relaunch continuity, corrupted checkpoints, clock failure/regression and preservation of fault metadata.
 
-The exact snapshot passed 523 Swift tests with zero failures, including five new heading layout/read-only tests. Offscreen native UI fixtures for glowing, waiting, Off, long recovery and narrow width were rendered and visually inspected. They are labeled fixtures, not screenshots of live hardware state. The optimized arm64 build and all four AppIntents metadata actions passed, along with strict signature verification. No installed-app launch, real prompt, hardware action or preference change was performed for this UI revision.
+Build 34 was installed with an exact binary/signature check and retained build 33 backup. Its running app and recovery helper were verified. All preferences matched the preinstallation backup, with closed-lid lighting and ambient override Off. The user physically reported that the logo stayed bright at 100% while display brightness was lowered. This is an observed functional check, not a photometric measurement or verification of every positive-to-positive slider update.
 
-The unchanged integrations retain build 32 evidence: 16 Python tests passed with three optional signing fixtures skipped, and Stream Deck typecheck, 16 tests, build/package validation and zero-vulnerability audit passed. Those integration checks were not rerun for this UI-only revision. Current documentation, media, privacy/secret and package-integrity checks are recorded with the candidate. Existing documentation screenshots are still explicitly identified as older captures.
+The build 35 cap is tested with inert clocks and temporary preferences/files, not a 30-minute live hardware run. No running-app setting or hardware state was changed to prepare it. Automated tests do not prove panel darkness, exact physical brightness, native handback or compatibility on other devices.
 
-The administrator-only ambient override remains on the existing full-app elevation route. Its privilege boundary is unresolved. Additional native adapters still have weaker interface checks than the verified fade adapter; this revision does not claim that review findings are fixed.
-
-Automated recovery and output tests use inert fixtures. Passing tests do not prove physical light output, built-in panel darkness, exact brightness, lifecycle recovery or compatibility on other devices. Existing app settings and the installed copy are untouched.
+The unchanged integrations retain build 32 evidence: 16 Python tests passed with three optional signing fixtures skipped, and Stream Deck typecheck, 16 tests, build/package validation and zero-vulnerability audit passed. Those integration checks must also pass in the exact release CI. Existing screenshots remain explicitly labeled as older captures. Local source/build checks do not substitute for a passing release workflow on the exact published commit.
 
 ## Earlier validation history
 
@@ -45,7 +44,7 @@ The logo-enable flag is sampled once per second, independently of the requested 
 
 The existing opt-in helper sends a temporary CoreBrightness lid notification override only after macOS observes the real closed lid, then keeps keyboard modules in their closed state. Recovery is recorded before writes. It restores the current physical lid state, not a stale startup snapshot. Failed logo restoration does not prevent independent normal-sleep recovery, and logo-only records do not change unowned power state.
 
-Regression tests cover durable-before-write ordering, repeated-poll suppression, missing keyboard capability, daemon readiness, partial/rejected writes, current-lid restoration, unknown state, cleanup retry, reopen/reclose state, independent recovery and ownership. Duration-policy tests cover exact timer boundaries, no-timer sessions and retained safety cutoffs. Timers apply with or without an external display; Until turned off removes only the timer, not safety stops. Duration changes apply to a new session. Existing helper cancellation and lifecycle fixtures remain in place.
+Regression tests cover durable-before-write ordering, repeated-poll suppression, missing keyboard capability, daemon readiness, partial/rejected writes, current-lid restoration, unknown state, cleanup retry, reopen/reclose state, independent recovery and ownership. Earlier duration-policy tests covered exact timer boundaries, no-timer sessions and retained safety cutoffs. Build 35 removes the no-timer option and caps all new and migrated sessions at 30 minutes, with or without an external display. Duration changes apply to a new session. Existing helper cancellation and lifecycle fixtures remain in place.
 
 The private global notification also reaches display/color modules. Unchanged True Tone and color behavior has not been established. Broader compatibility, repeated physical lid transitions and keyboard restoration, external-display hotplug, real thermal/low-battery cutoffs and force-killed helper recovery remain hardware acceptance limits. No optical brightness measurement or broader hardware-compatibility claim is implied. No persistent brightness or security setting is changed by this option.
 

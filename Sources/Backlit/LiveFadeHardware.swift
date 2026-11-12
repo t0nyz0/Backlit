@@ -19,6 +19,9 @@ final class LiveFadeHardware {
         var keyboardClosed: (UInt64) -> Bool
         var factor: () -> Double?
         var logoEnabled: () -> Bool?
+        var mapping: () -> [[Double]]? = { nil }
+        var setMapping: ([[Double]]) -> Bool = { _ in false }
+        var refreshMapping: () -> Bool = { false }
         var now: () -> Double = { ProcessInfo.processInfo.systemUptime }
         var wait: (Double) -> Void = { interval in
             let deadline = ProcessInfo.processInfo.systemUptime + interval
@@ -35,6 +38,64 @@ final class LiveFadeHardware {
     init(interface: Interface) { io = interface }
 
     func currentContext() -> FadeSafetyContext? { io.context() }
+    func currentMapping() -> [[Double]]? { io.mapping() }
+    func installSource(_ source: IndependentLogoSource, plan: LogoSourceRecovery, context: FadeSafetyContext) throws {
+        guard context.permitsOpenKeyboardRestore, currentContext() == context, plan.valid else { throw FadeSessionInterruption.lifecycle }
+        try source.validate(io.mapping())
+        guard currentContext() == context, io.setMapping(plan.requested) else {
+            throw RuntimeServices.failure("The logo brightness source was not accepted. Recovery was retained.")
+        }
+        guard currentContext() == context else { throw FadeSessionInterruption.lifecycle }
+        // Reapply startup and zero-to-positive transitions: a zero native
+        // source can remain gated. Other updates preserve the fade direction.
+        if !source.installed || (plan.previous.first?[1] == 0 && plan.requested[0][1] > 0) {
+            guard io.refreshMapping(), currentContext() == context else {
+                throw RuntimeServices.failure("The independent logo source could not be applied. Recovery was retained.")
+            }
+        }
+        guard let actual = io.mapping(), LogoDevice.equivalent(actual, plan.requested), currentContext() == context else {
+            throw RuntimeServices.failure("The independent logo source was not confirmed. Recovery was retained.")
+        }
+        source.didInstall(plan)
+    }
+
+    /// Called under the existing recovery lock before either restore route can
+    /// Unblank. A failed setter may have applied; both original and intended are
+    /// owned. A competitor/unknown source is never overwritten.
+    func restoreSource(_ record: FadeRecoveryRecord) throws {
+        guard let source = record.logoSource, record.pendingBatch != nil else { return }
+        guard source.valid, let before = currentContext(), let current = io.mapping(),
+              source.owns(current) else {
+            throw RuntimeServices.failure("The saved logo source cannot be safely restored. Recovery was retained.")
+        }
+        func restoreMapping() throws {
+            if !LogoDevice.equivalent(current, source.original) {
+                guard currentContext() == before, io.setMapping(source.original),
+                      let actual = io.mapping(), LogoDevice.equivalent(actual, source.original) else {
+                    throw RuntimeServices.failure("The original logo source was not confirmed. Recovery was retained.")
+                }
+            }
+            guard currentContext() == before else { throw FadeSessionInterruption.lifecycle }
+            if before.permitsOpenKeyboardRestore {
+                // Always retry refresh, even if an earlier attempt restored the
+                // curve before failing. Equality is not apply confirmation.
+                guard io.refreshMapping(), currentContext() == before else {
+                    throw RuntimeServices.failure("The restored logo source could not be applied. Recovery was retained.")
+                }
+            }
+            guard let after = io.mapping(), LogoDevice.equivalent(after, source.original), currentContext() == before else {
+                throw RuntimeServices.failure("The restored logo source changed. Recovery was retained.")
+            }
+        }
+        if before.permitsOpenKeyboardRestore {
+            try guardedFadeWrite { try restoreMapping() }
+        } else {
+            // This writes only the logo curve, never a wake/apply event. The
+            // following conservative fade restore handles keyboard cleanup.
+            try restoreMapping()
+        }
+    }
+
     func waitForSafetyEvent(_ interval:Double) {io.wait(interval)}
 
     /// DisplayLogicalState is only populated after a corresponding write on
@@ -150,6 +211,7 @@ final class LiveFadeHardware {
         // The journal persists a batch before its first possible hardware write.
         // An unacknowledged/unused session has nothing to undo on the device.
         guard record.pendingBatch != nil else { return }
+        try restoreSource(record)
         operationLock.lock(); defer { operationLock.unlock() }
         let deadline = try terminalDeadline()
         guard let before = currentContext(), let saved = keyboardStates(),
@@ -273,7 +335,15 @@ final class LiveFadeHardware {
             } catch { return nil }
         }, logoEnabled: {
             LogoDevice.enabledState()
-        },wait:{monitor.wait($0)}))
+        }, mapping: {
+            guard let rows = client.perform(globalReader, with: LogoDevice.mappingKey)?.takeRetainedValue() as? [[NSNumber]] else { return nil }
+            let values = rows.map { $0.map(\.doubleValue) }
+            return LogoDevice.valid(values) ? values : nil
+        }, setMapping: { rows in
+            globalSet(client, globalWriter, rows as NSArray, LogoDevice.mappingKey as NSString)
+        }, refreshMapping: {
+            globalSet(client, globalWriter, NSNumber(value: 1), "DisplayPowerStateEvent")
+        }, wait:{monitor.wait($0)}))
         guard hardware.currentContext() != nil, hardware.keyboardStates() != nil else {
             throw RuntimeServices.failure("Current lid, sleep, lock and keyboard state must be known before using fades.")
         }

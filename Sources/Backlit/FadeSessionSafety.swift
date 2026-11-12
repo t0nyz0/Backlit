@@ -71,6 +71,7 @@ struct FadeRecoveryRecord: Codable, Equatable {
     var effectsAllowed: Bool
     var pendingBatch: FadeBatchSnapshot?
     var closedLidRequested: Bool?
+    var logoSource: LogoSourceRecovery? = nil
 }
 
 /// Durable ownership is separate from the closed-lid lease: open-lid fades must
@@ -96,8 +97,8 @@ final class FadeRecoveryStore {
     private func write(_ record: FadeRecoveryRecord) throws {
         try JSONEncoder().encode(record).write(to:url,options:.atomic)
     }
-    func prepare(parentPID: Int32, context: FadeSafetyContext, keyboards: [UInt64:Int], closedLidRequested: Bool = false) throws -> UUID {
-        guard parentPID>0,!keyboards.isEmpty,keyboards.values.allSatisfy({(0...6).contains($0)}) else {
+    func prepare(parentPID: Int32, context: FadeSafetyContext, keyboards: [UInt64:Int], closedLidRequested: Bool = false, logoSource: LogoSourceRecovery? = nil) throws -> UUID {
+        guard logoSource?.valid ?? true, parentPID>0,!keyboards.isEmpty,keyboards.values.allSatisfy({(0...6).contains($0)}) else {
             throw RuntimeServices.failure("Cannot prepare fade recovery without a valid owner and keyboard state.")
         }
         return try ClosedEffectSession.locked(directory:directory,wait:true) {
@@ -105,7 +106,7 @@ final class FadeRecoveryStore {
                 throw RuntimeServices.failure("Previous fade recovery must finish before starting another session.")
             }
             let token=UUID()
-            try self.write(.init(token:token,parentPID:parentPID,originalContext:context,keyboardStates:keyboards,watchdogPID:nil,effectsAllowed:false,pendingBatch:nil,closedLidRequested:closedLidRequested))
+            try self.write(.init(token:token,parentPID:parentPID,originalContext:context,keyboardStates:keyboards,watchdogPID:nil,effectsAllowed:false,pendingBatch:nil,closedLidRequested:closedLidRequested,logoSource:logoSource))
             return token
         }!
     }
@@ -132,6 +133,7 @@ final class FadeRecoveryStore {
     func withPermission<T>(token: UUID, watchdogAlive: (Int32)->Bool,
                            snapshotProvider: () throws -> FadeBatchSnapshot,
                            shouldWrite: () throws -> Bool = {true},
+                           sourceUpdate: () -> LogoSourceRecovery? = {nil},
                            _ body: () throws -> T) throws -> T? {
         let result: T?? = try ClosedEffectSession.locked(directory:directory,wait:false) { () throws -> T? in
             var record=try self.read()
@@ -147,7 +149,18 @@ final class FadeRecoveryStore {
             // Identical safety snapshots remain valid across frames. Persist
             // changes, not two disk writes per animation tick; keep the latest
             // snapshot even after success for independent crash restoration.
-            if record.pendingBatch != snapshot { record.pendingBatch=snapshot;try self.write(record) }
+            let source = sourceUpdate()
+            if let source {
+                guard source.valid, let prior = record.logoSource,
+                      LogoDevice.equivalent(source.original, prior.original) else {
+                    throw RuntimeServices.failure("The independent logo recovery source is invalid.")
+                }
+            }
+            if record.pendingBatch != snapshot || (source != nil && record.logoSource != source) {
+                record.pendingBatch=snapshot
+                if let source { record.logoSource = source }
+                try self.write(record)
+            }
             return try body()
         }
         return result ?? nil

@@ -17,9 +17,12 @@ enum FadeSessionInterruption: LocalizedError {
 
 protocol FadeEffectSession: AnyObject {
     var needsAnimation: Bool { get }
+    var ownsIndependentSource: Bool { get }
     func apply(_ brightness: Double, closedLidRequested: Bool, frameInterval: Double) throws -> FadeApplyResult
     func restore() throws
 }
+
+extension FadeEffectSession { var ownsIndependentSource: Bool { false } }
 
 /// Owns only the animation session, not the logo lease or saved native mapping.
 /// A normal lid-policy pause must verify cleanup before forgetting the session.
@@ -37,6 +40,7 @@ final class FadeSessionCoordinator {
     private(set) var automaticRecoveryPending = false
     var needsAnimation: Bool { retryAfter != nil || session?.needsAnimation == true }
     var hasSession: Bool { session != nil }
+    var ownsIndependentSource: Bool { session?.ownsIndependentSource == true }
     init(physicalLid: @escaping () -> Bool?, now: @escaping () -> Double = { ProcessInfo.processInfo.systemUptime }, makeSession: @escaping (Bool) throws -> any FadeEffectSession) {
         self.physicalLid = physicalLid; self.now = now; self.makeSession = makeSession
     }

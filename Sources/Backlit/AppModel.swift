@@ -334,6 +334,7 @@ enum MusicCapturePolicy {
         self.lidStopper = lidStopper ?? LidWatcherStopper()
         self.demo = demo
         self.defaults = defaults ?? (demo ? UserDefaults(suiteName:(Bundle.main.bundleIdentifier ?? "local.backlit") + ".preview")! : .standard)
+        LidSessionIntent.migrateStoredDuration(self.defaults)
         lidIntentController = LidIntentController(defaults: self.defaults)
         let requested = lidIntentController.intent != nil
         lidRequested = requested
@@ -341,7 +342,11 @@ enum MusicCapturePolicy {
             (requested ? "Remembered. Waiting for your Mac and light to be ready." : "Off")
         if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
         if let data = self.defaults.data(forKey: LidSessionDuration.preferenceKey),
-           let duration = try? JSONDecoder().decode(LidSessionDuration.self, from: data) { lidSessionDuration = duration }
+           let duration = try? JSONDecoder().decode(LidSessionDuration.self, from: data) {
+            lidSessionDuration = duration
+            // Persist the normalized cap without changing unrelated settings.
+            if let normalized = try? JSONEncoder().encode(duration) { self.defaults.set(normalized, forKey: LidSessionDuration.preferenceKey) }
+        }
         device = LogoDevice(directory:AgentBridge.directory)
         if let raw = self.defaults.string(forKey: "mode") {
             if raw == "signals" {

@@ -184,7 +184,7 @@ import XCTest
         }
     }
 
-    func testQualifiedFixturePreservesUnlimitedChoiceWhenAdmitted() throws {
+    func testQualifiedFixtureCapsUnlimitedAndRequiresOpenWithoutCheckpoint() throws {
         let f = fixture(), id = try f.legacy()
         f.defaults.set(0.42, forKey: "brightness")
         // Leftover files are not held ownership and must not force manual work.
@@ -192,9 +192,12 @@ import XCTest
         XCTAssertEqual(f.controller.intent?.savedPause?.reason, .legacyUnknown)
         XCTAssertTrue(try f.controller.recoverSavedPause(environment: f.recovery))
         XCTAssertEqual(f.reads, 2); XCTAssertEqual(f.controller.intent?.id, id)
-        XCTAssertEqual(f.controller.intent?.durationSeconds, 0)
+        XCTAssertEqual(f.controller.intent?.durationSeconds, 1800)
         XCTAssertFalse(try XCTUnwrap(f.controller.intent).blocked)
         XCTAssertEqual(f.defaults.double(forKey: "brightness"), 0.42)
+        _ = try f.controller.resume(environment: f.session)
+        XCTAssertEqual(f.starts, 0, "Old unlimited sessions have no verified start while closed")
+        f.closed = false
         _ = try f.controller.resume(environment: f.session)
         XCTAssertEqual(f.starts, 1)
     }
@@ -455,6 +458,7 @@ import XCTest
 
     func testActualModelChecksBeforeAnyEffectOrHelperAndNeverReentersVerification() throws {
         let f = fixture(); _ = try f.legacy()
+        try f.store.write(.closed(try XCTUnwrap(f.controller.intent), clock: f.clock))
         var sequence: [String] = []
         var recovery = f.recovery
         weak var observed: AppModel?
