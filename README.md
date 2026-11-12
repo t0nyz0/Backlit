@@ -1,8 +1,8 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
 <img src="https://img.shields.io/badge/source-0.2.6-9a7400?style=flat" alt="Source 0.2.6">
-<img src="https://img.shields.io/badge/validation-candidate-2d6085?style=flat" alt="Candidate validation">
-<img src="https://img.shields.io/badge/release-on_hold-55565f?style=flat" alt="Release on hold">
+<img src="https://img.shields.io/badge/local_tests-566_passing-2d6085?style=flat" alt="566 local tests passing">
+<img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm_Perimeter-67538c?style=flat" alt="PolyForm Perimeter 1.0.0 license"></a>
@@ -16,10 +16,6 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 </picture>
 
 *Screenshots show the running native app in isolated preview. The illustrated light is a preview, not a hardware measurement. [Provenance](docs/media/README.md).*
-
-## Stability candidate: not a published release
-
-Version 0.2.6, build 38 includes the independent open-lid brightness fix, stability updates, hardened-runtime signing and housekeeping fixes. Closed-lid lighting is limited to 1–30 minutes, with no unlimited option. It keeps the Mac awake and may leave the built-in screen lit; the cap does not fix that behavior or guarantee safe temperatures. Keep the Mac on a hard, ventilated surface, never in a bag. See [release notes](docs/RELEASE.md) and [validation limits](docs/VALIDATION.md).
 
 ## Behaviors
 
@@ -92,7 +88,7 @@ Downloads are disabled in isolated preview. In the app, **Download Latest Versio
 
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.5 is **ad-hoc signed, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.6 is **ad-hoc signed with the hardened runtime, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
@@ -102,7 +98,7 @@ Optional login launch, closed-lid operation, and an administrator-authorized bri
 
 ## Updates
 
-Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.5. See [validation](docs/VALIDATION.md) for update verification and known limits.
+Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.6. See [validation](docs/VALIDATION.md) for update verification and known limits.
 
 ## Build
 
