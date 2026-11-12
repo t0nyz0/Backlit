@@ -1232,11 +1232,19 @@ enum MusicCapturePolicy {
             approved = alert.runModal() == .alertFirstButtonReturn
         }
         guard approved else { return }
-        do {
-            try BridgeToken.regenerate()
-            if bridgeEnabled { configureBridge(enabled: true, lan: bridgeLAN) }
+        let lan = bridgeLAN
+        switch PairingKeyRotation.run(wasSharing: bridgeEnabled, stopSharing: {
+            // From here the old key is refused, whatever happens next.
+            bridge.stop(); bridgeEnabled = false; bridgeStatus = "Not connected"
+        }, regenerate: { try BridgeToken.regenerate() }) {
+        case .rotated(let restartSharing):
+            if restartSharing { configureBridge(enabled: true, lan: lan) }
             notice = "A new pairing key was created. Copy it and update Home Assistant; the old key no longer works."
-        } catch { self.error = error.localizedDescription }
+        case .failed(let reason):
+            // Also remember Off, so a relaunch cannot bring the old key back.
+            configureBridge(enabled: false, lan: lan)
+            self.error = "A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. (\(reason))"
+        }
     }
     func apiState() -> [String:Any] {
         ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),

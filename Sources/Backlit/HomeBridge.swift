@@ -28,6 +28,22 @@ enum BridgeToken {
     }
 }
 
+/// Replacing a pairing key is what someone does when the old key may have
+/// been seen. The listener holds its key in memory, so it must stop before
+/// the stored key changes, and it must stay stopped if the new key cannot be
+/// created. Otherwise a failed rotation would leave the old key working.
+enum PairingKeyRotation {
+    enum Outcome: Equatable {
+        case rotated(restartSharing: Bool)
+        case failed(String)
+    }
+    static func run(wasSharing: Bool, stopSharing: () -> Void, regenerate: () throws -> Void) -> Outcome {
+        stopSharing()
+        do { try regenerate() } catch { return .failed(error.localizedDescription) }
+        return .rotated(restartSharing: wasSharing)
+    }
+}
+
 struct BridgeRequest {
     let method: String
     let path: String
