@@ -1035,7 +1035,7 @@ enum MusicCapturePolicy {
         guard force || now < lastLidIntentCheck || now - lastLidIntentCheck >= 1 else { return }
         if let intent, watcher != nil {
             lastLidIntentCheck = now
-            guard !intent.blocked else { lidPreferenceStatus = "Paused after an error. Turn this setting off and on after recovery."; stopLid(); return }
+            guard !intent.blocked else { lidPreferenceStatus = "Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery."; stopLid(); return }
             guard environment.safety().eligible else {
                 lidPreferenceStatus = "Remembered. Paused for your Mac’s safety settings."
                 stopLid(); return

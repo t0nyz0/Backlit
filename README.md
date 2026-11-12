@@ -19,7 +19,7 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 
 ## Stability candidate: not a published release
 
-Version 0.2.6, build 37 includes the independent open-lid brightness fix, stability updates, hardened-runtime signing and housekeeping fixes. Closed-lid lighting is limited to 1–30 minutes, with no unlimited option. It keeps the Mac awake and may leave the built-in screen lit; the cap does not fix that behavior or guarantee safe temperatures. Keep the Mac on a hard, ventilated surface, never in a bag. See [release notes](docs/RELEASE.md) and [validation limits](docs/VALIDATION.md).
+Version 0.2.6, build 38 includes the independent open-lid brightness fix, stability updates, hardened-runtime signing and housekeeping fixes. Closed-lid lighting is limited to 1–30 minutes, with no unlimited option. It keeps the Mac awake and may leave the built-in screen lit; the cap does not fix that behavior or guarantee safe temperatures. Keep the Mac on a hard, ventilated surface, never in a bag. See [release notes](docs/RELEASE.md) and [validation limits](docs/VALIDATION.md).
 
 ## Behaviors
 

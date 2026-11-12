@@ -86,9 +86,11 @@ struct LidSavedPause: Codable, Equatable {
         canRetry && clock.valid && (retryBoot != clock.boot || retryAfter.map { clock.seconds >= $0 } != false)
     }
     var status: String {
-        if reason == .hardFault { return detail ?? "Paused after an error. Restore your light, then turn this setting off and on to retry." }
+        // These messages also appear on the main page and in the menu, beside
+        // the Logo on switch, so they must name the setting they refer to.
+        if reason == .hardFault { return detail ?? "Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry." }
         if needsQualifiedHandback { return Self.unconfirmedStatus }
-        if attempts >= Self.attemptLimit { return "Automatic safety checks stopped after three attempts. Restore your light, then turn this setting off and on to retry." }
+        if attempts >= Self.attemptLimit { return "Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry." }
         if let detail { return detail }
         return "Remembered. Waiting to verify the previous session before reconnecting."
     }
