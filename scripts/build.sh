@@ -91,5 +91,12 @@ rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' home
 rm -rf "$app_bundle/Contents/Resources/Integrations"
 bash scripts/shortcuts-metadata.sh extract "$app_bundle" "$target_triple"
 strip -S "$app_bundle/Contents/MacOS/Backlit"
-codesign --force --sign - --identifier local.backlit "$app_bundle"
+# Hardened runtime makes macOS ignore DYLD_INSERT_LIBRARIES and similar
+# variables, so other processes cannot load code into Backlit and inherit its
+# Input Monitoring or audio permissions. It works with ad-hoc signing. The
+# entitlement is needed only because the ad-hoc app and the bundled Sparkle
+# framework have no team ID; drop it if Sparkle is ever removed. Keep the
+# entitlements file free of XML comments.
+codesign --force --sign - --options runtime --entitlements assets/Backlit.entitlements --identifier local.backlit "$app_bundle"
+codesign -dvv "$app_bundle" 2>&1 | grep -q 'flags=.*runtime' || { echo 'The app was signed without the hardened runtime.' >&2; exit 1; }
 echo "$app_bundle"
