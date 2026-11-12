@@ -879,13 +879,33 @@ enum MusicCapturePolicy {
     }
     /// Owned journals exist during healthy operation too. Readiness therefore
     /// requires an applied frame, not a waiting helper or a safely paused fade.
+    /// A frame that has issued its command and is waiting to observe the
+    /// output is still owned, healthy hardware. In Music that happens on
+    /// every beat that crosses zero. Treating each such frame as "not ready"
+    /// stopped capture, which silenced the audio, which made the next frame
+    /// ready again: capture restarted about twice a second. Readiness earned
+    /// by an applied frame is therefore kept across brief waits. A wait that
+    /// persists, a pause, an error or a recovery still withdraws it.
+    static let musicReadinessGrace = 2.0
+    private var lastMusicReadyFrame: Double?
     func updateMusicHardwareReadiness(_ operation: () throws -> FadeApplyResult) rethrows {
+        let wasReady = musicHardwareReady
         musicHardwareReady = false
         lastHardwareResult = nil
         defer { if lastHardwareResult != .applied { invalidateLightReadyNotice() } }
         let result = try operation()
         lastHardwareResult = result
-        if case .applied = result { musicHardwareReady = true }
+        let now = recoveryClock()
+        switch result {
+        case .applied:
+            musicHardwareReady = true; lastMusicReadyFrame = now
+        case .waiting:
+            if wasReady, let last = lastMusicReadyFrame, now.isFinite, now >= last,
+               now - last <= Self.musicReadinessGrace { musicHardwareReady = true }
+            else { lastMusicReadyFrame = nil }
+        case .paused:
+            lastMusicReadyFrame = nil
+        }
     }
     var musicCaptureAllowed: Bool {
         let observed = musicCaptureObservation?() ?? .init(deviceAvailable: device.available,
