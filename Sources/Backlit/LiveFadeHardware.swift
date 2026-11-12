@@ -240,6 +240,7 @@ final class LiveFadeHardware {
         let set = unsafeBitCast(client.method(for: writer), to: Setter.self)
         let globalSet = unsafeBitCast(client.method(for: globalWriter), to: GlobalSetter.self)
         let monitor = try LiveFadeSafetyMonitor()
+        let diagnostics = NativeLightSampleDiagnostics(source: .fadeFactor)
         let hardware = LiveFadeHardware(interface: .init(context: { monitor.context() }, keyboardIDs: {
             guard let numbers = keyboard.perform(idsReader)?.takeRetainedValue() as? [NSNumber] else { return nil }
             var ids: [UInt64] = []
@@ -264,9 +265,12 @@ final class LiveFadeHardware {
         }, keyboardClosed: { id in
             set(client, writer, NSNumber(value: true), "ClamshellUpdate", id)
         }, factor: {
-            guard let state = client.perform(globalReader, with: "LEPWMState")?.takeRetainedValue() as? [String: NSNumber],
-                  let factor = state["Factor"], CFGetTypeID(factor) != CFBooleanGetTypeID() else { return nil }
-            return factor.doubleValue
+            do {
+                return try NativeLightSample.factor(client.perform(globalReader, with: "LEPWMState")?.takeRetainedValue())
+            } catch let failure as NativeLightSample.Failure {
+                diagnostics.record(failure)
+                return nil
+            } catch { return nil }
         }, logoEnabled: {
             LogoDevice.enabledState()
         },wait:{monitor.wait($0)}))

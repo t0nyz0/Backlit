@@ -9,6 +9,9 @@ struct LidSessionIntent: Codable, Equatable {
     let id: UUID
     let durationSeconds: Double
     var blocked: Bool
+    // Optional for v1 compatibility. A missing cause is an unknown legacy
+    // pause, never an assertion that the old failure was transient.
+    var pause: LidSavedPause?
 
     init(duration: LidSessionDuration, id: UUID = UUID()) {
         version = 1; self.id = id; durationSeconds = duration.durationSeconds; blocked = false
@@ -17,7 +20,11 @@ struct LidSessionIntent: Codable, Equatable {
         guard LidSessionPolicy.validDuration(durationSeconds) else { return nil }
         version = 1; self.id = id; self.durationSeconds = durationSeconds; blocked = false
     }
-    var valid: Bool { version == 1 && LidSessionPolicy.validDuration(durationSeconds) }
+    var valid: Bool {
+        version == 1 && LidSessionPolicy.validDuration(durationSeconds) &&
+            (pause?.valid ?? true) && (blocked || pause == nil)
+    }
+    var savedPause: LidSavedPause? { blocked ? pause ?? .init(reason: .legacyUnknown) : nil }
     static func load(_ defaults: UserDefaults) -> Self? {
         guard let data = defaults.data(forKey: preferenceKey),
               let value = try? JSONDecoder().decode(Self.self, from: data), value.valid else { return nil }
@@ -27,6 +34,60 @@ struct LidSessionIntent: Codable, Equatable {
         guard valid else { throw RuntimeServices.failure("The saved closed-lid choice is invalid.") }
         defaults.set(try JSONEncoder().encode(self), forKey: Self.preferenceKey)
     }
+}
+
+struct LidSavedPause: Codable, Equatable {
+    enum Reason: String, Codable { case legacyUnknown, interruptedCleanup, hardFault }
+    var reason: Reason
+    var attempts = 0
+    var retryBoot: UUID?
+    var retryAfter: Double?
+    var detail: String?
+    static let attemptLimit = 3
+    var valid: Bool {
+        (0...Self.attemptLimit).contains(attempts) &&
+            ((retryBoot == nil && retryAfter == nil) ||
+             (retryBoot != nil && retryAfter.map { $0.isFinite && $0 >= 0 } == true))
+    }
+    var canRetry: Bool { reason != .hardFault && attempts < Self.attemptLimit }
+    var needsQualifiedHandback: Bool { reason == .legacyUnknown || reason == .interruptedCleanup }
+    static let unconfirmedStatus = "Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings."
+    func hasImpossibleBackoff(clock: LidContinuousClock) -> Bool {
+        guard clock.valid, retryBoot == clock.boot, let retryAfter else { return false }
+        let maximumDelay = attempts > 0 ? pow(2, Double(attempts - 1)) : 0
+        // Continuous time includes sleep and cannot restart within one boot.
+        // A larger remaining delay means saved timing or the current clock is
+        // untrustworthy. Never wait indefinitely or reset the retry budget.
+        return retryAfter - clock.seconds > maximumDelay + 0.000_001
+    }
+    func ready(clock: LidContinuousClock) -> Bool {
+        canRetry && clock.valid && (retryBoot != clock.boot || retryAfter.map { clock.seconds >= $0 } != false)
+    }
+    var status: String {
+        if reason == .hardFault { return detail ?? "Paused after an error. Restore your light, then turn this setting off and on to retry." }
+        if needsQualifiedHandback { return Self.unconfirmedStatus }
+        if attempts >= Self.attemptLimit { return "Automatic safety checks stopped after three attempts. Restore your light, then turn this setting off and on to retry." }
+        if let detail { return detail }
+        return "Remembered. Waiting to verify the previous session before reconnecting."
+    }
+}
+
+enum LidPauseVerification {
+    case verified
+    case handbackUnconfirmed
+    case retryLater(String)
+    case requiresRepair(String)
+}
+
+/// A fixture seam for the bounded admission state machine, not a handback
+/// implementation. Production has no qualified handback provider and must not
+/// enable automatic clearance from journal absence or native policy caches.
+@MainActor struct LidPauseRecoveryEnvironment {
+    var clock: () -> LidContinuousClock?
+    var eligible: () -> Bool
+    var verify: () throws -> LidPauseVerification
+    var allowsAutomaticClearance = false
+    func available(inPreview preview: Bool) -> Bool { preview && allowsAutomaticClearance }
 }
 
 struct LidContinuousClock: Equatable {
@@ -194,17 +255,89 @@ struct LidResumeSafety {
         case off
     }
     let defaults: UserDefaults
-    init(defaults: UserDefaults) { self.defaults = defaults }
+    private var verifyingPause = false
+    private let writeIntent: (LidSessionIntent) throws -> Void
+    init(defaults: UserDefaults, writeIntent: ((LidSessionIntent) throws -> Void)? = nil) {
+        self.defaults = defaults
+        self.writeIntent = writeIntent ?? { try $0.save(defaults) }
+    }
+    private func persist(_ value: LidSessionIntent) throws {
+        try writeIntent(value)
+        guard intent == value else { throw RuntimeServices.failure("The saved closed-lid safety state could not be recorded.") }
+        // UserDefaults provides retained preferences across normal relaunches.
+        // This readback is not an fsync guarantee against sudden power loss.
+    }
     var intent: LidSessionIntent? { LidSessionIntent.load(defaults) }
     func disable() { defaults.removeObject(forKey: LidSessionIntent.preferenceKey) }
-    func block() {
-        guard var intent else { return }
+    @discardableResult func block(reason: LidSavedPause.Reason = .hardFault, detail: String? = nil) -> Bool {
+        guard var intent else { return true }
         intent.blocked = true
-        try? intent.save(defaults)
+        // Do not reset a durable budget on repeated callbacks or relaunch.
+        var pause = intent.savedPause ?? .init(reason: reason)
+        if reason == .hardFault || pause.reason != .hardFault { pause.reason = reason }
+        pause.detail = detail
+        intent.pause = pause
+        do { try persist(intent); return true } catch { return false }
+    }
+    func recordCleanupAttempt(clock: LidContinuousClock?) throws {
+        guard var intent else { return }
+        guard var pause = intent.pause, pause.reason == .interruptedCleanup, pause.canRetry else {
+            throw RuntimeServices.failure("The saved closed-lid failure is not eligible for automatic cleanup.")
+        }
+        pause.attempts = min(LidSavedPause.attemptLimit, pause.attempts + 1)
+        if let clock, clock.valid {
+            pause.retryBoot = clock.boot; pause.retryAfter = clock.seconds + pow(2, Double(pause.attempts - 1))
+        }
+        intent.pause = pause; try persist(intent)
+    }
+    /// Only verifies/clears the latch. Normal ownership, timer and helper
+    /// admission still run afterwards and recheck the same saved intent.
+    @discardableResult func recoverSavedPause(environment: LidPauseRecoveryEnvironment) throws -> Bool {
+        guard environment.allowsAutomaticClearance, !verifyingPause,
+              var intent, var pause = intent.savedPause else { return false }
+        let originalIntent = intent
+        verifyingPause = true
+        defer { verifyingPause = false }
+        guard let clock = environment.clock(), clock.valid, self.intent == intent else { return false }
+        if pause.canRetry && pause.hasImpossibleBackoff(clock: clock) {
+            pause.reason = .hardFault
+            pause.detail = "Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry."
+            intent.pause = pause
+            try persist(intent)
+            return false
+        }
+        guard pause.ready(clock: clock),
+              environment.eligible(), self.intent == intent else { return false }
+        pause.attempts += 1
+        pause.retryBoot = clock.boot; pause.retryAfter = clock.seconds + pow(2, Double(pause.attempts - 1))
+        pause.detail = nil
+        intent.pause = pause
+        try persist(intent) // Recorded *before* a potentially reentrant check.
+        let result: LidPauseVerification
+        do { result = try environment.verify() }
+        catch { result = .requiresRepair("Safety verification failed: \(error.localizedDescription) Restore your light before retrying.") }
+        guard self.intent == intent else { return false }
+        switch result {
+        case .handbackUnconfirmed:
+            // Read-only preflight is not a recovery attempt or a handback.
+            // Retain exactly the original choice/budget; no retry is earned.
+            try persist(originalIntent)
+            return false
+        case .verified:
+            guard let after = environment.clock(), after.valid, after.boot == clock.boot,
+                  after.seconds >= clock.seconds, environment.eligible(), self.intent == intent else { return false }
+            intent.blocked = false; intent.pause = nil
+            try persist(intent)
+            return true
+        case .retryLater(let detail): pause.detail = detail
+        case .requiresRepair(let detail): pause.reason = .hardFault; pause.detail = detail
+        }
+        intent.pause = pause; try persist(intent)
+        return false
     }
     func enable(duration: LidSessionDuration, environment: LidIntentEnvironment) throws {
         let intent = LidSessionIntent(duration: duration)
-        try intent.save(defaults)
+        try persist(intent)
         // Only this explicit action may create a cycle while already closed.
         if case let .ready(checkpoint) = LidIntentPolicy.timer(intent: intent, checkpoint: nil,
             clock: environment.clock(), closed: environment.closed(), newCycle: true), let checkpoint {
@@ -214,7 +347,7 @@ struct LidResumeSafety {
     }
     func resume(environment: LidIntentEnvironment) throws -> Resume {
         guard let intent else { return .off }
-        guard !intent.blocked else { return .paused("Paused after an error. Restore your light, then turn this setting off and on to retry.") }
+        guard !intent.blocked else { return .paused(intent.savedPause!.status) }
         guard environment.safety().eligible else { return .paused("Remembered. Waiting for your Mac and light to be ready.") }
         let old = environment.checkpoints.read(intent.id)
         switch LidIntentPolicy.timer(intent: intent, checkpoint: old,

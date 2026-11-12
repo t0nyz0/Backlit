@@ -4,7 +4,7 @@ import Darwin
 /// Closed displays stop reevaluating the logo brightness mapping. Follow the
 /// hardware fade factor instead, only within an owned closed-lid session.
 final class ClosedLidEffect {
-    struct Sample { let factor: Double; let appliedNits: Double; let multiplier: Double }
+    typealias Sample = NativeLightSample.Sample
     struct Interface {
         var sample: () -> Sample?
         var duration: (Double) -> Bool
@@ -22,7 +22,7 @@ final class ClosedLidEffect {
     private var zeroBaselineStartedAt: Double?
     private struct EndpointRequest { let target: Double; let startedAt: Double }
     private var pendingEndpoint: EndpointRequest?
-    var needsAnimation: Bool { active && (moving || holding || pendingEndpoint != nil) }
+    var needsAnimation: Bool { zeroBaselineStartedAt != nil || (active && (moving || holding || pendingEndpoint != nil)) }
     func relinquish() { revision &+= 1; active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil; zeroBaselineStartedAt = nil; pendingEndpoint = nil }
     init(interface: Interface) { io = interface }
 
@@ -33,6 +33,9 @@ final class ClosedLidEffect {
         fileprivate let revision: UInt64
         fileprivate let next: ClosedLidEffect
         let commands: [Command]
+        // A successful plan may still be waiting for a native source, first
+        // rise or exact endpoint. Command count alone cannot establish output.
+        let result: FadeApplyResult
         var hasWrites: Bool { !commands.isEmpty }
     }
     /// Capture one sample/time and run the same controller against an inert
@@ -43,8 +46,8 @@ final class ClosedLidEffect {
         var duration=0.0, commands:[Command]=[]
         let next=ClosedLidEffect(interface:.init(sample:{sample},duration:{duration=$0;return true},logicalState:{commands.append(.init(duration:duration,state:$0));return true},keepKeyboardDark:{true},now:{now},frameInterval:frameInterval))
         copyState(to:next)
-        try next.apply(level)
-        return .init(owner:ObjectIdentifier(self),revision:revision,next:next,commands:commands)
+        let result = try next.apply(level)
+        return .init(owner:ObjectIdentifier(self),revision:revision,next:next,commands:commands,result:result)
     }
     func execute(_ plan: Plan) throws {
         guard plan.owner == ObjectIdentifier(self), plan.revision == revision else {
@@ -61,31 +64,46 @@ final class ClosedLidEffect {
         other.pendingEndpoint=pendingEndpoint
     }
 
-    func apply(_ level: Double) throws {
+    @discardableResult func apply(_ level: Double) throws -> FadeApplyResult {
         revision &+= 1
-        guard level.isFinite, let sample = io.sample(), sample.factor.isFinite,
-              (0...1).contains(sample.factor), sample.appliedNits.isFinite,
-              sample.multiplier.isFinite, sample.appliedNits >= 0, sample.multiplier >= 0, (sample.appliedNits * sample.multiplier).isFinite else {
+        guard level.isFinite, let sample = io.sample(), NativeLightSample.validationFailure(sample) == nil else {
             throw RuntimeServices.failure("Closed-lid light output is unavailable.")
         }
         let target = Effects.clamp(level)
+        // Off must still select logical Blank while the native source is
+        // gated, so a later source recovery cannot relight an Unblank state.
+        let sourceAvailableForTarget = target == 0 || (sample.appliedNits > 0 && sample.multiplier > 0)
         if pendingEndpoint?.target != target { pendingEndpoint = nil }
+        // A delayed callback is not a failed fade if the endpoint is now
+        // observed. Check its result before interpreting the elapsed deadline.
+        if pendingEndpoint != nil, sample.factor == target, sourceAvailableForTarget {
+            pendingEndpoint = nil; moving = false; holding = false
+            zeroBaselineStartedAt = nil; zeroRiseStartedAt = nil
+            return .applied
+        }
         if let pending = pendingEndpoint {
             let now = io.now()
-            guard now.isFinite, now >= pending.startedAt, now - pending.startedAt < 3 else {
-                throw RuntimeServices.failure("The requested logo endpoint was not confirmed. Logo control was stopped.")
+            guard now.isFinite, now >= pending.startedAt else {
+                throw RuntimeServices.failure("The logo endpoint deadline is unavailable.")
+            }
+            guard now - pending.startedAt < 3 else {
+                throw FadeSessionInterruption.outputTimeout("The requested logo endpoint was not confirmed. Logo control was stopped.")
             }
         }
         // Effects are normalized brightness, not an absolute photometric promise.
         // Retain macOS ambient limits; never divide by a low/zero baseline.
         // A temporarily gated output is valid: wait for the watchdog/hardware.
-        guard sample.appliedNits > 0, sample.multiplier > 0 else {
+        guard sourceAvailableForTarget else {
             moving=false
-            if zeroBaselineStartedAt == nil {zeroBaselineStartedAt=io.now()}
-            guard io.now()-zeroBaselineStartedAt!<3 else {
-                throw RuntimeServices.failure("The native logo brightness source is still unavailable. Logo control was stopped.")
+            let time = io.now()
+            guard time.isFinite, time >= 0, zeroBaselineStartedAt.map({ time >= $0 }) ?? true else {
+                throw RuntimeServices.failure("The logo output deadline is unavailable.")
             }
-            return
+            if zeroBaselineStartedAt == nil {zeroBaselineStartedAt=time}
+            guard time-zeroBaselineStartedAt!<3 else {
+                throw FadeSessionInterruption.outputTimeout("The native logo brightness source is still unavailable. Logo control was stopped.")
+            }
+            return .waiting
         }
         zeroBaselineStartedAt=nil
         let difference = target - sample.factor
@@ -100,11 +118,12 @@ final class ClosedLidEffect {
                 // the endpoint forever without actually reaching it.
                 if sample.factor == target {
                     pendingEndpoint = nil; moving = false; holding = false
+                    return .applied
                 }
-                return
+                return .waiting
             }
             let endpoint = target == 0 ? 1 : 2
-            if sample.factor == target, direction == endpoint, !moving, !holding { return }
+            if sample.factor == target, direction == endpoint, !moving, !holding { return .applied }
             let now = io.now()
             guard now.isFinite, now >= 0 else {
                 throw RuntimeServices.failure("The logo endpoint deadline is unavailable.")
@@ -118,7 +137,7 @@ final class ClosedLidEffect {
             direction = endpoint; moving = true; holding = false
             zeroRiseStartedAt = nil
             pendingEndpoint = .init(target: target, startedAt: now)
-            return
+            return .waiting
         }
         if nearInterior {
             if !holding {
@@ -129,17 +148,21 @@ final class ClosedLidEffect {
                 try write(duration:5,state:1)
                 direction=1;moving=false;holding=true
             }
-            return
+            return .applied
         }
         let next = difference > 0 ? 2 : 1
         if moving && direction == 2 && sample.factor == 0 && next == 2,
            let started = zeroRiseStartedAt {
             // A first rise waits for macOS's display-ready gate. Reissuing a
             // changing Breathe/Music target here can continually rearm it.
-            guard io.now() - started < 3 else {
-                throw RuntimeServices.failure("macOS has not enabled the closed-lid light output. Logo control was stopped.")
+            let time = io.now()
+            guard time.isFinite, time >= started else {
+                throw RuntimeServices.failure("The logo output deadline is unavailable.")
             }
-            return
+            guard time - started < 3 else {
+                throw FadeSessionInterruption.outputTimeout("macOS has not enabled the closed-lid light output. Logo control was stopped.")
+            }
+            return .waiting
         }
         // Re-target a short eased step rather than let a full-range fade
         // overshoot a moving peak. A frame takes roughly 17 ms to begin;
@@ -161,7 +184,12 @@ final class ClosedLidEffect {
         let duration = sample.factor == 0 && next == 2 ? max(0.5,calculated) : calculated
         try write(duration: duration, state: next)
         direction = next; moving = true; holding = false
-        if sample.factor == 0 && next == 2 { zeroRiseStartedAt = io.now() }
+        if sample.factor == 0 && next == 2 {
+            let time = io.now()
+            guard time.isFinite, time >= 0 else { throw RuntimeServices.failure("The logo output deadline is unavailable.") }
+            zeroRiseStartedAt = time
+        }
+        return sample.factor == 0 ? .waiting : .applied
     }
     private func write(duration: Double, state: Int) throws {
         let durationWritten = io.duration(duration)
@@ -173,10 +201,10 @@ final class ClosedLidEffect {
     }
     func restore() throws {
         revision &+= 1
-        guard active else { return }
+        guard active else { zeroBaselineStartedAt = nil; return }
         try write(duration: 5, state: 1)
         try write(duration: 0, state: 2)
-        active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil; pendingEndpoint = nil
+        active = false; direction = nil; moving = false; holding = false; zeroRiseStartedAt = nil; zeroBaselineStartedAt = nil; pendingEndpoint = nil
     }
 
     static func liveInterface(client existingClient: NSObject? = nil) -> Interface? {
@@ -194,10 +222,14 @@ final class ClosedLidEffect {
         func set(_ key: String, _ value: NSNumber) -> Bool {
             unsafeBitCast(client.method(for: writer), to: Setter.self)(client, writer, value, key as NSString)
         }
+        let diagnostics = NativeLightSampleDiagnostics(source: .closedEffect)
         return Interface(sample: {
-            guard let state = client.perform(reader, with: "LEPWMState")?.takeRetainedValue() as? [String: NSNumber],
-                  let factor = state["Factor"], let nits = state["AppliedNits"], let multiplier = state["NitsMultiplier"] else { return nil }
-            return Sample(factor: factor.doubleValue, appliedNits: nits.doubleValue, multiplier: multiplier.doubleValue)
+            do {
+                return try NativeLightSample.sample(client.perform(reader, with: "LEPWMState")?.takeRetainedValue())
+            } catch let failure as NativeLightSample.Failure {
+                diagnostics.record(failure)
+                return nil
+            } catch { return nil }
         }, duration: { set("LEPWMFactorFadeDuration", NSNumber(value: $0)) }, logicalState: { set("DisplayLogicalState", NSNumber(value: $0)) }, keepKeyboardDark: {
             // On a real reopen leave keyboard policy to macOS. Never fake the
             // physical lid state here; that belongs to the safety watchdog.

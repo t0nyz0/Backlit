@@ -1,8 +1,8 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.5-9a7400?style=flat" alt="Source 0.2.5">
-<img src="https://img.shields.io/badge/local_tests-236_passing-2d6085?style=flat" alt="236 local tests passing">
-<img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
+<img src="https://img.shields.io/badge/source-0.2.6-9a7400?style=flat" alt="Source 0.2.6">
+<img src="https://img.shields.io/badge/validation-candidate-2d6085?style=flat" alt="Candidate validation">
+<img src="https://img.shields.io/badge/release-on_hold-55565f?style=flat" alt="Release on hold">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm_Perimeter-67538c?style=flat" alt="PolyForm Perimeter 1.0.0 license"></a>
@@ -16,6 +16,10 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 </picture>
 
 *Screenshots show the running native app in isolated preview. The illustrated light is a preview, not a hardware measurement. [Provenance](docs/media/README.md).*
+
+## Stability candidate: not a published release
+
+Version 0.2.6, build 33 contains recovery and status fixes. Closed-lid lighting remains present, but a physical test showed the built-in screen staying lit with the lid closed. Brightness can still follow the screen. Keep closed-lid lighting off until those issues are resolved. These issues are not fixed or validated by this candidate. See [release notes](docs/RELEASE.md) and [validation limits](docs/VALIDATION.md).
 
 ## Behaviors
 

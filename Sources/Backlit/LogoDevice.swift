@@ -114,6 +114,7 @@ final class LogoDevice {
         lastWritten = rows; pendingWritten = nil
     }
 
+    var automaticRecoveryPending: Bool { fadeSession.automaticRecoveryPending }
     var closedEffectNeedsAnimation: Bool { fadeSession.needsAnimation || closedEffect?.needsAnimation == true }
     private func restoreClosedEffect() throws {
         guard closedEffect?.active == true else { return }
@@ -128,8 +129,7 @@ final class LogoDevice {
         guard needsRecovery || saved != nil else { return }
         if lease == nil { lease = try FileLease(url:AgentBridge.directory.appendingPathComponent("logo.lock")) }
         // Acquire global ownership before touching a prior process's recovery.
-        if fadeSession.hasSession {try fadeSession.restore()}
-        else {try FadeRuntime.recoverPending()}
+        try fadeSession.restore(recoverPending: FadeRuntime.recoverPending)
         try restoreClosedEffect()
         let original: [[Double]]
         if let saved { original = saved }

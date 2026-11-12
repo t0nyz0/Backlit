@@ -79,7 +79,7 @@ if arguments.contains("--verify-hardware") {
     var eventHandler: EventHandlerRef?
     var observing: NSObjectProtocol?
     var quitObserver: NSObjectProtocol?
-    private var terminationPending = false
+    private var pendingTerminationReason: QuitReason?
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
         NSApp.setActivationPolicy(.regular)
@@ -114,9 +114,9 @@ if arguments.contains("--verify-hardware") {
         model.updater.installGate.prepare = { [weak model] in model?.prepareQuit() ?? false }
         model.onLidStopCompleted = { [weak self] safe in
             guard let self else { return }
-            if self.terminationPending {
-                self.terminationPending = false
-                NSApp.reply(toApplicationShouldTerminate: safe && self.model.prepareQuit())
+            if let reason = self.pendingTerminationReason {
+                self.pendingTerminationReason = nil
+                NSApp.reply(toApplicationShouldTerminate: safe && self.model.prepareQuit(reason: reason))
             } else if safe { self.model.updater.continueApprovedInstallation() }
         }
         model.start()
@@ -135,8 +135,11 @@ if arguments.contains("--verify-hardware") {
     func showWindow() {popover.performClose(nil);window.makeKeyAndOrderFront(nil);NSApp.activate(ignoringOtherApps:true)}
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
         guard model.updater.allowsTermination() else { model.error = model.updater.message; return .terminateCancel }
-        if model.prepareQuit() { return .terminateNow }
-        if model.lidStopPending { terminationPending = true; return .terminateLater }
+        // The current AppleEvent belongs to this callback only. Preserve its
+        // reason while asynchronous restoration runs inside terminateLater.
+        let reason = pendingTerminationReason ?? QuitReason(appleEvent: NSAppleEventManager.shared().currentAppleEvent)
+        if model.prepareQuit(reason: reason) { return .terminateNow }
+        if model.lidStopPending { pendingTerminationReason = reason; return .terminateLater }
         return .terminateCancel
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {false}

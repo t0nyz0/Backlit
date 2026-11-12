@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import ServiceManagement
 import Combine
+import OSLog
 
 /// Pure decision seam for mode-driven capture; the existing driver still owns
 /// asynchronous starts, cancellation and all operating-system authorization.
@@ -89,8 +90,9 @@ enum MusicCapturePolicy {
         batteryResponse.reset(); musicResponse.reset(); synchronizeTyping(); configureTimer(); requestFrame() } }
     @Published var enabled = true { didSet {
         guard !isLoading else{return}
+        if !enabled { invalidateLightReadyNotice() }
         defaults.set(enabled,forKey:"enabled")
-        if !demo && device.available && !device.needsRecovery { controlWanted = true }
+        if !ambientChangeInProgress && !demo && device.available && !device.needsRecovery { controlWanted = true }
         synchronizeTouch()
         if !enabled && (audioRunning || audioStarting) {stopAudio()}
         synchronizeTyping(); requestFrame(); configureTimer()
@@ -154,7 +156,28 @@ enum MusicCapturePolicy {
     @Published var appearance = "system" { didSet { save() } }
     @Published var error: String?
     @Published private(set) var hardwareFailure: String?
-    @Published var notice: String?
+    @Published private var storedNotice: String?
+    var notice: String? {
+        get { storedNotice == Self.lightReadyNotice && !lightReady ? nil : storedNotice }
+        set { storedNotice = newValue }
+    }
+    private static let lightReadyNotice = "Your light is ready."
+    /// Ownership and cleanup completion alone do not establish output readiness.
+    var lightReady: Bool {
+        (!demo || hardwareApply != nil) && enabled && controlWanted && controlling &&
+            lastHardwareResult == .applied && hardwareFailure == nil && pausedReason == nil &&
+            lifecycleAllowsFrames && !systemSleeping && !cachedLocked && consoleActive &&
+            (!screenSleeping || (cachedLid && keepClosed)) && !automaticRecoveryPending &&
+            !reconnecting && !lidStopPending && !lidStopper.hasOutstandingFilesystemWork &&
+            lidIntentController.intent?.blocked != true && lidIntentController.intent?.savedPause == nil
+    }
+    func announceLightReadiness() {
+        if lightReady { notice = Self.lightReadyNotice }
+        else { invalidateLightReadyNotice() }
+    }
+    private func invalidateLightReadyNotice() {
+        if storedNotice == Self.lightReadyNotice { storedNotice = nil }
+    }
     @Published var pausedReason: String?
     @Published var shortcutKey: UInt32 = 11
     @Published var shortcutModifiers: UInt32 = 4352
@@ -174,11 +197,30 @@ enum MusicCapturePolicy {
     private var isStopping = false
     private(set) var hardwareRecoveryInProgress = false
     private(set) var hardwareApplyInProgress = false
-    var hardwareOperationInProgress: Bool { hardwareRecoveryInProgress || hardwareApplyInProgress }
+    var hardwareOperationInProgress: Bool { hardwareRecoveryInProgress || hardwareApplyInProgress || ambientAuthorizationInProgress }
     private(set) var lidCleanupInProgress = false
-    var lifecycleAllowsFrames: Bool { !isStopping && !hardwareOperationInProgress && !lidCleanupInProgress && !lidStopFailed }
+    var lifecycleAllowsFrames: Bool { !isStopping && !hardwareOperationInProgress && !savedLidCheckInProgress && !lidCleanupInProgress && !lidStopFailed }
     private let hardwareRestore: (() throws -> Void)?
     private let hardwareApply: ((Double, Bool) throws -> FadeApplyResult)?
+    private let ambientAuthorization: ((Bool) throws -> Void)?
+    private var ambientChangeInProgress = false
+    private var ambientAuthorizationInProgress = false
+    private var ambientResumeAllowed = false
+    private let lidPauseRecoveryEnvironment: LidPauseRecoveryEnvironment?
+    private var savedLidRecoveryAllowed = true
+    private var savedLidCheckInProgress = false
+    private var controlOffPending = false
+    private let recoveryLogger = Logger(subsystem: "local.backlit", category: "recovery")
+    @Published private(set) var reconnecting = false
+    private struct PendingLifecycleRecovery {
+        var attempts = 0
+        var retryAt: Double
+        let message: String
+    }
+    private var pendingLifecycleRecovery: PendingLifecycleRecovery?
+    var recoveryClock: () -> Double = { ProcessInfo.processInfo.systemUptime }
+    var automaticRecoveryPending: Bool { pendingLifecycleRecovery != nil }
+    private var lifecycleInterrupted: Bool { systemSleeping || screenSleeping || cachedLocked || !consoleActive }
     private var tickCount = 0
     private var lastSourceSample = -Double.infinity
     private var lastBatterySample = -Double.infinity
@@ -233,15 +275,32 @@ enum MusicCapturePolicy {
     var id: String { defaults.string(forKey:"installation.id")! }
     var agentState: AgentState { AgentBridge.aggregate(agents) }
     var isChinese: Bool { language == "zh-Hant" }
+    var savedLidPauseNeedsReview: Bool {
+        lidIntentController.intent?.savedPause.map { $0.needsQualifiedHandback || !$0.canRetry } == true
+    }
+    var savedLidRecoveryUnconfirmed: Bool { lidIntentController.intent?.savedPause?.needsQualifiedHandback == true }
     func t(_ english: String, _ chinese: String) -> String { isChinese ? chinese : english }
     var status: String {
+        if automaticRecoveryPending || reconnecting { return lifecycleInterrupted ? "Waiting to reconnect after wake" : "Reconnecting to your MacBook" }
         if let hardwareFailure { return "Logo control unavailable: \(hardwareFailure)" }
         if let pausedReason { return pausedReason }
+        // Explain a saved safety pause without turning it into a runtime pause
+        // or hiding a current pause or the user's explicit Off choice.
+        if (!demo || hardwareApply != nil), enabled, let pause = lidIntentController.intent?.savedPause {
+            if pause.needsQualifiedHandback { return pause.status }
+            return cachedLid ? "Closed-lid lighting paused after an error" : pause.status
+        }
         if demo { return t("Preview · logo unchanged","預覽・不會更改標誌") }
         if !device.available { return t("Preview · compatible logo not found","預覽・未找到相容標誌") }
         if !controlWanted && device.needsRecovery { return "Restore your light to continue" }
         if !enabled { return t("Logo off","標誌已關閉") }
         guard controlling else { return "Connecting to your MacBook" }
+        switch lastHardwareResult {
+        case .waiting: return "Waiting for light output"
+        case .paused: return "Light output paused"
+        case nil: return "Connecting to your MacBook"
+        case .applied: break
+        }
         if let label = logoStatus.statusLabel { return label }
         switch mode {
         case .steady:return t("Glowing","發光中")
@@ -263,9 +322,13 @@ enum MusicCapturePolicy {
     init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil,
          musicCaptureObservation: (() -> MusicCaptureObservation)? = nil,
          hardwareRestore: (() throws -> Void)? = nil, lidIntentEnvironment: LidIntentEnvironment? = nil,
-         hardwareApply: ((Double, Bool) throws -> FadeApplyResult)? = nil) {
+         hardwareApply: ((Double, Bool) throws -> FadeApplyResult)? = nil,
+         lidPauseRecoveryEnvironment: LidPauseRecoveryEnvironment? = nil,
+         ambientAuthorization: ((Bool) throws -> Void)? = nil) {
         self.hardwareRestore = hardwareRestore
         self.hardwareApply = hardwareApply
+        self.ambientAuthorization = ambientAuthorization
+        self.lidPauseRecoveryEnvironment = lidPauseRecoveryEnvironment
         self.lidIntentEnvironment = lidIntentEnvironment
         self.musicCaptureObservation = musicCaptureObservation
         self.lidStopper = lidStopper ?? LidWatcherStopper()
@@ -274,7 +337,8 @@ enum MusicCapturePolicy {
         lidIntentController = LidIntentController(defaults: self.defaults)
         let requested = lidIntentController.intent != nil
         lidRequested = requested
-        lidPreferenceStatus = requested ? "Remembered. Waiting for your Mac and light to be ready." : "Off"
+        lidPreferenceStatus = lidIntentController.intent?.savedPause?.status ??
+            (requested ? "Remembered. Waiting for your Mac and light to be ready." : "Off")
         if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
         if let data = self.defaults.data(forKey: LidSessionDuration.preferenceKey),
            let duration = try? JSONDecoder().decode(LidSessionDuration.self, from: data) { lidSessionDuration = duration }
@@ -362,13 +426,19 @@ enum MusicCapturePolicy {
                 // The lid helper may have triggered fade recovery. Retire that
                 // session before another frame or the pending quit can proceed.
                 do { if self.controlling { try self.restoreOwnedHardware() } }
-                catch { self.error = error.localizedDescription; safe = false }
+                catch {
+                    self.error = error.localizedDescription; safe = false
+                    if !self.isStopping && self.controlWanted && self.lifecycleInterrupted {
+                        self.deferLifecycleRecovery(error)
+                    }
+                }
             } else {
                 self.error = "Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry."
             }
             self.lidStopPending = false
             self.lidCleanupInProgress = false
-            if !safe {
+            if !safe && (!self.automaticRecoveryPending || !result.safeToQuit) {
+                self.pendingLifecycleRecovery = nil
                 self.lidIntentController.block(); self.controlWanted = false; self.cancelStopping()
                 self.lidPreferenceStatus = "Paused after an error. Restore your light before retrying."
             } else if self.lidRequested { self.lidPreferenceStatus = "Remembered. Waiting for your Mac and light to be ready." }
@@ -388,7 +458,7 @@ enum MusicCapturePolicy {
             (NSWorkspace.sessionDidResignActiveNotification,{$0.consoleActive = false; $0.touch.reset(); $0.stopAudio(); $0.releaseHardware()}),
             (NSWorkspace.sessionDidBecomeActiveNotification,{$0.consoleActive = true;$0.touch.reset()})
         ]
-        for (name,action) in states { observers.append(center.addObserver(forName:name,object:nil,queue:.main){[weak self] _ in Task { @MainActor in if let self { action(self); self.synchronizeTouch(); self.synchronizeTyping(); self.requestFrame() } }}) }
+        for (name,action) in states { observers.append(center.addObserver(forName:name,object:nil,queue:.main){[weak self] _ in Task { @MainActor in if let self { action(self); self.lastSourceSample = -Double.infinity; self.synchronizeTouch(); self.synchronizeTyping(); self.requestFrame() } }}) }
         controlWanted = !demo && device.available && !device.needsRecovery
         configureTimer()
         if !demo && !controlWanted && device.needsRecovery { notice = "A previous logo session needs restoration. Use Restore Light to pick up where you left off." }
@@ -407,7 +477,9 @@ enum MusicCapturePolicy {
         defaults.set(musicPreset.rawValue, forKey: "music.preset")
     }
     func tick() {
+        defer { if !lightReady { invalidateLightReadyNotice() } }
         guard lifecycleAllowsFrames else { return }
+        if controlOffPending { controlOffPending = false; stopLid(); releaseHardware(); return }
         if lidOffPending { stopLid(); return }
         if let watcher, !watcher.isRunning, !lidStopPending { stopLid(); return }
         tickCount += 1
@@ -433,6 +505,9 @@ enum MusicCapturePolicy {
             cachedLid = lidIntentEnvironment.closed() ?? false
             cachedLocked = !lidIntentEnvironment.safety().unlocked
         }
+        // This must precede begin/apply: begin itself creates an owned journal,
+        // and no new effect may run while old cleanup remains unverified.
+        recoverSavedLidPause()
         synchronizeLidIntent(preflightOnly: true)
         guard lifecycleAllowsFrames else { return }
         // A remembered choice can prepare ownership while closed; the helper
@@ -462,7 +537,7 @@ enum MusicCapturePolicy {
         if pausedReason != nil && (audioRunning || audioStarting) { stopAudio() }
         if controlWanted && (!demo || hardwareApply != nil) {
             if pausedReason != nil { releaseHardware() }
-            else {
+            else if resumeAfterLifecycleRecovery() && lidIntentController.intent?.blocked != true {
                 do {
                     try withHardwareApply {
                         try updateMusicHardwareReadiness {
@@ -475,6 +550,8 @@ enum MusicCapturePolicy {
                 } catch { hardwareFailure = error.localizedDescription; self.error = error.localizedDescription; lidIntentController.block(); controlWanted = false; stopLid(); releaseHardware() }
             }
         }
+        reconnecting = controlWanted && (automaticRecoveryPending || device.automaticRecoveryPending)
+        synchronizeTouch(); synchronizeTyping()
         synchronizeLidIntent()
         // Capture starts only after ownership and the first output request
         // succeed, and stops if that work failed or the session became unsafe.
@@ -517,7 +594,7 @@ enum MusicCapturePolicy {
     }
     var inputSessionEligible: Bool {
         let allowedClosed = keepClosed && cachedLid
-        return lifecycleAllowsFrames && controlWanted && (mode == .touch || mode == .typing) && enabled &&
+        return lifecycleAllowsFrames && !automaticRecoveryPending && !reconnecting && controlWanted && (mode == .touch || mode == .typing) && enabled &&
             pausedReason == nil && !cachedLocked && !systemSleeping && consoleActive &&
             (!screenSleeping || allowedClosed)
     }
@@ -611,14 +688,27 @@ enum MusicCapturePolicy {
     }
     func repairAndResume() {
         guard !hardwareOperationInProgress else { return }
+        pendingLifecycleRecovery = nil
         restore()
-        if !device.needsRecovery { controlWanted = !demo && device.available; tick(); if controlling && hardwareFailure == nil { notice = "Your light is ready." } }
+        if !device.needsRecovery { controlWanted = !demo && device.available; tick(); announceLightReadiness() }
     }
     func setControl(_ wanted: Bool) {
+        if !wanted {
+            ambientResumeAllowed = false
+            invalidateLightReadyNotice()
+            // Withdrawal is allowed even inside a verification-pumped callback.
+            // Cleanup waits for the active batch, but a restart cannot win.
+            savedLidRecoveryAllowed = false; controlWanted = false
+            controlOffPending = true
+            pendingLifecycleRecovery = nil; reconnecting = false
+            if hardwareOperationInProgress || lidCleanupInProgress { requestFrame(); return }
+        }
         guard !hardwareOperationInProgress, !lidCleanupInProgress else { notice = "Light recovery is still in progress."; return }
-        if demo { notice = "This is an isolated preview. Your real logo is unchanged."; return }
+        if demo && hardwareApply == nil { notice = "This is an isolated preview. Your real logo is unchanged."; return }
         controlWanted = wanted
-        if !wanted { stopLid(); releaseHardware() }
+        controlOffPending = false
+        savedLidRecoveryAllowed = wanted
+        if !wanted { pendingLifecycleRecovery = nil; reconnecting = false; stopLid(); releaseHardware() }
         tick()
     }
     /// Terminal verification pumps the run loop for safety notifications. Keep
@@ -634,6 +724,7 @@ enum MusicCapturePolicy {
     @discardableResult func withHardwareRecovery(_ operation: () throws -> Void) rethrows -> Bool {
         guard !hardwareOperationInProgress else { return false }
         hardwareRecoveryInProgress = true
+        invalidateLightReadyNotice()
         lastHardwareResult = nil
         musicHardwareReady = false
         if audioRunning || audioStarting { stopAudio() }
@@ -643,8 +734,90 @@ enum MusicCapturePolicy {
     }
     func releaseHardware() {
         guard controlling, !hardwareOperationInProgress, !lidCleanupInProgress else { return }
-        do { try restoreOwnedHardware() }
-        catch { lidIntentController.block(); self.error = error.localizedDescription; controlWanted = false }
+        // A failed sleep/lock cleanup keeps the owned session and journal. Do
+        // not repeatedly touch hardware while macOS is still transitioning.
+        if automaticRecoveryPending && !isStopping && controlWanted { return }
+        do { try restoreOwnedHardware(); pendingLifecycleRecovery = nil }
+        catch {
+            if !isStopping && controlWanted && lifecycleInterrupted {
+                deferLifecycleRecovery(error)
+            } else {
+                pendingLifecycleRecovery = nil
+                lidIntentController.block(); self.error = error.localizedDescription; controlWanted = false
+            }
+        }
+    }
+    private func deferLifecycleRecovery(_ failure: Error) {
+        guard pendingLifecycleRecovery == nil else { return }
+        guard lidIntentController.block(reason: .interruptedCleanup) else {
+            hardwareFailure = "The closed-lid recovery choice could not be saved. Restore your light before retrying."
+            controlWanted = false; return
+        }
+        let attempts = lidIntentController.intent?.pause?.attempts ?? 0
+        pendingLifecycleRecovery = .init(attempts: attempts, retryAt: recoveryClock() + 0.5, message: failure.localizedDescription)
+        reconnecting = true
+        recoveryLogger.notice("Owned light cleanup was interrupted; waiting for a safe awake session before retrying.")
+        // Keep mode, power and closed-lid intent. No effects resume until the
+        // same owned session's restoration has been positively verified.
+        notice = "Backlit will reconnect when your Mac is awake and unlocked."
+        if error == failure.localizedDescription { error = nil }
+        lastHardwareResult = nil; musicHardwareReady = false
+        if audioRunning || audioStarting { stopAudio() }
+    }
+    private func resumeAfterLifecycleRecovery() -> Bool {
+        guard var pending = pendingLifecycleRecovery else { return true }
+        guard controlWanted, !isStopping, !lifecycleInterrupted, !hardwareOperationInProgress,
+              !lidCleanupInProgress, !lidStopPending, !lidStopFailed, pausedReason == nil else { return false }
+        let now = recoveryClock()
+        guard now.isFinite, now >= pending.retryAt else { return false }
+        guard pending.attempts < LidSavedPause.attemptLimit else {
+            pendingLifecycleRecovery = nil; reconnecting = false
+            lidIntentController.block(); controlWanted = false
+            return false
+        }
+        pending.attempts += 1
+        do { try lidIntentController.recordCleanupAttempt(clock: currentLidIntentEnvironment().clock()) }
+        catch {
+            pendingLifecycleRecovery = nil; reconnecting = false
+            hardwareFailure = error.localizedDescription; controlWanted = false
+            return false
+        }
+        recoveryLogger.notice("Retrying verified light cleanup, attempt \(pending.attempts).")
+        pendingLifecycleRecovery = pending
+        do {
+            try restoreOwnedHardware()
+            // A successful existing restore callback is not qualified native
+            // handback. Preserve any saved pause, its timer and retry history.
+            pendingLifecycleRecovery = nil
+            reconnecting = false
+            if lidIntentController.intent?.savedPause?.needsQualifiedHandback == true {
+                recoveryLogger.notice("Cleanup returned, but saved closed-lid handback remains unconfirmed.")
+            } else {
+                recoveryLogger.notice("Owned cleanup verified; reconnecting the requested light behavior.")
+            }
+            if error == pending.message { error = nil }
+            notice = lidIntentController.intent?.savedPause?.needsQualifiedHandback == true ? LidSavedPause.unconfirmedStatus : nil
+            // Restoration can pump Off, brightness, mode or lifecycle changes.
+            // The queued next frame recomputes all policy/output; never apply
+            // the value calculated before the restore callback returned.
+            return false
+        } catch {
+            guard controlWanted, !isStopping else {
+                pendingLifecycleRecovery = nil; reconnecting = false
+                return false
+            }
+            if pending.attempts < 3 {
+                pending.retryAt = now + pow(2, Double(pending.attempts - 1))
+                pendingLifecycleRecovery = pending
+            } else {
+                pendingLifecycleRecovery = nil
+                reconnecting = false
+                recoveryLogger.error("Automatic cleanup retry limit reached; keeping recovery and stopping light control.")
+                hardwareFailure = error.localizedDescription; self.error = error.localizedDescription
+                lidIntentController.block(); controlWanted = false
+            }
+            return false
+        }
     }
     private func restoreOwnedHardware() throws {
         let restored = try withHardwareRecovery {
@@ -656,6 +829,9 @@ enum MusicCapturePolicy {
     }
     func restore() {
         guard !demo, !hardwareOperationInProgress else { return }
+        pendingLifecycleRecovery = nil
+        savedLidRecoveryAllowed = false
+        reconnecting = false
         controlWanted = false
         musicHardwareReady = false
         if audioRunning || audioStarting { stopAudio() }
@@ -665,8 +841,14 @@ enum MusicCapturePolicy {
         do {
             try withHardwareRecovery {
                 try device.restore(); controlling = false
-                let verify = watcher != nil
-                guard try finishPowerRecovery({ try RuntimeServices.repairLid(verifyNormalSleep: verify) }) else { return }
+                let forcePowerRestore = watcher != nil
+                guard try finishPowerRecovery({ try RuntimeServices.repairLid(forcePowerRestore: forcePowerRestore) }) else { return }
+                if lidIntentController.intent?.savedPause?.needsQualifiedHandback == true {
+                    notice = "Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused."
+                    return
+                } else if lidIntentController.intent?.blocked == true {
+                    lidIntentController.block(detail: "Your light was restored. Turn closed-lid lighting off and on to retry.")
+                }
                 notice = "The saved logo and lid settings were restored."
             }
         }
@@ -677,6 +859,7 @@ enum MusicCapturePolicy {
     func updateMusicHardwareReadiness(_ operation: () throws -> FadeApplyResult) rethrows {
         musicHardwareReady = false
         lastHardwareResult = nil
+        defer { if lastHardwareResult != .applied { invalidateLightReadyNotice() } }
         let result = try operation()
         lastHardwareResult = result
         if case .applied = result { musicHardwareReady = true }
@@ -733,6 +916,7 @@ enum MusicCapturePolicy {
         // Off withdraws future resume intent even if a hardware operation is
         // currently pumping callbacks. Cleanup begins once that batch returns.
         if !enabled {
+            savedLidRecoveryAllowed = false
             lidIntentController.disable(); lidRequested = false; lidPreferenceStatus = "Off"
             lidOffPending = true
             stopLid(); requestFrame(); return
@@ -743,12 +927,48 @@ enum MusicCapturePolicy {
             error = "Finish the previous closed-lid session cleanup before starting another."; return
         }
         do {
+            savedLidRecoveryAllowed = true
             try lidIntentController.enable(duration: lidSessionDuration, environment: currentLidIntentEnvironment())
             lidRequested = true
             synchronizeLidIntent(force: true)
         } catch {
             lidRequested = lidIntentController.intent != nil; self.error = error.localizedDescription
             lidPreferenceStatus = "Paused after an error. Restore your light before retrying."
+        }
+    }
+    private func recoverSavedLidPause() {
+        // No production handback provider has been qualified. Journal absence
+        // and stable native caches cannot rule out retained synthetic overrides
+        // or late requests. Keep the choice/budget untouched, without probing.
+        // Only isolated fixtures exercise the future bounded admission logic.
+        guard let supplied = lidPauseRecoveryEnvironment,
+              supplied.available(inPreview: demo) else { return }
+        guard savedLidRecoveryAllowed, !savedLidCheckInProgress, enabled, !isStopping,
+              !controlling, watcher == nil, !automaticRecoveryPending,
+              !hardwareOperationInProgress, !lidCleanupInProgress, !lidStopPending,
+              !lidStopFailed, !lidStopper.hasOutstandingFilesystemWork,
+              lidIntentController.intent?.savedPause?.canRetry == true else { return }
+        savedLidCheckInProgress = true
+        defer { savedLidCheckInProgress = false }
+        let environment = LidPauseRecoveryEnvironment(clock: supplied.clock, eligible: { [weak self] in
+            guard let self, self.savedLidRecoveryAllowed, self.enabled, !self.isStopping,
+                  !self.systemSleeping, self.consoleActive else { return false }
+            return supplied.eligible()
+        }, verify: supplied.verify, allowsAutomaticClearance: true)
+        guard let clock = environment.clock(),
+              let pause = lidIntentController.intent?.savedPause,
+              pause.hasImpossibleBackoff(clock: clock) ||
+                (pause.ready(clock: clock) && environment.eligible()) else { return }
+        do {
+            try withHardwareRecovery {
+                if try lidIntentController.recoverSavedPause(environment: environment) {
+                    controlWanted = true
+                    lidPreferenceStatus = "Previous session verified. Reconnecting your remembered choice."
+                }
+            }
+        } catch {
+            lidIntentController.block(detail: "The saved safety check could not be recorded. Restore your light before retrying.")
+            self.error = error.localizedDescription
         }
     }
     private func currentLidIntentEnvironment() -> LidIntentEnvironment {
@@ -858,7 +1078,7 @@ enum MusicCapturePolicy {
         }
     }
     /// Only an explicit successful power repair can retire a failed helper.
-    /// The caller must verify the normal power state, not merely delete a file.
+    /// The caller must successfully restore the power override, not merely delete a file.
     @discardableResult func completePowerRecovery(_ repair: () throws -> Void) rethrows -> Bool {
         guard !hardwareOperationInProgress else { return false }
         return try finishPowerRecovery(repair)
@@ -870,12 +1090,56 @@ enum MusicCapturePolicy {
         return true
     }
     func setAmbient(_ enabled: Bool) {
-        guard !hardwareOperationInProgress else { notice = "Light recovery is still in progress."; return }
-        guard !demo, device.available else { error = "A compatible live Mac is required."; return }
-        if let app = device.competingApp { error = "Quit \(app) before changing logo settings."; return }
-        let resume = controlWanted; controlWanted = false; releaseHardware()
-        do { try RuntimeServices.authorizedAmbient(enabled); ambientUnlocked = enabled; defaults.set(enabled,forKey:"ambientUnlocked"); if resume { setControl(true) } }
-        catch { self.error = error.localizedDescription }
+        guard !ambientChangeInProgress, !hardwareOperationInProgress, !savedLidCheckInProgress, !isStopping else {
+            notice = "Light recovery is still in progress."; return
+        }
+        // Fixtures must replace both hardware operations as well as authorization.
+        let isolated = demo && ambientAuthorization != nil && hardwareRestore != nil && hardwareApply != nil
+        guard isolated || (!demo && device.available) else { error = "A compatible live Mac is required."; return }
+        if !isolated, let app = device.competingApp { error = "Quit \(app) before changing logo settings."; return }
+        guard watcher == nil, !lidStopPending, !lidCleanupInProgress, !lidStopFailed,
+              !lidStopper.hasOutstandingFilesystemWork else {
+            notice = "Turn off closed-lid lighting and finish its cleanup before changing ambient limits."; return
+        }
+        let resume = controlWanted
+        ambientChangeInProgress = true; ambientResumeAllowed = true
+        defer { ambientChangeInProgress = false; ambientAuthorizationInProgress = false; requestFrame() }
+        controlWanted = false
+        releaseHardware()
+        guard ambientCleanupSafe(isolated: isolated), ambientResumeAllowed else {
+            if error == nil { error = "Restore your light before changing ambient limits." }
+            return
+        }
+        // The authorization dialog pumps the run loop. Block frames, duplicate
+        // prompts and recovery while it is open, but retain new Off/Quit intent.
+        ambientAuthorizationInProgress = true
+        var mayResume = false
+        do {
+            try (ambientAuthorization ?? RuntimeServices.authorizedAmbient)(enabled)
+            ambientUnlocked = enabled; defaults.set(enabled,forKey:"ambientUnlocked")
+            mayResume = true
+        } catch AmbientAuthorizationFailure.cancelled {
+            notice = "Ambient brightness limits were not changed."
+            mayResume = true
+        } catch {
+            // A helper failure may follow a partial privileged write. Unlike
+            // cancellation, it is not evidence that the old state is intact.
+            self.error = error.localizedDescription
+        }
+        // Discard any ownership request made by a callback inside the dialog.
+        // Only the captured intent and the cancellation/cleanup gates may resume.
+        controlWanted = false
+        ambientAuthorizationInProgress = false
+        if mayResume && resume && ambientResumeAllowed && ambientCleanupSafe(isolated: isolated) {
+            setControl(true)
+        }
+    }
+    private func ambientCleanupSafe(isolated: Bool) -> Bool {
+        !controlling && !hardwareRecoveryInProgress && !hardwareApplyInProgress &&
+            !lidCleanupInProgress && !lidStopPending && !lidStopFailed && watcher == nil &&
+            !lidStopper.hasOutstandingFilesystemWork && !automaticRecoveryPending &&
+            !isStopping && !controlOffPending && hardwareFailure == nil &&
+            lidIntentController.intent?.blocked != true && (isolated || !device.needsRecovery)
     }
     var loginEnabled: Bool { !demo && SMAppService.mainApp.status == .enabled }
     func setLogin(_ value: Bool) {
@@ -933,14 +1197,22 @@ enum MusicCapturePolicy {
         guard updater.allowsTermination() else { error = updater.message; return }
         quitRunLoop.request { NSApp.terminate(nil) }
     }
-    func prepareQuit(confirmOff: (() -> NSApplication.ModalResponse)? = nil) -> Bool {
-        guard !hardwareOperationInProgress else { notice = "Light recovery is still in progress. Retry Quit when it finishes."; return false }
+    func prepareQuit(reason: QuitReason = .userInitiated, confirmOff: (() -> NSApplication.ModalResponse)? = nil) -> Bool {
+        ambientResumeAllowed = false
+        guard !hardwareOperationInProgress, !savedLidCheckInProgress else {
+            // Withdraw automatic rearm, but do not schedule restoration here:
+            // an Off logo may require the existing Restore-and-Quit consent.
+            savedLidRecoveryAllowed = false; controlWanted = false
+            pendingLifecycleRecovery = nil; reconnecting = false
+            notice = "Light recovery is still in progress. Retry Quit when it finishes."
+            return false
+        }
         if terminationApproved { return true }
         if !isStopping {
             audioSession.retainResumeIntent(consented: audioConsent)
             isStopping = true
             synchronizeTouch(); synchronizeTyping(); powerMonitor.stop(); timer?.invalidate(); stopAudio()
-            if controlling && !enabled {
+            if controlling && !enabled && reason.requiresOffConfirmation {
                 let result: NSApplication.ModalResponse
                 if let confirmOff { result = confirmOff() }
                 else {

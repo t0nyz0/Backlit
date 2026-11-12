@@ -1,4 +1,29 @@
-# Backlit validation
+# Backlit 0.2.6 stability candidate validation
+
+Version 0.2.6, build 33 is a private candidate. It is not installed, published or physically accepted. The candidate package records its exact local source identity and hashes. A local snapshot commit is not a remote release commit or CI pass.
+
+## Current release blockers
+
+- The built-in screen was physically observed lit with the lid fully closed while Backlit closed-lid lighting was active, and off after Backlit quit. Keep closed-lid lighting off. The feature is retained without claiming this issue is fixed.
+- Logo brightness can still depend on the screen. Independent closed-lid brightness is unproven.
+- Physical sleep/wake and automatic native handback remain unqualified. A separate finite-output experiment is not application acceptance and is excluded from this build.
+
+## Candidate checks
+
+This revision changes only the status layout relative to build 32: the live state is beside the top Logo Control heading, compatibility details are underneath, and recovery actions remain alongside. Long messages wrap. Control, power and recovery logic are unchanged.
+
+The exact snapshot passed 523 Swift tests with zero failures, including five new heading layout/read-only tests. Offscreen native UI fixtures for glowing, waiting, Off, long recovery and narrow width were rendered and visually inspected. They are labeled fixtures, not screenshots of live hardware state. The optimized arm64 build and all four AppIntents metadata actions passed, along with strict signature verification. No installed-app launch, real prompt, hardware action or preference change was performed for this UI revision.
+
+The unchanged integrations retain build 32 evidence: 16 Python tests passed with three optional signing fixtures skipped, and Stream Deck typecheck, 16 tests, build/package validation and zero-vulnerability audit passed. Those integration checks were not rerun for this UI-only revision. Current documentation, media, privacy/secret and package-integrity checks are recorded with the candidate. Existing documentation screenshots are still explicitly identified as older captures.
+
+The administrator-only ambient override remains on the existing full-app elevation route. Its privilege boundary is unresolved. Additional native adapters still have weaker interface checks than the verified fade adapter; this revision does not claim that review findings are fixed.
+
+Automated recovery and output tests use inert fixtures. Passing tests do not prove physical light output, built-in panel darkness, exact brightness, lifecycle recovery or compatibility on other devices. Existing app settings and the installed copy are untouched.
+
+## Earlier validation history
+
+The sections below describe prior checks and limitations; they are not a current release approval and do not override the blockers above.
+
 
 Version: **0.2.4**, build 29. Publication requires a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the exact `v0.2.4` tag. Check that run for its commit and results. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
 

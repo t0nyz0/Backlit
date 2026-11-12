@@ -1,5 +1,7 @@
 # Backlit native media
 
+The 0.2.6 stability candidate retains the 0.2.5 captures below; no new screenshot session was run. The generated manifest app_version identifies the package whose media was checked, not a new capture version. The candidate adds recovery/status behavior that these older images do not demonstrate.
+
 Workspace, Connections, Settings, menu, Music, Trackpad and Typing views are refreshed for **0.2.5 (30)**. The captures include standalone Typing, automatic Music capture controls, and remembered closed-lid settings. Battery uses the isolated 82% fixture. The original photographic header is unchanged. The standalone app icon is generated from the [centered-square native artwork](../ICON.md); all window captures include the same centered-square glyph. These previews illustrate controls, not physical output.
 
 These are real native SwiftUI/AppKit views captured from the running Backlit executable using an owned-window capture path. They are not image-generated app mockups or borrowed screenshots.

@@ -170,14 +170,14 @@ enum RuntimeServices {
         return 0
     }
 
-    static func repairLid(verifyNormalSleep: Bool = false) throws {
+    static func repairLid(forcePowerRestore: Bool = false) throws {
         let journal = AgentBridge.directory.appendingPathComponent("lid-recovery.json")
         let hasJournal = FileManager.default.fileExists(atPath: journal.path)
-        guard hasJournal || verifyNormalSleep else { return }
+        guard hasJournal || forcePowerRestore else { return }
         let record = hasJournal
             ? try JSONDecoder().decode(LidRecovery.self, from: Data(contentsOf: journal))
             : LidRecovery(needsRestore: false, logoOverride: false)
-        try record.restore(forceNormalSleep: verifyNormalSleep, logo: {
+        try repairLid(record: hasJournal ? record : nil, forcePowerRestore: forcePowerRestore, logo: {
             _ = try ClosedEffectSession.locked(wait: true) {
                 // Encoding the recovery record removes live effect permission.
                 // Keep its ownership bits until every independent reset works.
@@ -195,11 +195,21 @@ enum RuntimeServices {
             defer { IOServiceClose(connection) }
             var value: UInt64 = 0
             guard IOConnectCallScalarMethod(connection, 12, &value, 1, nil, nil) == KERN_SUCCESS else { throw failure("Could not restore normal lid sleep.") }
-            if verifyNormalSleep {
-                guard (rootValue("AppleClamshellCausesSleep") as? NSNumber)?.boolValue == true else { throw failure("Normal lid sleep has not been confirmed. Recovery is retained.") }
-            }
-        })
-        if hasJournal { try FileManager.default.removeItem(at: journal) }
+            // AppleClamshellCausesSleep describes aggregate system policy, not
+            // ownership of this override. Normal external-display mode can keep
+            // it false after this reset succeeds.
+        }, removeJournal: { try FileManager.default.removeItem(at: journal) })
+    }
+
+    /// Offline-testable recovery ordering. Retire the journal only after every
+    /// requested restoration succeeds, without imposing a system sleep policy.
+    static func repairLid(record: LidRecovery?, forcePowerRestore: Bool = false,
+                          logo: () throws -> Void, power: () throws -> Void,
+                          removeJournal: () throws -> Void) throws {
+        guard record != nil || forcePowerRestore else { return }
+        try (record ?? LidRecovery(needsRestore: false, logoOverride: false))
+            .restore(forceNormalSleep: forcePowerRestore, logo: logo, power: power)
+        if record != nil { try removeJournal() }
     }
 
     static func authorizedAmbient(_ enabled: Bool) throws {
@@ -209,7 +219,7 @@ enum RuntimeServices {
         let script = NSAppleScript(source: "do shell script \"\(escaped)\" with prompt \"Backlit wants to \(enabled ? "unlock" : "restore") the logo brightness range.\" with administrator privileges")!
         var error: NSDictionary?
         script.executeAndReturnError(&error)
-        if let error { throw failure(error[NSAppleScript.errorMessage] as? String ?? "Authorization was cancelled.") }
+        if let error { throw AmbientAuthorizationFailure(scriptError: error) }
     }
 
     /// This branch only executes under the system's administrator authorization.

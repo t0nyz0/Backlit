@@ -1,5 +1,5 @@
 {
-  "app_version": "0.2.5",
+  "app_version": "0.2.6",
   "native_capture": true,
   "isolated_preview": true,
   "source": "Backlit --capture-suite docs/media",

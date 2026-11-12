@@ -16,21 +16,69 @@ struct Surface<Content: View>: View {
     }
 }
 
+/// The live state belongs beside the control heading, not below the effect controls.
+/// Long recovery messages wrap rather than disappearing into a truncated badge.
+struct LogoControlHeading: View {
+    let title: String
+    let status: String
+    let detail: String
+    let controlling: Bool
+    private var label: some View {
+        HStack(spacing: 5) {
+            Circle().fill(controlling ? Color.green : .white.opacity(0.45)).frame(width: 5, height: 5)
+            Text(title).font(.system(size: 9, weight: .semibold)).tracking(1.5)
+        }.fixedSize()
+    }
+    private var state: some View { Text(status).font(.system(size: 12, weight: .medium)) }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 12) { label; state.fixedSize() }
+                VStack(alignment: .leading, spacing: 5) {
+                    label
+                    state.fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Text(detail).font(.system(size: 10)).foregroundStyle(.white.opacity(0.65))
+                .fixedSize(horizontal: false, vertical: true)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("logo-control-heading")
+    }
+}
+
 struct LogoPreview: View {
     @ObservedObject var model: AppModel
     @ObservedObject var presentation: LightPresentation
     var compact = false
     init(model:AppModel,compact:Bool=false) { self.model=model;self.presentation=model.presentation;self.compact=compact }
+    var statusHeading: LogoControlHeading {
+        LogoControlHeading(title: model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW",
+            status: model.status,
+            detail: model.device.available ? "Compatible illuminated logo detected" : model.device.explanation,
+            controlling: model.controlling)
+    }
     var body: some View {
         ZStack {
             LidCanvas(level:presentation.level,compact:compact).clipShape(RoundedRectangle(cornerRadius:compact ? 18 : 24))
             VStack {
-                HStack(spacing:5) {
-                    Circle().fill(model.controlling ? Color.green : .white.opacity(0.45)).frame(width:5,height:5)
-                    Text(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW").font(.system(size:9,weight:.semibold)).tracking(1.5)
-                    Spacer()
-                    if !compact {
-                        Toggle(model.t("Logo on","標誌開啟"),isOn:$model.enabled).toggleStyle(.switch).labelsHidden().controlSize(.small).help("Turn logo output on or off · \(model.shortcutLabel)")
+                HStack(alignment: .top, spacing: 14) {
+                    if compact {
+                        HStack(spacing: 5) {
+                            Circle().fill(model.controlling ? Color.green : .white.opacity(0.45)).frame(width: 5, height: 5)
+                            Text(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW").font(.system(size: 9, weight: .semibold)).tracking(1.5)
+                        }
+                        Spacer()
+                    } else {
+                        statusHeading
+                        VStack(alignment: .trailing, spacing: 10) {
+                            Toggle(model.t("Logo on","標誌開啟"),isOn:$model.enabled).toggleStyle(.switch).labelsHidden().controlSize(.small).help("Turn logo output on or off · \(model.shortcutLabel)")
+                            if !model.demo && (model.device.needsRecovery || model.hardwareFailure != nil) && (!model.controlWanted || !model.controlling) {
+                                Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}.buttonStyle(.bordered).controlSize(.small)
+                            } else if !model.demo && model.savedLidPauseNeedsReview {
+                                Button("Review Closed-lid Pause") { model.selectedPage = "settings" }.buttonStyle(.bordered).controlSize(.small)
+                            }
+                        }
                     }
                 }
                 Spacer()
@@ -126,7 +174,7 @@ struct LightPage: View {
                 Surface(model.t("Brightness","亮度")) {
                     HStack(alignment:.firstTextBaseline,spacing:4) { Text("\(Effects.percent(model.brightness))").font(.system(size:38,weight:.medium)).monospacedDigit(); Text("%").font(.system(size:19)).foregroundStyle(.secondary); Spacer(); Image(systemName:"sun.max").font(.system(size:23,weight:.light)).foregroundStyle(.secondary) }
                     Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness")
-                    Text(model.t("Independent of your screen brightness.","獨立於螢幕亮度。" )).font(.system(size:11)).foregroundStyle(.secondary)
+                    Text(model.t("Does not change your screen brightness setting.","不會更改螢幕亮度設定。" )).font(.system(size:11)).foregroundStyle(.secondary)
                 }
                 }
                 Surface {
@@ -164,14 +212,6 @@ struct LightPage: View {
                 }.font(.system(size:12))
             }.frame(maxWidth:.infinity)
         }
-        HStack(spacing:12) {
-            Circle().fill(model.controlling ? Color.green : Color.secondary.opacity(0.4)).frame(width:7,height:7)
-            VStack(alignment:.leading,spacing:3) {Text(model.status).font(.system(size:12,weight:.medium)); Text(model.device.available ? "Compatible illuminated logo detected" : model.device.explanation).font(.system(size:10)).foregroundStyle(.secondary)}
-            Spacer()
-            if !model.demo && (model.device.needsRecovery || model.hardwareFailure != nil) && (!model.controlWanted || !model.controlling) {
-                Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}.buttonStyle(.borderedProminent).tint(.primary)
-            }
-        }.padding(.top,1)
     }
     func modeRow(_ mode: GlowMode) -> some View {
         let selected = model.mode == mode
@@ -255,9 +295,11 @@ struct SettingsPage: View {
             LidDurationControls(model: model)
             Divider()
             settingRow(model.t("Override ambient brightness limit","任何環境下的全亮度"),"Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.") {Toggle("Override ambient brightness limit",isOn:Binding(get:{model.ambientUnlocked},set:{model.setAmbient($0)})).labelsHidden().toggleStyle(.switch)}
-            if !model.demo && model.device.needsRecovery && (!model.controlWanted || !model.controlling) {
+            if !model.demo && (model.device.needsRecovery || model.savedLidPauseNeedsReview) && (!model.controlWanted || !model.controlling) {
                 Divider()
-                settingRow(model.t("Restore your light","還原你的燈光"),"Finish recovering the previous session and reconnect.") {Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}}
+                settingRow(model.t("Restore your light","還原你的燈光"), model.savedLidRecoveryUnconfirmed
+                    ? "Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused."
+                    : "Finish recovering the previous session and reconnect.") {Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}}
             }
         }
         Surface {
@@ -366,7 +408,7 @@ struct MenuView: View {
             Divider()
             HStack(spacing:12) {
                 MenuLidPreview(presentation:model.presentation)
-                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.logoStatus.statusLabel ?? model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
+                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
                 Spacer();Toggle("Backlight",isOn:$model.enabled).labelsHidden().toggleStyle(.switch).controlSize(.small)
             }
             HStack {

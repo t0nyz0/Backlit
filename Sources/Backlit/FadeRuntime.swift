@@ -75,9 +75,43 @@ final class FadeRuntime: FadeEffectSession {
         }
     }
 
+    /// A receipt is useful only for this exact token. Never reinterpret a new
+    /// owner's journal (or an unreadable one) as permission to restart.
+    static func interrupted(record: FadeRecoveryRecord?, completed: Bool, token: UUID, helperAlive: Bool) -> Bool {
+        if let record {
+            guard record.token == token else { return false }
+            return !helperAlive || (record.watchdogPID != nil && !record.effectsAllowed)
+        }
+        return completed
+    }
+
+    static func safetyTransitionInterrupted(record: FadeRecoveryRecord?, token: UUID,
+                                           before: FadeSafetyContext?, after: FadeSafetyContext?) -> Bool {
+        guard let record, record.token == token, let before, let after else { return false }
+        return before != after
+    }
+
     func apply(_ brightness:Double, closedLidRequested:Bool, frameInterval:Double = 0.05) throws -> FadeApplyResult {
+        let before = hardware.currentContext()
+        do { return try applyFrame(brightness, closedLidRequested: closedLidRequested, frameInterval: frameInterval) }
+        catch {
+            let record = try? store.read()
+            // The keyboard guard can detect a completed power/session change
+            // before the watchdog has revoked the still-owned journal.
+            if Self.safetyTransitionInterrupted(record: record, token: token, before: before, after: hardware.currentContext()) {
+                throw FadeSessionInterruption.lifecycle
+            }
+            if Self.interrupted(record: record, completed: store.completed(token: token), token: token, helperAlive: childIdentity.isAlive),
+               record != nil || !FileManager.default.fileExists(atPath: store.url.path) {
+                throw FadeSessionInterruption.lifecycle
+            }
+            throw error
+        }
+    }
+
+    private func applyFrame(_ brightness:Double, closedLidRequested:Bool, frameInterval:Double) throws -> FadeApplyResult {
         guard let initialContext=hardware.currentContext() else {throw RuntimeServices.failure("Logo safety state is unavailable.")}
-        if initialContext.lidClosed && !closedLidRequested {return .paused}
+        if initialContext.sleeping || initialContext.locked || (initialContext.lidClosed && !closedLidRequested) {return .paused}
         guard childIdentity.isAlive else {throw RuntimeServices.failure("The fade recovery helper stopped; logo control was paused.")}
         let record=try store.read()
         guard record.token==token else {throw RuntimeServices.failure("Logo fade ownership changed.")}
@@ -99,33 +133,52 @@ final class FadeRuntime: FadeEffectSession {
             // battery/thermal/time limits. Never animate before it grants access.
             guard ClosedEffectSession.permitted() else{return .waiting}
         }
+        return try Self.applyPermittedFrame(brightness, closedLidRequested: closedLidRequested,
+            frameInterval: frameInterval, effect: effect, hardware: hardware, store: store, token: token,
+            watchdogPID: childIdentity.pid, watchdogAlive: { self.childIdentity.isAlive },
+            lidPermission: { ClosedEffectSession.permitted() }, markWriteFailure: { self.hadWriteFailure = true })
+    }
+
+    /// Production permission/planning/write path shared with inert fixtures.
+    /// Readiness follows the plan outcome, including successful no-write waits.
+    static func applyPermittedFrame(_ brightness: Double, closedLidRequested: Bool, frameInterval: Double,
+                                   effect: ClosedLidEffect, hardware: LiveFadeHardware,
+                                   store: FadeRecoveryStore, token: UUID, watchdogPID: Int32,
+                                   watchdogAlive: () -> Bool, lidPermission: () -> Bool,
+                                   markWriteFailure: () -> Void) throws -> FadeApplyResult {
         var result=FadeApplyResult.waiting
         var plan:ClosedLidEffect.Plan?
         var planContext:FadeSafetyContext?
-        _ = try store.withPermission(token:token,watchdogAlive:{ $0==self.childIdentity.pid && self.childIdentity.isAlive },snapshotProvider:{
-            guard let context=hardware.currentContext(), context==planContext,
-                  let keyboards=hardware.keyboardStates() else {
-                throw RuntimeServices.failure("Safety state changed before the logo frame.")
+        _ = try store.withPermission(token:token,watchdogAlive:{ $0==watchdogPID && watchdogAlive() },snapshotProvider:{
+            guard let context=hardware.currentContext() else {
+                throw RuntimeServices.failure("Logo safety state is unavailable before the frame.")
+            }
+            guard context==planContext else { throw FadeSessionInterruption.lifecycle }
+            guard let keyboards=hardware.keyboardStates() else {
+                throw RuntimeServices.failure("Keyboard state is unavailable before the logo frame.")
             }
             return .init(context:context,keyboardStates:keyboards)
         },shouldWrite:{
-            guard let fresh=hardware.currentContext(),Self.frameAllowed(context:fresh,closedRequested:closedLidRequested,lidPermission:ClosedEffectSession.permitted()) else {return false}
+            guard let fresh=hardware.currentContext(),Self.frameAllowed(context:fresh,closedRequested:closedLidRequested,lidPermission:lidPermission()) else {return false}
             planContext=fresh
             let next=try effect.plan(brightness,frameInterval:frameInterval)
-            if !next.hasWrites {try effect.execute(next);result = .applied;return false}
+            if !next.hasWrites {try effect.execute(next);result = next.result;return false}
             plan=next;return true
         }) {
             guard let plan else {return}
             do {
                 try hardware.guardedFadeWrite {
-                    guard hardware.currentContext()==planContext,
-                          Self.frameAllowed(context:planContext!,closedRequested:closedLidRequested,lidPermission:ClosedEffectSession.permitted()) else {
-                        throw RuntimeServices.failure("Safety state changed before the logo frame.")
+                    guard let current = hardware.currentContext() else {
+                        throw RuntimeServices.failure("Logo safety state is unavailable before the frame.")
+                    }
+                    guard current==planContext,
+                          Self.frameAllowed(context:current,closedRequested:closedLidRequested,lidPermission:lidPermission()) else {
+                        throw FadeSessionInterruption.lifecycle
                     }
                     try effect.execute(plan)
-                    result = .applied
+                    result = plan.result
                 }
-            } catch {hadWriteFailure=true;throw error}
+            } catch {markWriteFailure();throw error}
         }
         return result
     }
@@ -133,14 +186,8 @@ final class FadeRuntime: FadeEffectSession {
     func restore() throws {
         if FileManager.default.fileExists(atPath:store.url.path) || store.completed(token:token) {
             try store.recover(token:token) { record in
-                guard record.pendingBatch != nil else {return}
-                if !hadWriteFailure, hardware.currentContext()?.permitsOpenKeyboardRestore == true {
-                    // A healthy, still-running owner can preserve a fresh
-                    // keyboard snapshot during normal open-lid shutdown.
-                    try hardware.guardedFadeWrite {try effect.restore()}
-                    try hardware.confirmTerminal()
-                } else {
-                    try hardware.restore(record)
+                try Self.restore(record, hardware: hardware, effect: effect, hadWriteFailure: hadWriteFailure) {
+                    self.hadWriteFailure = true
                 }
             }
         } else {
@@ -148,6 +195,30 @@ final class FadeRuntime: FadeEffectSession {
         }
         effect.relinquish()
         if FileManager.default.fileExists(atPath:leaseURL.path) {try FileManager.default.removeItem(at:leaseURL)}
+    }
+
+    /// Shared with inert fixtures so retry routing is tested with the actual
+    /// effect, hardware adapter and durable recovery store.
+    static func restore(_ record: FadeRecoveryRecord, hardware: LiveFadeHardware,
+                        effect: ClosedLidEffect, hadWriteFailure: Bool,
+                        markWriteFailure: () -> Void) throws {
+        guard record.pendingBatch != nil else {return}
+        if !hadWriteFailure, hardware.currentContext()?.permitsOpenKeyboardRestore == true {
+            do {
+                // A healthy, still-running owner can preserve a fresh
+                // keyboard snapshot during normal open-lid shutdown.
+                try hardware.guardedFadeWrite {try effect.restore()}
+                try hardware.confirmTerminal()
+            } catch {
+                // The effect can be inactive after the setters returned true while
+                // terminal confirmation or keyboard restoration still fails.
+                // Retry the conservative reset, not that inactive no-op.
+                markWriteFailure()
+                throw error
+            }
+        } else {
+            try hardware.restore(record)
+        }
     }
 
     static func frameAllowed(context:FadeSafetyContext,closedRequested:Bool,lidPermission:Bool) -> Bool {
