@@ -84,25 +84,85 @@ struct AutomationConnections: View {
     }
 }
 
+/// Native settings layout scoped to Connections, leaving other pages unchanged.
+struct ConnectionSettingsSection<Content: View>: View {
+    let title: String
+    let detail: String
+    let caption: String
+    let content: Content
+    init(_ title: String, detail: String, caption: String = "", @ViewBuilder content: () -> Content) {
+        self.title = title; self.detail = detail; self.caption = caption; self.content = content()
+    }
+    var body: some View {
+        HStack(alignment: .top, spacing: 24) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(title).font(.system(size: 17, weight: .semibold))
+                Text(detail).font(.system(size: 12)).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if !caption.isEmpty {
+                    Text(caption).font(.system(size: 10)).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }.frame(width: 174, alignment: .leading).padding(.top, 8)
+            content.frame(maxWidth: .infinity, alignment: .leading)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct ConnectionSettingsGroup<Content: View>: View {
+    let content: Content
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) { content }
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.primary.opacity(0.08), lineWidth: 1))
+    }
+}
+
 struct MCPConnections: View {
     @ObservedObject var model: AppModel
     var body: some View {
-        Surface("AI control") {
-            Picker("Allow AI connections", selection:Binding(get:{model.mcpAccess},set:{model.configureMCPAccess($0)})) {
-                ForEach(MCPAccess.allCases) { access in Text(access.title).tag(access) }
+        ConnectionSettingsSection("MCP control",
+            detail: "On-demand access for an assistant to check or change your light when you ask.",
+            caption: "Model Context Protocol · Off by default") {
+            VStack(alignment: .leading, spacing: 10) {
+                ConnectionSettingsGroup {
+                    HStack(spacing: 12) {
+                        rowLabel("MCP access")
+                        Picker("MCP access", selection: Binding(get: { model.mcpAccess }, set: { model.configureMCPAccess($0) })) {
+                            ForEach(MCPAccess.allCases) { access in Text(access.title).tag(access) }
+                        }.labelsHidden().frame(width: 205)
+                        Spacer(minLength: 0)
+                    }.padding(.vertical, 14)
+                    if model.mcpAccess != .off {
+                        Divider()
+                        HStack(spacing: 12) {
+                            rowLabel("Assistant setup")
+                            HStack(spacing: 8) {
+                                Button("Copy Codex Setup") { model.copyMCPSetup(claude: false) }
+                                Button("Copy Claude Code Setup") { model.copyMCPSetup(claude: true) }
+                            }
+                            Spacer(minLength: 0)
+                        }.padding(.vertical, 14)
+                        Divider()
+                        HStack(spacing: 12) {
+                            rowLabel("Access key")
+                            Spacer(minLength: 0)
+                            Button("Replace AI Key") { model.regenerateMCPKey() }
+                        }.padding(.vertical, 14)
+                    }
+                }.font(.system(size: 12)).controlSize(.regular)
+                if model.mcpAccess != .off {
+                    Text("Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.")
+                        .font(.system(size: 10)).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true).padding(.horizontal, 6)
+                }
             }
-            Text("Connect a local AI assistant to check this light or change it when you ask. Off by default.")
-                .font(.system(size:11)).foregroundStyle(.secondary)
-            if model.mcpAccess != .off {
-                HStack {
-                    Button("Copy Codex Setup") { model.copyMCPSetup(claude:false) }
-                    Button("Copy Claude Code Setup") { model.copyMCPSetup(claude:true) }
-                    Spacer()
-                    Button("Replace AI Key") { model.regenerateMCPKey() }
-                }.font(.system(size:11))
-                Text("Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.")
-                    .font(.system(size:11)).foregroundStyle(.secondary)
-            }
-        }.font(.system(size:12))
+        }.accessibilityIdentifier("mcp-control-section")
+    }
+    private func rowLabel(_ text: String) -> some View {
+        Text(text).font(.system(size: 12, weight: .medium)).frame(width: 95, alignment: .leading)
     }
 }

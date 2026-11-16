@@ -1,10 +1,10 @@
-# Local AI control
+# Local MCP control
 
 This source build includes a local Model Context Protocol (MCP) server. It lets an assistant inspect Backlit and control its light when asked. It does not run a model or require a Backlit account.
 
 ## Setup
 
-1. Open a Backlit build containing this feature and choose **Connections → AI control**.
+1. Open a Backlit build containing this feature and choose **Connections → MCP control**.
 2. Select **Status only** or **Allow light changes**. The default is **Off**. Keychain may ask for access during this deliberate setup action.
 3. Choose **Copy Codex Setup** or **Copy Claude Code Setup**, then run the copied command in your local terminal. The installed bundle must be in `/Applications` and contain this feature. A source checkout does not update an older installed app.
 4. Check the assistant's `/mcp` connections and ask it to read Backlit's status.

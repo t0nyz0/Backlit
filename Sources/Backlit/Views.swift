@@ -126,9 +126,11 @@ struct RootView: View {
     }
     func nav(_ id: String,_ title: String,_ icon: String) -> some View {
         Button { model.selectedPage=id } label: {
-            HStack(spacing:10) {Image(systemName:icon).frame(width:20);Text(title);Spacer()}.font(.system(size:13,weight:model.selectedPage == id ? .semibold : .medium)).padding(.horizontal,12).padding(.vertical,11)
+            HStack(spacing:10) {Image(systemName:icon).frame(width:20);Text(title);Spacer()}.font(.system(size:13,weight:model.selectedPage == id ? .semibold : .medium))
+                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal,12).padding(.vertical,11)
                 .foregroundStyle(model.selectedPage == id ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.65))
                 .background(model.selectedPage == id ? Color.primary : .clear,in:RoundedRectangle(cornerRadius:10))
+                .contentShape(RoundedRectangle(cornerRadius: 10))
         }.buttonStyle(.plain)
     }
 }
@@ -232,23 +234,42 @@ struct ConnectionsPage: View {
     @ObservedObject var model: AppModel
     @State private var showHomeSetup=false
     var body: some View {
-        PageHeading(eyebrow:"BACKLIT",title:model.t("Connections","連接"),subtitle:model.t("Optional connections for agents and automation.","代理程式和自動化的選用連接。"))
-        AutomationConnections(model: model)
+        PageHeading(eyebrow: "CONNECTIONS", title: model.t("Assistants & integrations", "助理與整合"),
+            subtitle: model.t("Control your light on request, or reflect coding activity automatically.", "依要求控制燈光，或自動反映程式工作狀態。"))
         MCPConnections(model: model)
-        Surface(model.t("Coding companions","程式夥伴")) {
-            ForEach(CodingAgent.allCases) { agent in
-                let connected = !model.demo && AgentBridge.connected(agent)
-                HStack(spacing:14) {
-                    Image(systemName:agent == .codex ? "sparkle" : "terminal").font(.system(size:20)).frame(width:42,height:42).background(Color.primary.opacity(0.05),in:RoundedRectangle(cornerRadius:12))
-                    VStack(alignment:.leading,spacing:4){Text(agent.title).font(.system(size:14,weight:.semibold)); Text(connected ? (agent == .codex ? "Hooks installed · trust them in Codex" : "Hooks installed · new sessions are ready") : "Working, waiting, or needs your attention").font(.system(size:11)).foregroundStyle(.secondary)}
-                    Spacer()
-                    Button {model.chooseFolder(agent)} label:{Image(systemName:"folder")}.help("Choose a custom configuration folder")
-                    Button(connected ? model.t("Disconnect","中斷連接") : model.t("Connect","連接")){model.connectAgent(agent,!connected)}
+        ConnectionSettingsSection(model.t("Coding status hooks", "程式狀態掛鉤"),
+            detail: "Automatic light feedback from coding sessions. Independent of MCP.") {
+            VStack(alignment: .leading, spacing: 10) {
+                ConnectionSettingsGroup {
+                    ForEach(CodingAgent.allCases) { agent in
+                        let connected = !model.demo && AgentBridge.connected(agent)
+                        HStack(spacing: 12) {
+                            Image(systemName: agent == .codex ? "sparkle" : "terminal")
+                                .font(.system(size: 18)).frame(width: 36, height: 36)
+                                .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(agent.title).font(.system(size: 13, weight: .semibold))
+                                Text(connected ? (agent == .codex ? "Hooks installed · trust them in Codex" : "Hooks installed · new sessions are ready") : "Working, waiting, or needs your attention")
+                                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            Spacer(minLength: 8)
+                            Button { model.chooseFolder(agent) } label: { Image(systemName: "folder") }
+                                .help("Choose a custom configuration folder")
+                                .accessibilityLabel("Choose \(agent.title) configuration folder")
+                            Button(connected ? model.t("Disconnect", "中斷連接") : model.t("Connect", "連接")) {
+                                model.connectAgent(agent, !connected)
+                            }.accessibilityLabel("\(connected ? "Disconnect" : "Connect") \(agent.title) coding status hooks")
+                        }.padding(.vertical, 14).controlSize(.regular)
+                        if agent == .claude { Divider() }
+                    }
                 }
-                if agent == .claude {Divider().padding(.vertical,5)}
+                Text("Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.")
+                    .font(.system(size: 10)).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true).padding(.horizontal, 6)
             }
-            Text("Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.").font(.system(size:11)).foregroundStyle(.secondary)
-        }
+        }.accessibilityIdentifier("coding-status-hooks-section")
+        AutomationConnections(model: model)
         Surface {
             HStack(spacing:14) {
                 Image(systemName:"house").font(.system(size:20)).frame(width:42,height:42)

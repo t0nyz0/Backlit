@@ -22,7 +22,7 @@ struct MCPBridgeClient: Sendable {
             throw ExternalControlError(.appNotRunning, "Open Backlit before using its AI connection.")
         }
         let access = localAccess()
-        guard access != "off" else { throw ExternalControlError(.accessDisabled, "Enable AI control in Backlit Connections first.") }
+        guard access != "off" else { throw ExternalControlError(.accessDisabled, "Enable MCP control in Backlit Connections first.") }
         return try BridgeToken.value(account:BridgeToken.agentAccount,create:false,interactive:false)
     }
     static func localAccess(bundleIdentifier: String? = Bundle.main.bundleIdentifier,

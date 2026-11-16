@@ -21,7 +21,7 @@ Installed build 44 was exercised with **Codex CLI 0.155.1**, using temporary inv
 
 Candidate 45's headless MCP binary also connected through the actual Codex client and read the unchanged installed build-44 GUI. This verifies candidate transport compatibility and its connection to the existing bridge. **It does not exercise the candidate-45 GUI, its recovery admission or native hardware behavior.** Claude Code user-session acceptance remains unverified.
 
-Fixtures cover control policy, local Music/Typing authorization, automatic Battery brightness, recovery ownership, separate AI/Home Assistant keys, key replacement, cancellation, redirects, response bounds and real stdio pipes. The installed-client preference lookup and Codex's object-valued experimental capability are covered by regressions. MCP setup and access controls are described in [Local AI control](MCP.md).
+Fixtures cover control policy, local Music/Typing authorization, automatic Battery brightness, recovery ownership, separate AI/Home Assistant keys, key replacement, cancellation, redirects, response bounds and real stdio pipes. The installed-client preference lookup and Codex's object-valued experimental capability are covered by regressions. MCP setup and access controls are described in [Local MCP control](MCP.md).
 
 ## Recovery checks
 

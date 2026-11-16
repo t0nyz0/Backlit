@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.7-9a7400?style=flat" alt="Source 0.2.7">
+<img src="https://img.shields.io/badge/source-0.2.8-9a7400?style=flat" alt="Source 0.2.8">
 <img src="https://img.shields.io/badge/local_tests-673_passing-2d6085?style=flat" alt="673 local Swift tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
@@ -72,7 +72,7 @@ Opt-in local Backlit links and a separately packaged Stream Deck plugin provide 
 
 An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light and status sensors over a local, authenticated connection. It is off by default.
 
-This source build also includes optional [MCP control](docs/MCP.md) for local AI assistants. Open **Connections → AI control** and choose **Status only** or **Allow light changes**. AI access starts off and has a separate Keychain key. The four tools read status, set power, set manual brightness and select an available behavior; existing agent status hooks stay separate.
+This source build also includes optional [MCP control](docs/MCP.md) for local AI assistants. Open **Connections → MCP control** and choose **Status only** or **Allow light changes**. AI access starts off and has a separate Keychain key. The four tools read status, set power, set manual brightness and select an available behavior; existing agent status hooks stay separate.
 
 Keep Backlit open. For Codex, run:
 
