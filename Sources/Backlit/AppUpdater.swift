@@ -191,20 +191,21 @@ struct UpdateControlPresentation {
 struct UpdateControls: View {
     @ObservedObject var updater: AppUpdater
     let preview: Bool
+    var display: (String) -> String = { $0 }
     var body: some View {
         let presentation = UpdateControlPresentation(info: Bundle.main.infoDictionary ?? [:], preview: preview)
         VStack(alignment: .trailing, spacing: 8) {
             if presentation.canUpdateInApp {
-                Button(presentation.primaryTitle) { updater.check(preview: preview) }.disabled(!updater.canCheck)
-                if updater.installPaused { Button("Install Update and Relaunch") { updater.retryInstall() } }
-                if !updater.canCheck { Button("Show Update Progress") { updater.showProgress() } }
-                if let message = updater.message { Text(message).font(.system(size: 11)).foregroundStyle(.secondary).frame(maxWidth: 300).fixedSize(horizontal: false, vertical: true) }
+                Button(display(presentation.primaryTitle)) { updater.check(preview: preview) }.disabled(!updater.canCheck)
+                if updater.installPaused { Button(display("Install Update and Relaunch")) { updater.retryInstall() } }
+                if !updater.canCheck { Button(display("Show Update Progress")) { updater.showProgress() } }
+                if let message = updater.message { Text(display(message)).font(.system(size: 11)).foregroundStyle(.secondary).frame(maxWidth: 300).fixedSize(horizontal: false, vertical: true) }
             } else {
-                Link(presentation.primaryTitle, destination: UpdateControlPresentation.downloadURL)
+                Link(display(presentation.primaryTitle), destination: UpdateControlPresentation.downloadURL)
                     .buttonStyle(.bordered)
                     .disabled(!presentation.canDownload)
                 if let guidance = presentation.guidance {
-                    Text(guidance).font(.system(size: 11)).foregroundStyle(.secondary)
+                    Text(display(guidance)).font(.system(size: 11)).foregroundStyle(.secondary)
                         .multilineTextAlignment(.trailing).frame(maxWidth: 300, alignment: .trailing)
                         .fixedSize(horizontal: false, vertical: true)
                 }

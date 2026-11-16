@@ -90,7 +90,12 @@ if arguments.contains("--verify-hardware") {
         }
         buildMenus()
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:860),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
-        window.title = model.demo ? "Backlit — Preview" : "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
+        window.title = model.demo ? model.t("Backlit — Preview", th:"Backlit — ตัวอย่าง") : "Backlit";
+        model.onLanguageChange = { [weak self] in
+            guard let self else { return }
+            self.buildMenus(); self.window.title = self.model.demo ? self.model.t("Backlit — Preview", th:"Backlit — ตัวอย่าง") : "Backlit"
+        }
+        window.titlebarAppearsTransparent = true; window.delegate = self
         let hosting=NSHostingView(rootView:RootView(model:model))
         hosting.allowedTouchTypes = .direct
         window.contentView=hosting; window.center(); window.isReleasedWhenClosed = false
@@ -176,7 +181,7 @@ if arguments.contains("--verify-hardware") {
             lastIconStep = step
         }
         let now=ProcessInfo.processInfo.systemUptime
-        let tooltip = "Backlit · \(model.mode.title) · \(logoStatus.detail)"
+        let tooltip = "Backlit · \(model.display(model.mode.title)) · \(model.display(logoStatus.detail))"
         if now-lastTooltipUpdate>=1 {
             lastTooltipStatus=tooltip;lastTooltipUpdate=now
             status?.button?.toolTip=tooltip
@@ -201,10 +206,10 @@ if arguments.contains("--verify-hardware") {
     @objc func settings() {model.selectedPage="settings";showWindow()}
     func buildMenus() {
         let menu=NSMenu();let root=NSMenuItem();menu.addItem(root);let app=NSMenu();root.submenu=app
-        let setting=NSMenuItem(title:"Settings…",action:#selector(settings),keyEquivalent:",");setting.target=self;app.addItem(setting)
-        app.addItem(.separator());let quit=NSMenuItem(title:"Quit Backlit",action:#selector(quit),keyEquivalent:"q");quit.target=self;app.addItem(quit)
-        let editRoot=NSMenuItem(title:"Edit",action:nil,keyEquivalent:"");let edit=NSMenu(title:"Edit");editRoot.submenu=edit
-        for (name,selector,key) in [("Copy","copy:","c"),("Paste","paste:","v"),("Select All","selectAll:","a")] {edit.addItem(NSMenuItem(title:name,action:NSSelectorFromString(selector),keyEquivalent:key))}
+        let setting=NSMenuItem(title:model.t("Settings…", th:"การตั้งค่า…"),action:#selector(settings),keyEquivalent:",");setting.target=self;app.addItem(setting)
+        app.addItem(.separator());let quit=NSMenuItem(title:model.t("Quit Backlit", th:"ออกจาก Backlit"),action:#selector(quit),keyEquivalent:"q");quit.target=self;app.addItem(quit)
+        let editTitle=model.t("Edit", th:"แก้ไข");let editRoot=NSMenuItem(title:editTitle,action:nil,keyEquivalent:"");let edit=NSMenu(title:editTitle);editRoot.submenu=edit
+        for (name,selector,key) in [(model.t("Copy", th:"คัดลอก"),"copy:","c"),(model.t("Paste", th:"วาง"),"paste:","v"),(model.t("Select All", th:"เลือกทั้งหมด"),"selectAll:","a")] {edit.addItem(NSMenuItem(title:name,action:NSSelectorFromString(selector),keyEquivalent:key))}
         menu.addItem(editRoot);NSApp.mainMenu=menu
     }
     func capture(_ view:NSView,to file:URL) throws {

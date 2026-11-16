@@ -155,7 +155,8 @@ enum MusicCapturePolicy {
     @Published private(set) var mcpAccess: MCPAccess = .off
     private var agentRateLimit = ExternalControlRateLimit()
     private let externalControlObservation: (() -> ExternalControlContext)?
-    @Published var language = "en" { didSet { save() } }
+    @Published var language = "en" { didSet { save(); if language != oldValue { onLanguageChange?() } } }
+    var onLanguageChange: (() -> Void)?
     @Published var appearance = "system" { didSet { save() } }
     @Published var error: String?
     @Published private(set) var hardwareFailure: String?
@@ -309,7 +310,13 @@ enum MusicCapturePolicy {
         lidIntentController.intent?.savedPause.map { $0.needsQualifiedHandback || !$0.canRetry } == true
     }
     var savedLidRecoveryUnconfirmed: Bool { lidIntentController.intent?.savedPause?.needsQualifiedHandback == true }
-    func t(_ english: String, _ chinese: String) -> String { isChinese ? chinese : english }
+    func t(_ english: String, _ chinese: String, _ thai: String) -> String {
+        switch language { case "zh-Hant": chinese; case "th": thai; default: english }
+    }
+    /// Text without a Traditional Chinese translation stays English in that language.
+    func t(_ english: String, th thai: String) -> String { language == "th" ? thai : english }
+    /// Translates a runtime message (status, notice, option title) for display.
+    func display(_ text: String) -> String { language == "th" ? ThaiText.translate(text) : text }
     var status: String {
         if recoveryBlocksAdmission { return "Restore your light to finish the previous lid session" }
         if ownedLidAwaitingCleanup { return "Waiting for closed-lid cleanup" }
@@ -322,10 +329,10 @@ enum MusicCapturePolicy {
             if pause.needsQualifiedHandback { return pause.status }
             return cachedLid ? "Closed-lid lighting paused after an error" : pause.status
         }
-        if demo { return t("Preview · logo unchanged","預覽・不會更改標誌") }
-        if !device.available { return t("Preview · compatible logo not found","預覽・未找到相容標誌") }
+        if demo { return t("Preview · logo unchanged","預覽・不會更改標誌","ตัวอย่าง · โลโก้จริงไม่เปลี่ยน") }
+        if !device.available { return t("Preview · compatible logo not found","預覽・未找到相容標誌","ตัวอย่าง · ไม่พบโลโก้ที่รองรับ") }
         if !controlWanted && needsLightRecovery { return "Restore your light to continue" }
-        if !enabled { return t("Logo off","標誌已關閉") }
+        if !enabled { return t("Logo off","標誌已關閉","โลโก้ปิดอยู่") }
         guard controlling else { return "Connecting to your MacBook" }
         switch lastHardwareResult {
         case .waiting: return "Waiting for light output"
@@ -335,14 +342,14 @@ enum MusicCapturePolicy {
         }
         if let label = logoStatus.statusLabel { return label }
         switch mode {
-        case .steady:return t("Glowing","發光中")
-        case .breathe:return t("Breathing","呼吸中")
+        case .steady:return t("Glowing","發光中","กำลังส่องสว่าง")
+        case .breathe:return t("Breathing","呼吸中","กำลังสว่าง-หรี่เป็นจังหวะ")
         case .battery:
             if !batteryAvailable { return "Battery state unavailable" }
             if batteryResponse.completionActive { return "Charge-ready signal" }
             if batteryIsPulsing { return "Pulsing while charging" }
             if charging && batteryOptions.chargingStyle != .level { return "Steady while plugged in" }
-            return t("Following your battery","跟隨電量")
+            return t("Following your battery","跟隨電量","สว่างตามระดับแบตเตอรี่")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
         case .touch:return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
@@ -1435,9 +1442,9 @@ enum MusicCapturePolicy {
     }
     func regenerateMCPKey() {
         guard !demo else { return }
-        let alert = NSAlert(); alert.messageText = "Replace the AI connection key?"
-        alert.informativeText = "The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same."
-        alert.addButton(withTitle:"Replace Key"); alert.addButton(withTitle:"Cancel")
+        let alert = NSAlert(); alert.messageText = t("Replace the AI connection key?", th:"เปลี่ยนคีย์การเชื่อมต่อ AI ไหม")
+        alert.informativeText = t("The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.", th:"คีย์เดิมจะใช้ไม่ได้ทันที ผู้ช่วย AI บนเครื่องนี้เชื่อมต่อใหม่ได้ตราบที่ยังเปิดการเข้าถึง AI ไว้ ส่วนรหัสของ Home Assistant ไม่เปลี่ยน")
+        alert.addButton(withTitle:t("Replace Key", th:"เปลี่ยนคีย์")); alert.addButton(withTitle:t("Cancel", th:"ยกเลิก"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         let priorAccess = mcpAccess
         configureMCPAccess(.off)
@@ -1471,9 +1478,9 @@ enum MusicCapturePolicy {
         let approved: Bool
         if let confirm { approved = confirm() }
         else {
-            let alert = NSAlert(); alert.messageText = "Create a new pairing key?"
-            alert.informativeText = "The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again."
-            alert.addButton(withTitle:"Create New Key"); alert.addButton(withTitle:"Cancel")
+            let alert = NSAlert(); alert.messageText = t("Create a new pairing key?", th:"สร้างรหัสจับคู่ใหม่ไหม")
+            alert.informativeText = t("The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.", th:"รหัสปัจจุบันจะใช้ไม่ได้ทันที Home Assistant จะขอรหัสใหม่ก่อนควบคุมไฟได้อีกครั้ง")
+            alert.addButton(withTitle:t("Create New Key", th:"สร้างรหัสใหม่")); alert.addButton(withTitle:t("Cancel", th:"ยกเลิก"))
             approved = alert.runModal() == .alertFirstButtonReturn
         }
         guard approved else { return }
@@ -1540,8 +1547,8 @@ enum MusicCapturePolicy {
                 let result: NSApplication.ModalResponse
                 if let confirmOff { result = confirmOff() }
                 else {
-                    let alert = NSAlert(); alert.messageText = "Restore the logo and quit?"; alert.informativeText = "Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again."
-                    alert.addButton(withTitle:"Restore and Quit"); alert.addButton(withTitle:"Cancel")
+                    let alert = NSAlert(); alert.messageText = t("Restore the logo and quit?", th:"คืนค่าโลโก้แล้วออกจากแอปไหม"); alert.informativeText = t("Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.", th:"การออกจากแอปจะคืนการตั้งค่าโลโก้เดิมที่บันทึกไว้ก่อนเริ่มใช้ Backlit รอบนี้ และโลโก้อาจสว่างขึ้นอีกครั้ง")
+                    alert.addButton(withTitle:t("Restore and Quit", th:"คืนค่าและออก")); alert.addButton(withTitle:t("Cancel", th:"ยกเลิก"))
                     result = alert.runModal()
                 }
                 guard result == .alertFirstButtonReturn else { cancelStopping(); return false }
