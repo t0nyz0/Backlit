@@ -78,6 +78,18 @@ if arguments.contains("--verify-hardware") {
         menuBarIsAvailable: { [weak self] in self?.status?.button != nil && self?.status?.isVisible == true },
         setDockVisible: { NSApp.setActivationPolicy($0 ? .regular : .accessory) },
         setMenuBarVisible: { [weak self] in self?.updateMenuBarVisibility($0) })
+    private lazy var appIconVisibilityReconciler = AppIconVisibilityReconciler(
+        requested: { [weak self] in
+            AppIconVisibility(dock: self?.model.dockIconVisible ?? true,
+                              menuBar: self?.model.menuBarIconVisible ?? true)
+        }, isApplied: { [weak self] in self?.appIconVisibility.isApplied($0) ?? true },
+        apply: { [weak self] in self?.model.applyAppIconVisibility() },
+        enqueue: { operation in
+            RunLoop.main.perform(inModes: [.default]) {
+                MainActor.assumeIsolated { operation() }
+            }
+            CFRunLoopWakeUp(CFRunLoopGetMain())
+        })
     var popover = NSPopover()
     var iconCache:[Int:NSImage]=[:]
     var lastIconStep = -1
@@ -132,6 +144,9 @@ if arguments.contains("--verify-hardware") {
         model.start()
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
+        // Initial policy setup runs before hardware/Keychain startup. Recheck
+        // after launch unwinds, since AppKit can register/activate us afterward.
+        appIconVisibilityReconciler.start()
         if let directory = option("--capture-suite") {
             Task { await captureSuite(URL(fileURLWithPath:directory)) }
         }
@@ -142,7 +157,13 @@ if arguments.contains("--verify-hardware") {
             catch { model.error = error.localizedDescription }
         }
     }
-    func showWindow() {popover.performClose(nil);window.makeKeyAndOrderFront(nil);NSApp.activate(ignoringOtherApps:true)}
+    func showWindow() {
+        popover.performClose(nil); window.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true)
+        appIconVisibilityReconciler.request()
+    }
+    func applicationDidBecomeActive(_ notification: Notification) {
+        appIconVisibilityReconciler.request()
+    }
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
         guard model.updater.allowsTermination() else { model.error = model.updater.message; return .terminateCancel }
         // The current AppleEvent belongs to this callback only. Preserve its

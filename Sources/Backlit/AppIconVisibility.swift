@@ -41,6 +41,9 @@ struct AppIconVisibilityResult {
     private var actual: AppIconVisibility {
         AppIconVisibility(dock: dockIsVisible(), menuBar: menuBarIsAvailable())
     }
+    func isApplied(_ requested: AppIconVisibility) -> Bool {
+        actual == requested.normalized
+    }
     private func showDock() -> Bool {
         if dockIsVisible() { return true }
         let accepted = setDockVisible(true)
