@@ -30,6 +30,8 @@ actor BoundedMCPTransport: Transport {
     private var pending = Data()
     private var connected = false
     private var writing = false
+    private var pendingSends = 0
+    private static let maximumPendingSends = 8
     private let stream: AsyncThrowingStream<Data, Error>
     private let continuation: AsyncThrowingStream<Data, Error>.Continuation
     static let maximumMessageBytes = 16_384
@@ -85,6 +87,14 @@ actor BoundedMCPTransport: Transport {
         guard connected, data.count <= 65_536 else {
             throw ExternalControlError(.unavailable, "MCP connection closed.")
         }
+        // The SDK consumes input into independent request/response tasks.
+        // Bound slow-reader output pressure as well as the input stream; do
+        // not infer request lifetimes from IDs or cancellation notifications.
+        guard pendingSends < Self.maximumPendingSends else {
+            finish(); throw ExternalControlError(.busy, "MCP output is busy.")
+        }
+        pendingSends += 1
+        defer { pendingSends -= 1 }
         var message = data; message.append(10)
         var offset = 0
         let deadline = ProcessInfo.processInfo.systemUptime + 2

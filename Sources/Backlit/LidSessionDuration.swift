@@ -49,6 +49,11 @@ struct LidSessionDuration: Codable, Equatable {
     func watcherArguments(parent: Int32, lease: URL, intent: UUID? = nil) -> [String] {
         ["--watch-lid", String(parent), lease.path, String(Int(durationSeconds))] + (intent.map { [$0.uuidString] } ?? [])
     }
+
+    func watcherArguments(parentIdentity: FadeProcessIdentity, lease: URL, intent: UUID? = nil) -> [String] {
+        watcherArguments(parent: parentIdentity.pid, lease: lease, intent: intent) +
+            ["--parent-start", String(parentIdentity.seconds), String(parentIdentity.microseconds)]
+    }
 }
 
 /// Strict parsing keeps a malformed helper invocation from launching the app UI.
@@ -58,10 +63,19 @@ struct LidWatcherArguments: Equatable {
     let lease: URL
     let durationSeconds: Double
     let intent: UUID?
+    let parentIdentity: FadeProcessIdentity?
 
     init?(arguments: [String]) {
         guard let index = arguments.firstIndex(of: "--watch-lid") else { return nil }
-        let values = Array(arguments.dropFirst(index + 1))
+        var values = Array(arguments.dropFirst(index + 1))
+        var parentStart: (UInt64, UInt64)?
+        if let flag = values.firstIndex(of: "--parent-start") {
+            guard flag >= 2, flag == values.count - 3,
+                  let seconds = UInt64(values[flag + 1]), seconds > 0,
+                  let microseconds = UInt64(values[flag + 2]), microseconds < 1_000_000 else { return nil }
+            parentStart = (seconds, microseconds)
+            values.removeSubrange(flag...)
+        }
         guard (2...4).contains(values.count),
               let parent = Int32(values[0]), parent > 0,
               values[1].hasPrefix("/"), !values[1].contains("\0") else { return nil }
@@ -74,6 +88,7 @@ struct LidWatcherArguments: Equatable {
         self.parent = parent
         self.lease = URL(fileURLWithPath: values[1])
         self.durationSeconds = seconds
+        parentIdentity = parentStart.map { .init(pid: parent, seconds: $0.0, microseconds: $0.1) }
         if values.count == 4 {
             guard let intent = UUID(uuidString: values[3]) else { return nil }
             self.intent = intent

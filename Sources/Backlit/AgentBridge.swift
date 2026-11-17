@@ -1,5 +1,6 @@
 import Foundation
 import CryptoKit
+import Darwin
 
 enum CodingAgent: String, CaseIterable, Identifiable, Codable {
     case claude, codex
@@ -30,6 +31,12 @@ enum CodingAgent: String, CaseIterable, Identifiable, Codable {
     }
 }
 struct AgentEvent: Codable, Equatable { var agent: CodingAgent; var state: AgentState; var time: Date }
+struct AgentHookInstallation: Equatable {
+    let fullyInstalled: Bool
+    let hasManagedHooks: Bool
+    var canDisconnect: Bool { hasManagedHooks }
+    static let absent = AgentHookInstallation(fullyInstalled:false,hasManagedHooks:false)
+}
 
 enum AgentBridge {
     static var directory: URL { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/Backlit") }
@@ -48,11 +55,36 @@ enum AgentBridge {
     }
     static func events(directory: URL = eventDirectory, now: Date = Date()) -> [AgentEvent] {
         ((try? FileManager.default.contentsOfDirectory(at:directory,includingPropertiesForKeys:nil)) ?? []).compactMap {
-            guard $0.pathExtension == "json", let data = try? Data(contentsOf:$0), data.count < 4096,
+            guard $0.pathExtension == "json", let data = metadata(at:$0),
                   let event = try? JSONDecoder().decode(AgentEvent.self,from:data),
                   (-10..<900).contains(now.timeIntervalSince(event.time)) else { return nil }
             return event
         }
+    }
+    /// Bound each read on the opened descriptor, rather than trusting a path
+    /// size check followed by an unbounded Foundation read. O_NONBLOCK keeps
+    /// opening a FIFO from waiting before fstat can reject non-regular files.
+    private static func metadata(at file:URL)->Data? {
+        let descriptor = open(file.path,O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
+        guard descriptor >= 0 else { return nil }
+        defer { close(descriptor) }
+        var information = stat()
+        guard fstat(descriptor,&information) == 0,
+              information.st_mode & S_IFMT == S_IFREG,
+              information.st_size >= 0, information.st_size < 4096 else { return nil }
+        var bytes = [UInt8](repeating:0,count:4096), count = 0
+        while count < bytes.count {
+            let received = bytes.withUnsafeMutableBytes { buffer in
+                Darwin.read(descriptor,buffer.baseAddress!.advanced(by:count),buffer.count-count)
+            }
+            if received == 0 { return Data(bytes.prefix(count)) }
+            if received < 0 {
+                if errno == EINTR { continue }
+                return nil
+            }
+            count += received
+        }
+        return nil // Includes a file that grew to the limit after fstat.
     }
     static func aggregate(_ events: [AgentEvent]) -> AgentState {
         events.contains{$0.state == .attention} ? .attention : events.contains{$0.state == .working} ? .working : .waiting
@@ -62,8 +94,65 @@ enum AgentBridge {
         return (UserDefaults.standard.string(forKey:key).map{URL(fileURLWithPath:$0)} ?? agent.folder).appendingPathComponent(agent.file)
     }
     static func connected(_ agent: CodingAgent) -> Bool {
-        guard let data = try? Data(contentsOf:file(agent)), let value = String(data:data,encoding:.utf8) else { return false }
-        return value.contains(marker + " " + agent.rawValue)
+        installation(agent).fullyInstalled
+    }
+    static func installation(_ agent: CodingAgent) -> AgentHookInstallation {
+        guard let data = try? Data(contentsOf:file(agent)) else { return .absent }
+        return inspectHooks(data,agent:agent,binaries:binaries(for:agent),
+            isExecutable:FileManager.default.isExecutableFile(atPath:))
+    }
+    /// Recognizes a complete current installation, not trust or event delivery.
+    /// Unknown/custom/legacy commands are preserved but do not establish that
+    /// every current hook is installed and points at an available executable.
+    static func hooksInstalled(_ data:Data,agent:CodingAgent,binaries:[String],isExecutable:(String)->Bool)->Bool {
+        inspectHooks(data,agent:agent,binaries:binaries,isExecutable:isExecutable).fullyInstalled
+    }
+    static func inspectHooks(_ data:Data,agent:CodingAgent,binaries:[String],isExecutable:(String)->Bool)->AgentHookInstallation {
+        guard let document = (try? JSONSerialization.jsonObject(with:data)) as? [String:Any],
+              let hooks = document["hooks"] as? [String:Any] else { return .absent }
+        // Removability is independent of completeness and executable health.
+        // Mirror the merger's exact ownership rules so partial/stale/legacy
+        // installations retain Disconnect without claiming custom shell work.
+        let owned = Set(binaries.flatMap { path in
+            ["working","waiting","attention","ended"].map { command(agent,$0,binary:path) }
+        })
+        let hasManagedHooks = hookEvents(for:agent).contains { name,_ in
+            (hooks[name] as? [[String:Any]] ?? []).contains { group in
+                (group["hooks"] as? [[String:Any]] ?? []).contains { item in
+                    guard let text = item["command"] as? String else { return false }
+                    return owned.contains(text) || ownsLegacyCommand(text,agent:agent,binaries:binaries)
+                }
+            }
+        }
+        let available = Set(binaries).filter { $0.hasPrefix("/") && !$0.contains("\0") && isExecutable($0) }
+        let fullyInstalled = document["disableAllHooks"] as? Bool != true && available.contains { binary in
+            hookEvents(for:agent).allSatisfy { name,phase in
+                guard let groups = hooks[name] as? [[String:Any]] else { return false }
+                return groups.contains { group in
+                    if name == "Notification" {
+                        guard group["matcher"] as? String == "permission_prompt|idle_prompt" else { return false }
+                    } else if let matcher = group["matcher"] {
+                        guard matcher as? String == "" else { return false }
+                    }
+                    guard let commands = group["hooks"] as? [[String:Any]] else { return false }
+                    return commands.contains {
+                        $0["type"] as? String == "command" && $0["command"] as? String == command(agent,phase,binary:binary)
+                    }
+                }
+            }
+        }
+        return AgentHookInstallation(fullyInstalled:fullyInstalled,hasManagedHooks:hasManagedHooks)
+    }
+    private static func binaries(for agent:CodingAgent)->[String] {
+        [Bundle.main.executableURL!.path,
+         FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications/Backlit.app/Contents/MacOS/Backlit").path,
+         "/Applications/Backlit.app/Contents/MacOS/Backlit"]
+        + (UserDefaults.standard.string(forKey:"agent.binary."+agent.rawValue).map{[$0]} ?? [])
+    }
+    private static func hookEvents(for agent:CodingAgent)->[(String,String)] {
+        let base = [("UserPromptSubmit","working"),("PreToolUse","working"),("PostToolUse","working"),
+                    ("PermissionRequest","attention"),("Stop","waiting"),("SessionEnd","ended")]
+        return base + (agent == .codex ? [("Interrupt","waiting")] : [("PostToolUseFailure","working"),("Notification","attention")])
     }
     static func shellArgument(_ value:String)->String {"'"+value.replacingOccurrences(of:"'",with:"'\\''")+"'"}
     static func command(_ agent:CodingAgent,_ phase:String,binary:String)->String {
@@ -96,9 +185,7 @@ enum AgentBridge {
         }
         guard doc["hooks"] == nil || doc["hooks"] is [String:Any] else { throw RuntimeServices.failure("Unrecognized hooks format. Nothing changed.") }
         var hooks = doc["hooks"] as? [String:Any] ?? [:]
-        let base: [(String,String)] = [("UserPromptSubmit","working"),("PreToolUse","working"),("PostToolUse","working"),("PermissionRequest","attention"),("Stop","waiting"),("SessionEnd","ended")]
-        let events = base + (agent == .codex ? [("Interrupt","waiting")] : [("PostToolUseFailure","working"),("Notification","attention")])
-        for (name,phase) in events {
+        for (name,phase) in hookEvents(for:agent) {
             guard hooks[name] == nil || hooks[name] is [[String:Any]] else { throw RuntimeServices.failure("Unrecognized event format. Nothing changed.") }
             var groups: [[String:Any]] = []
             for group in hooks[name] as? [[String:Any]] ?? [] {

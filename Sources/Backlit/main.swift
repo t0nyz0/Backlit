@@ -39,7 +39,7 @@ if arguments.contains("--watch-lid") {
     guard let request = LidWatcherArguments(arguments: arguments) else {
         FileHandle.standardError.write(Data("Invalid closed-lid helper arguments.\n".utf8)); exit(2)
     }
-    exit(RuntimeServices.watchLid(parent: request.parent, lease: request.lease, durationSeconds: request.durationSeconds, intentID: request.intent))
+    exit(RuntimeServices.watchLid(parent: request.parent, lease: request.lease, durationSeconds: request.durationSeconds, intentID: request.intent, parentIdentity: request.parentIdentity))
 }
 if arguments.contains("--verify-hardware") {
     let directory = AgentBridge.directory.appendingPathComponent("verification-"+UUID().uuidString)

@@ -415,9 +415,11 @@ enum MusicCapturePolicy {
                 self.defaults.set(GlowMode.battery.rawValue, forKey: "mode")
             } else if let mode = GlowMode(rawValue: raw) { self.mode = mode }
         }
-        if self.defaults.object(forKey:"brightness") != nil { brightness = self.defaults.double(forKey:"brightness") }
-        if self.defaults.object(forKey:"period") != nil { period = self.defaults.double(forKey:"period") }
-        if self.defaults.object(forKey:"intensity") != nil { intensity = self.defaults.double(forKey:"intensity") }
+        let savedEffect = EffectPreferenceValues(brightness: self.defaults.object(forKey: "brightness"),
+            period: self.defaults.object(forKey: "period"), intensity: self.defaults.object(forKey: "intensity"))
+        brightness = savedEffect.brightness
+        period = savedEffect.period
+        intensity = savedEffect.intensity
         if let raw=self.defaults.string(forKey:"touch.source"),let source=TouchSource(rawValue:raw),touchSources.contains(source) {touchSource=source}
         else {touchSource=touchSources.first ?? .screen}
         touchClickBlink = self.defaults.bool(forKey:"touch.clickBlink")
@@ -541,7 +543,7 @@ enum MusicCapturePolicy {
         controlWanted = canReconnectLight
         configureTimer()
         if !controlWanted && needsLightRecovery { notice = "A previous light session needs restoration. Use Restore Light to finish its cleanup." }
-        if !demo { configureBridge(enabled:self.defaults.bool(forKey:"bridge.enabled"),lan:self.defaults.bool(forKey:"bridge.lan")) }
+        if !demo { configureBridge(enabled:self.defaults.bool(forKey:"bridge.enabled"),lan:self.defaults.bool(forKey:"bridge.lan"),credentialIntent:.automaticResume) }
         if !demo, defaults.bool(forKey:"shortcut.shiftBrightness.enabled") { configureShiftBrightness(true,prompt:false) }
         startPowerMonitoring()
         if !demo {
@@ -812,7 +814,7 @@ enum MusicCapturePolicy {
     }
     func setShortcutRecording(_ recording: Bool) {
         guard recordingShortcut != recording else { return }
-        recordingShortcut = recording; shiftBrightnessKeys.resetGesture(); onShortcutRecordingChange?(recording)
+        recordingShortcut = recording; shiftBrightnessKeys.cancelPendingActions(); onShortcutRecordingChange?(recording)
     }
     func configureShiftBrightness(_ enabled: Bool, prompt: Bool) {
         let driver = demo ? shiftBrightnessDriver : nil
@@ -1257,10 +1259,15 @@ enum MusicCapturePolicy {
                 unlocked: LidResumeSafety.sessionUnlocked(), externalPower: power?.externalPower == true,
                 battery: power?.level, lowPower: ProcessInfo.processInfo.isLowPowerModeEnabled, thermal: ProcessInfo.processInfo.thermalState)
         }, checkpoints: .init(directory: AgentBridge.directory), start: { intent, lease in
+            guard let parent = FadeProcessIdentity.read(getpid()), parent.seconds > 0,
+                  parent.microseconds < 1_000_000 else {
+                throw RuntimeServices.failure("The closed-lid parent process could not be verified.")
+            }
             try FileManager.default.createDirectory(at: lease.deletingLastPathComponent(), withIntermediateDirectories: true)
             try Data().write(to: lease, options: .atomic)
             let process = Process(); process.executableURL = Bundle.main.executableURL
-            process.arguments = ["--watch-lid", String(getpid()), lease.path, String(intent.durationSeconds), intent.id.uuidString]
+            process.arguments = ["--watch-lid", String(parent.pid), lease.path, String(intent.durationSeconds), intent.id.uuidString,
+                                 "--parent-start", String(parent.seconds), String(parent.microseconds)]
             process.standardOutput = FileHandle.nullDevice; process.standardError = FileHandle.nullDevice
             do { try process.run(); return process }
             catch { try? FileManager.default.removeItem(at: lease); throw error }
@@ -1422,32 +1429,27 @@ enum MusicCapturePolicy {
     }
     func connectAgent(_ agent: CodingAgent, _ enabled: Bool) {
         guard !demo else { notice = "Connections are disabled in isolated preview."; return }
-        do { try AgentBridge.connect(agent,enabled:enabled); notice = enabled ? (agent == .codex ? "Hooks installed. Review and trust them in Codex Settings → Hooks, then start a new session." : "Hooks installed. Start a new Claude Code session to see status.") : "Backlit's hooks were removed. Existing hooks were preserved."; objectWillChange.send() }
+        do { try AgentBridge.connect(agent,enabled:enabled); notice = enabled ? (agent == .codex ? "Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session." : "Hooks saved. Review your agent settings, then start a new Claude Code session.") : "Backlit's hooks were removed. Existing hooks were preserved."; objectWillChange.send() }
         catch { self.error = error.localizedDescription }
     }
     func chooseFolder(_ agent: CodingAgent) {
         let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true; panel.showsHiddenFiles = true
         if panel.runModal() == .OK, let folder = panel.url { defaults.set(folder.path,forKey:"agent.folder."+agent.rawValue); objectWillChange.send() }
     }
-    func configureBridge(enabled: Bool, lan: Bool) {
+    func configureBridge(enabled: Bool, lan: Bool, credentialIntent: BridgeCredentialIntent = .deliberateSetup) {
         guard !demo else { notice = "Network sharing is disabled in isolated preview."; return }
         bridge.stop(); bridgeEnabled = false; bridgeLAN = lan
         do {
-            var agentToken: String?
-            if mcpAccess != .off {
-                do { agentToken = try BridgeToken.value(account:BridgeToken.agentAccount,create:false,interactive:false) }
-                catch {
-                    mcpAccess = .off; defaults.set("off",forKey:"mcp.access")
-                    self.error = "The AI connection was switched off because its Keychain key is unavailable. Enable it again in Connections."
-                }
-            }
-            if enabled || mcpAccess != .off {
-                try bridge.start(lan:enabled && lan,token:enabled ? BridgeToken.value() : nil,
-                                 agentToken:agentToken,agentAccess:mcpAccess)
-                bridgeEnabled = enabled
-            }
-            else { bridgeStatus = "Not connected" }
-            defaults.set(enabled,forKey:"bridge.enabled"); defaults.set(lan,forKey:"bridge.lan")
+            let setup = try BridgeConnectionSetup.prepare(homeAssistantRequested: enabled,
+                agentAccess: mcpAccess, intent: credentialIntent)
+            mcpAccess = setup.agentAccess
+            if try !setup.start(lan: lan, using: { lan, home, agent, access in
+                try bridge.start(lan: lan, token: home, agentToken: agent, agentAccess: access)
+            }) { bridgeStatus = "Not connected" }
+            bridgeEnabled = setup.homeAssistantEnabled
+            defaults.set(bridgeEnabled, forKey: "bridge.enabled"); defaults.set(lan, forKey: "bridge.lan")
+            defaults.set(mcpAccess.rawValue, forKey: "mcp.access")
+            if !setup.errors.isEmpty { self.error = setup.errors.joined(separator: "\n") }
         } catch {
             bridge.stop(); bridgeEnabled = false; mcpAccess = .off
             defaults.set(false,forKey:"bridge.enabled"); defaults.set("off",forKey:"mcp.access")
@@ -1459,7 +1461,7 @@ enum MusicCapturePolicy {
         do {
             if access != .off { _ = try BridgeToken.value(account:BridgeToken.agentAccount) }
             mcpAccess = access; defaults.set(access.rawValue,forKey:"mcp.access")
-            configureBridge(enabled:bridgeEnabled,lan:bridgeLAN)
+            configureBridge(enabled:bridgeEnabled,lan:bridgeLAN,credentialIntent:.automaticResume)
         } catch { self.error = error.localizedDescription }
     }
     func regenerateMCPKey() {
@@ -1512,11 +1514,11 @@ enum MusicCapturePolicy {
             bridge.stop(); bridgeEnabled = false; bridgeStatus = "Not connected"
         }, regenerate: { try BridgeToken.regenerate() }) {
         case .rotated(let restartSharing):
-            if restartSharing || mcpAccess != .off { configureBridge(enabled: restartSharing, lan: lan) }
+            if restartSharing || mcpAccess != .off { configureBridge(enabled: restartSharing, lan: lan, credentialIntent: .automaticResume) }
             notice = "A new pairing key was created. Copy it and update Home Assistant; the old key no longer works."
         case .failed(let reason):
             // Also remember Off, so a relaunch cannot bring the old key back.
-            configureBridge(enabled: false, lan: lan)
+            configureBridge(enabled: false, lan: lan, credentialIntent: .automaticResume)
             self.error = "A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. (\(reason))"
         }
     }
@@ -1533,7 +1535,7 @@ enum MusicCapturePolicy {
         isStopping = false; terminationApproved = false
         controlWanted = canReconnectLight
         startPowerMonitoring()
-        if bridgeEnabled || mcpAccess != .off { configureBridge(enabled: bridgeEnabled, lan: bridgeLAN) }
+        if bridgeEnabled || mcpAccess != .off { configureBridge(enabled: bridgeEnabled, lan: bridgeLAN, credentialIntent: .automaticResume) }
         if defaults.bool(forKey:"shortcut.shiftBrightness.enabled") {
             configureShiftBrightness(true, prompt:false)
         }

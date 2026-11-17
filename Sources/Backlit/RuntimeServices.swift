@@ -55,8 +55,15 @@ enum RuntimeServices {
 
     /// Runs as a separate unprivileged watchdog. Selector/type come from Apple's
     /// RootDomainUserClient.cpp and the installed IOPMLibDefs.h, not guessed IDs.
-    static func watchLid(parent: pid_t, lease: URL, durationSeconds: Double = 1800, intentID: UUID? = nil) -> Int32 {
+    static func watchLid(parent: pid_t, lease: URL, durationSeconds: Double = 1800, intentID: UUID? = nil,
+                         parentIdentity: FadeProcessIdentity? = nil) -> Int32 {
         guard LidSessionPolicy.validDuration(durationSeconds) else { return 12 }
+        // Signal 0 delivers no signal: preserve the legacy permission/liveness
+        // admission boundary even when process metadata is readable more widely.
+        guard parent > 0, kill(parent, 0) == 0 else { return 14 }
+        // Resolve legacy callers once and validate new callers' pre-launch
+        // identity before installing observers or opening any hardware service.
+        guard let owner = LidParentIdentity(parent: parent, supplied: parentIdentity) else { return 14 }
         // Install graceful child-only cancellation before opening or changing power services.
         let cancellation = LidWatchCancellation()
         let service = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
@@ -102,7 +109,7 @@ enum RuntimeServices {
         let timer = intent.map { intent in
             LidTimerMonitor(intent: intent, read: { checkpoints.read(intent.id) }, write: { try checkpoints.write($0) })
         }
-        while !cancellation.isRequested && kill(parent, 0) == 0 && FileManager.default.fileExists(atPath: lease.path) {
+        while !cancellation.isRequested && owner.isAlive() && FileManager.default.fileExists(atPath: lease.path) {
             guard let closed = physicalLidClosed else { return 10 }
             let power = battery()
             let thermal = ProcessInfo.processInfo.thermalState

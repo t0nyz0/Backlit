@@ -67,6 +67,21 @@ struct ShiftBrightnessPolicy {
     }
 }
 
+/// Physical-gesture ownership and queued-action invalidation form one pure
+/// state machine. Recorder boundaries and full listener resets are separate.
+struct ShiftBrightnessGestureState {
+    private var policy = ShiftBrightnessPolicy()
+    private(set) var actionGeneration: UInt64 = 0
+    mutating func reset() { actionGeneration &+= 1; policy.reset() }
+    // Recorder transitions invalidate queued actions, not a physical key hold.
+    // Keep consuming an owned press through its matching key-up.
+    mutating func cancelPendingActions() { actionGeneration &+= 1 }
+    mutating func handle(_ event: ShiftBrightnessEvent?, at now: TimeInterval) -> ShiftBrightnessDecision {
+        policy.handle(event, at: now)
+    }
+    func acceptsAction(generation: UInt64) -> Bool { actionGeneration == generation }
+}
+
 @MainActor private final class ShiftBrightnessTapContext {
     weak var owner: ShiftBrightnessKeys?
     let generation: UInt64
@@ -82,8 +97,7 @@ struct ShiftBrightnessPolicy {
     private var source: CFRunLoopSource?
     private var context: Unmanaged<ShiftBrightnessTapContext>?
     private var generation: UInt64 = 0
-    private var actionGeneration: UInt64 = 0
-    private var policy = ShiftBrightnessPolicy()
+    private var gesture = ShiftBrightnessGestureState()
     private(set) var running = false
     private let accessibility: (Bool)->Bool
     private let listeningAccess: ()->Bool
@@ -129,16 +143,17 @@ struct ShiftBrightnessPolicy {
         return nil
     }
     func stop() {
-        generation &+= 1; running = false; policy.reset()
+        generation &+= 1; running = false; gesture.reset()
         if let source { CFRunLoopRemoveSource(CFRunLoopGetMain(),source,.commonModes); CFRunLoopSourceInvalidate(source) }
         if let tap { CFMachPortInvalidate(tap) }
         source = nil; tap = nil; context?.release(); context = nil
     }
-    func resetGesture() { actionGeneration &+= 1; policy.reset() }
+    func resetGesture() { gesture.reset() }
+    func cancelPendingActions() { gesture.cancelPendingActions() }
     private func receive(_ type: CGEventType, event: CGEvent, generation expected: UInt64) -> Bool {
         guard running, generation == expected else { return false }
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
-            running = false; policy.reset()
+            running = false; gesture.reset()
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.generation == expected else { return }
                 self.stop()
@@ -148,11 +163,11 @@ struct ShiftBrightnessPolicy {
         }
         guard type.rawValue == UInt32(NSEvent.EventType.systemDefined.rawValue), let key = NSEvent(cgEvent:event) else { return false }
         let decoded = ShiftBrightnessEvent.decode(type:key.type.rawValue,subtype:Int(key.subtype.rawValue),data1:key.data1,modifiers:key.modifierFlags)
-        let decision = policy.handle(decoded,at:ProcessInfo.processInfo.systemUptime)
+        let decision = gesture.handle(decoded,at:ProcessInfo.processInfo.systemUptime)
         if let action = decision.action {
-            let actionGeneration = self.actionGeneration
+            let actionGeneration = gesture.actionGeneration
             DispatchQueue.main.async { [weak self] in
-                guard let self, self.running, self.generation == expected, self.actionGeneration == actionGeneration else { return }
+                guard let self, self.running, self.generation == expected, self.gesture.acceptsAction(generation: actionGeneration) else { return }
                 self.onAction?(action)
             }
         }

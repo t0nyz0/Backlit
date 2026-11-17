@@ -162,6 +162,15 @@ enum LogoBrightnessStep {
     }
 }
 
+/// Shared native-handler admission; nil means unregister/disable only.
+@MainActor enum LogoShortcutChange {
+    static func apply<Handle>(_ binding: LogoShortcut?, action: LogoShortcutAction,
+                              registry: LogoShortcutRegistry<Handle>, ensureHandler: () throws -> Void) throws {
+        if binding != nil { try ensureHandler() }
+        try registry.replace(binding, for: action)
+    }
+}
+
 @MainActor final class MacGlobalShortcuts {
     private static weak var receiver: MacGlobalShortcuts?
     private var handler: EventHandlerRef?
@@ -208,7 +217,10 @@ enum LogoBrightnessStep {
         return unavailable
     }
     func replace(_ binding: LogoShortcut?, action: LogoShortcutAction) -> String? {
-        do { try ensureHandler(); try registry.replace(binding,for:action); unavailable.removeValue(forKey:action); return nil }
+        do {
+            try LogoShortcutChange.apply(binding, action: action, registry: registry, ensureHandler: ensureHandler)
+            unavailable.removeValue(forKey: action); return nil
+        }
         catch { return error.localizedDescription }
     }
     func suspend() { registry.suspend() }

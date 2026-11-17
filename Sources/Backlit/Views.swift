@@ -242,14 +242,15 @@ struct ConnectionsPage: View {
             VStack(alignment: .leading, spacing: 10) {
                 ConnectionSettingsGroup {
                     ForEach(CodingAgent.allCases) { agent in
-                        let connected = !model.demo && AgentBridge.connected(agent)
+                        let installation = model.demo ? AgentHookInstallation.absent : AgentBridge.installation(agent)
+                        let connected = installation.fullyInstalled
                         HStack(spacing: 12) {
                             Image(systemName: agent == .codex ? "sparkle" : "terminal")
                                 .font(.system(size: 18)).frame(width: 36, height: 36)
                                 .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(agent.title).font(.system(size: 13, weight: .semibold))
-                                Text(connected ? (agent == .codex ? "Hooks installed · trust them in Codex" : "Hooks installed · new sessions are ready") : "Working, waiting, or needs your attention")
+                                Text(connected ? (agent == .codex ? "Hooks installed · trust them in Codex" : "Hooks installed · start a new session") : installation.canDisconnect ? "Hooks need review · reconnect or check agent settings" : "Working, waiting, or needs your attention")
                                     .font(.system(size: 11)).foregroundStyle(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -257,9 +258,15 @@ struct ConnectionsPage: View {
                             Button { model.chooseFolder(agent) } label: { Image(systemName: "folder") }
                                 .help("Choose a custom configuration folder")
                                 .accessibilityLabel("Choose \(agent.title) configuration folder")
-                            Button(connected ? model.t("Disconnect", "中斷連接") : model.t("Connect", "連接")) {
-                                model.connectAgent(agent, !connected)
-                            }.accessibilityLabel("\(connected ? "Disconnect" : "Connect") \(agent.title) coding status hooks")
+                            if !connected {
+                                Button(installation.canDisconnect ? model.t("Reconnect", "重新連接") : model.t("Connect", "連接")) {
+                                    model.connectAgent(agent, true)
+                                }.accessibilityLabel("\(installation.canDisconnect ? "Reconnect" : "Connect") \(agent.title) coding status hooks")
+                            }
+                            if installation.canDisconnect {
+                                Button(model.t("Disconnect", "中斷連接")) { model.connectAgent(agent, false) }
+                                    .accessibilityLabel("Disconnect \(agent.title) coding status hooks")
+                            }
                         }.padding(.vertical, 14).controlSize(.regular)
                         if agent == .claude { Divider() }
                     }
