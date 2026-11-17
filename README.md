@@ -12,13 +12,14 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 
 - Optional local MCP control lets compatible AI assistants read status and adjust power, brightness and behavior.
 - Configurable brightness-up/down shortcuts, plus a separate, off-by-default experimental Shift + hardware brightness option.
+- Optional menu-bar mode hides the running app's Dock icon while keeping Backlit accessible.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/media/light-dark.png">
   <img src="docs/media/light-light.png" alt="Backlit workspace with logo preview, behaviors, and brightness controls">
 </picture>
 
-*Screenshots show the running native app in isolated preview. The illustrated light is a preview, not a hardware measurement. [Provenance](docs/media/README.md).*
+*Historical 0.2.5 screenshots show the native app in isolated preview; some controls and layouts have since changed. The illustrated light is a preview, not a hardware measurement. Current Connections and Settings are described below. [Provenance](docs/media/README.md).*
 
 ## Behaviors
 
@@ -39,7 +40,7 @@ For Typing, select **Enable or retry typing access** and follow macOS’s Input 
 The logo supports white light. Brightness and timing are adjustable; RGB colors and pixel animations are not supported.
 
 <details>
-<summary>Music, Trackpad and Typing screenshots</summary>
+<summary>Historical 0.2.5 Music, Trackpad and Typing screenshots</summary>
 
 <img src="docs/media/music-light.png" width="280" alt="Native Music controls with Automatic level and response presets">
 <img src="docs/media/trackpad-light.png" width="280" alt="Native Trackpad controls with optional typing response switched off">
@@ -50,6 +51,8 @@ The logo supports white light. Brightness and timing are adjustable; RGB colors 
 ## Menu bar
 
 <p align="center"><img src="docs/media/menu-light.png" width="320" alt="Backlit menu with a small logo preview, behavior picker, and brightness controls"></p>
+
+*Historical 0.2.5 menu capture; newer status and recovery controls are not shown.*
 
 The menu includes a small preview and controls for the selected behavior. Battery shows its actual battery-driven output; the other behaviors retain manual brightness. Backlit’s own outlined status icon remains visible when dim; its center follows current output. **Control–Command–B** or **Option-click** toggles the light. Toggle and brightness-up/down shortcuts are configurable in Settings. You can hide the menu bar icon in Settings and reopen Backlit from the Dock or Applications. Settings also offers **Hide Dock icon**. New defaults show the menu-bar icon and hide the Dock icon; saved choices are preserved. Hiding the menu-bar icon restores the Dock icon first so the app stays reachable. This does not remove shortcuts you have pinned to the macOS Dock.
 
@@ -63,16 +66,9 @@ Claude Code and Codex have separate, reversible status hooks. Existing hooks are
 
 Opt-in local Backlit links and a separately packaged Stream Deck plugin provide toggle, on/off, brightness and behavior controls. Stream Deck remains experimental; real key/profile acceptance is unverified. The four native Shortcuts actions are unavailable in this ad-hoc signed build. Extracted action metadata does not establish discovery.
 
-<details>
-<summary>Other apps screenshot</summary>
-
-<img src="docs/media/connections-automation-light.png" width="700" alt="Native Other apps controls in isolated preview; no live connections or permissions enabled">
-
-</details>
-
 An optional [Home Assistant integration](docs/HOME-ASSISTANT.md) exposes a light and status sensors over a local, authenticated connection. It is off by default.
 
-This source build also includes optional [MCP control](docs/MCP.md) for local AI assistants. Open **Connections → MCP control** and choose **Status only** or **Allow light changes**. AI access starts off and has a separate Keychain key. The four tools read status, set power, set manual brightness and select an available behavior; existing agent status hooks stay separate.
+Backlit includes optional [MCP control](docs/MCP.md) for local AI assistants. Open **Connections → MCP control** and choose **Status only** or **Allow light changes**. MCP access starts off and has a separate Keychain key. The four tools read status, set power, set manual brightness and select an available behavior. The separate **Coding status hooks** section connects automatic Claude Code and Codex activity feedback.
 
 Keep Backlit open. For Codex, run:
 
@@ -82,28 +78,15 @@ codex mcp add backlit -- /Applications/Backlit.app/Contents/MacOS/Backlit --mcp
 
 Start a new local Codex session, check `/mcp`, then ask **“Read Backlit's status through MCP.”** For Claude Code, use **Copy Claude Code Setup** in Backlit. This is a local stdio connection; registering it does not automatically connect a cloud chat.
 
-<details>
-<summary>Connections screenshot</summary>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/connections-dark.png">
-  <img src="docs/media/connections-light.png" alt="Backlit Connections with agent connectors and optional Home Assistant setup">
-</picture>
-
-</details>
-
 ## Settings
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/settings-dark.png">
-  <img src="docs/media/settings-light.png" alt="Backlit settings: appearance, language, login launch, keyboard shortcut, closed-lid option, and brightness override">
-</picture>
+Settings includes appearance, language, launch at login, shortcuts, **Hide Dock icon**, **Show menu bar icon**, closed-lid duration and the optional brightness-limit override. New installations show the menu-bar icon and hide the running app's Dock icon. Saved choices are preserved; a pinned Dock shortcut is not removed.
 
 Downloads are disabled in isolated preview. In the app, **Download Latest Version** opens the installer page.
 
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.7 is **ad-hoc signed with the hardened runtime, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.8 is **ad-hoc signed with the hardened runtime, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
@@ -115,7 +98,7 @@ The brightness-limit override runs only built-in macOS tools with administrator 
 
 ## Updates
 
-Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.7. See [validation](docs/VALIDATION.md) for update verification and known limits.
+Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.8. See [validation](docs/VALIDATION.md) for update verification and known limits.
 
 ## Build
 
