@@ -1,10 +1,10 @@
 # Backlit validation
 
-## Local 0.2.8 candidate — build 52
+## Local 0.2.8 candidate — build 53
 
 This source candidate has not been installed or physically qualified. The running local app is **0.2.8, build 49**; its binary identity, read-only MCP health and accessory (Dock-hidden) activation policy were verified after startup and again after settling. Preferences, hook configuration and the existing Dock shortcut were preserved. No desktop/window, accessibility or screenshot inspection was performed in this review.
 
-- **785 non-UI Swift tests passed**, including the earlier hook/presentation regressions, 53 build-51 follow-up methods, and 26 new scan, hook-creation, unavailable-input and MCP-schema methods. The window-based sidebar interaction test was deliberately excluded under the current no-UI restriction; its earlier evidence is not a fresh build-52 result.
+- **790 non-UI Swift tests passed**, including the earlier hook/presentation regressions, 53 build-51 follow-up methods, 26 build-52 scan, hook-creation, unavailable-input and MCP-schema methods, and five shared session-summary methods. The window-based sidebar interaction test was deliberately excluded under the current no-UI restriction; its earlier evidence is not a fresh build-53 result.
 - **52 Python tests passed**, including actual installer rollback fixtures, Home Assistant Core integration, official Sparkle signature fixtures, source ZIP checks, and stale/concurrent-build packaging guards. **16 Stream Deck tests**, typecheck and the dependency audit passed.
 - The build records source identity before compilation and seals it inside the signed bundle only if that identity remains unchanged. Packaging rejects a stale/unproven bundle, freezes provenance plus a full bundle digest, verifies one private app snapshot for both ZIP and DMG, and compares the snapshot and live app against that frozen record before replacing prior output. Concurrent commit-only and completed-rebuild races are covered; failed replacement restores previous output or retains its recovery copy if rollback fails. These checks prevent the reproduced accidental mismatch; they are not a reproducible-build attestation against a hostile local build environment.
 - The optimized arm64 bundle, strict nested signature, headless MCP protocol, source/archive/checksum and privacy checks are local evidence. No matching tag or release workflow has run for this candidate, and no publication is authorized by this document.
@@ -25,11 +25,13 @@ Recorder transitions cancel queued Shift-brightness actions without discarding h
 MCP output pressure closes a slow-reader connection beyond eight pending sends. It is not a strict bound on all SDK request tasks, and it does not rewrite IDs or cancellation semantics. Real pipe tests cover overflow, cancellation, consumed output and unchanged notification/invalid-ID input.
 
 
+Session summaries and warnings share one projection and one view in the menu and workspace. Incomplete empty snapshots never claim that no agent exists; nonempty partial counts are explicitly observed counts. Complete-state wording is preserved, and recovery clears the warning. API state/count/limited semantics remain unchanged. These are isolated presentation/model assertions and source review, not native UI acceptance.
+
 Unavailable Trackpad selection stays visible and dark, including across reopening. It does not silently switch to Steady when its last source is removed; unsupported input remains unavailable to external mode commands. These assertions are isolated model/UI-source checks, not native interaction acceptance.
 
 ## Historical 0.2.7 release qualification
 
-The build-45 statements below describe its original pre-release acceptance state. They are retained as history and do not describe whether the app is installed now or qualify build 52.
+The build-45 statements below describe its original pre-release acceptance state. They are retained as history and do not describe whether the app is installed now or qualify build 53.
 
 Version: **0.2.7, build 45**. Installed-app GUI and physical smoke checks for build 45 remain pending, including normal startup/quit, sleep/wake and closed-lid handback. The live GUI evidence below is from installed build 44 and is distinguished from build-45 headless and isolated checks.
 

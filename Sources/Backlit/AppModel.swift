@@ -158,7 +158,8 @@ enum MusicCapturePolicy {
     }
     @Published var agents: [AgentEvent] = []
     @Published var agentMetadataLimited = false
-    var agentMetadataWarning: String? { agentMetadataLimited ? "Session metadata is incomplete. Some coding sessions may be missing from this snapshot." : nil }
+    var agentSessionStatus: AgentSessionStatus { .init(events: agents, incomplete: agentMetadataLimited) }
+    var agentMetadataWarning: String? { agentSessionStatus.warning }
     @Published var audioRunning = false
     @Published var audioPermissionHelp = false
     @Published private(set) var audioCaptureError: String?
@@ -1535,10 +1536,11 @@ enum MusicCapturePolicy {
         }
     }
     func apiState() -> [String:Any] {
-        ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),
+        let sessions = agentSessionStatus
+        return ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),
          "effect":mode.title,"effects":availableModes.map(\.title),"battery":Effects.percent(battery),
-         "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? (agentMetadataLimited ? "scan_limited" : "no_recent_signals") : agentState.rawValue,
-         "agent_scan_limited":agentMetadataLimited,"agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
+         "charging":charging,"actively_charging":activelyCharging,"agent_state":sessions.apiStateName,
+         "agent_scan_limited":sessions.incomplete,"agent_sessions":sessions.observedCount,"hardware_supported":device.available,"controlling":controlling,
          "preview":!controlling,"paused":pausedReason ?? "","output":output,
          "battery_available":batteryAvailable,"charge_ready":chargeReady,"automation_enabled":automationsEnabled]
     }

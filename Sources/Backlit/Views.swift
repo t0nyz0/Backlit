@@ -161,6 +161,25 @@ struct BatteryOutputReadout: View {
     }
 }
 
+/// Menu and workspace always present completeness together with the summary.
+struct AgentSessionSummary: View {
+    @ObservedObject var model: AppModel
+    var compact = false
+    var body: some View {
+        let status = model.agentSessionStatus
+        VStack(alignment: .leading, spacing: 6) {
+            Label(compact ? status.menuSummary : status.workspaceSummary, systemImage: "terminal")
+                .font(.system(size: compact ? 11 : 13, weight: compact ? .regular : .medium))
+                .foregroundStyle(compact ? .secondary : .primary)
+                .fixedSize(horizontal: false, vertical: true)
+            if let warning = status.warning {
+                Text(warning).font(.system(size: 11)).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+}
+
 struct LightPage: View {
     @ObservedObject var model: AppModel
     var body: some View {
@@ -194,8 +213,7 @@ struct LightPage: View {
                         Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
                     } else if model.mode == .agents {
-                        Label(model.agents.isEmpty ? (model.agentMetadataLimited ? "Session snapshot incomplete" : "Waiting for an agent") : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
-                        if let warning = model.agentMetadataWarning { Text(warning).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
+                        AgentSessionSummary(model: model)
                         Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
                         Button("Manage Connections"){model.selectedPage="connections"}
                     } else if model.mode == .typing {
@@ -462,7 +480,7 @@ struct MenuView: View {
                 TypingResponseControls(model: model).font(.system(size:11))
                 VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.unavailableTouchMessage ?? model.touchStatus,systemImage:"hand.tap").fixedSize(horizontal:false,vertical:true).font(.system(size:11)).foregroundStyle(.secondary)}
             } else if model.mode == .agents {
-                Label(model.agents.isEmpty ? "Waiting for an agent" : model.agentState.rawValue.capitalized,systemImage:"terminal").font(.system(size:11)).foregroundStyle(.secondary)
+                AgentSessionSummary(model: model, compact: true)
             }
             if !model.demo && model.needsLightRecovery && (!model.controlWanted || !model.controlling) {
                 Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}.buttonStyle(.borderedProminent).tint(.primary)
