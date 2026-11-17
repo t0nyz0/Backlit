@@ -38,6 +38,17 @@ struct AgentHookInstallation: Equatable {
     static let absent = AgentHookInstallation(fullyInstalled:false,hasManagedHooks:false)
 }
 
+/// A partial snapshot must not be presented as complete session status.
+struct AgentEventScan {
+    let events: [AgentEvent]
+    let limited: Bool
+}
+struct AgentEventScanLimits {
+    let maximumEntries: Int
+    let maximumReads: Int
+    static let standard = Self(maximumEntries: 4096, maximumReads: 1024)
+}
+
 enum AgentBridge {
     static var directory: URL { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/Backlit") }
     static var eventDirectory: URL { directory.appendingPathComponent("agent-events") }
@@ -53,13 +64,57 @@ enum AgentBridge {
         try JSONEncoder().encode(AgentEvent(agent:agent,state:state,time:Date())).write(to:file,options:.atomic)
         try FileManager.default.setAttributes([.posixPermissions:0o600],ofItemAtPath:file.path)
     }
+    /// Compatibility for callers that do not present completeness. The app
+    /// uses scanEvents so a budget-limited snapshot is visibly identified.
     static func events(directory: URL = eventDirectory, now: Date = Date()) -> [AgentEvent] {
-        ((try? FileManager.default.contentsOfDirectory(at:directory,includingPropertiesForKeys:nil)) ?? []).compactMap {
-            guard $0.pathExtension == "json", let data = metadata(at:$0),
-                  let event = try? JSONDecoder().decode(AgentEvent.self,from:data),
-                  (-10..<900).contains(now.timeIntervalSince(event.time)) else { return nil }
-            return event
+        scanEvents(directory: directory, now: now).events
+    }
+    static func scanEvents(directory: URL = eventDirectory, now: Date = Date(),
+                           limits: AgentEventScanLimits = .standard) -> AgentEventScan {
+        guard let stream = opendir(directory.path) else {
+            return AgentEventScan(events: [], limited: errno != ENOENT)
         }
+        defer { closedir(stream) }
+        var enumerationFailed = false
+        let result = scanEvents(now: now, limits: limits, nextURL: {
+            // readdir is nonrecursive and retains only the current entry. Do
+            // not construct an array of every filename before applying limits.
+            while true {
+                errno = 0
+                guard let entry = readdir(stream) else {
+                    enumerationFailed = errno != 0
+                    return nil
+                }
+                let capacity = MemoryLayout.size(ofValue: entry.pointee.d_name)
+                let name = withUnsafePointer(to: &entry.pointee.d_name) {
+                    $0.withMemoryRebound(to: CChar.self, capacity: capacity) { String(cString: $0) }
+                }
+                if name == "." || name == ".." { continue }
+                return directory.appendingPathComponent(name)
+            }
+        }, readMetadata: metadata(at:))
+        return AgentEventScan(events: result.events, limited: result.limited || enumerationFailed)
+    }
+    /// Deterministic seam for budget/ordering tests; production supplies a
+    /// streaming directory cursor and the descriptor-bounded metadata reader.
+    static func scanEvents(now: Date, limits: AgentEventScanLimits,
+                           nextURL: () -> URL?, readMetadata: (URL) -> Data?) -> AgentEventScan {
+        let entryLimit = max(0, limits.maximumEntries), readLimit = max(0, limits.maximumReads)
+        var entries = 0, reads = 0, events: [AgentEvent] = []
+        while let file = nextURL() {
+            // One extra entry distinguishes an exactly-full complete scan
+            // from truncation. It is neither opened nor retained.
+            guard entries < entryLimit else { return AgentEventScan(events: events, limited: true) }
+            entries += 1
+            guard file.pathExtension == "json" else { continue }
+            guard reads < readLimit else { return AgentEventScan(events: events, limited: true) }
+            reads += 1
+            guard let data = readMetadata(file), data.count < 4096,
+                  let event = try? JSONDecoder().decode(AgentEvent.self, from: data),
+                  (-10..<900).contains(now.timeIntervalSince(event.time)) else { continue }
+            events.append(event)
+        }
+        return AgentEventScan(events: events, limited: false)
     }
     /// Bound each read on the opened descriptor, rather than trusting a path
     /// size check followed by an unbounded Foundation read. O_NONBLOCK keeps
@@ -209,27 +264,79 @@ enum AgentBridge {
         return try JSONSerialization.data(withJSONObject:doc,options:[.prettyPrinted,.sortedKeys,.withoutEscapingSlashes]) + Data([10])
     }
     static func connect(_ agent: CodingAgent, enabled: Bool) throws {
-        let file = file(agent), manager = FileManager.default
-        let exists = manager.fileExists(atPath:file.path)
-        if !exists && !enabled { return }
-        let attrs = exists ? try manager.attributesOfItem(atPath:file.path) : [:]
-        guard !exists || attrs[.type] as? FileAttributeType == .typeRegular else { throw RuntimeServices.failure("Agent settings is a symbolic link or special file. Choose its actual folder first.") }
-        let bytes = exists ? try Data(contentsOf:file) : nil
         let binary = Bundle.main.executableURL!.path
         let prior = [FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications/Backlit.app/Contents/MacOS/Backlit").path, "/Applications/Backlit.app/Contents/MacOS/Backlit"] + (UserDefaults.standard.string(forKey:"agent.binary."+agent.rawValue).map{[$0]} ?? [])
-        let output = try merged(bytes,agent:agent,enabled:enabled,binary:binary,priorBinaries:prior)
-        try manager.createDirectory(at:directory,withIntermediateDirectories:true,attributes:[.posixPermissions:0o700])
-        if let bytes {
-            let backup = directory.appendingPathComponent("agent-backup-" + UUID().uuidString + ".json")
-            try bytes.write(to:backup,options:.atomic)
-            try manager.setAttributes([.posixPermissions:0o600],ofItemAtPath:backup.path)
-            guard try Data(contentsOf:file) == bytes else { throw RuntimeServices.failure("Agent settings changed during connection. Try again.") }
-            // Backups can hold sensitive settings; keep only the latest few.
-            SupportFilePruner.pruneAgentBackups(directory:directory)
+        if try saveHooks(at: file(agent), agent: agent, enabled: enabled, binary: binary,
+                         priorBinaries: prior, backupDirectory: directory) {
+            UserDefaults.standard.set(binary, forKey: "agent.binary." + agent.rawValue)
         }
-        try manager.createDirectory(at:file.deletingLastPathComponent(),withIntermediateDirectories:true)
-        try output.write(to:file,options:.atomic)
-        try manager.setAttributes([.posixPermissions:attrs[.posixPermissions] ?? 0o600],ofItemAtPath:file.path)
-        UserDefaults.standard.set(binary,forKey:"agent.binary."+agent.rawValue)
+    }
+    /// The path-injected transaction is also used by inert filesystem tests.
+    /// Existing-file writers can still race the optimistic reread; no external
+    /// compare-and-swap guarantee is claimed. Initial creation never replaces
+    /// a file that appeared after the absent observation.
+    @discardableResult static func saveHooks(at file: URL, agent: CodingAgent, enabled: Bool,
+                                            binary: String, priorBinaries: [String] = [],
+                                            backupDirectory: URL,
+                                            beforeCommit: () throws -> Void = {}) throws -> Bool {
+        let manager = FileManager.default
+        let exists = manager.fileExists(atPath: file.path)
+        if !exists && !enabled { return false }
+        let attrs = exists ? try manager.attributesOfItem(atPath: file.path) : [:]
+        guard !exists || attrs[.type] as? FileAttributeType == .typeRegular else { throw RuntimeServices.failure("Agent settings is a symbolic link or special file. Choose its actual folder first.") }
+        let bytes = exists ? try Data(contentsOf: file) : nil
+        let output = try merged(bytes, agent: agent, enabled: enabled, binary: binary, priorBinaries: priorBinaries)
+        try manager.createDirectory(at: backupDirectory, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        if let bytes {
+            let backup = backupDirectory.appendingPathComponent("agent-backup-" + UUID().uuidString + ".json")
+            try bytes.write(to: backup, options: .atomic)
+            try manager.setAttributes([.posixPermissions: 0o600], ofItemAtPath: backup.path)
+            guard try Data(contentsOf: file) == bytes else { throw RuntimeServices.failure("Agent settings changed during connection. Try again.") }
+            SupportFilePruner.pruneAgentBackups(directory: backupDirectory)
+        }
+        try manager.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+        if exists {
+            try beforeCommit()
+            try output.write(to: file, options: .atomic)
+            try manager.setAttributes([.posixPermissions: attrs[.posixPermissions] ?? 0o600], ofItemAtPath: file.path)
+        } else {
+            try createHooksExclusively(output, at: file, beforeCommit: beforeCommit)
+        }
+        return true
+    }
+    private static func createHooksExclusively(_ data: Data, at file: URL,
+                                               beforeCommit: () throws -> Void) throws {
+        let manager = FileManager.default
+        let staged = file.deletingLastPathComponent().appendingPathComponent(".backlit-hooks-" + UUID().uuidString + ".tmp")
+        let descriptor = open(staged.path, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, mode_t(0o600))
+        guard descriptor >= 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        var needsClose = true
+        defer {
+            if needsClose { close(descriptor) }
+            try? manager.removeItem(at: staged)
+        }
+        // The descriptor is private from creation; restore owner read/write
+        // if an unusually restrictive process umask removed either bit.
+        guard fchmod(descriptor, mode_t(0o600)) == 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        try data.withUnsafeBytes { buffer in
+            var count = 0
+            while count < buffer.count {
+                let written = Darwin.write(descriptor, buffer.baseAddress!.advanced(by: count), buffer.count - count)
+                if written < 0 && errno == EINTR { continue }
+                guard written > 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(written == 0 ? EIO : errno)) }
+                count += written
+            }
+        }
+        let closeResult = close(descriptor)
+        needsClose = false
+        guard closeResult == 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
+        try beforeCommit()
+        guard renamex_np(staged.path, file.path, UInt32(RENAME_EXCL)) == 0 else {
+            let reason = errno
+            if reason == EEXIST || reason == ENOTEMPTY {
+                throw RuntimeServices.failure("Agent settings appeared during connection. Nothing was overwritten. Review them and try again.")
+            }
+            throw NSError(domain: NSPOSIXErrorDomain, code: Int(reason))
+        }
     }
 }

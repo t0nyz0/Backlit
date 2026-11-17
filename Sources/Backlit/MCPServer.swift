@@ -96,6 +96,7 @@ actor BacklitMCPTools {
             "hardware_enabled":["type":"boolean"],"hardware_sample_age_seconds":["type":"number","minimum":0],
             "hardware_supported":["type":"boolean"],"controlling":["type":"boolean"],"preview":["type":"boolean"],"recovery_required":["type":"boolean"],
             "busy":["type":"boolean"],"paused":["type":"string"],"observed_at":["type":"string"],
+            "agent_scan_limited":["type":"boolean"],
             "application_result":["type":"string","enum":["applied","waiting","paused","unavailable","recovery_required"]],
             "available_modes":["type":"array","items":["type":"object","properties":[
                 "name":["type":"string"],"selectable":["type":"boolean"],"reason":["type":"string"]

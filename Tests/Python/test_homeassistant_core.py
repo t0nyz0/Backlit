@@ -68,10 +68,31 @@ class CoreIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(commands[-1], {"enabled": True, "brightness": 100, "effect": "Breathe"})
                 self.assertEqual(len(hass.states.async_all("sensor")), 3)
                 self.assertEqual(len(hass.states.async_all("binary_sensor")), 2)
+                # A partial nonempty scan must not look like complete agent
+                # status/count in the bundled integration. Other sensors work.
+                sensors = hass.states.async_all("sensor")
+                status_id = next(entity.entity_id for entity in sensors if entity.attributes.get("friendly_name", "").endswith("Agent status"))
+                sessions_id = next(entity.entity_id for entity in sensors if entity.attributes.get("friendly_name", "").endswith("Agent sessions"))
+                battery_id = next(entity.entity_id for entity in sensors if entity.attributes.get("device_class") == "battery")
+                state.update(agent_scan_limited=True, agent_state="waiting", agent_sessions=1024)
+                coordinator = hass.data["backlit"][entry.entry_id]
+                await coordinator.async_refresh()
+                await hass.async_block_till_done()
+                self.assertEqual(hass.states.get(status_id).state, "scan_limited")
+                self.assertEqual(hass.states.get(sessions_id).state, "unknown")
+                for entity_id in [status_id, sessions_id]:
+                    self.assertTrue(hass.states.get(entity_id).attributes["snapshot_incomplete"])
+                    self.assertEqual(hass.states.get(entity_id).attributes["observed_sessions"], 1024)
+                self.assertNotEqual(hass.states.get(battery_id).state, "unavailable")
+                state.update(agent_scan_limited=False, agent_state="working", agent_sessions=2)
+                await coordinator.async_refresh()
+                await hass.async_block_till_done()
+                self.assertEqual(hass.states.get(status_id).state, "working")
+                self.assertEqual(hass.states.get(sessions_id).state, "2")
                 state["controlling"] = False
                 state["preview"] = True
                 coordinator = hass.data["backlit"][entry.entry_id]
-                await coordinator.async_request_refresh()
+                await coordinator.async_refresh()
                 await hass.async_block_till_done()
                 self.assertEqual(hass.states.get(entity).state, "unavailable")
                 self.assertTrue(await hass.config_entries.async_unload(entry.entry_id))

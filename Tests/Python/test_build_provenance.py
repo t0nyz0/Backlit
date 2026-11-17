@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -145,6 +146,52 @@ class BuildProvenanceTests(unittest.TestCase):
         self.assertEqual((self.root / 'dist/exported-ref.txt').read_text(), original)
         self.assertEqual(sentinel.read_text(), 'previous package')
         self.assertFalse(list((self.root / 'dist').glob('package-work.*')))
+
+    def test_frozen_identity_accepts_an_exact_private_copy(self):
+        provenance.write(self.root, self.app, provenance.capture(self.root))
+        frozen = provenance.freeze(self.root, self.app)
+        copy = self.root / 'dist/private/Backlit.app'
+        shutil.copytree(self.app, copy, symlinks=True)
+        self.assertEqual(provenance.verify_frozen(self.root, copy, frozen), frozen['provenance'])
+        self.assertEqual(provenance.bundle_digest(copy), frozen['bundle_sha256'])
+
+    def test_frozen_identity_rejects_a_clean_completed_rebuild(self):
+        provenance.write(self.root, self.app, provenance.capture(self.root))
+        frozen = provenance.freeze(self.root, self.app)
+        (self.root / 'source.txt').write_text('concurrent clean build\n')
+        self.git('add', '.'); self.git('commit', '-qm', 'New clean source')
+        provenance.write(self.root, self.app, provenance.capture(self.root))
+        with self.assertRaisesRegex(ValueError, 'changed while packaging'):
+            provenance.verify_frozen(self.root, self.app, frozen)
+
+    def test_frozen_identity_includes_bytes_modes_and_link_targets(self):
+        resource = self.app / 'Contents/payload'
+        resource.write_text('original bytes')
+        original_mode = resource.stat().st_mode & 0o777
+        link = self.app / 'Contents/alias'
+        link.symlink_to('payload')
+        provenance.write(self.root, self.app, provenance.capture(self.root))
+        frozen = provenance.freeze(self.root, self.app)
+        resource.write_text('different bytes')
+        with self.assertRaisesRegex(ValueError, 'changed while packaging'):
+            provenance.verify_frozen(self.root, self.app, frozen)
+        resource.write_text('original bytes'); resource.chmod(0o700)
+        with self.assertRaisesRegex(ValueError, 'changed while packaging'):
+            provenance.verify_frozen(self.root, self.app, frozen)
+        resource.chmod(original_mode); link.unlink(); link.symlink_to('elsewhere')
+        with self.assertRaisesRegex(ValueError, 'changed while packaging'):
+            provenance.verify_frozen(self.root, self.app, frozen)
+
+    def test_bundle_identity_rejects_special_files_without_opening_them(self):
+        os.mkfifo(self.app / 'Contents/fifo')
+        with self.assertRaisesRegex(ValueError, 'unsupported special file'):
+            provenance.bundle_digest(self.app)
+
+    def test_invalid_frozen_identity_is_rejected(self):
+        for value in [None, [], {}, {'format': True},
+                      {'format': 1, 'provenance': {}, 'bundle_sha256': 'z' * 64}]:
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, 'Invalid frozen'):
+                provenance.verify_frozen(self.root, self.app, value)
 
     def test_archive_nested_in_another_repository_cannot_borrow_its_identity(self):
         archive = self.root / 'dist/source-archive'

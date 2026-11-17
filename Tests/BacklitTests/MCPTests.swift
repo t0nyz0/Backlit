@@ -56,6 +56,36 @@ final class MCPTests: XCTestCase {
         XCTAssertEqual(try JSONDecoder().decode(Value.self,from:Data(text.utf8)),result.structuredContent)
         XCTAssertEqual(result.structuredContent?.objectValue?["manual_brightness_percent"],68)
     }
+    func testActualPartialStatusUsesDeclaredOutputPropertiesForEveryTool() async throws {
+        for flag: Bool? in [nil, false, true] {
+            var sample = Self.state; sample.agentScanLimited = flag
+            let response = sample
+            let backend = BacklitMCPTools { _ in response }
+            for tool in BacklitMCPTools.tools {
+                let arguments: [String: Value]
+                switch tool.name {
+                case "backlit_set_power": arguments = ["enabled": true]
+                case "backlit_set_brightness": arguments = ["percent": 50]
+                case "backlit_set_mode": arguments = ["mode": "steady"]
+                default: arguments = [:]
+                }
+                let result = await backend.call(.init(name: tool.name, arguments: arguments))
+                XCTAssertEqual(result.isError, false)
+                let actual = try XCTUnwrap(result.structuredContent?.objectValue)
+                let success = try XCTUnwrap(tool.outputSchema?.objectValue?["oneOf"]?.arrayValue?.first?.objectValue)
+                let properties = try XCTUnwrap(success["properties"]?.objectValue)
+                XCTAssertEqual(success["additionalProperties"], .bool(false))
+                XCTAssertTrue(Set(actual.keys).isSubset(of: Set(properties.keys)), "Undeclared success properties: \(actual.keys)")
+                for required in try XCTUnwrap(success["required"]?.arrayValue) {
+                    XCTAssertNotNil(actual[try XCTUnwrap(required.stringValue)])
+                }
+                if let flag {
+                    XCTAssertEqual(actual["agent_scan_limited"], .bool(flag))
+                    XCTAssertEqual(properties["agent_scan_limited"]?.objectValue?["type"], .string("boolean"))
+                } else { XCTAssertNil(actual["agent_scan_limited"]) }
+            }
+        }
+    }
     @MainActor func testReadOnlyCredentialCannotWriteAndCannotAccessHomeAssistantRoutes() async throws {
         let server = HomeBridge(); defer { server.stop() }
         server.agentState = { Self.state }

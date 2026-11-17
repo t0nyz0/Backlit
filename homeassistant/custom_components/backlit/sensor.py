@@ -21,5 +21,17 @@ class BacklitSensor(BacklitEntity, SensorEntity):
             self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
+    def extra_state_attributes(self):
+        if self.key not in ("agent_state", "agent_sessions"):
+            return None
+        return {"snapshot_incomplete": self.coordinator.data.get("agent_scan_limited"),
+                "observed_sessions": self.coordinator.data.get("agent_sessions")}
+
+    @property
     def native_value(self):
+        if self.coordinator.data.get("agent_scan_limited") is True:
+            if self.key == "agent_state":
+                return "scan_limited"
+            if self.key == "agent_sessions":
+                return None  # Unknown total; observed lower bound is an attribute.
         return self.coordinator.data.get(self.key)

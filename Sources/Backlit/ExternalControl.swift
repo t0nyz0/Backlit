@@ -120,6 +120,9 @@ struct AgentLightState: Codable, Sendable, Equatable {
     let applicationResult: String
     let observedAt: String
     let availableModes: [Mode]
+    // Optional for compatibility with older installed backends. Nil is unknown,
+    // not a claim that the metadata snapshot was complete.
+    var agentScanLimited: Bool? = nil
 }
 
 extension GlowMode {

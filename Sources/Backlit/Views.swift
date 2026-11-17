@@ -167,7 +167,7 @@ struct LightPage: View {
         LogoPreview(model:model)
         HStack(alignment:.top,spacing:18) {
             Surface(model.t("Behavior","選擇模式")) {
-                VStack(spacing:5) { ForEach(model.availableModes) { mode in modeRow(mode) } }
+                VStack(spacing:5) { ForEach(model.presentedModes) { mode in modeRow(mode) } }
             }.frame(maxWidth:.infinity)
             VStack(spacing:18) {
                 if model.mode == .battery {
@@ -194,7 +194,8 @@ struct LightPage: View {
                         Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
                     } else if model.mode == .agents {
-                        Label(model.agents.isEmpty ? "Waiting for an agent" : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
+                        Label(model.agents.isEmpty ? (model.agentMetadataLimited ? "Session snapshot incomplete" : "Waiting for an agent") : "\(model.agents.count) sessions · \(model.agentState.rawValue)",systemImage:"terminal").font(.system(size:13,weight:.medium))
+                        if let warning = model.agentMetadataWarning { Text(warning).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
                         Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
                         Button("Manage Connections"){model.selectedPage="connections"}
                     } else if model.mode == .typing {
@@ -202,11 +203,15 @@ struct LightPage: View {
                         TypingResponseControls(model: model)
                         Text("The light turns off shortly after typing stops. With the lid closed, use an external keyboard.").font(.system(size: 11)).foregroundStyle(.secondary)
                     } else if model.mode == .touch {
-                        Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:12,weight:.medium))
-                        if model.touchSource != .screen {Toggle("Blink on trackpad click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)}
+                        Label(model.unavailableTouchMessage == nil ? model.touchStatus : "Trackpad input unavailable",systemImage:"hand.tap").font(.system(size:12,weight:.medium))
+                        if model.unavailableTouchMessage == nil && model.touchSource != .screen {Toggle("Blink on trackpad click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)}
                         TypingResponseControls(model: model)
-                        Text("Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.").font(.system(size:11)).foregroundStyle(.secondary)
-                        Text("Global trackpad · event-driven, no input polling").font(.system(size:10)).foregroundStyle(.tertiary)
+                        if let message = model.unavailableTouchMessage {
+                            Text(message).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+                        } else {
+                            Text("Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.").font(.system(size:11)).foregroundStyle(.secondary)
+                            Text("Global trackpad · event-driven, no input polling").font(.system(size:10)).foregroundStyle(.tertiary)
+                        }
                     } else {
                         Label(model.t("Steady brightness","簡單、優雅地亮著。"),systemImage:"circle.fill").font(.system(size:13,weight:.medium))
                         Text(model.t("Uses the brightness set above.","以你選擇的亮度持續發光。")).font(.system(size:12)).foregroundStyle(.secondary)
@@ -221,12 +226,14 @@ struct LightPage: View {
         return Button {model.mode=mode} label: {
             HStack(spacing:12) {
                 Image(systemName:mode.symbol).font(.system(size:17,weight:.medium)).frame(width:34,height:34).foregroundStyle(selected ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.6)).background(selected ? Color.primary : Color.primary.opacity(0.045),in:RoundedRectangle(cornerRadius:10))
-                VStack(alignment:.leading,spacing:3){Text(mode.title).font(.system(size:12,weight:.semibold));Text(subtitles[mode]!).font(.system(size:10)).foregroundStyle(.secondary)}
+                VStack(alignment:.leading,spacing:3){Text(mode.title).font(.system(size:12,weight:.semibold));Text(mode == .touch && !model.touchAvailable ? "Input unavailable · choose another behavior" : subtitles[mode]!).font(.system(size:10)).foregroundStyle(.secondary)}
                 Spacer();if selected {Image(systemName:"checkmark").font(.system(size:11,weight:.bold))}
             }.frame(maxWidth:.infinity,alignment:.leading).padding(6)
                 .contentShape(Rectangle())
                 .background(selected ? Color.primary.opacity(0.045) : .clear,in:RoundedRectangle(cornerRadius:12))
-        }.buttonStyle(.plain).accessibilityLabel("\(mode.title) mode").accessibilityAddTraits(selected ? .isSelected : [])
+        }.buttonStyle(.plain).disabled(!model.availableModes.contains(mode))
+            .accessibilityLabel("\(mode.title) mode").accessibilityAddTraits(selected ? .isSelected : [])
+            .accessibilityHint(mode == .touch && !model.touchAvailable ? "Input unavailable. Enable typing response or choose another behavior." : "")
     }
 }
 
@@ -271,6 +278,7 @@ struct ConnectionsPage: View {
                         if agent == .claude { Divider() }
                     }
                 }
+                if let warning = model.agentMetadataWarning { Text(warning).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
                 Text("Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.")
                     .font(.system(size: 10)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true).padding(.horizontal, 6)
@@ -430,7 +438,7 @@ struct MenuView: View {
             HStack {
                 Text(model.t("Behavior","模式")).font(.system(size:12)).foregroundStyle(.secondary)
                 Spacer()
-                Picker("Behavior",selection:$model.mode) {ForEach(model.availableModes){mode in Label(mode.title,systemImage:mode.symbol).tag(mode)}}.labelsHidden().pickerStyle(.menu).frame(width:150)
+                Picker("Behavior",selection:$model.mode) {ForEach(model.presentedModes){mode in Label(mode == .touch && !model.touchAvailable ? "Trackpad · unavailable" : mode.title,systemImage:mode.symbol).tag(mode).disabled(!model.availableModes.contains(mode))}}.labelsHidden().pickerStyle(.menu).frame(width:150)
             }
             if model.mode == .battery {
                 Text("Battery-driven output").font(.system(size: 12, weight: .medium))
@@ -452,7 +460,7 @@ struct MenuView: View {
                 TypingResponseControls(model: model).font(.system(size: 11))
             } else if model.mode == .touch {
                 TypingResponseControls(model: model).font(.system(size:11))
-                VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.touchStatus,systemImage:"hand.tap").font(.system(size:11)).foregroundStyle(.secondary)}
+                VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.unavailableTouchMessage ?? model.touchStatus,systemImage:"hand.tap").fixedSize(horizontal:false,vertical:true).font(.system(size:11)).foregroundStyle(.secondary)}
             } else if model.mode == .agents {
                 Label(model.agents.isEmpty ? "Waiting for an agent" : model.agentState.rawValue.capitalized,systemImage:"terminal").font(.system(size:11)).foregroundStyle(.secondary)
             }

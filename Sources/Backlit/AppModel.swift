@@ -95,7 +95,7 @@ enum MusicCapturePolicy {
     }
     private var batteryResponse = BatteryResponse()
     private var musicResponse = MusicResponse()
-    let touchSources = TouchResponse.sources
+    let touchSources: [TouchSource]
     var touchAvailable:Bool {!touchSources.isEmpty || typingEnabled}
     @Published var touchSource:TouchSource = .screen {didSet {
         guard !isLoading else{return};defaults.set(touchSource.rawValue,forKey:"touch.source")
@@ -107,6 +107,12 @@ enum MusicCapturePolicy {
     @Published var touchDown = false
     @Published var touchStatus = "Waiting for touch"
     var availableModes:[GlowMode] {GlowMode.allCases.filter{$0 != .touch || touchAvailable}}
+    // Presentation can retain a selected unavailable input mode without admitting
+    // it through external control or silently switching to an illuminated mode.
+    var presentedModes: [GlowMode] { GlowMode.allCases.filter { availableModes.contains($0) || $0 == mode } }
+    var unavailableTouchMessage: String? {
+        mode == .touch && !touchAvailable ? "No trackpad input is available. Enable typing response or choose another behavior." : nil
+    }
     let bridge = HomeBridge()
     @Published var mode: GlowMode = .battery { didSet { guard !isLoading else{return}; lastSourceSample = -Double.infinity; if mode == .battery {lastBatterySample = -Double.infinity}; save(); if mode != .music { stopAudio() } else if oldValue != .music { clearAudioFailure() }
         synchronizeTouch()
@@ -151,6 +157,8 @@ enum MusicCapturePolicy {
         if batteryAvailable != available { batteryAvailable = available }
     }
     @Published var agents: [AgentEvent] = []
+    @Published var agentMetadataLimited = false
+    var agentMetadataWarning: String? { agentMetadataLimited ? "Session metadata is incomplete. Some coding sessions may be missing from this snapshot." : nil }
     @Published var audioRunning = false
     @Published var audioPermissionHelp = false
     @Published private(set) var audioCaptureError: String?
@@ -327,6 +335,11 @@ enum MusicCapturePolicy {
     private let epoch = ProcessInfo.processInfo.systemUptime
     var id: String { defaults.string(forKey:"installation.id")! }
     var agentState: AgentState { AgentBridge.aggregate(agents) }
+    func applyAgentScan(_ scan: AgentEventScan) {
+        let next = scan.events.sorted { $0.time < $1.time }
+        if agents != next { agents = next }
+        if agentMetadataLimited != scan.limited { agentMetadataLimited = scan.limited }
+    }
     var isChinese: Bool { language == "zh-Hant" }
     var savedLidPauseNeedsReview: Bool {
         lidIntentController.intent?.savedPause.map { $0.needsQualifiedHandback || !$0.canRetry } == true
@@ -368,7 +381,7 @@ enum MusicCapturePolicy {
             return t("Following your battery","跟隨電量")
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
-        case .touch:return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
+        case .touch:if let message = unavailableTouchMessage { return message }; return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
         case .typing:return typingDown ? "Typing active · light on" : typingStatus
         }
     }
@@ -381,7 +394,8 @@ enum MusicCapturePolicy {
          lidPauseRecoveryEnvironment: LidPauseRecoveryEnvironment? = nil,
          ambientAuthorization: ((Bool) throws -> Void)? = nil,
          externalControlObservation: (() -> ExternalControlContext)? = nil,
-         recoveryEnvironment: LightRecoveryEnvironment? = nil) {
+         recoveryEnvironment: LightRecoveryEnvironment? = nil, touchSources injectedTouchSources: [TouchSource]? = nil) {
+        self.touchSources = injectedTouchSources ?? TouchResponse.sources
         self.externalControlObservation = externalControlObservation
         self.recoveryEnvironment = demo ? recoveryEnvironment : nil
         self.hardwareRestore = hardwareRestore
@@ -425,7 +439,6 @@ enum MusicCapturePolicy {
         touchClickBlink = self.defaults.bool(forKey:"touch.clickBlink")
         strobe = self.defaults.bool(forKey:"strobe")
         typingEnabled = self.defaults.bool(forKey: "typing.enabled")
-        if mode == .touch && !touchAvailable { mode = .steady }
         automationsEnabled = self.defaults.bool(forKey: "automation.enabled")
         mcpAccess = MCPAccess(rawValue:self.defaults.string(forKey:"mcp.access") ?? "off") ?? .off
         if self.defaults.object(forKey: "music.automatic") != nil { musicAutomatic = self.defaults.bool(forKey: "music.automatic") }
@@ -609,8 +622,7 @@ enum MusicCapturePolicy {
             }
             if !demo && now-lastAgentPrune >= 600 { pruneAgentFiles() }
             if mode == .agents || bridgeEnabled || mcpAccess != .off {
-                let nextAgents=demo ? [] : AgentBridge.events().sorted{$0.time<$1.time}
-                if agents != nextAgents {agents=nextAgents}
+                applyAgentScan(demo ? AgentEventScan(events: [], limited: false) : AgentBridge.scanEvents())
             }
             cachedLid = demo ? false : RuntimeServices.lidClosed
             cachedLogoEnabled = demo ? nil : LogoDevice.enabledState()
@@ -914,7 +926,7 @@ enum MusicCapturePolicy {
                 else if selected == .typing && !context.typingAuthorized { reason = "Enable typing access in Backlit first" }
                 else { reason = nil }
                 return .init(name:selected.externalName, selectable:reason == nil, reason:reason)
-            })
+            }, agentScanLimited:agentMetadataLimited)
     }
     func repairAndResume() {
         guard !hardwareOperationInProgress else { return }
@@ -1525,8 +1537,8 @@ enum MusicCapturePolicy {
     func apiState() -> [String:Any] {
         ["id":id,"name":"Backlit","version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development","build":Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0","enabled":enabled,"brightness":Int(((mode == .battery ? output : Effects.clamp(brightness))*255).rounded()),
          "effect":mode.title,"effects":availableModes.map(\.title),"battery":Effects.percent(battery),
-         "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? "no_recent_signals" : agentState.rawValue,
-         "agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
+         "charging":charging,"actively_charging":activelyCharging,"agent_state":agents.isEmpty ? (agentMetadataLimited ? "scan_limited" : "no_recent_signals") : agentState.rawValue,
+         "agent_scan_limited":agentMetadataLimited,"agent_sessions":agents.count,"hardware_supported":device.available,"controlling":controlling,
          "preview":!controlling,"paused":pausedReason ?? "","output":output,
          "battery_available":batteryAvailable,"charge_ready":chargeReady,"automation_enabled":automationsEnabled]
     }

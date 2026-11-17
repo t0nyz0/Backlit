@@ -8,12 +8,14 @@
 - Dock visibility is rechecked after startup and activation.
 - Native presentation is invalidated when recovery or busy checks prevent a normal frame.
 - Customized legacy coding hooks are preserved when reconnecting or disconnecting Backlit.
-- Packaging verifies the bundle's version and source provenance and rejects stale or concurrently changed build inputs.
+- Packaging uses a verified private bundle snapshot and frozen source/digest identity for both ZIP and DMG, rejecting concurrent rebuild races and preserving earlier output on failure.
 
 ### Follow-up fixes
 
 - Automatic connection restoration reuses keys without prompting or creating replacements; an unavailable Home Assistant key no longer disables healthy local MCP.
-- Agent metadata reads reject links/special files and enforce the per-file size limit. Hook status checks the complete configuration and keeps repair/disconnect access for partial installations.
+- Agent metadata reads reject links/special files and enforce per-file and aggregate scan budgets, with explicit incomplete status when limited. Hook status checks the complete configuration and keeps repair/disconnect access for partial installations.
+- Initial hook-file creation does not overwrite a file created concurrently; existing-file writer races remain a known limit.
+- Unavailable Trackpad stays selected and dark with a clear explanation, including after reopening.
 - Lid helpers verify the parent's process-start identity to avoid following a reused PID.
 - Recorder transitions preserve held Shift-brightness pairing; disabling ordinary shortcuts works even if handler creation failed.
 - Imported manual controls reject malformed/nonfinite values before reaching sliders while preserving valid settings.
@@ -21,6 +23,6 @@
 
 ### Qualification
 
-Build 51 passed non-UI and isolated integration checks. It has not been installed or physically qualified. Sleep/wake, lid handback, emitted light, native shortcut suppression and fresh agent-session acceptance remain pending. Closed-lid lighting stays capped at 30 minutes and may keep the built-in screen lit.
+Build 52 passed non-UI and isolated integration checks. It has not been installed or physically qualified. Sleep/wake, lid handback, emitted light, native shortcut suppression and fresh agent-session acceptance remain pending. Closed-lid lighting stays capped at 30 minutes and may keep the built-in screen lit.
 
 This candidate is ad-hoc signed with hardened runtime, not Developer ID signed or notarized. No public release or tag has been created. See [validation](VALIDATION.md).
