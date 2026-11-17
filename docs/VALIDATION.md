@@ -1,5 +1,21 @@
 # Backlit validation
 
+## Local 0.2.8 candidate — build 50
+
+This source candidate has not been installed or physically qualified. The running local app is **0.2.8, build 49**; its binary identity, read-only MCP health and accessory (Dock-hidden) activation policy were verified after startup and again after settling. Preferences, hook configuration and the existing Dock shortcut were preserved. No desktop/window, accessibility or screenshot inspection was performed in this review.
+
+- **706 non-UI Swift tests passed**, including seven new regression methods for native presentation invalidation and preserving customized legacy hooks. The window-based sidebar interaction test was deliberately excluded under the current no-UI restriction; its earlier evidence is not a fresh build-50 result.
+- **33 Python tests passed**, including actual installer rollback fixtures, Home Assistant Core integration, official Sparkle signature fixtures, source ZIP checks, and stale/concurrent-build packaging guards. **16 Stream Deck tests**, typecheck and the dependency audit passed.
+- The build records source identity before compilation and seals it inside the signed bundle only if that identity remains unchanged. Packaging rejects a stale/unproven bundle, freezes one verified identity for app/source/manifest, stages output and checks again before replacing prior packages. These checks prevent the reproduced accidental mismatch; they are not a reproducible-build attestation against a hostile local build environment.
+- The optimized arm64 bundle, strict nested signature, headless MCP protocol, source/archive/checksum and privacy checks are local evidence. No matching tag or release workflow has run for this candidate, and no publication is authorized by this document.
+- Independent source review found no newly confirmed critical authentication, privilege or recovery defect. Remaining robustness and qualification limits include synchronous native/Keychain waits, conservative manual closed-lid recovery, textual hook installation detection, experimental input edge cases and headless MCP discovery backpressure.
+
+Physical sleep/wake, lid handback and expiry, emitted light, native shortcut suppression, current-window interaction and fresh coding-agent hook delivery remain unverified. The app remains ad-hoc signed with hardened runtime and disabled library validation for Sparkle; it is not Developer ID signed or notarized. The detailed private QA evidence is kept outside the public source package.
+
+## Historical 0.2.7 release qualification
+
+The build-45 statements below describe its original pre-release acceptance state. They are retained as history and do not describe whether the app is installed now or qualify build 50.
+
 Version: **0.2.7, build 45**. Installed-app GUI and physical smoke checks for build 45 remain pending, including normal startup/quit, sleep/wake and closed-lid handback. The live GUI evidence below is from installed build 44 and is distinguished from build-45 headless and isolated checks.
 
 Publication requires the exact source in a clean commit and a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the matching `v0.2.7` tag. Check the matching tagged workflow for its exact commit and outcome; local checks are recorded separately below. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.

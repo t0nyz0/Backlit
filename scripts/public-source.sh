@@ -2,8 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p dist
-source_commit="$(git rev-parse HEAD)"
-short_commit="$(git rev-parse --short HEAD)"
+source_ref="${1:-HEAD}"
+source_commit="$(git rev-parse --verify --end-of-options "$source_ref^{commit}")"
+short_commit="$(git rev-parse --short "$source_commit")"
 staging="$(mktemp -d "$PWD/dist/public-candidate.XXXXXX")"
 export_root="$staging/Backlit"
 mkdir "$export_root"

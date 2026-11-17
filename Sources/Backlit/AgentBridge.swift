@@ -78,8 +78,15 @@ enum AgentBridge {
         """
     }
     private static func ownsLegacyCommand(_ text:String,agent:CodingAgent,binaries:[String])->Bool {
-        guard text.hasPrefix("/usr/bin/pgrep -xq Backlit "),text.contains(" "+marker+" "+agent.rawValue+" ") else{return false}
-        return binaries.contains {text.contains(shellArgument($0)+" "+marker+" ")}
+        // A prefix and embedded invocation do not establish ownership of the
+        // whole shell command: users may have appended their own work. Only
+        // remove the exact known legacy form; preserve unknown variants.
+        binaries.contains { binary in
+            ["working","waiting","attention","ended"].contains { phase in
+                text == "/usr/bin/pgrep -xq Backlit || exit 0; " + shellArgument(binary)
+                    + " " + marker + " " + agent.rawValue + " " + phase + " $sid"
+            }
+        }
     }
     static func merged(_ original: Data?, agent: CodingAgent, enabled: Bool, binary: String, priorBinaries: [String] = []) throws -> Data {
         var doc: [String:Any] = [:]

@@ -573,7 +573,12 @@ enum MusicCapturePolicy {
         defaults.set(musicPreset.rawValue, forKey: "music.preset")
     }
     func tick() {
-        defer { if !lightReady { invalidateLightReadyNotice() } }
+        defer {
+            if !lightReady { invalidateLightReadyNotice() }
+            // Recovery and busy gates also change the native presentation.
+            // Invalidate once even when no ordinary effect frame may proceed.
+            onIconChange?()
+        }
         // A stopped retained helper must enter its existing verified cleanup
         // path before the dead-owner admission guard can withhold frames.
         if !hardwareOperationInProgress, !isStopping, !lidCleanupInProgress, !lidStopFailed,
@@ -665,7 +670,6 @@ enum MusicCapturePolicy {
         // Capture starts only after ownership and the first output request
         // succeed, and stops if that work failed or the session became unsafe.
         synchronizeMusicCapture()
-        onIconChange?()
         configureTimer()
     }
     func effectOutput(at now: Double) -> Double {

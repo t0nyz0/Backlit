@@ -1,22 +1,17 @@
-**Backlit 0.2.7**
-
-### New
-
-- Optional local MCP control lets compatible AI assistants check status and control power, brightness and mode.
-- Configurable brightness-up/down shortcuts.
-- Experimental Shift + hardware brightness keys, off by default and pending physical keyboard validation.
+**Backlit 0.2.8 — local candidate, not published**
 
 ### Improvements
 
-- Improved brightness-limit override application and restoration.
-- Incomplete closed-lid recovery now blocks light control until resolved.
-- Turning the light off or quitting during recovery prevents automatic restart.
+- Clearer native Connections settings distinguish MCP control from automatic coding-status hooks.
+- Optional Hide Dock icon setting, with the menu-bar icon shown and Dock icon hidden by default. Saved choices are preserved, and hiding the menu-bar icon restores Dock access first. Existing pinned Dock shortcuts are retained.
+- Sidebar navigation responds across the full row.
+- Dock visibility is rechecked after startup and activation.
+- Native presentation is invalidated when recovery or busy checks prevent a normal frame.
+- Customized legacy coding hooks are preserved when reconnecting or disconnecting Backlit.
+- Packaging verifies the bundle's version and source provenance and rejects stale or concurrently changed build inputs.
 
-### What to know
+### Qualification
 
-- Closed-lid lighting is capped at 30 minutes and may keep the built-in display lit. Independent closed-lid brightness is still being evaluated.
-- macOS may ask you to re-enable Backlit under Input Monitoring after updating.
+Build 50 passed non-UI and isolated integration checks. It has not been installed or physically qualified. Sleep/wake, lid handback, emitted light, native shortcut suppression and fresh agent-session acceptance remain pending. Closed-lid lighting stays capped at 30 minutes and may keep the built-in screen lit.
 
-Installed-app GUI and physical smoke checks for build 45, including startup/quit, sleep/wake and closed-lid handback, remain pending.
-
-This build is ad-hoc signed with the hardened runtime, not Developer ID signed or notarized. See [validation](https://github.com/t0nyz0/Backlit/blob/v0.2.7/docs/VALIDATION.md) for completed checks and remaining hardware acceptance.
+This candidate is ad-hoc signed with hardened runtime, not Developer ID signed or notarized. No public release or tag has been created. See [validation](VALIDATION.md).

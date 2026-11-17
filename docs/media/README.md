@@ -1,6 +1,6 @@
 # Backlit native media
 
-Version 0.2.7 retains the 0.2.5 captures below; no new screenshot session was run. The generated manifest app_version identifies the package whose media was checked, not a new capture version. These older images do not show the 0.2.6 status heading, the 1–30 minute closed-lid duration control or the New Pairing Key button.
+Version 0.2.8 retains the 0.2.5 captures below; no new screenshot session was run. The generated manifest app_version identifies the package whose media was checked, not a new capture version. These older images do not show the 0.2.6 status heading, the 1–30 minute closed-lid duration control or the New Pairing Key button. They also predate the 0.2.8 Connections layout and Dock visibility setting.
 
 Workspace, Connections, Settings, menu, Music, Trackpad and Typing views are refreshed for **0.2.5 (30)**. The captures include standalone Typing, automatic Music capture controls, and remembered closed-lid settings. Battery uses the isolated 82% fixture. The original photographic header is unchanged. The standalone app icon is generated from the [centered-square native artwork](../ICON.md); all window captures include the same centered-square glyph. These previews illustrate controls, not physical output.
 

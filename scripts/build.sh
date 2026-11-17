@@ -6,6 +6,9 @@ toolchain_usr="$(dirname "$(dirname "$(xcrun --find swiftc)")")"
 intent_protocols="$toolchain_usr/share/swift/SwiftConstantValues/AppIntents.json"
 [ -s "$intent_protocols" ] || { echo 'This Xcode toolchain is missing AppIntents constant-gathering definitions.' >&2; exit 1; }
 mkdir -p dist/appintents
+build_snapshot="$(mktemp "$PWD/dist/build-input.XXXXXX")"
+trap 'rm -f "$build_snapshot"' EXIT
+python3 scripts/build-provenance.py capture "$build_snapshot"
 # The SDK definition is versioned on newer toolchains; the frontend consumes
 # a plain protocol-name array on both older and newer Swift compilers.
 intent_array="$PWD/dist/appintents/protocols.json"
@@ -91,6 +94,8 @@ rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' home
 rm -rf "$app_bundle/Contents/Resources/Integrations"
 bash scripts/shortcuts-metadata.sh extract "$app_bundle" "$target_triple"
 strip -S "$app_bundle/Contents/MacOS/Backlit"
+# Seal exact source/build identity with the bundle before signing.
+python3 scripts/build-provenance.py write "$app_bundle" --snapshot "$build_snapshot"
 # Hardened runtime makes macOS ignore DYLD_INSERT_LIBRARIES and similar
 # variables, so other processes cannot load code into Backlit and inherit its
 # Input Monitoring or audio permissions. It works with ad-hoc signing. The
