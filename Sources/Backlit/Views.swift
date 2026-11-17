@@ -304,6 +304,11 @@ struct SettingsPage: View {
             Divider()
             settingRow("Language","English / 繁體中文") {Picker("Language",selection:$model.language){Text("English").tag("en");Text("繁體中文").tag("zh-Hant")}.labelsHidden().frame(width:150)}
             Divider()
+            settingRow("Hide Dock icon", "Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.") {
+                Toggle("Hide Dock icon", isOn: Binding(get: { !model.dockIconVisible }, set: { model.dockIconVisible = !$0 }))
+                    .labelsHidden().toggleStyle(.switch).disabled(!model.menuBarIconVisible)
+            }
+            Divider()
             settingRow("Show menu bar icon", "When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.") {
                 Toggle("Show menu bar icon", isOn: $model.menuBarIconVisible).labelsHidden().toggleStyle(.switch)
             }

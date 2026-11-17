@@ -73,6 +73,11 @@ if arguments.contains("--verify-hardware") {
     var window: NSWindow!
     let menuBarItem = MenuBarItemController<NSStatusItem>()
     var status: NSStatusItem? { menuBarItem.item }
+    private lazy var appIconVisibility = AppIconVisibilityController(
+        dockIsVisible: { NSApp.activationPolicy() == .regular },
+        menuBarIsAvailable: { [weak self] in self?.status?.button != nil && self?.status?.isVisible == true },
+        setDockVisible: { NSApp.setActivationPolicy($0 ? .regular : .accessory) },
+        setMenuBarVisible: { [weak self] in self?.updateMenuBarVisibility($0) })
     var popover = NSPopover()
     var iconCache:[Int:NSImage]=[:]
     var lastIconStep = -1
@@ -83,7 +88,9 @@ if arguments.contains("--verify-hardware") {
     private var pendingTerminationReason: QuitReason?
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
-        NSApp.setActivationPolicy(.regular)
+        if !NSApp.setActivationPolicy(.regular) {
+            model.notice = "macOS could not show the Dock icon. Backlit will keep its menu bar entry available."
+        }
         if let icon = ApplicationIcon.load() {
             NSApp.applicationIconImage = icon
             NSApp.dockTile.display()
@@ -100,8 +107,11 @@ if arguments.contains("--verify-hardware") {
             guard let self else{return false}
             return !NSApp.isHidden && ((self.window.isVisible && !self.window.isMiniaturized && self.window.occlusionState.contains(.visible) && self.model.selectedPage == "light") || self.popover.isShown)
         }
-        model.onMenuBarIconVisibilityChange = { [weak self] in self?.updateMenuBarVisibility() }
-        updateMenuBarVisibility()
+        model.onAppIconVisibilityChange = { [weak self] requested in
+            guard let self else { return AppIconVisibilityResult(visibility: requested.normalized) }
+            return self.appIconVisibility.apply(requested)
+        }
+        model.applyAppIconVisibility()
         popover.contentViewController = NSHostingController(rootView:MenuView(model:model)); popover.behavior = .transient
         updateIcon(); installShortcut()
         quitObserver = DistributedNotificationCenter.default().addObserver(forName:.init("local.backlit.quit"),object:nil,queue:.main) { [weak self] _ in Task { @MainActor in self?.model.quit() } }
@@ -148,17 +158,23 @@ if arguments.contains("--verify-hardware") {
         if popover.isShown {popover.performClose(nil)}
         else if let button=status?.button {popover.show(relativeTo:button.bounds,of:button,preferredEdge:.minY);popover.contentViewController?.view.window?.makeKey()}
     }
-    func updateMenuBarVisibility() {
-        if !model.menuBarIconVisible { popover.performClose(nil) }
-        if menuBarItem.setVisible(model.menuBarIconVisible, create: {
+    func updateMenuBarVisibility(_ visible: Bool) {
+        if !visible { popover.performClose(nil) }
+        // Discard an unusable item before making one replacement, never two.
+        if visible, let item = status, item.button == nil {
+            menuBarItem.setVisible(false, create: { item }, remove: { NSStatusBar.system.removeStatusItem($0) })
+        }
+        if menuBarItem.setVisible(visible, create: {
             let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
             item.button?.target = self; item.button?.action = #selector(toggleMenu)
             item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            item.button?.setAccessibilityLabel("Backlit")
             return item
         }, remove: { NSStatusBar.system.removeStatusItem($0) }) {
             lastIconStep = -1; lastTooltipUpdate = -Double.infinity
             updateIcon()
         }
+        if visible { status?.isVisible = true }
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         showWindow()

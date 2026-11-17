@@ -30,12 +30,35 @@ enum MusicCapturePolicy {
     let defaults: UserDefaults
     @Published var menuBarIconVisible = true {
         didSet {
-            guard !isLoading, menuBarIconVisible != oldValue else { return }
-            defaults.set(menuBarIconVisible, forKey: "menuBarIcon.visible")
-            onMenuBarIconVisibilityChange?()
+            guard !isLoading, !appIconVisibilityChanging, menuBarIconVisible != oldValue else { return }
+            applyAppIconVisibility()
         }
     }
-    var onMenuBarIconVisibilityChange: (() -> Void)?
+    @Published var dockIconVisible = true {
+        didSet {
+            guard !isLoading, !appIconVisibilityChanging, dockIconVisible != oldValue else { return }
+            applyAppIconVisibility()
+        }
+    }
+    var onAppIconVisibilityChange: ((AppIconVisibility) -> AppIconVisibilityResult)?
+    private var appIconVisibilityChanging = false
+    private var appIconVisibilityFailure: String?
+    func applyAppIconVisibility() {
+        guard !isLoading, !appIconVisibilityChanging else { return }
+        appIconVisibilityChanging = true
+        defer { appIconVisibilityChanging = false }
+        let requested = AppIconVisibility(dock: dockIconVisible, menuBar: menuBarIconVisible).normalized
+        let result = onAppIconVisibilityChange?(requested) ?? AppIconVisibilityResult(visibility: requested)
+        dockIconVisible = result.visibility.dock; menuBarIconVisible = result.visibility.menuBar
+        // A total native failure must not save an inaccessible launch preference.
+        if result.visibility.hasVisibleEntry {
+            defaults.set(dockIconVisible, forKey: "dockIcon.visible")
+            defaults.set(menuBarIconVisible, forKey: "menuBarIcon.visible")
+        }
+        if let failure = result.failure { notice = failure }
+        else if notice == appIconVisibilityFailure { notice = nil }
+        appIconVisibilityFailure = result.failure
+    }
     let device: LogoDevice
     let audio = SystemAudio()
     let touch = TouchResponse()
@@ -376,7 +399,9 @@ enum MusicCapturePolicy {
         lidRequested = requested
         lidPreferenceStatus = lidIntentController.intent?.savedPause?.status ??
             (requested ? "Remembered. Waiting for your Mac and light to be ready." : "Off")
-        if let visible = self.defaults.object(forKey: "menuBarIcon.visible") as? Bool { menuBarIconVisible = visible }
+        let appIcons = AppIconVisibility.load(self.defaults)
+        menuBarIconVisible = appIcons.menuBar; dockIconVisible = appIcons.dock
+        if !appIcons.menuBar { self.defaults.set(true, forKey: "dockIcon.visible") }
         if let data = self.defaults.data(forKey: LidSessionDuration.preferenceKey),
            let duration = try? JSONDecoder().decode(LidSessionDuration.self, from: data) {
             lidSessionDuration = duration

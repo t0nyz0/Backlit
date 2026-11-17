@@ -21,7 +21,9 @@ import XCTest
         defaults.set(0.25, forKey: "brightness"); defaults.set("battery", forKey: "mode")
         defaults.set("keep", forKey: "unrelated.fixture")
         let first = AppModel(demo: true, defaults: defaults)
-        var callbacks = 0; first.onMenuBarIconVisibilityChange = { callbacks += 1 }
+        var callbacks = 0; first.onAppIconVisibilityChange = { requested in
+            callbacks += 1; return AppIconVisibilityResult(visibility: requested)
+        }
         first.menuBarIconVisible = false; first.menuBarIconVisible = false
         XCTAssertEqual(callbacks, 1)
         XCTAssertTrue(first.prepareQuit())
