@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 PROJECT = Path(__file__).resolve().parents[2]
@@ -74,7 +75,7 @@ elif name=='mv':
 
 
 class PackageSnapshotTests(unittest.TestCase):
-    def fixture(self, phase='', kind='rebuild', failure=''):
+    def fixture(self, phase='', kind='rebuild', failure='', tag=None):
         with tempfile.TemporaryDirectory(prefix='backlit-package-snapshot-') as temp:
             root=Path(temp);(root/'scripts').mkdir();(root/'assets').mkdir()
             app=root/'dist/Backlit.app';(app/'Contents/MacOS').mkdir(parents=True)
@@ -98,6 +99,8 @@ class PackageSnapshotTests(unittest.TestCase):
             for name in ['codesign','lipo','ditto','hdiutil','backlit-fixture-export','mv']:
                 tool=bins/name;tool.write_text(TOOL);tool.chmod(0o700)
             output=root/'dist/packages';output.mkdir();sentinel=output/'old-output.txt';sentinel.write_text('previous output')
+            # The disposable app is version 0.2.8, independent of the host CI tag.
+            env['GITHUB_REF'] = tag if tag is not None else 'refs/tags/v' + info['CFBundleShortVersionString']
             env.update(PATH=str(bins)+os.pathsep+env['PATH'],PYTHONDONTWRITEBYTECODE='1',RACE_PHASE=phase,RACE_KIND=kind,FAILURE=failure)
             run=subprocess.run(['bash','scripts/package.sh'],cwd=root,env=env,capture_output=True,text=True,timeout=20)
             result={'code':run.returncode,'stdout':run.stdout,'stderr':run.stderr,'commit':commit,
@@ -120,6 +123,16 @@ class PackageSnapshotTests(unittest.TestCase):
         self.assertEqual(result['sentinel'],'previous output',result)
         self.assertFalse(result['stages'],result)
         self.assertNotIn('manifest',result)
+
+    def test_host_release_tag_cannot_contaminate_disposable_fixture(self):
+        with patch.dict(os.environ, {'GITHUB_REF': 'refs/tags/v9.9.9'}):
+            result = self.fixture()
+        self.assertEqual(result['code'], 0, result)
+
+    def test_mismatched_fixture_tag_still_rejects_before_replacing_output(self):
+        result = self.fixture(tag='refs/tags/v9.9.9')
+        self.assert_rejected(result)
+        self.assertIn('Tag and app version differ.', result['stderr'])
 
     def test_clean_success_uses_one_private_bundle_for_both_formats_and_architecture(self):
         result=self.fixture();self.assertEqual(result['code'],0,result)

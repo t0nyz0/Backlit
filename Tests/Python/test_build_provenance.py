@@ -102,6 +102,8 @@ class BuildProvenanceTests(unittest.TestCase):
         output = self.root / 'dist/packages'; output.mkdir()
         sentinel = output / 'old-output.txt'; sentinel.write_text('keep until validation passes')
         env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
+        # Keep the disposable app's own release identity, not the host CI tag.
+        env['GITHUB_REF'] = 'refs/tags/v' + self.info['CFBundleShortVersionString']
         env['PATH'] = str(bins) + os.pathsep + env['PATH']
         for stale, message in [(False, 'no valid source provenance'), (True, 'version/build differs')]:
             with self.subTest(stale=stale):
@@ -138,6 +140,8 @@ class BuildProvenanceTests(unittest.TestCase):
         output = self.root / 'dist/packages'; output.mkdir()
         sentinel = output / 'old-output.txt'; sentinel.write_text('previous package')
         env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
+        # Keep the disposable app's own release identity, not the host CI tag.
+        env['GITHUB_REF'] = 'refs/tags/v' + self.info['CFBundleShortVersionString']
         env['PATH'] = str(bins) + os.pathsep + env['PATH']
         result = subprocess.run(['bash', 'scripts/package.sh'], cwd=self.root, env=env,
             capture_output=True, text=True, timeout=15)

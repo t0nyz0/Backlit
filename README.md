@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.9-9a7400?style=flat" alt="Source 0.2.9">
+<img src="https://img.shields.io/badge/source-0.2.10-9a7400?style=flat" alt="Source 0.2.10">
 <img src="https://img.shields.io/badge/local_nonUI_tests-865_passing-2d6085?style=flat" alt="865 local non-UI Swift tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">

@@ -1,4 +1,6 @@
-## Backlit 0.2.9
+## Backlit 0.2.10
+
+The 0.2.9 tag is retained as a failed release attempt: packaging fixtures inherited the CI tag and stopped verification before any release files were published. 0.2.10 fixes that fixture isolation without weakening production package validation.
 
 ### Improvements
 
