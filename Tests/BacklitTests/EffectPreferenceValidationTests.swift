@@ -29,7 +29,7 @@ import XCTest
     }
 
     func testValidSavedValuesAndUnrelatedPreferencesArePreserved() {
-        for (brightness, period, intensity) in [(0.0, 3.0, 0.25), (0.93, 3.2, 1.7), (1.0, 10.0, 3.0)] {
+        for (brightness, period, intensity) in [(0.0, 3.0, 0.25), (0.93, 3.2, 1.7), (1.0, 10.0, 3.0), (0.7, 20.0, 1.0), (0.7, 30.0, 1.0)] {
             fixture(["brightness": brightness, "period": period, "intensity": intensity]) { model, defaults in
                 XCTAssertEqual(model.brightness, brightness)
                 XCTAssertEqual(model.period, period)
@@ -38,6 +38,18 @@ import XCTest
                 XCTAssertEqual(defaults.double(forKey: "period"), period)
                 XCTAssertEqual(defaults.double(forKey: "intensity"), intensity)
             }
+        }
+    }
+
+    func testThirtySecondBreathingPacePersistsAndReopensWithoutChangingOtherSettings() {
+        fixture(["period": 10.0]) { model, defaults in
+            model.period = 30
+            XCTAssertEqual(defaults.double(forKey: "period"), 30)
+            let reopened = AppModel(demo: true, defaults: defaults)
+            XCTAssertEqual(reopened.period, 30)
+            XCTAssertEqual(reopened.brightness, model.brightness)
+            XCTAssertEqual(reopened.mode, model.mode)
+            XCTAssertTrue(reopened.prepareQuit())
         }
     }
 
@@ -52,7 +64,7 @@ import XCTest
     }
 
     func testFiniteOutOfRangeValuesMatchExistingEngineBoundsWithoutRewritingStorage() {
-        for (raw, brightness, period, intensity) in [(-100.0, 0.0, 3.0, 0.25), (100.0, 1.0, 10.0, 3.0)] {
+        for (raw, brightness, period, intensity) in [(-100.0, 0.0, 3.0, 0.25), (100.0, 1.0, 30.0, 3.0)] {
             fixture(["brightness": raw, "period": raw, "intensity": raw]) { model, defaults in
                 XCTAssertEqual(model.brightness, brightness)
                 XCTAssertEqual(model.period, period)

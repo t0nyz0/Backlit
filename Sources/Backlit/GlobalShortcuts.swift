@@ -13,7 +13,11 @@ enum LogoShortcutAction: UInt32, CaseIterable, Identifiable, Codable {
         }
     }
     var preferenceKey: String { "shortcut.v2." + String(rawValue) }
-    var defaultBinding: LogoShortcut {
+    var defaultBinding: LogoShortcut? {
+        self == .toggle ? legacyDefaultBinding : nil
+    }
+    /// Used only to preserve shortcuts already active in older installations.
+    var legacyDefaultBinding: LogoShortcut {
         switch self {
         case .toggle: return .init(keyCode:11,modifiers:4352,keyLabel:"B")
         case .decrease: return .init(keyCode:125,modifiers:4352,keyLabel:"↓")
@@ -66,6 +70,16 @@ struct LogoShortcut: Codable, Equatable {
 
 enum LogoShortcutPreferences {
     static func load(_ defaults: UserDefaults) -> [LogoShortcutAction:LogoShortcut] {
+        // Capture older implicit bindings before adopting the new defaults. Explicit
+        // bindings (including null/disabled) are never overwritten.
+        if !defaults.bool(forKey:"shortcut.defaults.v3") { // gitleaks:allow -- preference migration marker, not a credential
+            if defaults.string(forKey:"installation.id") != nil {
+                for action in [LogoShortcutAction.decrease, .increase] where defaults.object(forKey:action.preferenceKey) == nil {
+                    defaults.set(try? JSONEncoder().encode(action.legacyDefaultBinding),forKey:action.preferenceKey)
+                }
+            }
+            defaults.set(true,forKey:"shortcut.defaults.v3") // gitleaks:allow -- preference migration marker, not a credential
+        }
         var result: [LogoShortcutAction:LogoShortcut] = [:]
         for action in LogoShortcutAction.allCases {
             if let data = defaults.data(forKey:action.preferenceKey) {

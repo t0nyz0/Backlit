@@ -54,6 +54,26 @@ final class AmbientOverrideScriptTests: XCTestCase {
     private var backup: URL { directory.appendingPathComponent("ambient.plist") }
     private let originalMinimum = "<array><array><real>0</real><real>1.5</real></array><array><real>200</real><real>12.5</real></array><array><real>3.4028234663852886e+38</real><real>40</real></array></array>"
 
+    func testRestartWaitsForOldServiceExitAndFailsClosed() throws {
+        let handshake = AmbientOverrideScript.serviceRestart
+            .replacingOccurrences(of: "/usr/bin/pgrep -x corebrightnessd", with: "discover")
+            .replacingOccurrences(of: "/usr/bin/killall -TERM corebrightnessd", with: "restart")
+            .replacingOccurrences(of: "/bin/kill -0", with: "probe")
+            .replacingOccurrences(of: "/bin/sleep 0.1", with: ":")
+        for (discovery, restart, probe, expected) in [
+            ("echo 42", ":", "calls=$((calls + 1)); [ $calls -lt 4 ]", Int32(0)),
+            ("echo 42", ":", "return 0", Int32(1)),
+            ("echo 42", "return 1", "return 1", Int32(1)),
+            ("return 2", ":", "return 1", Int32(1)),
+            ("return 1", "exit 99", "exit 99", Int32(0))
+        ] {
+            let script = "set -eu; calls=0; fail() { echo \"$1\"; exit 1; }; " +
+                "discover() { \(discovery); }; restart() { \(restart); }; probe() { \(probe); };\n" + handshake
+            let result = try tool("/bin/sh", ["-c", script])
+            XCTAssertEqual(result.status, expected, result.output)
+        }
+    }
+
     func testEnableSavesOriginalsOnceThenRestorePutsThemBack() throws {
         try write(minimum, originalMinimum)           // one limit exists, the other does not
         try write("UnrelatedSetting", "<integer>7</integer>")
@@ -243,7 +263,7 @@ final class AmbientOverrideScriptTests: XCTestCase {
             XCTAssertFalse(script.contains(Bundle.main.bundlePath))
             // Every external command is one of these system tools, by absolute path.
             let allowed: Set<String> = ["/usr/bin/stat", "/bin/mkdir", "/usr/bin/mktemp", "/bin/rm", "/usr/bin/sed",
-                "/usr/bin/defaults", "/usr/bin/plutil", "/usr/bin/cmp", "/bin/chmod", "/bin/mv", "/usr/bin/killall"]
+                "/usr/bin/defaults", "/usr/bin/plutil", "/usr/bin/cmp", "/bin/chmod", "/bin/mv", "/usr/bin/killall", "/usr/bin/pgrep", "/bin/kill", "/bin/sleep"]
             let used = Set(script.components(separatedBy: CharacterSet(charactersIn: " \n\"'()`;|&$")).filter { $0.hasPrefix("/usr/") || $0.hasPrefix("/bin/") })
             XCTAssertTrue(used.isSubset(of: allowed.union(["/usr/bin:/bin:/usr/sbin:/sbin"])), "Unexpected tool: \(used.subtracting(allowed))")
             for path in allowed where used.contains(path) {

@@ -127,6 +127,61 @@ import XCTest
         XCTAssertNoThrow(try model.performAutomation(.brightness(0.4)))
     }
 
+    func testExplicitRestoreRearmsHardFaultWithoutReplacingTimedIntent() throws {
+        let fixture = Fixture(); defer { fixture.dispose() }
+        let intent = LidSessionIntent(id: UUID(), durationSeconds: 1800)!
+        try intent.save(fixture.defaults)
+        let controller = LidIntentController(defaults: fixture.defaults)
+        XCTAssertTrue(controller.block())
+        fixture.model.repairAndResume()
+        XCTAssertEqual(controller.intent?.id, intent.id)
+        XCTAssertEqual(controller.intent?.durationSeconds, intent.durationSeconds)
+        XCTAssertEqual(controller.intent?.blocked, false)
+        XCTAssertNil(controller.intent?.pause)
+        XCTAssertTrue(fixture.model.controlWanted)
+        XCTAssertEqual(fixture.state.applies, 1)
+    }
+
+    func testExplicitRearmRetainsOriginalDeadlineAndExpiredCycle() throws {
+        let fixture = Fixture(); defer { fixture.dispose() }
+        let intent = LidSessionIntent(duration: .init())
+        let clock = LidContinuousClock(boot: UUID(), seconds: 100)
+        let checkpoint = LidTimerCheckpoint.closed(intent, clock: clock)
+        try intent.save(fixture.defaults)
+        let controller = LidIntentController(defaults: fixture.defaults)
+        XCTAssertTrue(controller.block())
+        XCTAssertTrue(try controller.rearmAfterExplicitRestore(expectedID: intent.id))
+        let retained = try XCTUnwrap(controller.intent)
+        guard case let .ready(result) = LidIntentPolicy.timer(intent: retained, checkpoint: checkpoint,
+            clock: .init(boot: clock.boot, seconds: 200), closed: true) else { return XCTFail("Expected original cycle") }
+        XCTAssertEqual(result, checkpoint)
+        guard case .expired = LidIntentPolicy.timer(intent: retained, checkpoint: checkpoint,
+            clock: .init(boot: clock.boot, seconds: 1900), closed: true) else { return XCTFail("Must not earn a fresh cycle") }
+    }
+
+    func testExplicitRestoreNeverRearmsOnFailureWithdrawalOrChangedIntent() throws {
+        for scenario in ["failure", "off", "quit", "changed", "legacy"] {
+            let fixture = Fixture(); defer { fixture.dispose() }
+            let intent = LidSessionIntent(id: UUID(), durationSeconds: 1800)!
+            try intent.save(fixture.defaults)
+            let controller = LidIntentController(defaults: fixture.defaults)
+            XCTAssertTrue(controller.block(reason: scenario == "legacy" ? .legacyUnknown : .hardFault))
+            if scenario == "failure" { fixture.state.repairFailure = RuntimeServices.failure("inert failure") }
+            fixture.state.onRestore = {
+                if scenario == "off" { fixture.model.setControl(false) }
+                if scenario == "quit" { _ = fixture.model.prepareQuit() }
+                if scenario == "changed" {
+                    try! LidSessionIntent(id: UUID(), durationSeconds: 1800)!.save(fixture.defaults)
+                    _ = controller.block()
+                }
+            }
+            fixture.model.repairAndResume()
+            XCTAssertEqual(controller.intent?.blocked, true, scenario)
+            XCTAssertFalse(fixture.model.controlWanted, scenario)
+            XCTAssertEqual(fixture.state.applies, 0, scenario)
+        }
+    }
+
     func testFailedPowerRepairAfterLogoRestorationNeverResumesAndSuccessfulRetryDoes() {
         let fixture = Fixture(lid: true, logo: true); defer { fixture.dispose() }
         let model = fixture.model

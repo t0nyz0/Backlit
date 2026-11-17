@@ -5,14 +5,14 @@ Backlit's Settings contains three independent global shortcuts. Each can be chan
 | Action | Default | Result |
 | --- | --- | --- |
 | Toggle logo | Control–Command–B | Existing on/off action. |
-| Increase logo brightness | Control–Command–Up Arrow | Adds five percentage points to the saved manual level. |
-| Decrease logo brightness | Control–Command–Down Arrow | Subtracts five percentage points from the saved manual level. |
+| Increase logo brightness | Off | Adds five percentage points to the saved manual level. |
+| Decrease logo brightness | Off | Subtracts five percentage points from the saved manual level. |
 
 Brightness stays between 0% and 100%. These actions preserve the current behavior and on/off state; adjusting while Off saves the level without turning the logo on. Battery output stays automatic, so its brightness shortcuts show an explanation without changing the manual level. Busy/recovery states reject changes. An accepted level is not a measurement of emitted light.
 
-The ordinary shortcuts use the same public `RegisterEventHotKey` API as the existing toggle and request no new keyboard-monitoring permission. Use Command, Control or Option with a regular key; Shift can be added. The recorder shows arrow/function key names, temporarily releases Backlit's shortcuts and prevents actions while recording. Duplicate combinations are rejected. A failed native replacement keeps the previous binding. macOS or another application may reserve a combination; registration errors appear beside the action. Existing saved toggle settings are retained.
+The ordinary shortcuts use the same public `RegisterEventHotKey` API as the existing toggle and request no new keyboard-monitoring permission. Use Command, Control or Option with a regular key; Shift can be added. The recorder shows arrow/function key names, temporarily releases Backlit's shortcuts and prevents actions while recording. Duplicate combinations are rejected. A failed native replacement keeps the previous binding. macOS or another application may reserve a combination; registration errors appear beside the action. Existing saved shortcuts and disabled choices are retained. Upgrades also preserve the previous implicit Control–Command–Up/Down Arrow bindings. Reset adopts the new defaults: Control–Command–B for Toggle, Off for each brightness action.
 
-Literal F1/F2 key events are different from the screen-brightness media events. If a literal function-key chord is recorded, the keyboard's Fn/function-key setting may affect how it is produced. It is not a guarantee that pressing the brightness-labelled key will trigger it. The arrow defaults avoid that distinction.
+Literal F1/F2 key events are different from the screen-brightness media events. If a literal function-key chord is recorded, the keyboard's Fn/function-key setting may affect how it is produced. It is not a guarantee that pressing the brightness-labelled key will trigger it. Ordinary arrow-key chords avoid that distinction.
 
 ## Shift plus hardware brightness keys
 

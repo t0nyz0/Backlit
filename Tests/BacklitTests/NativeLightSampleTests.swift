@@ -27,9 +27,23 @@ final class NativeLightSampleTests: XCTestCase {
         for factor in [0.0, 1.0] {
             let sample = try NativeLightSample.sample(["Factor": factor, "AppliedNits": 0.0, "NitsMultiplier": 0.0])
             XCTAssertEqual(sample.factor, factor)
-            XCTAssertEqual(sample.appliedNits, 0)
-            XCTAssertEqual(sample.multiplier, 0)
+            XCTAssertFalse(sample.positiveSourceObserved)
+            XCTAssertFalse(sample.canAttemptFirstRise)
         }
+    }
+
+    func testMeasuredOutputSchemaAndStrictFailures() throws {
+        let zero = try NativeLightSample.sample(["Factor": 0, "FinalNits": 0])
+        XCTAssertFalse(zero.positiveSourceObserved); XCTAssertTrue(zero.canAttemptFirstRise)
+        let positive = try NativeLightSample.sample(["Factor": 1, "FinalNits": 400])
+        XCTAssertTrue(positive.positiveSourceObserved); XCTAssertFalse(positive.canAttemptFirstRise)
+        for (value, reason) in [(true as Any, NativeLightSample.Failure.Reason.boolean),
+                                 ("400", .malformed), (Double.nan, .nonfinite),
+                                 (Double.infinity, .nonfinite), (-1.0, .negative)] {
+            assertFailure(["Factor": 1, "FinalNits": value], .finalNits, reason)
+        }
+        assertFailure(["Factor": 1, "FinalNits": 400, "AppliedNits": 2], .multiplier, .missing)
+        assertFailure(["Factor": 1, "FinalNits": 400, "AppliedNits": "bad", "NitsMultiplier": 1], .appliedNits, .malformed)
     }
 
     func testContainerAndEachRequiredFieldFailures() {

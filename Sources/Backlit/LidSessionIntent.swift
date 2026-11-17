@@ -318,6 +318,16 @@ struct LidResumeSafety {
         intent.pause = pause
         do { try persist(intent); return true } catch { return false }
     }
+    /// A deliberate Restore Light action may retry a hard fault after all
+    /// restoration stages succeed. Retain the existing intent ID and timer;
+    /// this is neither startup clearance nor a fresh closed-lid time allowance.
+    @discardableResult func rearmAfterExplicitRestore(expectedID: UUID) throws -> Bool {
+        guard var intent, intent.id == expectedID, intent.blocked,
+              intent.savedPause?.reason == .hardFault else { return false }
+        intent.blocked = false; intent.pause = nil
+        try persist(intent)
+        return true
+    }
     func recordCleanupAttempt(clock: LidContinuousClock?) throws {
         guard var intent else { return }
         guard var pause = intent.pause, pause.reason == .interruptedCleanup, pause.canRetry else {

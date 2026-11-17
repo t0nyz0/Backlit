@@ -91,6 +91,21 @@ final class FadeRecoveryStore {
         guard let data=try? Data(contentsOf:completionURL),let receipt=try? JSONDecoder().decode(Completion.self,from:data) else {return false}
         return receipt.token==token
     }
+    /// Exact-token completion plus retired journal, checked under the same
+    /// lock as writes/recovery. Absence alone is never retirement evidence.
+    func verifiedRetirement(token: UUID) throws -> Bool {
+        try ClosedEffectSession.locked(directory: directory, wait: true) {
+            self.completed(token: token) && !FileManager.default.fileExists(atPath: self.url.path)
+        } ?? false
+    }
+    func permitsRecovery(of token: UUID) throws -> Bool {
+        try ClosedEffectSession.locked(directory: directory, wait: true) {
+            if FileManager.default.fileExists(atPath: self.url.path) {
+                return try self.read().token == token
+            }
+            return self.completed(token: token)
+        } ?? false
+    }
     func read() throws -> FadeRecoveryRecord {
         try JSONDecoder().decode(FadeRecoveryRecord.self,from:Data(contentsOf:url))
     }

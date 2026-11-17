@@ -11,7 +11,7 @@ struct EffectPreferenceValues {
 
     init(brightness: Any?, period: Any?, intensity: Any?) {
         self.brightness = Self.bound(brightness, to: 0...1, missing: 0.68, invalid: 0)
-        self.period = Self.bound(period, to: 3...10, missing: 6, invalid: 6)
+        self.period = Self.bound(period, to: Effects.breathingPeriodRange, missing: 6, invalid: 6)
         self.intensity = Self.bound(intensity, to: 0.25...3, missing: 1, invalid: 0.25)
     }
 

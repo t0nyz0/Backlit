@@ -35,6 +35,7 @@ struct EffectInput {
 }
 
 enum Effects {
+    static let breathingPeriodRange = 3.0...30.0
     static func level(at time: Double, input: EffectInput) -> Double {
         guard input.enabled, time.isFinite else { return 0 }
         let base = clamp(input.brightness)
@@ -44,7 +45,7 @@ enum Effects {
         case .touch: return input.touchDown ? base : 0
         case .typing: return input.typingDown ? base : 0
         case .breathe:
-            let cycle = input.period.isFinite ? max(3, min(10, input.period)) : 6
+            let cycle = input.period.isFinite ? max(breathingPeriodRange.lowerBound, min(breathingPeriodRange.upperBound, input.period)) : 6
             let phase = t.truncatingRemainder(dividingBy: cycle) / cycle
             return base * (0.04 + 0.96 * pow((1 - cos(2 * .pi * phase)) / 2, 1.5))
         case .battery: return clamp(input.battery)

@@ -5,15 +5,84 @@ import XCTest
 @MainActor final class AmbientCancellationTests: XCTestCase {
     private func model(restore: @escaping () throws -> Void = {},
                        apply: @escaping (Double, Bool) throws -> FadeApplyResult = { _, _ in .applied },
+                       reconnect: (() throws -> Void)? = nil,
                        authorize: @escaping (Bool) throws -> Void) -> (AppModel, UserDefaults) {
         let suite = "local.backlit.test.ambient." + UUID().uuidString
         let defaults = UserDefaults(suiteName: suite)!
         addTeardownBlock { defaults.removePersistentDomain(forName: suite) }
         let model = AppModel(demo: true, defaults: defaults,
             lidStopper: LidWatcherStopper(removeLease: { _ in }, needsRecovery: { _ in false }),
-            hardwareRestore: restore, hardwareApply: apply, ambientAuthorization: authorize)
+            hardwareRestore: restore, hardwareApply: apply, ambientAuthorization: authorize, ambientReconnect: reconnect)
         model.controlWanted = true; model.controlling = true
         return (model, defaults)
+    }
+
+    func testServiceReadinessRetriesFreshClientsAndStopsAtFirstReadableOne() {
+        var attempts = 0, waits = 0
+        let result: Int? = LogoDevice.readableServiceClient(attempt: {
+            attempts += 1; return attempts == 4 ? 4 : nil
+        }, wait: { waits += 1 })
+        XCTAssertEqual(result, 4); XCTAssertEqual(attempts, 4); XCTAssertEqual(waits, 3)
+    }
+
+    func testServiceReadinessFailureIsBoundedAndDoesNotReturnAnOldClient() {
+        var attempts = 0, waits = 0
+        let result: Int? = LogoDevice.readableServiceClient(attempt: {
+            attempts += 1; return nil
+        }, wait: { waits += 1 })
+        XCTAssertNil(result); XCTAssertEqual(attempts, 20); XCTAssertEqual(waits, 19)
+    }
+
+    func testSuccessfulChangeReconnectsBeforeApplyingAndKeepsCallbacksGated() {
+        var events: [String] = [], current: AppModel!
+        let (m, _) = model(restore: { events.append("restore") },
+            apply: { _, _ in events.append("apply"); return .applied },
+            reconnect: {
+                events.append("reconnect")
+                XCTAssertTrue(current.hardwareOperationInProgress)
+                current.tick(); current.setLid(true)
+                XCTAssertFalse(current.controlling)
+            }, authorize: { _ in events.append("authorize") })
+        current = m
+        m.setAmbient(true)
+        XCTAssertEqual(events, ["restore", "authorize", "reconnect", "apply"])
+        XCTAssertTrue(m.controlWanted)
+        m.controlling = false
+    }
+
+    func testReconnectFailurePreservesChangedPreferenceButNeverResumes() {
+        var applies = 0
+        let (m, defaults) = model(apply: { _, _ in applies += 1; return .applied },
+            reconnect: { throw RuntimeServices.failure("Service not ready") }, authorize: { _ in })
+        m.setAmbient(true)
+        XCTAssertTrue(m.ambientUnlocked)
+        XCTAssertTrue(defaults.bool(forKey: "ambientUnlocked"))
+        XCTAssertFalse(m.controlWanted); XCTAssertFalse(m.controlling)
+        XCTAssertEqual(applies, 0); XCTAssertEqual(m.error, "Service not ready")
+        m.tick(); XCTAssertEqual(applies, 0)
+    }
+
+    func testCancellationDoesNotReconnectUnchangedService() {
+        let (m, _) = model(reconnect: { XCTFail("Cancelled helper did not restart service") },
+            authorize: { _ in throw AmbientAuthorizationFailure.cancelled })
+        m.setAmbient(true)
+        XCTAssertTrue(m.controlWanted)
+        m.controlling = false
+    }
+
+    func testOffAndQuitDuringReconnectPreventResume() {
+        for quit in [false, true] {
+            var current: AppModel!, applies = 0
+            let (m, _) = model(apply: { _, _ in applies += 1; return .applied },
+                reconnect: {
+                    if quit { XCTAssertFalse(current.prepareQuit()) }
+                    else { current.setControl(false) }
+                }, authorize: { _ in })
+            current = m; m.setAmbient(true)
+            m.tick(); m.tick()
+            XCTAssertTrue(m.ambientUnlocked)
+            XCTAssertFalse(m.controlWanted); XCTAssertEqual(applies, 0)
+        }
     }
 
     func testCancellationRestoresPriorIntentAfterCleanupAndPreservesPreferences() {

@@ -17,6 +17,32 @@ enum AmbientOverrideScript {
     static let minimumNits = "12.5"
     static let maximumNits = "1000"
 
+    // Confirm that the old service has exited, not merely that TERM was sent.
+    // Reconnection may then wait for a replacement, never bind the dying daemon.
+    static let serviceRestart = """
+    if old_pids="$(/usr/bin/pgrep -x corebrightnessd)"; then
+      :
+    else
+      status=$?
+      [ "$status" -eq 1 ] || fail 'The brightness service could not be identified. Recovery was retained.'
+      old_pids=''
+    fi
+    if [ -n "$old_pids" ]; then
+      /usr/bin/killall -TERM corebrightnessd >/dev/null 2>&1 || fail 'The brightness service could not be restarted. Recovery was retained.'
+      attempts=0
+      while :; do
+        alive=''
+        for pid in $old_pids; do
+          if /bin/kill -0 "$pid" 2>/dev/null; then alive=1; fi
+        done
+        [ -z "$alive" ] && break
+        attempts=$((attempts + 1))
+        [ "$attempts" -lt 50 ] || fail 'The old brightness service has not stopped. Recovery was retained.'
+        /bin/sleep 0.1
+      done
+    fi
+    """
+
     /// A flat limit at every light level, as an XML property-list fragment.
     static func flatLimit(_ nits: String) -> String {
         "<array><array><real>0</real><real>\(nits)</real></array><array><real>3.4028234663852886e+38</real><real>\(nits)</real></array></array>"
@@ -63,6 +89,7 @@ enum AmbientOverrideScript {
           printf '%s' "$value"
         }
         """
+        let restartScript = restart == "/usr/bin/killall -TERM corebrightnessd" ? Self.serviceRestart : "\(restart) >/dev/null 2>&1 || true"
         let keyList = keys.joined(separator: " ")
         let body: String
         if enabled {
@@ -82,7 +109,7 @@ enum AmbientOverrideScript {
             fi
             /usr/bin/defaults write "$domain" \(keys[0]) '\(flatLimit(minimumNits))'
             /usr/bin/defaults write "$domain" \(keys[1]) '\(flatLimit(maximumNits))'
-            \(restart) >/dev/null 2>&1 || true
+            \(restartScript)
             """
         } else {
             body = """
@@ -109,7 +136,7 @@ enum AmbientOverrideScript {
                 fail 'A brightness limit that was originally absent is still present. Recovery was retained.'
               fi
             done
-            \(restart) >/dev/null 2>&1 || true
+            \(restartScript)
             /bin/rm -f "$backup"
             """
         }

@@ -36,6 +36,114 @@ import XCTest
         return AppModel(demo: true, defaults: defaults, lidStopper: stopper, hardwareRestore: hardwareRestore)
     }
 
+    func testRapidOffOnRemembersLatestChoiceWithoutSkippingCleanup() async throws {
+        try await checkRapidToggle(failed: false, withdraw: false)
+    }
+    func testRapidOffOnCannotBypassFailedCleanup() async throws {
+        try await checkRapidToggle(failed: true, withdraw: false)
+    }
+    func testRapidOffOnOffKeepsLatestOffAfterCleanup() async throws {
+        try await checkRapidToggle(failed: false, withdraw: true)
+    }
+    func testRapidOffOnStartsExactlyOneReplacementAfterVerifiedCleanup() async throws {
+        try await checkRapidToggle(failed: false, withdraw: false, resume: true)
+    }
+    private func checkRapidToggle(failed: Bool, withdraw: Bool, resume: Bool = false) async throws {
+        let gate = Gate(expectation(description: "toggle cleanup entered"))
+        defer { gate.release() }
+        let suite = "local.backlit.test.rapid-toggle." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { defaults.removePersistentDomain(forName: suite); try? FileManager.default.removeItem(at: directory) }
+        let process = Watcher(), replacement = Watcher()
+        let boot = UUID()
+        var starts = 0
+        weak var current: AppModel?
+        let stopper = LidWatcherStopper(timeout: 2, pollInterval: 0.01,
+            removeLease: { _ in if gate.calls == 0 { gate.wait() } }, needsRecovery: { _ in false })
+        let environment = LidIntentEnvironment(clock: { .init(boot: boot, seconds: 100) },
+            closed: { false }, safety: {
+                LidResumeSafety(preview: false, enabled: true, owned: resume && current?.controlling == true, cleanupClear: current?.lifecycleAllowsFrames == true,
+                    awake: true, unlocked: true, externalPower: true, battery: 0.8,
+                    lowPower: false, thermal: .nominal)
+            }, checkpoints: .init(directory: directory), start: { _, _ in
+                XCTAssertTrue(resume); XCTAssertFalse(process.isRunning)
+                XCTAssertFalse(current?.lidStopPending == true)
+                starts += 1; return replacement
+            })
+        var restores = 0
+        let model = AppModel(demo: true, defaults: defaults, lidStopper: stopper,
+            hardwareRestore: { restores += 1 }, lidIntentEnvironment: environment,
+            hardwareApply: { _, _ in .applied })
+        current = model
+        model.controlWanted = true; model.controlling = true
+        XCTAssertTrue(model.adoptLidWatcher(process, lease: lease))
+        model.setLid(false)
+        XCTAssertTrue(model.lidStopPending)
+        model.setLid(true)
+        XCTAssertTrue(model.lidRequested, "A rapid On must not be discarded during cleanup")
+        XCTAssertNotNil(LidSessionIntent.load(defaults))
+        XCTAssertFalse(model.lifecycleAllowsFrames)
+        XCTAssertEqual(restores, 0); XCTAssertEqual(starts, 0)
+        if withdraw { model.setLid(false) }
+        let done = expectation(description: "toggle cleanup completed")
+        model.onLidStopCompleted = { safe in XCTAssertEqual(safe, !failed); done.fulfill() }
+        await fulfillment(of: [gate.entered], timeout: 1)
+        process.terminationStatus = failed ? 6 : 0
+        process.isRunning = false; gate.release()
+        await fulfillment(of: [done], timeout: 1)
+        XCTAssertEqual(model.lidRequested, !withdraw)
+        XCTAssertEqual(model.controlWanted, !failed)
+        XCTAssertEqual(restores, failed ? 0 : 1)
+        if failed { XCTAssertTrue(LidSessionIntent.load(defaults)?.blocked == true) }
+        if withdraw { XCTAssertNil(LidSessionIntent.load(defaults)) }
+        if resume {
+            model.tick()
+            XCTAssertEqual(starts, 1); XCTAssertTrue(model.keepClosed)
+            model.tick(); XCTAssertEqual(starts, 1)
+            let retired = expectation(description: "replacement fixture retired")
+            model.onLidStopCompleted = { safe in XCTAssertTrue(safe); retired.fulfill() }
+            replacement.isRunning = false
+            model.setLid(false)
+            await fulfillment(of: [retired], timeout: 1)
+        } else if !failed {
+            model.setLid(false)
+            XCTAssertFalse(model.lidRequested); XCTAssertNil(LidSessionIntent.load(defaults))
+        }
+        model.controlling = false; model.controlWanted = false
+    }
+
+    func testExplicitLidRetryReacquiresOnlyWhenRecoveryAndPowerAllowIt() throws {
+        for scenario in ["clear", "logoRecovery", "lidRecovery", "powerOff"] {
+            let suite = "local.backlit.test.lid-retry." + UUID().uuidString
+            let defaults = UserDefaults(suiteName: suite)!
+            defer { defaults.removePersistentDomain(forName: suite) }
+            var saved = LidSessionIntent(duration: .init(amount: 30)); saved.blocked = true
+            try saved.save(defaults)
+            var applies = 0
+            let environment = LidIntentEnvironment(clock: { nil }, closed: { nil }, safety: {
+                LidResumeSafety(preview: true, enabled: true, owned: false, cleanupClear: true,
+                    awake: true, unlocked: true, externalPower: true, battery: 0.8,
+                    lowPower: false, thermal: .nominal)
+            }, checkpoints: .init(directory: FileManager.default.temporaryDirectory), start: { _, _ in
+                XCTFail("Preview fixture must not create a helper"); return Watcher()
+            })
+            let model = AppModel(demo: true, defaults: defaults,
+                hardwareRestore: {}, lidIntentEnvironment: environment,
+                hardwareApply: { _, _ in applies += 1; return .applied },
+                recoveryEnvironment: .init(hardwareAvailable: { true },
+                    logoNeedsRecovery: { scenario == "logoRecovery" },
+                    lidNeedsRecovery: { scenario == "lidRecovery" }, repairLid: { _ in }))
+            if scenario == "powerOff" { model.enabled = false }
+            model.controlWanted = false
+            model.setLid(false); model.setLid(true)
+            XCTAssertEqual(model.controlWanted, scenario == "clear", scenario)
+            XCTAssertEqual(applies > 0, scenario == "clear", scenario)
+            XCTAssertEqual(model.enabled, scenario != "powerOff")
+            model.controlling = false; model.controlWanted = false
+        }
+    }
+
     func testQuitSuppressesFramesUntilHelperAndFadeRestorationComplete() async {
         let gate = Gate(expectation(description: "quit lease removal entered"))
         defer { gate.release() }

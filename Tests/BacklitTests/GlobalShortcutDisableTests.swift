@@ -6,7 +6,7 @@ import XCTest
         var next = 0, removed: [Int] = [], handlerCalls = 0
         let registry = LogoShortcutRegistry<Int>(register: { _, _ in next += 1; return next },
                                                  unregister: { removed.append($0) })
-        let bindings = Dictionary(uniqueKeysWithValues: LogoShortcutAction.allCases.map { ($0, $0.defaultBinding) })
+        let bindings = Dictionary(uniqueKeysWithValues: LogoShortcutAction.allCases.map { ($0, $0.legacyDefaultBinding) })
         XCTAssertTrue(registry.configure(bindings).isEmpty)
         XCTAssertNoThrow(try LogoShortcutChange.apply(nil, action: .increase, registry: registry, ensureHandler: {
             handlerCalls += 1; throw ShortcutError(message: "Inert handler installation failure")
@@ -43,7 +43,7 @@ import XCTest
         var registered = 0, removed = 0, handlerCalls = 0
         let registry = LogoShortcutRegistry<Int>(register: { _, _ in registered += 1; return registered },
                                                  unregister: { _ in removed += 1 })
-        try registry.replace(LogoShortcutAction.increase.defaultBinding, for: .increase)
+        try registry.replace(LogoShortcutAction.increase.legacyDefaultBinding, for: .increase)
         let prior = registry.desired[.increase]
         XCTAssertThrowsError(try LogoShortcutChange.apply(.init(keyCode: 45, modifiers: 4352, keyLabel: "N"),
             action: .increase, registry: registry, ensureHandler: {

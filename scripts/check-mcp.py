@@ -137,9 +137,27 @@ def check(binary):
         peer.close()
     assert peer.process.returncode == 0
 
+    # Ping only: no light tools, credentials or native app control.
+    for array_count in [63, 256]:  # request+params add two containers
+        payload = (b'{"jsonrpc":"2.0","id":11,"method":"ping","params":{"extra":' +
+                   b'[' * array_count + b'0' + b']' * array_count + b'}}\n')
+        rejected = subprocess.run([str(binary), '--mcp'], input=payload, capture_output=True, timeout=4)
+        assert rejected.returncode == 0, f'deep input exited {rejected.returncode}'
+        assert rejected.stdout == b'' and rejected.stderr == b''
+    peer = Peer(binary)
+    try:
+        peer.initialize()
+        peer.process.stdin.write(b'{"jsonrpc":"2.0","id":11,"method":"ping","params":{"extra":' +
+                                b'[' * 62 + b'0' + b']' * 62 + b'}}\n')
+        peer.process.stdin.flush()
+        assert peer.read()['id'] == 11
+    finally:
+        peer.close()
+    assert peer.process.returncode == 0
+
     conflict = subprocess.run([str(binary), '--mcp', '--preview'], capture_output=True, timeout=4)
     assert conflict.returncode == 2 and conflict.stdout == b''
-    print('MCP subprocess checks passed: initialization, real Codex capabilities, schemas, strict arguments, version negotiation, EOF, signals, and input bound.')
+    print('MCP subprocess checks passed: initialization, real Codex capabilities, schemas, strict arguments, version negotiation, EOF, signals, input bound, and iterative JSON depth bounds.')
 
 
 if __name__ == '__main__':

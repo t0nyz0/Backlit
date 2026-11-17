@@ -100,9 +100,9 @@ if arguments.contains("--verify-hardware") {
     private var pendingTerminationReason: QuitReason?
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
-        if !NSApp.setActivationPolicy(.regular) {
-            model.notice = "macOS could not show the Dock icon. Backlit will keep its menu bar entry available."
-        }
+        // Apply only the saved icon preference through the controller below.
+        // A speculative Dock request here can fail even when menu-bar-only
+        // mode is healthy, leaving a stale notice unrelated to the light.
         if let icon = ApplicationIcon.load() {
             NSApp.applicationIconImage = icon
             NSApp.dockTile.display()

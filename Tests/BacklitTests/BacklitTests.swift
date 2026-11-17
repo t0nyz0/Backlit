@@ -138,11 +138,26 @@ final class BacklitTests: XCTestCase {
         XCTAssertLessThan(Effects.level(at:0,input:input),0.05)
         XCTAssertGreaterThan(Effects.level(at:3,input:input),0.75)
         XCTAssertEqual(Effects.level(at:0,input:input),Effects.level(at:6,input:input),accuracy:0.001)
-        for period in [3.0,4.5,6,10] {
+        for period in [3.0,4.5,6,10,20,30] {
             input.period=period
             XCTAssertGreaterThan(Effects.level(at:period/2,input:input)-Effects.level(at:0,input:input),0.7)
         }
     }
+    func testBreathingThirtySecondCycleUsesFullRangeAndBoundsInvalidValues() {
+        var input = EffectInput(); input.mode = .breathe; input.brightness = 1; input.period = 30
+        XCTAssertEqual(Effects.breathingPeriodRange, 3...30)
+        XCTAssertEqual(Effects.level(at: 0, input: input), 0.04, accuracy: 0.000001)
+        XCTAssertEqual(Effects.level(at: 15, input: input), 1, accuracy: 0.000001)
+        XCTAssertEqual(Effects.level(at: 30, input: input), 0.04, accuracy: 0.000001)
+        let atThirty = Effects.level(at: 7.5, input: input)
+        input.period = 100
+        XCTAssertEqual(Effects.level(at: 7.5, input: input), atThirty)
+        input.period = .nan
+        let fallback = Effects.level(at: 3, input: input)
+        input.period = 6
+        XCTAssertEqual(Effects.level(at: 3, input: input), fallback)
+    }
+
     func testAttentionOnlyDoubleBlinksWhenAway() {
         var input=EffectInput();input.mode = .agents;input.agent = .attention;input.away=true
         XCTAssertGreaterThan(Effects.level(at:0.05,input:input),Effects.level(at:0.2,input:input))

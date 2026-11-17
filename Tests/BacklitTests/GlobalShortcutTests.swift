@@ -5,7 +5,7 @@ import Carbon
 
 @MainActor final class GlobalShortcutTests: XCTestCase {
     private var bindings: [LogoShortcutAction:LogoShortcut] {
-        Dictionary(uniqueKeysWithValues:LogoShortcutAction.allCases.map{($0,$0.defaultBinding)})
+        Dictionary(uniqueKeysWithValues:LogoShortcutAction.allCases.map{($0,$0.legacyDefaultBinding)})
     }
     private final class Backend {
         var next = 0
@@ -34,11 +34,40 @@ import Carbon
         NSEvent.keyEvent(with:.keyDown,location:.zero,modifierFlags:flags,timestamp:0,windowNumber:0,
             context:nil,characters:characters,charactersIgnoringModifiers:characters,isARepeat:false,keyCode:code)!
     }
-    func testDefaultsUseOrdinaryArrowsAndPreserveTheToggleChord() {
-        XCTAssertEqual(bindings[.toggle]?.label,"⌃⌘B")
-        XCTAssertEqual(bindings[.increase]?.label,"⌃⌘↑")
-        XCTAssertEqual(bindings[.decrease]?.label,"⌃⌘↓")
-        XCTAssertEqual(Set(bindings.values.map(\.keyCode)).count,3)
+    func testFreshInstallAndResetUseToggleOnly() {
+        model { model, defaults in
+            XCTAssertEqual(model.logoShortcuts[.toggle]?.label,"⌃⌘B")
+            XCTAssertNil(model.logoShortcuts[.decrease]); XCTAssertNil(model.logoShortcuts[.increase])
+            XCTAssertEqual(LogoShortcutPreferences.load(defaults),model.logoShortcuts)
+            let relaunched = AppModel(demo:true,defaults:defaults)
+            XCTAssertEqual(relaunched.logoShortcuts,model.logoShortcuts)
+            _ = relaunched.prepareQuit()
+            for action in [LogoShortcutAction.decrease, .increase] {
+                XCTAssertTrue(model.setLogoShortcut(action.legacyDefaultBinding,action:action))
+                XCTAssertTrue(model.setLogoShortcut(action.defaultBinding,action:action))
+                XCTAssertNil(LogoShortcutPreferences.load(defaults)[action])
+            }
+            XCTAssertEqual(LogoShortcutAction.toggle.defaultBinding?.label,"⌃⌘B")
+        }
+    }
+    func testExistingImplicitShortcutsMigrateOnceWithoutChangingSavedChoices() throws {
+        let suite = "local.backlit.shortcut-migration." + UUID().uuidString
+        let defaults = UserDefaults(suiteName:suite)!
+        defer { defaults.removePersistentDomain(forName:suite) }
+        defaults.set("existing-install",forKey:"installation.id")
+        defaults.set("untouched",forKey:"unrelated")
+        let custom = LogoShortcut(keyCode:45,modifiers:4352,keyLabel:"N")
+        try LogoShortcutPreferences.save(custom,action:.toggle,defaults:defaults)
+        try LogoShortcutPreferences.save(nil,action:.decrease,defaults:defaults)
+        let first = LogoShortcutPreferences.load(defaults)
+        XCTAssertEqual(first[.toggle],custom); XCTAssertNil(first[.decrease])
+        XCTAssertEqual(first[.increase],LogoShortcutAction.increase.legacyDefaultBinding)
+        XCTAssertEqual(defaults.string(forKey:"unrelated"),"untouched")
+        XCTAssertEqual(LogoShortcutPreferences.load(defaults),first)
+        try LogoShortcutPreferences.save(LogoShortcutAction.increase.defaultBinding,action:.increase,defaults:defaults)
+        XCTAssertNil(LogoShortcutPreferences.load(defaults)[.increase])
+        try LogoShortcutPreferences.save(custom,action:.increase,defaults:defaults)
+        XCTAssertEqual(LogoShortcutPreferences.load(defaults)[.increase],custom)
     }
     func testRecorderNamesArrowsAndIgnoresCapsLockAndNumericPadFlags() throws {
         let binding = try LogoShortcut.capture(key(126,flags:[.command,.control,.capsLock,.numericPad,.function]))
@@ -93,7 +122,7 @@ import Carbon
         backend.failedKey = 45
         XCTAssertThrowsError(try registry.replace(.init(keyCode:45,modifiers:4352,keyLabel:"N"),for:.increase))
         XCTAssertEqual(backend.registered.count,3); XCTAssertTrue(backend.removed.isEmpty)
-        XCTAssertEqual(registry.desired[.increase],LogoShortcutAction.increase.defaultBinding)
+        XCTAssertEqual(registry.desired[.increase],LogoShortcutAction.increase.legacyDefaultBinding)
         model { model,defaults in
             model.onShortcutChange = { _,_ in "Fixture conflict" }
             XCTAssertFalse(model.setLogoShortcut(.init(keyCode:45,modifiers:4352,keyLabel:"N"),action:.increase))
@@ -104,7 +133,7 @@ import Carbon
     func testLocalDuplicateIsRejectedBeforeNativeRegistration() {
         model { model,_ in
             var calls = 0; model.onShortcutChange = { _,_ in calls += 1; return nil }
-            XCTAssertFalse(model.setLogoShortcut(LogoShortcutAction.increase.defaultBinding,action:.decrease))
+            XCTAssertFalse(model.setLogoShortcut(LogoShortcutAction.toggle.defaultBinding,action:.decrease))
             XCTAssertEqual(calls,0)
         }
     }

@@ -7,11 +7,30 @@ import OSLog
 enum NativeLightSample {
     struct Sample {
         let factor: Double
-        let appliedNits: Double
-        let multiplier: Double
+        enum Source { case baseline(appliedNits: Double, multiplier: Double), measuredOutput(finalNits: Double) }
+        let source: Source
+        init(factor: Double, appliedNits: Double, multiplier: Double) {
+            self.factor = factor; source = .baseline(appliedNits: appliedNits, multiplier: multiplier)
+        }
+        init(factor: Double, finalNits: Double) {
+            self.factor = factor; source = .measuredOutput(finalNits: finalNits)
+        }
+        var positiveSourceObserved: Bool {
+            switch source {
+            case let .baseline(nits, multiplier): return nits > 0 && multiplier > 0
+            case let .measuredOutput(nits): return nits > 0
+            }
+        }
+        // FinalNits includes the fade factor. Zero at factor zero is unknown
+        // source availability, not a proven zero baseline. A guarded bounded
+        // first-rise attempt is allowed, but cannot be reported as output.
+        var canAttemptFirstRise: Bool {
+            if case .measuredOutput = source { return factor == 0 }
+            return false
+        }
     }
     struct Failure: Error, Equatable {
-        enum Field: String { case state = "LEPWMState", factor = "Factor", appliedNits = "AppliedNits", multiplier = "NitsMultiplier", product = "AppliedNits*NitsMultiplier" }
+        enum Field: String { case finalNits = "FinalNits", state = "LEPWMState", factor = "Factor", appliedNits = "AppliedNits", multiplier = "NitsMultiplier", product = "AppliedNits*NitsMultiplier" }
         enum Reason: String { case missing, malformed, boolean, nonfinite, outOfRange, negative }
         let field: Field
         let reason: Reason
@@ -42,19 +61,29 @@ enum NativeLightSample {
 
     static func sample(_ raw: Any?) throws -> Sample {
         let state = try dictionary(raw)
-        let value = Sample(factor: try number(.factor, in: state),
-                           appliedNits: try number(.appliedNits, in: state),
+        let factor = try number(.factor, in: state)
+        let value: Sample
+        if state["AppliedNits"] == nil && state["NitsMultiplier"] == nil && state["FinalNits"] != nil {
+            value = Sample(factor: factor, finalNits: try number(.finalNits, in: state))
+        } else {
+            // Never hide a partial or malformed baseline behind another field.
+            value = Sample(factor: factor, appliedNits: try number(.appliedNits, in: state),
                            multiplier: try number(.multiplier, in: state))
+        }
         if let failure = validationFailure(value) { throw failure }
         return value
     }
 
     static func validationFailure(_ value: Sample) -> Failure? {
-        for (field, number) in [(Failure.Field.factor, value.factor), (.appliedNits, value.appliedNits), (.multiplier, value.multiplier)] {
-            if let failure = validationFailure(number, field: field) { return failure }
-        }
-        guard (value.appliedNits * value.multiplier).isFinite else {
-            return Failure(field: .product, reason: .nonfinite, value: value.appliedNits * value.multiplier)
+        if let failure = validationFailure(value.factor, field: .factor) { return failure }
+        switch value.source {
+        case let .measuredOutput(nits): return validationFailure(nits, field: .finalNits)
+        case let .baseline(nits, multiplier):
+            if let failure = validationFailure(nits, field: .appliedNits) { return failure }
+            if let failure = validationFailure(multiplier, field: .multiplier) { return failure }
+            guard (nits * multiplier).isFinite else {
+                return Failure(field: .product, reason: .nonfinite, value: nits * multiplier)
+            }
         }
         return nil
     }

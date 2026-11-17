@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
 <p align="center">
-<img src="https://img.shields.io/badge/source-0.2.8-9a7400?style=flat" alt="Source 0.2.8">
-<img src="https://img.shields.io/badge/local_nonUI_tests-790_passing-2d6085?style=flat" alt="790 local non-UI Swift tests passing">
+<img src="https://img.shields.io/badge/source-0.2.9-9a7400?style=flat" alt="Source 0.2.9">
+<img src="https://img.shields.io/badge/local_nonUI_tests-865_passing-2d6085?style=flat" alt="865 local non-UI Swift tests passing">
 <img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
 <img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
 <img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
@@ -26,7 +26,7 @@ Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo
 | Behavior | What it does |
 | --- | --- |
 | Steady | Holds the brightness you choose. |
-| Breathe | Fades in and out on a 3–10 second cycle. |
+| Breathe | Fades in and out on a 3–30 second cycle. |
 | Battery | Automatic pulse only while actively charging; solid at full or paused charging. Unplugged, output equals the battery percentage down to zero. Manual brightness has no effect. Includes pulse speed, a configurable “Dim to” floor (0% by default), optional plugged-in styles, and charge-ready cues. |
 | Music | Responds to bass energy in system playback, with automatic level adjustment, Smooth/Balanced/Punchy response, sensitivity, and dark-between-beat controls. |
 | Agents | Shows working, waiting, and attention states from coding agents. |
@@ -56,9 +56,9 @@ The logo supports white light. Brightness and timing are adjustable; RGB colors 
 
 The menu includes a small preview and controls for the selected behavior. Battery shows its actual battery-driven output; the other behaviors retain manual brightness. Backlit’s own outlined status icon remains visible when dim; its center follows current output. **Control–Command–B** or **Option-click** toggles the light. Toggle and brightness-up/down shortcuts are configurable in Settings. You can hide the menu bar icon in Settings and reopen Backlit from the Dock or Applications. Settings also offers **Hide Dock icon**. New defaults show the menu-bar icon and hide the Dock icon; saved choices are preserved. Hiding the menu-bar icon restores the Dock icon first so the app stays reachable. This does not remove shortcuts you have pinned to the macOS Dock.
 
-**Control–Command–Up/Down Arrow** changes manual logo brightness by five percentage points while preserving its behavior and on/off state. Battery stays automatic. A separate, off-by-default experimental **Shift + hardware brightness keys** option requires Accessibility, Input Monitoring and physical keyboard validation before screen suppression can be claimed. See [shortcut setup and limits](docs/SHORTCUTS.md).
+Brightness-up/down shortcuts are **Off by default** and can be assigned in Settings. Existing choices, including the previous Control–Command–Up/Down Arrow defaults, are preserved on upgrade. An assigned shortcut changes manual logo brightness by five percentage points while preserving its behavior and on/off state. Battery stays automatic. A separate, off-by-default experimental **Shift + hardware brightness keys** option requires Accessibility, Input Monitoring and physical keyboard validation before screen suppression can be claimed. See [shortcut setup and limits](docs/SHORTCUTS.md).
 
-Launch connects compatible hardware automatically. Quit restores the previous logo curve. If restoration fails, Backlit retains a recovery record and offers Restore Light. Incomplete closed-lid cleanup keeps output paused until recovery is confirmed. Turning the light off or quitting during repair prevents automatic restart.
+Launch connects compatible hardware automatically. Quit restores the previous logo curve. If restoration fails, Backlit retains a recovery record and offers Restore Light. Known transient closed-lid failures receive up to three persisted automatic recovery attempts. Each replacement requires verification of the exact previous fade session's cleanup, and retains the original closed-lid time limit. Unknown faults, unverified cleanup, and exhausted retry budgets stay paused for Restore Light. Turning the light off or quitting during repair cancels pending automatic restart.
 
 ## Connections
 
@@ -86,7 +86,7 @@ Downloads are disabled in isolated preview. In the app, **Download Latest Versio
 
 ## Install
 
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit 0.2.8 is **ad-hoc signed with the hardened runtime, not Developer ID signed or notarized**.
+Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit is **ad-hoc signed with the hardened runtime, not Developer ID signed or notarized**.
 
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
@@ -98,7 +98,7 @@ The brightness-limit override runs only built-in macOS tools with administrator 
 
 ## Updates
 
-Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. In-app installation remains unavailable in 0.2.8. See [validation](docs/VALIDATION.md) for update verification and known limits.
+Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. Installation remains manual. See [validation](docs/VALIDATION.md) for update verification and known limits.
 
 ## Build
 

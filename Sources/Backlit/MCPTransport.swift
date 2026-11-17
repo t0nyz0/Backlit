@@ -2,6 +2,34 @@ import Foundation
 import MCP
 import Darwin
 
+/// Bound recursive parser work before either Foundation or the SDK sees input.
+/// Strings and escape sequences are scanned as bytes, without decoding JSON.
+/// This is a resource guard, not a replacement for SDK syntax validation.
+enum MCPJSONNesting {
+    static let maximumDepth = 64
+    static func accepts(_ data: Data) -> Bool {
+        var containers: [UInt8] = []
+        var inString = false, escaped = false
+        for byte in data {
+            if inString {
+                if escaped { escaped = false }
+                else if byte == 92 { escaped = true }
+                else if byte == 34 { inString = false }
+                continue
+            }
+            if byte == 34 { inString = true }
+            else if byte == 123 || byte == 91 {
+                guard containers.count < maximumDepth else { return false }
+                containers.append(byte)
+            } else if byte == 125 || byte == 93 {
+                guard containers.last == (byte == 125 ? 123 : 91) else { return false }
+                containers.removeLast()
+            }
+        }
+        return true
+    }
+}
+
 /// The pinned SDK models experimental client capabilities as String values,
 /// although real clients send capability objects. Backlit implements none of
 /// those extensions, so ignore this optional object before SDK initialization.
@@ -71,7 +99,7 @@ actor BoundedMCPTransport: Transport {
         while let newline = pending.firstIndex(of:10) {
             let line = Data(pending[..<newline])
             pending.removeSubrange(...newline)
-            guard line.count <= Self.maximumMessageBytes else { finish(); return }
+            guard line.count <= Self.maximumMessageBytes, MCPJSONNesting.accepts(line) else { finish(); return }
             if !line.isEmpty, case .dropped = continuation.yield(SDKInitializeCompatibility.messageForSDK(line)) { finish(); return }
         }
         if pending.count > Self.maximumMessageBytes { finish() }

@@ -1,3 +1,22 @@
+## Backlit 0.2.9
+
+### Improvements
+
+- New installations and Reset keep Control–Command–B for Toggle and leave brightness-up/down shortcuts Off. Existing shortcut choices are preserved on upgrade.
+
+- Rejects excessively nested MCP requests before JSON parsing, preventing crashes of the local stdio MCP process.
+- Breathing pace now ranges from 3 to 30 seconds, preserving existing settings.
+- Supports native measured-output readback used by newer MacBook logo hardware.
+- Known transient closed-lid failures receive bounded automatic recovery with persisted retry limits and exact-session cleanup verification. Recovery preserves the original closed-lid deadline; unknown faults and exhausted budgets still stop safely.
+- Restore Light explicitly retries a recovered closed-lid fault without requiring an off/on toggle.
+- More reliable ambient-setting reconnects and rapid closed-lid off/on changes.
+- Removed an unnecessary launch-time Dock request that could leave a misleading warning in menu-bar-only mode.
+
+### Validation limits
+
+- Native logo output and breathing were observed on the local Mac after the readback correction. Automatic fault/relaunch recovery is covered by isolated end-to-end tests, not a deliberate live hardware-fault injection.
+- Existing permission requirements, the 30-minute closed-lid limit, and ad-hoc signing/notarization limitations remain unchanged.
+
 ## Backlit 0.2.8
 
 ### New

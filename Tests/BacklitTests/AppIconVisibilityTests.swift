@@ -34,6 +34,32 @@ import XCTest
         let name = "Backlit.AppIconVisibility." + UUID().uuidString
         return (name, UserDefaults(suiteName: name)!)
     }
+    func testLaunchDoesNotSpeculativelyRequestDockOrPostUntrackedFailure() throws {
+        // Launch wiring is checked without constructing AppDelegate (which
+        // creates real hardware services and windows).
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let source = try String(contentsOf: root.appendingPathComponent("Sources/Backlit/main.swift"), encoding: .utf8)
+        let launch = try XCTUnwrap(source.range(of: "func applicationDidFinishLaunching"))
+        let end = try XCTUnwrap(source.range(of: "func application(_ application:", range: launch.upperBound..<source.endIndex))
+        let body = source[launch.lowerBound..<end.lowerBound]
+        XCTAssertFalse(body.contains("setActivationPolicy"))
+        XCTAssertFalse(body.contains("could not show the Dock icon"))
+        XCTAssertTrue(body.contains("model.applyAppIconVisibility()"))
+    }
+
+    func testMenuOnlyStartupDoesNotNeedDockAndDoesNotPostFailure() {
+        let (suite, store) = defaults(); defer { store.removePersistentDomain(forName: suite) }
+        store.set(false, forKey: "dockIcon.visible"); store.set(true, forKey: "menuBarIcon.visible")
+        let model = AppModel(demo: true, defaults: store)
+        let backend = Backend(); backend.dock = false; backend.canShowDock = false
+        let controller = backend.makeController()
+        model.onAppIconVisibilityChange = { controller.apply($0) }
+        model.applyAppIconVisibility()
+        XCTAssertEqual(backend.events, ["menu:on"])
+        XCTAssertNil(model.notice)
+        XCTAssertFalse(model.dockIconVisible); XCTAssertTrue(model.menuBarIconVisible)
+    }
+
     func testEveryRequestedPairHasAtLeastOneEntry() {
         for dock in [true, false] {
             for menu in [true, false] {

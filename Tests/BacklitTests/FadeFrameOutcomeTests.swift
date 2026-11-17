@@ -10,6 +10,7 @@ final class FadeFrameOutcomeTests: XCTestCase {
         let token: UUID
         var context: FadeSafetyContext? = .init(lidClosed: false, sleeping: false, locked: false, generation: 1)
         var sample: ClosedLidEffect.Sample? = .init(factor: 0, appliedNits: 0, multiplier: 1)
+        var sampleFailure: NativeLightSample.Failure?
         var now = 0.0
         var events: [String] = []
         var permission = true
@@ -21,7 +22,7 @@ final class FadeFrameOutcomeTests: XCTestCase {
             duration: { self.write("recovery:duration:\($0)") }, logicalState: { self.write("recovery:state:\($0)") },
             keyboardLogicalState: { self.write("keyboard:\($0):\($1)") }, keyboardClosed: { self.write("closed:\($0)") },
             factor: { self.sample?.factor }, logoEnabled: { false }, now: { self.now }, wait: { self.now += $0 }))
-        lazy var effect = ClosedLidEffect(interface: .init(sample: { self.sample },
+        lazy var effect = ClosedLidEffect(interface: .init(sample: { self.sample }, sampleFailure: { self.sampleFailure },
             duration: { self.write("duration:\($0)") }, logicalState: {
                 self.write("state:\($0)") && (self.onLogicalState?($0) ?? true)
             },
@@ -54,6 +55,117 @@ final class FadeFrameOutcomeTests: XCTestCase {
         let value = try Fixture()
         addTeardownBlock { try FileManager.default.removeItem(at: value.directory) }
         return value
+    }
+
+    func testMissingClosedSourceFieldsWaitWithoutWritesThenUseFreshReadback() throws {
+        let f = try fixture()
+        f.context = .init(lidClosed: true, sleeping: false, locked: false, generation: 1)
+        try f.store.setClosedLidRequested(token: f.token, value: true)
+        f.sample = nil
+        // Missing all source fields remains a no-write readiness condition.
+        do { _ = try NativeLightSample.sample(["Factor": 0] as NSDictionary) }
+        catch let failure as NativeLightSample.Failure { f.sampleFailure = failure }
+        XCTAssertEqual(f.sampleFailure?.field, .appliedNits)
+        XCTAssertEqual(try f.apply(1, closedLidRequested: true), .waiting)
+        f.now = 0.5
+        XCTAssertEqual(try f.apply(1, closedLidRequested: true), .waiting)
+        XCTAssertTrue(f.events.isEmpty); XCTAssertNil(try f.store.read().pendingBatch)
+        XCTAssertTrue(f.needsAnimation)
+        // Permission alone never proves output; only a complete native sample
+        // permits the guarded write, and observed output then confirms it.
+        f.sampleFailure = nil
+        f.sample = .init(factor: 0, appliedNits: 100, multiplier: 1)
+        XCTAssertEqual(try f.apply(1, closedLidRequested: true), .waiting)
+        XCTAssertNotNil(try f.store.read().pendingBatch)
+        XCTAssertFalse(f.events.isEmpty)
+        f.sample = .init(factor: 1, appliedNits: 100, multiplier: 1)
+        XCTAssertEqual(try f.apply(1, closedLidRequested: true), .applied)
+    }
+
+    func testMeasuredOutputSchemaUsesBoundedFirstRiseAndActualConfirmation() throws {
+        for target in [0.5, 1.0] {
+            let f = try fixture()
+            f.context = .init(lidClosed: true, sleeping: false, locked: false, generation: 1)
+            try f.store.setClosedLidRequested(token: f.token, value: true)
+            f.sample = try NativeLightSample.sample(["Factor": 0, "FinalNits": 0])
+            XCTAssertEqual(try f.apply(target, closedLidRequested: true), .waiting)
+            let count = f.events.count
+            XCTAssertGreaterThan(count, 0)
+            f.now = 1
+            XCTAssertEqual(try f.apply(target, closedLidRequested: true), .waiting)
+            XCTAssertEqual(f.events.count, count, "Do not rearm an unconfirmed rise")
+            f.sample = try NativeLightSample.sample(["Factor": target, "FinalNits": target * 400])
+            XCTAssertEqual(try f.apply(target, closedLidRequested: true), .applied)
+            let settledCount = f.events.count
+            for time in [10.0, 60.0, 120.0] {
+                f.now = time
+                XCTAssertEqual(try f.apply(target, closedLidRequested: true), .applied)
+                XCTAssertEqual(f.events.count, settledCount)
+            }
+        }
+    }
+
+    func testMeasuredFirstRiseStillRequiresClosedLidPermission() throws {
+        let f = try fixture()
+        f.context = .init(lidClosed: true, sleeping: false, locked: false, generation: 1)
+        try f.store.setClosedLidRequested(token: f.token, value: true)
+        f.permission = false
+        f.sample = try NativeLightSample.sample(["Factor": 0, "FinalNits": 0])
+        XCTAssertEqual(try f.apply(1, closedLidRequested: true), .waiting)
+        XCTAssertTrue(f.events.isEmpty)
+    }
+
+    func testMeasuredPositiveFactorWithoutOutputCannotConfirmTarget() throws {
+        let f = try fixture()
+        f.sample = try NativeLightSample.sample(["Factor": 0, "FinalNits": 0])
+        XCTAssertEqual(try f.apply(1), .waiting)
+        f.sample = try NativeLightSample.sample(["Factor": 1, "FinalNits": 0])
+        f.now = 1
+        XCTAssertEqual(try f.apply(1), .waiting)
+        f.now = 3
+        XCTAssertThrowsError(try f.apply(1)) { XCTAssertTrue($0 is FadeSessionInterruption) }
+    }
+
+    func testMeasuredZeroNeverClaimsOutputAndTimesOut() throws {
+        for target in [0.5, 1.0] {
+            let f = try fixture()
+            f.sample = try NativeLightSample.sample(["Factor": 0, "FinalNits": 0])
+            XCTAssertEqual(try f.apply(target), .waiting)
+            let count = f.events.count
+            f.now = 3
+            XCTAssertThrowsError(try f.apply(target)) { XCTAssertTrue($0 is FadeSessionInterruption) }
+            XCTAssertEqual(f.events.count, count)
+        }
+    }
+
+    func testMissingSourceDeadlineIsBoundedWithoutAnyHardwareWrite() throws {
+        for field in [NativeLightSample.Failure.Field.appliedNits, .multiplier] {
+            let f = try fixture()
+            f.context = .init(lidClosed: true, sleeping: false, locked: false, generation: 1)
+            try f.store.setClosedLidRequested(token: f.token, value: true)
+            f.sample = nil; f.sampleFailure = .init(field: field, reason: .missing)
+            XCTAssertEqual(try f.apply(1, closedLidRequested: true), .waiting)
+            f.now = 2.99
+            XCTAssertEqual(try f.apply(1, closedLidRequested: true), .waiting)
+            f.now = 3
+            XCTAssertThrowsError(try f.apply(1, closedLidRequested: true)) {
+                guard case FadeSessionInterruption.outputTimeout = $0 else { return XCTFail("Expected bounded interruption") }
+            }
+            XCTAssertTrue(f.events.isEmpty); XCTAssertNil(try f.store.read().pendingBatch)
+            try f.restore()
+            XCTAssertTrue(f.events.isEmpty)
+        }
+    }
+
+    func testMalformedAndMissingFactorStillFailClosedWithoutWrites() throws {
+        for failure in [NativeLightSample.Failure(field: .factor, reason: .missing),
+                        .init(field: .appliedNits, reason: .malformed),
+                        .init(field: .multiplier, reason: .nonfinite)] {
+            let f = try fixture()
+            f.sample = nil; f.sampleFailure = failure
+            XCTAssertThrowsError(try f.apply(1)) { XCTAssertFalse($0 is FadeSessionInterruption) }
+            XCTAssertTrue(f.events.isEmpty); XCTAssertNil(try f.store.read().pendingBatch)
+        }
     }
 
     func testGatedPositiveSourceWaitsWithoutWriteBatchAndRetainsDeadline() throws {

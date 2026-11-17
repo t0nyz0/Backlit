@@ -201,7 +201,7 @@ struct LightPage: View {
                 Surface {
                     if model.mode == .breathe {
                         HStack {Text(model.t("Breathing pace","呼吸速度")).fontWeight(.medium);Spacer();Text(String(format:"%.1f s",model.period)).monospacedDigit().foregroundStyle(.secondary)}
-                        Slider(value:$model.period,in:3...10).tint(.primary).accessibilityLabel("Breathing cycle seconds")
+                        Slider(value:$model.period,in:Effects.breathingPeriodRange).tint(.primary).accessibilityLabel("Breathing cycle seconds")
                         HStack {Text("Faster");Spacer();Text("Slower")}.font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .music {
                         MusicResponseControls(model: model)
@@ -468,7 +468,7 @@ struct MenuView: View {
             }
             }
             if model.mode == .breathe {
-                VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(String(format:"%.1f seconds",model.period)).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:3...10).tint(.primary).accessibilityLabel("Breathing cycle seconds")}
+                VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(String(format:"%.1f seconds",model.period)).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:Effects.breathingPeriodRange).tint(.primary).accessibilityLabel("Breathing cycle seconds")}
             } else if model.mode == .music {
                 MusicResponseControls(model: model).font(.system(size:11))
                 VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel("Music intensity")};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);MusicCaptureStatus(model: model)}.font(.system(size:11))

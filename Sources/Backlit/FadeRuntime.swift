@@ -39,6 +39,7 @@ final class FadeRuntime: FadeEffectSession {
     private var effect:ClosedLidEffect
     private var requestedClosed=false
     private var hadWriteFailure=false
+    var recoveryToken: UUID? { token }
     var ownsIndependentSource: Bool { independentSource != nil }
     var needsAnimation:Bool { independentSource?.installed == false || effect.needsAnimation || (try? store.read().effectsAllowed) != true }
 

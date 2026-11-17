@@ -22,11 +22,15 @@ enum FadeSessionInterruption: LocalizedError {
 protocol FadeEffectSession: AnyObject {
     var needsAnimation: Bool { get }
     var ownsIndependentSource: Bool { get }
+    var recoveryToken: UUID? { get }
     func apply(_ brightness: Double, closedLidRequested: Bool, frameInterval: Double) throws -> FadeApplyResult
     func restore() throws
 }
 
-extension FadeEffectSession { var ownsIndependentSource: Bool { false } }
+extension FadeEffectSession {
+    var ownsIndependentSource: Bool { false }
+    var recoveryToken: UUID? { nil }
+}
 
 /// Owns only the animation session, not the logo lease or saved native mapping.
 /// A normal lid-policy pause must verify cleanup before forgetting the session.
@@ -34,6 +38,8 @@ final class FadeSessionCoordinator {
     private let recoveryLogger = Logger(subsystem: "local.backlit", category: "recovery")
     private let physicalLid: () -> Bool?
     private let makeSession: (Bool) throws -> any FadeEffectSession
+    private let durableRecovery: AutomaticFadeRecovery?
+    private var pendingDurableCleanup: (token: UUID, reason: AutomaticRecoveryStore.Reason)?
     private var session: (any FadeEffectSession)?
     private var recoveryRequired = false
     private let now: () -> Double
@@ -50,14 +56,24 @@ final class FadeSessionCoordinator {
     private var swapPending = false
     private var swapAttempts = 0
     private var swapRetryAfter: Double?
-    var needsAnimation: Bool { retryAfter != nil || swapPending || session?.needsAnimation == true }
+    var needsAnimation: Bool { automaticRecoveryPending || retryAfter != nil || swapPending || session?.needsAnimation == true }
     var hasSession: Bool { session != nil }
+    var recoveryToken: UUID? { session?.recoveryToken }
     var ownsIndependentSource: Bool { session?.ownsIndependentSource == true }
-    init(physicalLid: @escaping () -> Bool?, now: @escaping () -> Double = { ProcessInfo.processInfo.systemUptime }, makeSession: @escaping (Bool) throws -> any FadeEffectSession) {
-        self.physicalLid = physicalLid; self.now = now; self.makeSession = makeSession
+    init(physicalLid: @escaping () -> Bool?, now: @escaping () -> Double = { ProcessInfo.processInfo.systemUptime }, durableRecovery: AutomaticFadeRecovery? = nil, makeSession: @escaping (Bool) throws -> any FadeEffectSession) {
+        self.physicalLid = physicalLid; self.now = now; self.durableRecovery = durableRecovery; self.makeSession = makeSession
     }
     func apply(_ brightness: Double, closedLidRequested: Bool, frameInterval: Double) throws -> FadeApplyResult {
         if let terminalFailure { throw terminalFailure }
+        if let pending = pendingDurableCleanup, let durableRecovery {
+            if !closedLidRequested, durableRecovery.intentWasWithdrawn {
+                try retire(); pendingDurableCleanup = nil; automaticRecoveryPending = false
+                return .paused
+            }
+            guard try durableRecovery.cleanupReady() else { return .waiting }
+            try durableRecovery.begin(token: pending.token, reason: pending.reason)
+            return try finishDurableCleanup(token: pending.token)
+        }
         if swapPending { return try retireForSwap() }
         if recoveryRequired {try retire()}
         guard let lid = physicalLid() else { throw RuntimeServices.failure("Physical lid state is unavailable.") }
@@ -68,7 +84,10 @@ final class FadeSessionCoordinator {
             if time < deadline { return .waiting }
             retryAfter = nil
         }
-        if session == nil { session = try makeSession(closedLidRequested) }
+        if session == nil {
+            if let durableRecovery, try !durableRecovery.admit(allowWithdrawnIntent: !closedLidRequested) { return .waiting }
+            session = try makeSession(closedLidRequested)
+        }
         guard let session else { throw RuntimeServices.failure("Logo animation session is unavailable.") }
         let result: FadeApplyResult
         do {
@@ -85,6 +104,19 @@ final class FadeSessionCoordinator {
                 // one second as a first retry, but never spend the bounded
                 // failure budget on it.
                 return try retireForSwap()
+            }
+            if closedLidRequested, let durableRecovery, let token = session.recoveryToken {
+                let reason: AutomaticRecoveryStore.Reason
+                switch interruption {
+                case .lifecycle: reason = .lifecycle
+                case .outputTimeout: reason = .outputTimeout
+                case .sourceMode: preconditionFailure("Source swaps are handled above")
+                }
+                try durableRecovery.begin(token: token, reason: reason)
+                recoveryLogger.notice("Recorded a bounded automatic recovery attempt before retiring the light session.")
+                automaticRecoveryPending = true
+                pendingDurableCleanup = (token, reason)
+                return try finishDurableCleanup(token: token)
             }
             automaticRecoveryPending = true
             // Restoration must succeed before a replacement can be considered.
@@ -103,6 +135,7 @@ final class FadeSessionCoordinator {
             return .waiting
         }
         if result == .applied {
+            if let token = session.recoveryToken { try durableRecovery?.outputConfirmed(token: token) }
             if automaticRecoveryPending { recoveryLogger.notice("Automatic fade recovery confirmed a successful output frame.") }
             automaticRecoveryPending = false
             let time = now()
@@ -111,6 +144,18 @@ final class FadeSessionCoordinator {
         } else { healthySince = nil }
         if result == .paused { try retire() }
         return result
+    }
+    private func finishDurableCleanup(token: UUID) throws -> FadeApplyResult {
+        // A known transient interruption permits bounded cleanup retries, not
+        // replacement while an old owner or write may still be outstanding.
+        do { try retire() }
+        catch {
+            recoveryLogger.notice("Transient light cleanup is still pending; retaining its durable retry budget.")
+            return .waiting
+        }
+        try durableRecovery?.verified(token: token)
+        pendingDurableCleanup = nil
+        return .waiting
     }
     /// Manual restoration must clear a retired coordinator's failure latch,
     /// but only after any remaining durable recovery has been verified.
@@ -121,6 +166,7 @@ final class FadeSessionCoordinator {
     func restore() throws {
         try retire()
         retries = 0; retryAfter = nil; healthySince = nil; terminalFailure = nil; automaticRecoveryPending = false
+        pendingDurableCleanup = nil
         swapPending = false; swapAttempts = 0; swapRetryAfter = nil
     }
     /// Retires the session for a lid transition. Returns `.waiting` both

@@ -16,14 +16,17 @@ final class LogoDevice {
     private var lastWritten: [[Double]]?
     private var pendingWritten: [[Double]]?
     private var closedEffect: ClosedLidEffect?
-    private lazy var fadeSession = FadeSessionCoordinator(physicalLid: {RuntimeServices.physicalLidClosed}, makeSession: { [unowned self] in try FadeRuntime(closedLidRequested:$0, expectedMapping:self.saved) })
+    private lazy var fadeSession = FadeSessionCoordinator(physicalLid: {RuntimeServices.physicalLidClosed}, durableRecovery: automaticRecovery, makeSession: { [unowned self] in try FadeRuntime(closedLidRequested:$0, expectedMapping:self.saved) })
     private var lease: FileLease?
     private let recovery: URL
     private(set) var available = false
     private(set) var explanation = "No compatible illuminated logo was detected."
     typealias Setter = @convention(c) (AnyObject, Selector, AnyObject, NSString) -> Bool
 
-    init(directory: URL) {
+    let automaticRecovery: AutomaticFadeRecovery
+    init(directory: URL, defaults: UserDefaults = .standard) {
+        automaticRecovery = AutomaticFadeRecovery(store: AutomaticRecoveryStore(directory: directory),
+            intent: { LidSessionIntent.load(defaults) }, verify: { try FadeRecoveryStore(directory: directory).verifiedRetirement(token: $0) })
         recovery = directory.appendingPathComponent("logo-recovery.json")
         let node = IORegistryEntryFromPath(kIOMainPortDefault, Self.nodePath)
         guard node != 0 else { return }
@@ -45,6 +48,42 @@ final class LogoDevice {
         explanation = "Compatible logo hardware detected."
     }
 
+    /// Ambient-limit changes restart the service, invalidating this client's
+    /// connection. Only replace it after verified session cleanup. Readiness
+    /// checks are read-only and bounded; failure never resumes hardware writes.
+    func reconnectAfterAmbientChange() throws {
+        guard saved == nil, lease == nil, !needsRecovery else {
+            throw failure("Restore the current logo session before reconnecting its service.")
+        }
+        guard let kind = NSClassFromString("BrightnessSystemClient") as? NSObject.Type else {
+            throw failure("The logo control service is unavailable.")
+        }
+        client = nil
+        // The helper verified the old daemon's exit. Wait only for a readable
+        // replacement; callbacks remain guarded by ambient authorization.
+        if let ready = Self.readableServiceClient(attempt: { () -> NSObject? in
+            let candidate = kind.init()
+            guard PrivateInterface.matches(candidate, reader, PrivateInterface.copyProperty),
+                  PrivateInterface.matches(candidate, writer, PrivateInterface.setProperty),
+                  let rows = candidate.perform(reader, with: Self.mappingKey)?.takeRetainedValue() as? [[NSNumber]],
+                  Self.valid(rows.map { $0.map(\.doubleValue) }) else { return nil }
+            return candidate
+        }, wait: { RunLoop.current.run(until: Date().addingTimeInterval(0.1)) }) {
+            client = ready
+            return
+        }
+        throw failure("The logo service has not reconnected after changing ambient limits. Restore Light before retrying.")
+    }
+
+    static func readableServiceClient<Client>(attempt: () -> Client?, wait: () -> Void) -> Client? {
+        for index in 0..<20 {
+            if let client = attempt() { return client }
+            if index < 19 { wait() }
+        }
+        return nil
+    }
+
+    var ownedFadeRecoveryToken: UUID? { fadeSession.recoveryToken }
     var competingApp:String? {ControllerMonitor.shared.competingApp}
 
     var needsRecovery: Bool { FileManager.default.fileExists(atPath: recovery.path) || FileManager.default.fileExists(atPath: AgentBridge.directory.appendingPathComponent("fade-recovery.json").path) }
@@ -128,11 +167,20 @@ final class LogoDevice {
             else { closedEffect?.relinquish() }
         }
     }
-    func restore() throws {
+    func restore(expectedFadeToken: UUID? = nil) throws {
         guard available else { throw failure(explanation) }
         if let app = competingApp { throw failure("Quit \(app) before restoring a previous Backlit session.") }
+        // Explicit recovery may retry a failed service reconnect. Do this only
+        // in restoration, never inside begin/apply where pumped Off intent
+        // could otherwise be followed by an unconditional output write.
+        if client == nil { try reconnectAfterAmbientChange() }
         guard needsRecovery || saved != nil else { return }
         if lease == nil { lease = try FileLease(url:AgentBridge.directory.appendingPathComponent("logo.lock")) }
+        if let expectedFadeToken {
+            guard try FadeRecoveryStore(directory: AgentBridge.directory).permitsRecovery(of: expectedFadeToken) else {
+                throw failure("Automatic recovery no longer owns the recorded fade session.")
+            }
+        }
         // Acquire global ownership before touching a prior process's recovery.
         try fadeSession.restore(recoverPending: FadeRuntime.recoverPending)
         try restoreClosedEffect()

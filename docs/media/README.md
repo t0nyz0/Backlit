@@ -1,6 +1,6 @@
 # Backlit native media
 
-Version 0.2.8 retains the 0.2.5 captures below; no new screenshot session was run. The generated manifest app_version identifies the package whose media was checked, not a new capture version. These older images do not show the 0.2.6 status heading, the 1–30 minute closed-lid duration control or the New Pairing Key button. They also predate the 0.2.8 Connections layout and Dock visibility setting.
+The retained screenshots below were captured for 0.2.5 (30); no new screenshot session was run for the later versions described here. The manifest `app_version` records that actual capture version, not the current package version. Running `scripts/check_media.py` validates the existing image hashes and dimensions without changing provenance. An explicit `--strip` removes PNG metadata and refreshes hashes while preserving the recorded capture version; after a new capture session, record its actual version deliberately. These older images do not show the 0.2.6 status heading, the 1–30 minute closed-lid duration control or the New Pairing Key button. They also predate the 0.2.8 Connections layout and Dock visibility setting.
 
 The README labels retained screenshots as historical and omits the outdated Connections and Settings images. Those current pages are described in text. Historical assets remain here for provenance; they are not evidence of the current layout or defaults.
 
