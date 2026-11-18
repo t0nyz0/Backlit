@@ -1,4 +1,4 @@
-<p align="center"><a href="https://t0nyz.com/counter/backlit/hero.svg"><img src="https://t0nyz.com/counter/backlit/hero.svg" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. Live app download total, actual last successful update time, and source/build metadata."></a></p>
+<p align="center"><a href="https://t0nyz.com/counter/backlit/hero.svg?v=2"><img src="https://t0nyz.com/counter/backlit/hero.svg?v=2" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. Live app download total, actual last successful update time, and source/build metadata."></a></p>
 
 Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo.
 Native Swift. Local processing. No account required.

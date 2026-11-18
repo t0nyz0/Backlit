@@ -138,7 +138,7 @@ class DownloadsTests(unittest.TestCase):
 
     def test_readme_layout_invariants(self):
         text = (Path(__file__).resolve().parents[2]/'README.md').read_text()
-        self.assertIn('src="https://t0nyz.com/counter/backlit/hero.svg"', text)
+        self.assertIn('src="https://t0nyz.com/counter/backlit/hero.svg?v=2"', text)
         self.assertNotIn('## Downloads', text)
         self.assertNotIn('img.shields.io', text)
         self.assertIn('[License](LICENSE)', text)
