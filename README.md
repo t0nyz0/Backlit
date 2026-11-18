@@ -27,6 +27,15 @@ Native Swift. Local processing. No account required.
 
 Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/Backlit/releases) · [Counting method and update status](docs/downloads/README.md)
 
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/media/light-dark.png">
+  <img src="docs/media/light-light.png" width="780" alt="Backlit native app showing logo preview, behaviors and brightness controls">
+</picture>
+</p>
+
+*Historical 0.2.5 isolated preview. Some controls and layouts have since changed; the illustrated light is not a hardware measurement. [Provenance](docs/media/README.md).*
+
 ## Seven ways to light up
 
 | Behavior | What it does |
@@ -42,15 +51,6 @@ Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/
 White light only. Brightness and timing are adjustable.
 
 [Behavior details, permissions and limits](#behavior-details-and-permissions)
-
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/light-dark.png">
-  <img src="docs/media/light-light.png" width="780" alt="Backlit native app showing logo preview, behaviors and brightness controls">
-</picture>
-</p>
-
-*Historical 0.2.5 isolated preview. Some controls and layouts have since changed; the illustrated light is not a hardware measurement. [Provenance](docs/media/README.md).*
 
 ## Connections
 
