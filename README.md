@@ -1,31 +1,19 @@
-<p align="center"><img src="docs/header.png" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. A real MacBook with its illuminated logo."></p>
-<p align="center">
-<img src="https://img.shields.io/badge/source-0.2.10-9a7400?style=flat" alt="Source 0.2.10">
-<img src="https://img.shields.io/badge/local_nonUI_tests-865_passing-2d6085?style=flat" alt="865 local non-UI Swift tests passing">
-<img src="https://img.shields.io/badge/local_build-verified-55565f?style=flat" alt="Local build verified">
-<img src="https://img.shields.io/badge/macOS-14.0_target-55565f?style=flat" alt="macOS 14.0 target">
-<img src="https://img.shields.io/badge/Swift-6-a7440c?style=flat" alt="Swift 6">
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm_Perimeter-67538c?style=flat" alt="PolyForm Perimeter 1.0.0 license"></a>
-</p>
+<p align="center"><a href="https://t0nyz.com/counter/backlit/hero.svg"><img src="https://t0nyz.com/counter/backlit/hero.svg" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. Live sampled app downloads, dated trend, five latest downloadable releases, and source/build metadata."></a></p>
 
 Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo.
 Native Swift. Local processing. No account required.
 
-[Download for Apple silicon](https://t0nyz.com/backlit/install) · [Behaviors](#seven-ways-to-light-up) · [Connections](#connections) · [Build](#build-from-source)
+[Download for Apple silicon](https://t0nyz.com/backlit/install) · [Behaviors](#seven-ways-to-light-up) · [Connections](#connections) · [Build](#build-from-source) · [License](LICENSE)
+
+Source **0.2.10** · [Download counts and refresh details](docs/downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases)
 
 ## Get Backlit
+
+[![Download Backlit for Apple silicon — latest ZIP or DMG](docs/media/download-backlit.svg)](https://t0nyz.com/backlit/install)
 
 1. Download the [latest ZIP or DMG](https://github.com/t0nyz0/Backlit/releases).
 2. Quit Backlit, then move the new app to **Applications**.
 3. Open Backlit and choose a behavior.
-
-> Requires a physically illuminated, independently controlled logo. Ad-hoc signed with the hardened runtime; not Developer ID signed or notarized.
-
-## Downloads
-
-[![App download trend from recorded snapshots and downloads by version, with the actual check time](https://t0nyz.com/counter/backlit)](https://t0nyz.com/counter/backlit)
-
-Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/Backlit/releases) · [Counting method and update status](docs/downloads/README.md)
 
 <p align="center">
 <picture>
