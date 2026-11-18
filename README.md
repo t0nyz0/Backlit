@@ -8,30 +8,68 @@
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm_Perimeter-67538c?style=flat" alt="PolyForm Perimeter 1.0.0 license"></a>
 </p>
 
-Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo from the menu bar. Backlit is a native Swift app with an original interface, local processing, and no account requirement.
+Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo.
+Native Swift. Local processing. No account required.
 
-- Optional local MCP control lets compatible AI assistants read status and adjust power, brightness and behavior.
-- Configurable brightness-up/down shortcuts, plus a separate, off-by-default experimental Shift + hardware brightness option.
-- Optional menu-bar mode hides the running app's Dock icon while keeping Backlit accessible.
+[Download for Apple silicon](https://t0nyz.com/backlit/install) · [Behaviors](#seven-ways-to-light-up) · [Connections](#connections) · [Build](#build-from-source)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/light-dark.png">
-  <img src="docs/media/light-light.png" alt="Backlit workspace with logo preview, behaviors, and brightness controls">
-</picture>
+## Get Backlit
 
-*Historical 0.2.5 screenshots show the native app in isolated preview; some controls and layouts have since changed. The illustrated light is a preview, not a hardware measurement. Current Connections and Settings are described below. [Provenance](docs/media/README.md).*
+1. Download the [latest ZIP or DMG](https://github.com/t0nyz0/Backlit/releases).
+2. Quit Backlit, then move the new app to **Applications**.
+3. Open Backlit and choose a behavior.
 
-## Behaviors
+> Requires a physically illuminated, independently controlled logo. Ad-hoc signed with the hardened runtime; not Developer ID signed or notarized.
+
+## Seven ways to light up
 
 | Behavior | What it does |
 | --- | --- |
-| Steady | Holds the brightness you choose. |
-| Breathe | Fades in and out on a 3–30 second cycle. |
-| Battery | Automatic pulse only while actively charging; solid at full or paused charging. Unplugged, output equals the battery percentage down to zero. Manual brightness has no effect. Includes pulse speed, a configurable “Dim to” floor (0% by default), optional plugged-in styles, and charge-ready cues. |
-| Music | Responds to bass energy in system playback, with automatic level adjustment, Smooth/Balanced/Punchy response, sensitivity, and dark-between-beat controls. |
-| Agents | Shows working, waiting, and attention states from coding agents. |
-| Trackpad | Lights while a finger rests on the trackpad, with any app open. Optional click blink and permission-gated typing response. |
-| Typing | Lights briefly while you type, with any app open. Requires macOS Input Monitoring permission; uses timing only, not characters. |
+| **Steady** | Hold the brightness you choose. |
+| **Breathe** | Fade in and out on a 3–30 second cycle. |
+| **Battery** | Follow battery charge and charging activity. |
+| **Music** | Respond to bass energy in system playback. |
+| **Agents** | Show working, waiting and attention states. |
+| **Trackpad** | Light up while a finger rests on the trackpad. |
+| **Typing** | Respond to typing timing, not characters. |
+
+White light only. Brightness and timing are adjustable.
+
+[Behavior details, permissions and limits](#behavior-details-and-permissions)
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/media/light-dark.png">
+  <img src="docs/media/light-light.png" width="780" alt="Backlit native app showing logo preview, behaviors and brightness controls">
+</picture>
+</p>
+
+*Historical 0.2.5 isolated preview. Some controls and layouts have since changed; the illustrated light is not a hardware measurement. [Provenance](docs/media/README.md).*
+
+## Downloads
+
+![App downloads across all releases, split into DMG and app ZIP, with the latest sample date](docs/media/downloads.svg)
+
+Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/Backlit/releases) · [Counting method and update status](docs/downloads/README.md)
+
+## Connections
+
+| Connection | Purpose |
+| --- | --- |
+| Claude Code & Codex hooks | Show coding activity, without prompts or code. |
+| Local MCP control | Read status or opt in to light changes. |
+| Home Assistant | Optional authenticated local light control. |
+| Stream Deck | Separately packaged, experimental add-on. |
+
+[Setup guides and current integration limits](#connection-setup-and-limits)
+
+## Updates
+
+Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. Installation remains manual. See [validation](docs/VALIDATION.md) for update verification and known limits.
+
+## Behavior details and permissions
+
+**Battery.** Automatic pulse only while actively charging; solid at full or paused charging. Unplugged, output equals the battery percentage down to zero. Manual brightness has no effect. Includes pulse speed, a configurable “Dim to” floor (0% by default), optional plugged-in styles, and charge-ready cues.
 
 Battery mode displays **Battery-driven output** in the workspace and menu, without a manual brightness slider. Switching to another mode restores its saved manual brightness. Optional Battery styles and brief charge-ready signals can override the automatic charging pattern.
 
@@ -39,16 +77,15 @@ For Typing, select **Enable or retry typing access** and follow macOS’s Input 
 
 The logo supports white light. Brightness and timing are adjustable; RGB colors and pixel animations are not supported.
 
-<details>
-<summary>Historical 0.2.5 Music, Trackpad and Typing screenshots</summary>
+**Music.** Automatic level adjustment, Smooth/Balanced/Punchy response, sensitivity and dark-between-beat controls.
 
-<img src="docs/media/music-light.png" width="280" alt="Native Music controls with Automatic level and response presets">
-<img src="docs/media/trackpad-light.png" width="280" alt="Native Trackpad controls with optional typing response switched off">
-<img src="docs/media/typing-light.png" width="280" alt="Native standalone Typing controls and Input Monitoring access guidance">
+**Trackpad.** Optional click blink and permission-gated typing response.
 
-</details>
+### Music and audio privacy
 
-## Menu bar
+Selecting Music starts system audio automatically after macOS permits it; switching to another behavior stops capture. If access fails, use Retry System Audio or open the privacy settings shown in the app. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
+
+## Menu bar and shortcuts
 
 <p align="center"><img src="docs/media/menu-light.png" width="320" alt="Backlit menu with a small logo preview, behavior picker, and brightness controls"></p>
 
@@ -58,9 +95,7 @@ The menu includes a small preview and controls for the selected behavior. Batter
 
 Brightness-up/down shortcuts are **Off by default** and can be assigned in Settings. Existing choices, including the previous Control–Command–Up/Down Arrow defaults, are preserved on upgrade. An assigned shortcut changes manual logo brightness by five percentage points while preserving its behavior and on/off state. Battery stays automatic. A separate, off-by-default experimental **Shift + hardware brightness keys** option requires Accessibility, Input Monitoring and physical keyboard validation before screen suppression can be claimed. See [shortcut setup and limits](docs/SHORTCUTS.md).
 
-Launch connects compatible hardware automatically. Quit restores the previous logo curve. If restoration fails, Backlit retains a recovery record and offers Restore Light. Known transient closed-lid failures receive up to three persisted automatic recovery attempts. Each replacement requires verification of the exact previous fade session's cleanup, and retains the original closed-lid time limit. Unknown faults, unverified cleanup, and exhausted retry budgets stay paused for Restore Light. Turning the light off or quitting during repair cancels pending automatic restart.
-
-## Connections
+## Connection setup and limits
 
 Claude Code and Codex have separate, reversible status hooks. Existing hooks are preserved. They send a session identifier and status—not prompts, code, or tool output. Codex requires hook review/trust in its settings. Live status-hook delivery in Codex remains unverified.
 
@@ -78,29 +113,32 @@ codex mcp add backlit -- /Applications/Backlit.app/Contents/MacOS/Backlit --mcp
 
 Start a new local Codex session, check `/mcp`, then ask **“Read Backlit's status through MCP.”** For Claude Code, use **Copy Claude Code Setup** in Backlit. This is a local stdio connection; registering it does not automatically connect a cloud chat.
 
-## Settings
+## Settings and hardware limits
 
 Settings includes appearance, language, launch at login, shortcuts, **Hide Dock icon**, **Show menu bar icon**, closed-lid duration and the optional brightness-limit override. New installations show the menu-bar icon and hide the running app's Dock icon. Saved choices are preserved; a pinned Dock shortcut is not removed.
 
 Downloads are disabled in isolated preview. In the app, **Download Latest Version** opens the installer page.
 
-## Install
-
-Download the Apple silicon ZIP or DMG from [Releases](https://github.com/t0nyz0/Backlit/releases). Quit any running Backlit, then put the new app in **Applications**. Backlit is **ad-hoc signed with the hardened runtime, not Developer ID signed or notarized**.
-
 A physically illuminated, independently controlled logo is required. The macOS 14 deployment target is not a claim that every older Mac/OS is supported. Unsupported hardware can use preview mode.
 
-Selecting Music starts system audio automatically after macOS permits it; switching to another behavior stops capture. If access fails, use Retry System Audio or open the privacy settings shown in the app. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
-
-Optional login launch, closed-lid operation, and an administrator-authorized brightness-limit override are in Settings. Closed-lid lighting keeps the keyboard dark and restores the real lid state when stopped. Choose a duration from 1 to 30 minutes. The default and maximum are 30 minutes; sleep counts toward the timer and relaunching does not reset it. Low battery, Low Power Mode and heat also stop the session. The built-in screen may remain lit while closed. Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and known limits](docs/VALIDATION.md).
+**Closed-lid lighting.** Choose 1–30 minutes (default and maximum: 30). Sleep counts toward the timer; relaunching does not reset it. Low battery, Low Power Mode and heat stop the session. The keyboard stays dark and the real lid state is restored when stopped. **The built-in screen may remain lit while closed.** Other hardware, lid transitions and administrator behavior still need validation. Global screen-touch detection is not included. See [validation and troubleshooting](docs/VALIDATION.md).
 
 The brightness-limit override runs only built-in macOS tools with administrator authorization. Original limits are saved, and the saved copy is kept until restoration is verified.
 
-## Updates
+## Native app gallery
 
-Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. Installation remains manual. See [validation](docs/VALIDATION.md) for update verification and known limits.
+Historical 0.2.5 screenshots show the native app in isolated preview; some controls and layouts have since changed. The illustrated light is a preview, not a hardware measurement. [Provenance](docs/media/README.md).
 
-## Build
+<details>
+<summary>Historical 0.2.5 Music, Trackpad and Typing screenshots</summary>
+
+<img src="docs/media/music-light.png" width="280" alt="Native Music controls with Automatic level and response presets">
+<img src="docs/media/trackpad-light.png" width="280" alt="Native Trackpad controls with optional typing response switched off">
+<img src="docs/media/typing-light.png" width="280" alt="Native standalone Typing controls and Input Monitoring access guidance">
+
+</details>
+
+## Build from source
 
 ```sh
 git clone https://github.com/t0nyz0/Backlit.git
@@ -116,9 +154,9 @@ The local installer gracefully quits, replaces, and reopens `/Applications/Backl
 open -n dist/Backlit.app --args --preview
 ```
 
-The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy/secret checks, and an optimized build. Release publication requires that workflow to pass for the exact version tag. It packages ZIP, DMG, clean source, the separate Stream Deck add-on, build metadata, and SHA-256 checksums. Check the tagged workflow run for its commit and results. [Contributing](CONTRIBUTING.md) covers packaging and Home Assistant tests.
+The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy/secret checks, and an optimized build. Release publication requires that workflow to pass for the exact version tag. It packages ZIP, DMG, clean source, the separate Stream Deck add-on, build metadata, and SHA-256 checksums. Check the tagged workflow run for its commit and results. [Contributing](.github/CONTRIBUTING.md) covers packaging and Home Assistant tests.
 
-[Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md) · [Attribution](docs/ATTRIBUTION.md)
+[Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](.github/SECURITY.md) · [Attribution](docs/ATTRIBUTION.md)
 
 Backlit is independent of Apple, Anthropic, OpenAI, Home Assistant, Backglow, and LidPulse. Their names and marks belong to their owners. Backlit’s original code and artwork use [PolyForm Perimeter 1.0.0](LICENSE), a source-available license that restricts competing reuse. The header photograph, third-party marks and the coffee badge are excluded.
 

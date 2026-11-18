@@ -1,0 +1,150 @@
+{
+  "repository": "t0nyz0/Backlit",
+  "checked_at": "2026-11-17T00:58:45Z",
+  "assets": [
+    {
+      "id": 729791239,
+      "name": "Backlit-0.1.7-macOS-arm64.zip",
+      "release": "v0.1.7",
+      "format": "zip",
+      "download_count": 4
+    },
+    {
+      "id": 729791241,
+      "name": "Backlit-0.1.7-macOS-arm64.dmg",
+      "release": "v0.1.7",
+      "format": "dmg",
+      "download_count": 4
+    },
+    {
+      "id": 729820005,
+      "name": "Backlit-0.1.8-macOS-arm64.dmg",
+      "release": "v0.1.8",
+      "format": "dmg",
+      "download_count": 12
+    },
+    {
+      "id": 729820007,
+      "name": "Backlit-0.1.8-macOS-arm64.zip",
+      "release": "v0.1.8",
+      "format": "zip",
+      "download_count": 12
+    },
+    {
+      "id": 730169167,
+      "name": "Backlit-0.1.9-macOS-arm64.dmg",
+      "release": "v0.1.9",
+      "format": "dmg",
+      "download_count": 21
+    },
+    {
+      "id": 730169168,
+      "name": "Backlit-0.1.9-macOS-arm64.zip",
+      "release": "v0.1.9",
+      "format": "zip",
+      "download_count": 21
+    },
+    {
+      "id": 731457354,
+      "name": "Backlit-0.2.1-macOS-arm64.zip",
+      "release": "v0.2.1",
+      "format": "zip",
+      "download_count": 45
+    },
+    {
+      "id": 731457358,
+      "name": "Backlit-0.2.1-macOS-arm64.dmg",
+      "release": "v0.2.1",
+      "format": "dmg",
+      "download_count": 45
+    },
+    {
+      "id": 732217230,
+      "name": "Backlit-0.2.2-macOS-arm64.dmg",
+      "release": "v0.2.2",
+      "format": "dmg",
+      "download_count": 36
+    },
+    {
+      "id": 732217238,
+      "name": "Backlit-0.2.2-macOS-arm64.zip",
+      "release": "v0.2.2",
+      "format": "zip",
+      "download_count": 37
+    },
+    {
+      "id": 732609960,
+      "name": "Backlit-0.2.3-macOS-arm64.dmg",
+      "release": "v0.2.3",
+      "format": "dmg",
+      "download_count": 12
+    },
+    {
+      "id": 732609961,
+      "name": "Backlit-0.2.3-macOS-arm64.zip",
+      "release": "v0.2.3",
+      "format": "zip",
+      "download_count": 12
+    },
+    {
+      "id": 733733868,
+      "name": "Backlit-0.2.4-macOS-arm64.zip",
+      "release": "v0.2.4",
+      "format": "zip",
+      "download_count": 7
+    },
+    {
+      "id": 733733873,
+      "name": "Backlit-0.2.4-macOS-arm64.dmg",
+      "release": "v0.2.4",
+      "format": "dmg",
+      "download_count": 6
+    },
+    {
+      "id": 733892145,
+      "name": "Backlit-0.2.5-macOS-arm64.dmg",
+      "release": "v0.2.5",
+      "format": "dmg",
+      "download_count": 14
+    },
+    {
+      "id": 733892148,
+      "name": "Backlit-0.2.5-macOS-arm64.zip",
+      "release": "v0.2.5",
+      "format": "zip",
+      "download_count": 13
+    },
+    {
+      "id": 738083317,
+      "name": "Backlit-0.2.6-macOS-arm64.dmg",
+      "release": "v0.2.6",
+      "format": "dmg",
+      "download_count": 53
+    },
+    {
+      "id": 738083319,
+      "name": "Backlit-0.2.6-macOS-arm64.zip",
+      "release": "v0.2.6",
+      "format": "zip",
+      "download_count": 42
+    },
+    {
+      "id": 753631925,
+      "name": "Backlit-0.2.7-macOS-arm64.zip",
+      "release": "v0.2.7",
+      "format": "zip",
+      "download_count": 12
+    },
+    {
+      "id": 753631930,
+      "name": "Backlit-0.2.7-macOS-arm64.dmg",
+      "release": "v0.2.7",
+      "format": "dmg",
+      "download_count": 12
+    }
+  ],
+  "dmg": 215,
+  "zip": 205,
+  "total": 420,
+  "comparison": null
+}

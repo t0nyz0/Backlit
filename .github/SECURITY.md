@@ -4,4 +4,4 @@ Report security issues privately to [tonyz@outlook.com](mailto:tonyz@outlook.com
 
 Download updates from the [latest release](https://github.com/t0nyz0/Backlit/releases/latest).
 
-See [validation and known limits](docs/VALIDATION.md) for technical details.
+See [validation and known limits](../docs/VALIDATION.md) for technical details.

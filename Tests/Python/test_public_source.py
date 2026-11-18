@@ -49,7 +49,7 @@ class PublicSourceArchiveTests(unittest.TestCase):
         for directory in ['.github', 'Sources', 'Tests', 'assets',
                           'homeassistant', 'integrations', 'docs/licenses', 'docs/media']:
             self.write(directory + '/fixture.txt', 'public fixture\n')
-        for file in ['README.md', 'LICENSE', 'SECURITY.md', 'CONTRIBUTING.md',
+        for file in ['README.md', 'LICENSE', '.github/SECURITY.md', '.github/CONTRIBUTING.md',
                      'Package.swift', 'Package.resolved', '.gitignore']:
             self.write(file, (PROJECT / file).read_text())
         self.write('scripts/public-source.sh',
@@ -61,7 +61,8 @@ class PublicSourceArchiveTests(unittest.TestCase):
         self.write('docs/header.png', 'placeholder public image\n')
         # Stub public linked assets, but keep the project's real documentation
         # and links. New README links expose future source-allowlist omissions.
-        for document in [self.root / 'README.md', *self.root.joinpath('docs').rglob('*.md')]:
+        for document in [self.root / 'README.md', *self.root.joinpath('docs').rglob('*.md'),
+                         *self.root.joinpath('.github').glob('*.md')]:
             for target in local_targets(document.read_text()):
                 path = document.parent / target
                 if not path.exists():
@@ -103,7 +104,10 @@ class PublicSourceArchiveTests(unittest.TestCase):
                 self.assertEqual(archive.read('Backlit/docs/' + name),
                                  (PROJECT / 'docs' / name).read_bytes())
             documents = [name for name in names if name == 'Backlit/README.md' or
-                         name.startswith('Backlit/docs/') and name.endswith('.md')]
+                         name.startswith(('Backlit/docs/', 'Backlit/.github/')) and name.endswith('.md')]
+            for name in ['CONTRIBUTING.md', 'SECURITY.md']:
+                self.assertIn('Backlit/.github/' + name, names)
+                self.assertNotIn('Backlit/' + name, names)
             for name in documents:
                 for target in local_targets(archive.read(name).decode()):
                     resolved = posixpath.normpath(posixpath.join(

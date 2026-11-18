@@ -34,7 +34,7 @@ for name in filter(None, files):
         if upstream_license and kind == 'personal email':
             continue
         # The owner approved this public security contact in this file only.
-        if name == 'SECURITY.md' and kind == 'personal email':
+        if name == '.github/SECURITY.md' and kind == 'personal email':
             checked = re.sub(r'(?<![\w.%+@-])tonyz@outlook\.com(?![\w.%+@-])', '', text)
             found = re.search(pattern, checked) is not None
         else:

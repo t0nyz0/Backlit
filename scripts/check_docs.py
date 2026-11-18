@@ -6,7 +6,7 @@ import plistlib
 import re
 
 root = Path(__file__).resolve().parents[1]
-files = [root/'README.md', root/'CONTRIBUTING.md', root/'SECURITY.md', *root.joinpath('docs').glob('*.md')]
+files = [root/'README.md', root/'.github/CONTRIBUTING.md', root/'.github/SECURITY.md', *root.joinpath('docs').glob('*.md')]
 # Historical research retains its original context and is not the public package.
 historical = {'PRODUCT-WORKSHOP.md','PROJECT-BRIEF.md','FEATURE-IDEAS.md','HARDWARE-RESEARCH.md'}
 count = 0

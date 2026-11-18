@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="888" height="260" viewBox="0 0 888 260" role="img" aria-labelledby="title desc">
+<title id="title">Backlit app downloads: 459</title>
+<desc id="desc">235 DMG and 224 app ZIP downloads, checked 2026-11-18T01:34:04Z. +39 since 2026-11-17. Counts are not unique installs and include verification downloads.</desc>
+<rect width="888" height="260" rx="8" fill="#161b22"/>
+<g font-family="Arial,sans-serif">
+<text x="28" y="37" fill="#919aa6" font-size="13">APP DOWNLOADS · ALL RELEASES</text>
+<text x="28" y="92" fill="#f0f6fc" font-size="44" font-weight="600">459</text>
+<text x="119" y="89" fill="#8bdaab" font-size="15">+39 since 2026-11-17</text>
+<text x="860" y="37" text-anchor="end" fill="#919aa6" font-size="12">Snapshot · 2026-11-18 UTC</text>
+<rect x="28" y="121" width="423.922" height="18" rx="3" fill="#70b7ea"/>
+<rect x="455.922" y="121" width="404.078" height="18" rx="3" fill="#aa98df"/>
+<circle cx="34" cy="167" r="5" fill="#70b7ea"/><text x="48" y="172" fill="#d1d9e0" font-size="15">DMG · 235</text>
+<circle cx="204" cy="167" r="5" fill="#aa98df"/><text x="218" y="172" fill="#d1d9e0" font-size="15">App ZIP · 224</text>
+<path d="M28 196H860" stroke="#30363d"/>
+<text x="28" y="222" fill="#919aa6" font-size="12">GitHub asset download counts, not unique installs. Includes verification downloads.</text>
+<text x="28" y="242" fill="#919aa6" font-size="12">App DMG + app ZIP only; source archives and add-ons excluded.</text>
+</g></svg>
