@@ -141,7 +141,7 @@ class DownloadsTests(unittest.TestCase):
         self.assertIn('src="docs/header.png"', text)
         install = text.index('## Get Backlit')
         downloads = text.index('## Downloads', install)
-        chart = text.index('docs/media/downloads.svg', downloads)
+        chart = text.index('https://t0nyz.com/counter/backlit', downloads)
         start = text.index('## Seven ways to light up', chart)
         picture = text.index('width="780"', start)
         connections = text.index('## Connections', picture)
