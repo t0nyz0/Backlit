@@ -23,7 +23,7 @@ Native Swift. Local processing. No account required.
 
 ## Downloads
 
-[![App downloads across all releases, split into DMG and app ZIP, with the actual check time](https://t0nyz.com/counter/backlit)](https://t0nyz.com/counter/backlit)
+[![App download trend from recorded snapshots and downloads by version, with the actual check time](https://t0nyz.com/counter/backlit)](https://t0nyz.com/counter/backlit)
 
 Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/Backlit/releases) · [Counting method and update status](docs/downloads/README.md)
 
