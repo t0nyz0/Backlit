@@ -1,6 +1,6 @@
 # Backlit + Home Assistant
 
-Your MacBook PROLED's logo can be a local, brightness-only Home Assistant light. No cloud account or MQTT broker is needed. The custom component is bundled with the app and lives at `homeassistant/custom_components/backlit` in this repository.
+Your MacBook PROLED's logo can be a local, brightness-only Home Assistant light. No cloud account or MQTT broker is needed. The custom component is bundled with the app and lives at `integrations/homeassistant/custom_components/backlit` in this repository.
 
 ## Pair your Mac
 

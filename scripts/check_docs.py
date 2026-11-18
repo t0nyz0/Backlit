@@ -28,6 +28,6 @@ assert info['CFBundleIdentifier'] == 'local.backlit'
 assert info['CFBundleShortVersionString'] in root.joinpath('README.md').read_text()
 assert 'https://buymeacoffee.com/tonyz' in root.joinpath('README.md').read_text()
 assert root.joinpath('README.md').read_text().rstrip().endswith('alt="Buy t0nyz a coffee"></a></p>')
-manifest = json.loads(root.joinpath('homeassistant/custom_components/backlit/manifest.json').read_text())
+manifest = json.loads(root.joinpath('integrations/homeassistant/custom_components/backlit/manifest.json').read_text())
 assert manifest['version'] == info['CFBundleShortVersionString']
 print(f'Checked {count} local documentation references, version metadata, and the coffee badge/link.')

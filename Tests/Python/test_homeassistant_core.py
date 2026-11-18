@@ -39,7 +39,7 @@ class CoreIntegrationTests(unittest.IsolatedAsyncioTestCase):
         await site.start()
         port = site._server.sockets[0].getsockname()[1]
         with tempfile.TemporaryDirectory(prefix="backlit-ha-") as config:
-            source = Path(__file__).parents[2] / "homeassistant/custom_components/backlit"
+            source = Path(__file__).parents[2] / "integrations/homeassistant/custom_components/backlit"
             shutil.copytree(source, Path(config) / "custom_components/backlit")
             hass = HomeAssistant(config)
             loader.async_setup(hass)

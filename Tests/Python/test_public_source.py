@@ -47,7 +47,7 @@ class PublicSourceArchiveTests(unittest.TestCase):
                     if not key.startswith('GIT_')}
         self.git('init', '--quiet')
         for directory in ['.github', 'Sources', 'Tests', 'assets',
-                          'homeassistant', 'integrations', 'docs/licenses', 'docs/media']:
+                          'integrations', 'docs/licenses', 'docs/media']:
             self.write(directory + '/fixture.txt', 'public fixture\n')
         for file in ['README.md', 'LICENSE', '.github/SECURITY.md', '.github/CONTRIBUTING.md',
                      'Package.swift', 'Package.resolved', '.gitignore']:
@@ -59,6 +59,8 @@ class PublicSourceArchiveTests(unittest.TestCase):
         self.write('docs/media/README.md',
                    (PROJECT / 'docs/media/README.md').read_text())
         self.write('docs/header.png', 'placeholder public image\n')
+        self.write('integrations/homeassistant/custom_components/backlit/manifest.json',
+                   (PROJECT / 'integrations/homeassistant/custom_components/backlit/manifest.json').read_text())
         # Stub public linked assets, but keep the project's real documentation
         # and links. New README links expose future source-allowlist omissions.
         for document in [self.root / 'README.md', *self.root.joinpath('docs').rglob('*.md'),
@@ -103,6 +105,8 @@ class PublicSourceArchiveTests(unittest.TestCase):
             for name in ['MCP.md', 'SHORTCUTS.md', 'ICON.md']:
                 self.assertEqual(archive.read('Backlit/docs/' + name),
                                  (PROJECT / 'docs' / name).read_bytes())
+            self.assertIn('Backlit/integrations/homeassistant/custom_components/backlit/manifest.json', names)
+            self.assertFalse(any(name.startswith('Backlit/homeassistant/') for name in names))
             documents = [name for name in names if name == 'Backlit/README.md' or
                          name.startswith(('Backlit/docs/', 'Backlit/.github/')) and name.endswith('.md')]
             for name in ['CONTRIBUTING.md', 'SECURITY.md']:

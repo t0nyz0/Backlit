@@ -3,10 +3,6 @@
 Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo.
 Native Swift. Local processing. No account required.
 
-[Download for Apple silicon](https://t0nyz.com/backlit/install) · [Behaviors](#seven-ways-to-light-up) · [Connections](#connections) · [Build](#build-from-source) · [License](LICENSE)
-
-Source **0.2.10** · [Download counts and refresh details](docs/downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases)
-
 ## Get Backlit
 
 [![Download Backlit for Apple silicon — latest ZIP or DMG](docs/media/download-backlit.svg)](https://t0nyz.com/backlit/install)
@@ -143,6 +139,8 @@ open -n dist/Backlit.app --args --preview
 ```
 
 The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy/secret checks, and an optimized build. Release publication requires that workflow to pass for the exact version tag. It packages ZIP, DMG, clean source, the separate Stream Deck add-on, build metadata, and SHA-256 checksums. Check the tagged workflow run for its commit and results. [Contributing](.github/CONTRIBUTING.md) covers packaging and Home Assistant tests.
+
+Source **0.2.10** · [Download counts and refresh details](docs/downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases) · [License](LICENSE)
 
 [Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](.github/SECURITY.md) · [Attribution](docs/ATTRIBUTION.md)
 

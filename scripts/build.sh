@@ -89,7 +89,7 @@ mkdir -p "$app_bundle/Contents/Resources/licenses"
 cp docs/licenses/*.txt "$app_bundle/Contents/Resources/licenses/"
 if [ -f assets/Backlit.icns ]; then cp assets/Backlit.icns "$app_bundle/Contents/Resources/Backlit.icns"; fi
 mkdir -p "$app_bundle/Contents/Resources/HomeAssistant"
-rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' homeassistant/ "$app_bundle/Contents/Resources/HomeAssistant/"
+rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' integrations/homeassistant/ "$app_bundle/Contents/Resources/HomeAssistant/"
 # Retired integrations must not survive an incremental generated-bundle build.
 rm -rf "$app_bundle/Contents/Resources/Integrations"
 bash scripts/shortcuts-metadata.sh extract "$app_bundle" "$target_triple"

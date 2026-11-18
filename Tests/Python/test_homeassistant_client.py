@@ -6,7 +6,7 @@ import unittest
 import aiohttp
 from aiohttp import web
 
-spec = importlib.util.spec_from_file_location("backlit_api", Path(__file__).parents[2] / "homeassistant/custom_components/backlit/api.py")
+spec = importlib.util.spec_from_file_location("backlit_api", Path(__file__).parents[2] / "integrations/homeassistant/custom_components/backlit/api.py")
 api = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(api)
 
