@@ -192,9 +192,51 @@ enum MusicCapturePolicy {
     @Published private(set) var mcpAccess: MCPAccess = .off
     private var agentRateLimit = ExternalControlRateLimit()
     private let externalControlObservation: (() -> ExternalControlContext)?
-    @Published var language = "en" { didSet { save() } }
+    @Published var language = "system" {
+        didSet { save(); if language != oldValue { onLanguageChange?() } }
+    }
+    /// Capture/preview override never changes the persisted language preference.
+    @Published var languageOverride: AppLanguage? {
+        didSet { if languageOverride != oldValue { onLanguageChange?() } }
+    }
+    @Published private(set) var systemPreferredLanguages: [String] = []
+    private let preferredLanguagesProvider: () -> [String]
+    /// Region and number conventions are independent of the interface language.
+    @Published private(set) var formattingLocale: Locale = .autoupdatingCurrent
+    private let formattingLocaleProvider: () -> Locale
+    func formattedInteger(_ value: Int) -> String {
+        value.formatted(.number.locale(formattingLocale))
+    }
+    func formattedDecimal(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(1)).locale(formattingLocale))
+    }
+    func formattedPercent(_ value: Double) -> String {
+        (Double(Effects.percent(value)) / 100).formatted(.percent.precision(.fractionLength(0)).locale(formattingLocale))
+    }
+    var onLanguageChange: (() -> Void)?
+    var resolvedLanguage: AppLanguage {
+        languageOverride ?? AppLanguage.resolve(preference: language, preferredLanguages: systemPreferredLanguages)
+    }
+    func refreshPreferredLanguages() {
+        let prior = resolvedLanguage
+        systemPreferredLanguages = preferredLanguagesProvider()
+        formattingLocale = formattingLocaleProvider()
+        if prior != resolvedLanguage { onLanguageChange?() }
+    }
     @Published var appearance = "system" { didSet { save() } }
-    @Published var error: String?
+    @Published var error: String? {
+        didSet { localizedErrorMessage = nil }
+    }
+    private var localizedErrorMessage: AppDisplayError?
+    var localizedError: String {
+        localizedErrorMessage?.render(language: resolvedLanguage) ?? l(error ?? "")
+    }
+    func presentError(_ message: AppDisplayError) {
+        // Keep diagnostics/protocol-facing state stable; render the typed message only
+        // at the presentation boundary so changing language also updates an open alert.
+        error = message.render(language: .english)
+        localizedErrorMessage = message
+    }
     @Published private(set) var hardwareFailure: String?
     @Published private var storedNotice: String?
     var notice: String? {
@@ -354,12 +396,18 @@ enum MusicCapturePolicy {
         if agents != next { agents = next }
         if agentMetadataLimited != scan.limited { agentMetadataLimited = scan.limited }
     }
-    var isChinese: Bool { language == "zh-Hant" }
+    var isChinese: Bool { resolvedLanguage == .chineseTraditional }
     var savedLidPauseNeedsReview: Bool {
         lidIntentController.intent?.savedPause.map { $0.needsQualifiedHandback || !$0.canRetry } == true
     }
     var savedLidRecoveryUnconfirmed: Bool { lidIntentController.intent?.savedPause?.needsQualifiedHandback == true }
-    func t(_ english: String, _ chinese: String) -> String { isChinese ? chinese : english }
+    func t(_ english: String, _ chinese: String) -> String {
+        Localization.text(english, language: resolvedLanguage, traditionalChinese: chinese)
+    }
+    func l(_ english: String) -> String { Localization.text(english, language: resolvedLanguage) }
+    func lf(_ template: String, arguments: [String:String]) -> String {
+        Localization.format(l(template), arguments: arguments)
+    }
     var status: String {
         if automaticStartupPending { return "Verifying previous light cleanup before reconnecting" }
         if recoveryBlocksAdmission { return "Restore your light to finish the previous lid session" }
@@ -373,10 +421,10 @@ enum MusicCapturePolicy {
             if pause.needsQualifiedHandback { return pause.status }
             return cachedLid ? "Closed-lid lighting paused after an error" : pause.status
         }
-        if demo { return t("Preview · logo unchanged","預覽・不會更改標誌") }
-        if !device.available { return t("Preview · compatible logo not found","預覽・未找到相容標誌") }
+        if demo { return "Preview · logo unchanged" }
+        if !device.available { return "Preview · compatible logo not found" }
         if !controlWanted && needsLightRecovery { return "Restore your light to continue" }
-        if !enabled { return t("Logo off","標誌已關閉") }
+        if !enabled { return "Logo off" }
         guard controlling else { return "Connecting to your MacBook" }
         switch lastHardwareResult {
         case .waiting: return "Waiting for light output"
@@ -386,14 +434,14 @@ enum MusicCapturePolicy {
         }
         if let label = logoStatus.statusLabel { return label }
         switch mode {
-        case .steady:return t("Glowing","發光中")
-        case .breathe:return t("Breathing","呼吸中")
+        case .steady:return "Glowing"
+        case .breathe:return "Breathing"
         case .battery:
             if !batteryAvailable { return "Battery state unavailable" }
             if batteryResponse.completionActive { return "Charge-ready signal" }
             if batteryIsPulsing { return "Pulsing while charging" }
             if charging && batteryOptions.chargingStyle != .level { return "Steady while plugged in" }
-            return t("Following your battery","跟隨電量")
+            return "Following your battery"
         case .music:return audioRunning ? "Moving with your music" : "Ready for your music"
         case .agents:return "Watching your agents"
         case .touch:if let message = unavailableTouchMessage { return message }; return touchDown || typingDown ? "Input active · light on" : typingEnabled ? "Ready for trackpad or typing" : "Ready for \(touchSource.title.lowercased()) touch"
@@ -404,6 +452,8 @@ enum MusicCapturePolicy {
 
     init(demo: Bool = false, defaults: UserDefaults? = nil, lidStopper: LidWatcherStopper? = nil,
          musicCaptureObservation: (() -> MusicCaptureObservation)? = nil,
+         preferredLanguages: @escaping () -> [String] = { AppLanguage.systemPreferredLanguages },
+         formattingLocale: @escaping () -> Locale = { .autoupdatingCurrent },
          hardwareRestore: (() throws -> Void)? = nil, lidIntentEnvironment: LidIntentEnvironment? = nil,
          hardwareApply: ((Double, Bool) throws -> FadeApplyResult)? = nil,
          lidPauseRecoveryEnvironment: LidPauseRecoveryEnvironment? = nil,
@@ -412,6 +462,10 @@ enum MusicCapturePolicy {
          automaticRecoveryStartupEnvironment: AutomaticRecoveryStartupEnvironment? = nil,
          externalControlObservation: (() -> ExternalControlContext)? = nil,
          recoveryEnvironment: LightRecoveryEnvironment? = nil, touchSources injectedTouchSources: [TouchSource]? = nil) {
+        self.formattingLocaleProvider = formattingLocale
+        self.formattingLocale = formattingLocale()
+        self.preferredLanguagesProvider = preferredLanguages
+        self.systemPreferredLanguages = preferredLanguages()
         self.touchSources = injectedTouchSources ?? TouchResponse.sources
         self.externalControlObservation = externalControlObservation
         self.recoveryEnvironment = demo ? recoveryEnvironment : nil
@@ -464,7 +518,7 @@ enum MusicCapturePolicy {
         if let raw = self.defaults.string(forKey: "music.preset"), let preset = MusicResponsePreset(rawValue: raw) { musicPreset = preset }
         if let data = self.defaults.data(forKey: "battery.response"), let options = try? JSONDecoder().decode(BatteryResponseOptions.self, from: data) { batteryOptions = options }
         if self.defaults.object(forKey:"enabled") != nil { enabled = self.defaults.bool(forKey:"enabled") }
-        language = self.defaults.string(forKey:"language") ?? "en"
+        language = self.defaults.string(forKey:"language") ?? "system"
         appearance = self.defaults.string(forKey:"appearance") ?? "system"
         logoShortcuts = LogoShortcutPreferences.load(self.defaults)
         if self.defaults.string(forKey:"installation.id") == nil { self.defaults.set(UUID().uuidString,forKey:"installation.id") }
@@ -527,7 +581,7 @@ enum MusicCapturePolicy {
             guard let self else { return }
             self.bridge.stop(); self.bridgeEnabled = false; self.mcpAccess = .off
             self.defaults.set(false,forKey:"bridge.enabled"); self.defaults.set("off",forKey:"mcp.access")
-            self.error = "Local connections were switched off because the listener failed. " + text
+            self.presentError(.listenerFailed(detail: text))
         }
         self.lidStopper.onResult = { [weak self] result in
             guard let self else { return }
@@ -1588,7 +1642,7 @@ enum MusicCapturePolicy {
         // Fixtures must replace both hardware operations as well as authorization.
         let isolated = demo && ambientAuthorization != nil && hardwareRestore != nil && hardwareApply != nil
         guard isolated || (!demo && device.available) else { error = "A compatible live Mac is required."; return }
-        if !isolated, let app = device.competingApp { error = "Quit \(app) before changing logo settings."; return }
+        if !isolated, let app = device.competingApp { presentError(.competingApp(app: app)); return }
         guard watcher == nil, !lidStopPending, !lidCleanupInProgress, !lidStopFailed,
               !lidStopper.hasOutstandingFilesystemWork else {
             notice = "Turn off closed-lid lighting and finish its cleanup before changing ambient limits."; return
@@ -1683,9 +1737,9 @@ enum MusicCapturePolicy {
     }
     func regenerateMCPKey() {
         guard !demo else { return }
-        let alert = NSAlert(); alert.messageText = "Replace the AI connection key?"
-        alert.informativeText = "The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same."
-        alert.addButton(withTitle:"Replace Key"); alert.addButton(withTitle:"Cancel")
+        let alert = NSAlert(); alert.messageText = l("Replace the AI connection key?")
+        alert.informativeText = l("The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.")
+        alert.addButton(withTitle:l("Replace Key")); alert.addButton(withTitle:l("Cancel"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         let priorAccess = mcpAccess
         configureMCPAccess(.off)
@@ -1693,7 +1747,7 @@ enum MusicCapturePolicy {
             _ = try BridgeToken.regenerate(account:BridgeToken.agentAccount)
             configureMCPAccess(priorAccess)
             notice = "The AI connection key was replaced. Turn AI access off to stop all assistant connections."
-        } catch { self.error = "AI access remains off because its key could not be replaced. " + error.localizedDescription }
+        } catch { self.presentError(.aiKeyReplacementFailed(detail: error.localizedDescription)) }
     }
     func copyMCPSetup(claude: Bool) {
         guard !demo, mcpAccess != .off else { return }
@@ -1719,9 +1773,9 @@ enum MusicCapturePolicy {
         let approved: Bool
         if let confirm { approved = confirm() }
         else {
-            let alert = NSAlert(); alert.messageText = "Create a new pairing key?"
-            alert.informativeText = "The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again."
-            alert.addButton(withTitle:"Create New Key"); alert.addButton(withTitle:"Cancel")
+            let alert = NSAlert(); alert.messageText = l("Create a new pairing key?")
+            alert.informativeText = l("The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.")
+            alert.addButton(withTitle:l("Create New Key")); alert.addButton(withTitle:l("Cancel"))
             approved = alert.runModal() == .alertFirstButtonReturn
         }
         guard approved else { return }
@@ -1736,7 +1790,7 @@ enum MusicCapturePolicy {
         case .failed(let reason):
             // Also remember Off, so a relaunch cannot bring the old key back.
             configureBridge(enabled: false, lan: lan, credentialIntent: .automaticResume)
-            self.error = "A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. (\(reason))"
+            self.presentError(.pairingKeyReplacementFailed(detail: reason))
         }
     }
     func apiState() -> [String:Any] {
@@ -1790,8 +1844,8 @@ enum MusicCapturePolicy {
                 let result: NSApplication.ModalResponse
                 if let confirmOff { result = confirmOff() }
                 else {
-                    let alert = NSAlert(); alert.messageText = "Restore the logo and quit?"; alert.informativeText = "Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again."
-                    alert.addButton(withTitle:"Restore and Quit"); alert.addButton(withTitle:"Cancel")
+                    let alert = NSAlert(); alert.messageText = l("Restore the logo and quit?"); alert.informativeText = l("Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.")
+                    alert.addButton(withTitle:l("Restore and Quit")); alert.addButton(withTitle:l("Cancel"))
                     result = alert.runModal()
                 }
                 guard result == .alertFirstButtonReturn else { cancelStopping(); return false }

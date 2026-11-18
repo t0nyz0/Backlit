@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>0% goes fully dark between pulses.</string>
+	<key>A compatible live Mac is required.</key>
+	<string>A compatible live Mac is required.</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>A previous light session needs restoration. Use Restore Light to finish its cleanup.</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>AI access remains off because its key could not be replaced. </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>AI access remains off because its key could not be replaced. {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>AI connections are disabled in isolated preview.</string>
+	<key>Access key</key>
+	<string>Access key</string>
+	<key>Actual battery-driven logo output</key>
+	<string>Actual battery-driven logo output</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</string>
+	<key>Agents</key>
+	<string>Agents</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Allow Backlit links and other apps</string>
+	<key>Allow connections from your local network</key>
+	<string>Allow connections from your local network</string>
+	<key>Allow light changes</key>
+	<string>Allow light changes</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</string>
+	<key>Also respond to typing</key>
+	<string>Also respond to typing</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>Ambient brightness limits were not changed.</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</string>
+	<key>Appearance</key>
+	<string>Appearance</string>
+	<key>Assistant setup</key>
+	<string>Assistant setup</string>
+	<key>Assistants &amp; integrations</key>
+	<string>Assistants &amp; integrations</string>
+	<key>Attention</key>
+	<string>Attention</string>
+	<key>Automatic level</key>
+	<string>Automatic level</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>Automatic light feedback from coding sessions. Independent of MCP.</string>
+	<key>Automatic pulse</key>
+	<string>Automatic pulse</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</string>
+	<key>Backlight</key>
+	<string>Backlight</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Backlit link copied. Use it with a launcher that supports custom app links.</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Backlit will reconnect when your Mac is awake and unlocked.</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Backlit will verify cleanup and reconnect when your Mac is awake.</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — Preview</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>Backlit's hooks were removed. Existing hooks were preserved.</string>
+	<key>Balanced</key>
+	<string>Balanced</string>
+	<key>Battery</key>
+	<string>Battery</string>
+	<key>Battery charging behavior</key>
+	<string>Battery charging behavior</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>Battery pulse cycle seconds</string>
+	<key>Battery state unavailable</key>
+	<string>Battery state unavailable</string>
+	<key>Battery-driven output</key>
+	<string>Battery-driven output</string>
+	<key>Beat intensity</key>
+	<string>Beat intensity</string>
+	<key>Behavior</key>
+	<string>Behavior</string>
+	<key>Blink</key>
+	<string>Blink</string>
+	<key>Blink on click</key>
+	<string>Blink on click</string>
+	<key>Blink on trackpad click</key>
+	<string>Blink on trackpad click</string>
+	<key>Breathe</key>
+	<string>Breathe</string>
+	<key>Breathing</key>
+	<string>Breathing</string>
+	<key>Breathing cycle seconds</key>
+	<string>Breathing cycle seconds</string>
+	<key>Breathing pace</key>
+	<string>Breathing pace</string>
+	<key>Brightness</key>
+	<string>Brightness</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</string>
+	<key>CONNECTIONS</key>
+	<string>CONNECTIONS</string>
+	<key>Cancel</key>
+	<string>Cancel</string>
+	<key>Change </key>
+	<string>Change </string>
+	<key>Charge-ready signal</key>
+	<string>Charge-ready signal</string>
+	<key>Charge-ready threshold</key>
+	<string>Charge-ready threshold</string>
+	<key>Charging</key>
+	<string>Charging</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>Charging pulse minimum brightness</string>
+	<key>Check for Updates</key>
+	<string>Check for Updates</string>
+	<key>Choose a custom configuration folder</key>
+	<string>Choose a custom configuration folder</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>Choose {agent} configuration folder</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>Cleaning up. Your choice is remembered.</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>Cleanup returned, but saved closed-lid handback remains unconfirmed.</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</string>
+	<key>Closed-lid duration</key>
+	<string>Closed-lid duration</string>
+	<key>Closed-lid duration amount</key>
+	<string>Closed-lid duration amount</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>Closed-lid lighting paused after an error</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>Closed-lid operation is unavailable in isolated preview.</string>
+	<key>Coding agent status</key>
+	<string>Coding agent status</string>
+	<key>Coding status hooks</key>
+	<string>Coding status hooks</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>Compatible illuminated logo detected</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>Compatible logo hardware detected.</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>Compatible logo hardware is unavailable.</string>
+	<key>Connect</key>
+	<string>Connect</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>Connect the Backlit logo light to your Home Assistant instance on your local network.</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>Connect {agent} coding status hooks</string>
+	<key>Connecting to system audio…</key>
+	<string>Connecting to system audio…</string>
+	<key>Connecting to your MacBook</key>
+	<string>Connecting to your MacBook</string>
+	<key>Connections</key>
+	<string>Connections</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>Connections are disabled in isolated preview.</string>
+	<key>Constant brightness</key>
+	<string>Constant brightness</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>Control your light on request, or reflect coding activity automatically.</string>
+	<key>Copy</key>
+	<string>Copy</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Copy Claude Code Setup</string>
+	<key>Copy Codex Setup</key>
+	<string>Copy Codex Setup</string>
+	<key>Copy Pairing Key</key>
+	<string>Copy Pairing Key</string>
+	<key>Copy Toggle Link</key>
+	<string>Copy Toggle Link</string>
+	<key>Create New Key</key>
+	<string>Create New Key</string>
+	<key>Create a new pairing key?</key>
+	<string>Create a new pairing key?</string>
+	<key>Currently using {language}</key>
+	<string>Currently using {language}</string>
+	<key>Dark</key>
+	<string>Dark</string>
+	<key>Dark between beats</key>
+	<string>Dark between beats</string>
+	<key>Decrease logo brightness</key>
+	<string>Decrease logo brightness</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</string>
+	<key>Dim to</key>
+	<string>Dim to</string>
+	<key>Disable</key>
+	<string>Disable</string>
+	<key>Disconnect</key>
+	<string>Disconnect</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>Disconnect {agent} coding status hooks</string>
+	<key>Dismiss notice</key>
+	<string>Dismiss notice</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>Does not change your screen brightness setting.</string>
+	<key>Download Latest Version</key>
+	<string>Download Latest Version</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>Download the app, then quit Backlit and replace it in Applications.</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>Downloads are disabled in preview.</string>
+	<key>Duration</key>
+	<string>Duration</string>
+	<key>Duration: {value} s</key>
+	<string>Duration: {value} s</string>
+	<key>Edit</key>
+	<string>Edit</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Enable Home Assistant bridge</string>
+	<key>Enable or retry typing access</key>
+	<string>Enable or retry typing access</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</string>
+	<key>Fade in and out</key>
+	<string>Fade in and out</string>
+	<key>Faster</key>
+	<string>Faster</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>Finish light recovery before using brightness shortcuts.</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>Finish recovering the previous session and reconnect.</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>Finish the previous closed-lid session cleanup before starting another.</string>
+	<key>Follow battery charge</key>
+	<string>Follow battery charge</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Follow your Mac, or choose a look.</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Follow your Mac’s preferred languages, or choose a language for Backlit.</string>
+	<key>Following your battery</key>
+	<string>Following your battery</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>Follows the battery percentage while plugged in too.</string>
+	<key>Fully charged</key>
+	<string>Fully charged</string>
+	<key>General</key>
+	<string>General</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>Global trackpad · event-driven, no input polling</string>
+	<key>Glow</key>
+	<string>Glow</string>
+	<key>Glowing</key>
+	<string>Glowing</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>Hardware brightness keys use macOS.</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>Hardware-key capture is disabled in isolated preview.</string>
+	<key>Hide Dock icon</key>
+	<string>Hide Dock icon</string>
+	<key>Hooks installed · start a new session</key>
+	<string>Hooks installed · start a new session</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>Hooks installed · trust them in Codex</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>Hooks need review · reconnect or check agent settings</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>Hooks saved. Review your agent settings, then start a new Claude Code session.</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>ISOLATED PREVIEW</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</string>
+	<key>Increase logo brightness</key>
+	<string>Increase logo brightness</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>Input Monitoring permission is required for typing response</string>
+	<key>Input active · light on</key>
+	<string>Input active · light on</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>Input unavailable · choose another behavior</string>
+	<key>Install Update and Relaunch</key>
+	<string>Install Update and Relaunch</string>
+	<key>Integration Folder</key>
+	<string>Integration Folder</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>Keep Backlit a click away in the menu bar.</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</string>
+	<key>Keep logo on with lid closed</key>
+	<string>Keep logo on with lid closed</string>
+	<key>Keep on for</key>
+	<string>Keep on for</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</string>
+	<key>LIVE PREVIEW</key>
+	<string>LIVE PREVIEW</string>
+	<key>LOGO CONNECTED</key>
+	<string>LOGO CONNECTED</string>
+	<key>LOGO CONTROL</key>
+	<string>LOGO CONTROL</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>LOGO UNAVAILABLE</string>
+	<key>Language</key>
+	<string>Language</string>
+	<key>Last access check: </key>
+	<string>Last access check: </string>
+	<key>Last access check: {diagnostic}</key>
+	<string>Last access check: {diagnostic}</string>
+	<key>Light</key>
+	<string>Light</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>Light cleanup verified. Reconnecting automatically.</string>
+	<key>Light output paused</key>
+	<string>Light output paused</string>
+	<key>Light recovery is still in progress.</key>
+	<string>Light recovery is still in progress.</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>Light recovery is still in progress. Retry Quit when it finishes.</string>
+	<key>Light up while typing</key>
+	<string>Light up while typing</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>Local connections were switched off because the listener failed. </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>Local connections were switched off because the listener failed. {detail}</string>
+	<key>Logo and power</key>
+	<string>Logo and power</string>
+	<key>Logo brightness</key>
+	<string>Logo brightness</string>
+	<key>Logo control enabled</key>
+	<string>Logo control enabled</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>Logo control unavailable: {detail}</string>
+	<key>Logo off</key>
+	<string>Logo off</string>
+	<key>Logo off · hardware disabled</key>
+	<string>Logo off · hardware disabled</string>
+	<key>Logo off · lid closed</key>
+	<string>Logo off · lid closed</string>
+	<key>Logo on</key>
+	<string>Logo on</string>
+	<key>Logo preview, {value} percent</key>
+	<string>Logo preview, {value} percent</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>Logo state unavailable · not controlling hardware</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>Logo state unavailable · {value}% requested</string>
+	<key>Logo unchanged</key>
+	<string>Logo unchanged</string>
+	<key>MCP access</key>
+	<string>MCP access</string>
+	<key>MCP control</key>
+	<string>MCP control</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>MacBook PROLED Logo Control</string>
+	<key>Manage Connections</key>
+	<string>Manage Connections</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>Manual logo brightness: {value}%</string>
+	<key>Match battery level</key>
+	<string>Match battery level</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>Matches battery charge when unplugged.</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · Off by default</string>
+	<key>Moving with your music</key>
+	<string>Moving with your music</string>
+	<key>Music</key>
+	<string>Music</string>
+	<key>Music intensity</key>
+	<string>Music intensity</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>Network sharing is disabled in isolated preview.</string>
+	<key>New Pairing Key</key>
+	<string>New Pairing Key</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>No charging pulse. Holds 100% logo output while plugged in.</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>No compatible illuminated logo was detected.</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>Normal lid sleep was restored. A leftover session file could not be removed.</string>
+	<key>Not connected</key>
+	<string>Not connected</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>Observed sessions: {count} · {state}</string>
+	<key>Off</key>
+	<string>Off</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>Off by default. Enable network access for Home Assistant on another device.</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</string>
+	<key>Off · lid closed</key>
+	<string>Off · lid closed</string>
+	<key>On battery</key>
+	<string>On battery</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>On-demand access for an assistant to check or change your light when you ask.</string>
+	<key>Open Accessibility</key>
+	<string>Open Accessibility</string>
+	<key>Open Input Monitoring</key>
+	<string>Open Input Monitoring</string>
+	<key>Open Privacy Settings</key>
+	<string>Open Privacy Settings</string>
+	<key>Open at login</key>
+	<string>Open at login</string>
+	<key>Open workspace</key>
+	<string>Open workspace</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</string>
+	<key>Optional local light integration</key>
+	<string>Optional local light integration</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</string>
+	<key>Other apps</key>
+	<string>Other apps</string>
+	<key>Override ambient brightness limit</key>
+	<string>Override ambient brightness limit</string>
+	<key>PREVIEW MODE</key>
+	<string>PREVIEW MODE</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>Pairing key copied. Paste it into Home Assistant; keep it private.</string>
+	<key>Paste</key>
+	<string>Paste</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>Paused after an error. Restore your light before retrying.</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>Playback only. No microphone. Nothing recorded.</string>
+	<key>Plugged in · Not charging</key>
+	<string>Plugged in · Not charging</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Press Command, Control or Option with a regular key. Escape cancels.</string>
+	<key>Preview only</key>
+	<string>Preview only</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>Preview uses a sample waveform.</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>Preview uses a sample waveform. Live system audio is never started in preview.</string>
+	<key>Preview · compatible logo not found</key>
+	<string>Preview · compatible logo not found</string>
+	<key>Preview · logo unchanged</key>
+	<string>Preview · logo unchanged</string>
+	<key>Preview · {value}% requested</key>
+	<string>Preview · {value}% requested</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>Previous light cleanup verified. Reconnecting automatically.</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>Previous session verified. Reconnecting your remembered choice.</string>
+	<key>Pulse</key>
+	<string>Pulse</string>
+	<key>Pulse cycle</key>
+	<string>Pulse cycle</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>Pulses only while actively charging, then stays solid when charging pauses or finishes.</string>
+	<key>Pulsing while charging</key>
+	<string>Pulsing while charging</string>
+	<key>Punchy</key>
+	<string>Punchy</string>
+	<key>Quit</key>
+	<string>Quit</string>
+	<key>Quit Backlit</key>
+	<string>Quit Backlit</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>Quit {app} before changing logo settings.</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</string>
+	<key>Ready at</key>
+	<string>Ready at</string>
+	<key>Ready for the next lid closure.</key>
+	<string>Ready for the next lid closure.</string>
+	<key>Ready for trackpad contact</key>
+	<string>Ready for trackpad contact</string>
+	<key>Ready for trackpad or typing</key>
+	<string>Ready for trackpad or typing</string>
+	<key>Ready for your music</key>
+	<string>Ready for your music</string>
+	<key>Ready for {source} touch</key>
+	<string>Ready for {source} touch</string>
+	<key>Reconnect</key>
+	<string>Reconnect</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>Reconnect {agent} coding status hooks</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>Reconnecting to your MacBook</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>Remembered. Open the lid before starting another timed session.</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>Remembered. Paused for your Mac’s safety settings.</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>Remembered. Preview never starts a closed-lid session.</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>Remembered. Waiting for a verified lid and timer state.</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>Remembered. Waiting for your Mac and light to be ready.</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>Remembered. Waiting to verify the previous session before reconnecting.</string>
+	<key>Replace AI Key</key>
+	<string>Replace AI Key</string>
+	<key>Replace Key</key>
+	<string>Replace Key</string>
+	<key>Replace the AI connection key?</key>
+	<string>Replace the AI connection key?</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>Replace the pairing key if it may have been seen by someone else</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</string>
+	<key>Reset</key>
+	<string>Reset</string>
+	<key>Respond to system playback</key>
+	<string>Respond to system playback</string>
+	<key>Response</key>
+	<string>Response</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</string>
+	<key>Restore Battery Defaults</key>
+	<string>Restore Battery Defaults</string>
+	<key>Restore Light</key>
+	<string>Restore Light</string>
+	<key>Restore and Quit</key>
+	<string>Restore and Quit</string>
+	<key>Restore the logo and quit?</key>
+	<string>Restore the logo and quit?</string>
+	<key>Restore your light</key>
+	<string>Restore your light</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>Restore your light before changing ambient limits.</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>Restore your light before quitting; the previous lid session still needs recovery.</string>
+	<key>Restore your light before starting another session.</key>
+	<string>Restore your light before starting another session.</string>
+	<key>Restore your light to continue</key>
+	<string>Restore your light to continue</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>Restore your light to finish the previous lid session</string>
+	<key>Retry System Audio</key>
+	<string>Retry System Audio</string>
+	<key>Review Closed-lid Pause</key>
+	<string>Review Closed-lid Pause</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>Saved brightness: {value}% · logo is off</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</string>
+	<key>Select All</key>
+	<string>Select All</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</string>
+	<key>Session snapshot incomplete</key>
+	<string>Session snapshot incomplete</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>Sessions: {count} · {state}</string>
+	<key>Settings</key>
+	<string>Settings</string>
+	<key>Settings…</key>
+	<string>Settings…</string>
+	<key>Setup</key>
+	<string>Setup</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</string>
+	<key>Setup guide</key>
+	<string>Setup guide</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + hardware brightness keys (experimental)</string>
+	<key>Show Update Progress</key>
+	<string>Show Update Progress</string>
+	<key>Show menu bar icon</key>
+	<string>Show menu bar icon</string>
+	<key>Signal</key>
+	<string>Signal</string>
+	<key>Slower</key>
+	<string>Slower</string>
+	<key>Smooth</key>
+	<string>Smooth</string>
+	<key>Start update checks from Settings.</key>
+	<string>Start update checks from Settings.</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>Starting closed-lid safety checks…</string>
+	<key>State unavailable</key>
+	<string>State unavailable</string>
+	<key>Status only</key>
+	<string>Status only</string>
+	<key>Steady</key>
+	<string>Steady</string>
+	<key>Steady brightness</key>
+	<string>Steady brightness</string>
+	<key>Steady while plugged in</key>
+	<string>Steady while plugged in</string>
+	<key>System</key>
+	<string>System</string>
+	<key>System Default</key>
+	<string>System Default</string>
+	<key>System audio follows Music mode.</key>
+	<string>System audio follows Music mode.</string>
+	<key>System audio is unavailable.</key>
+	<string>System audio is unavailable.</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>System audio starts with Music when your light is on and your Mac is active.</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>The saved logo and lid settings were restored.</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>This is an isolated preview. Your real logo is unchanged.</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>This update is incompatible with this build or Mac.</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>Timer finished. Reopen the lid to begin another timed session.</string>
+	<key>Toggle logo</key>
+	<string>Toggle logo</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>Touch detected · hold to keep lit</string>
+	<key>Touch released · light off</key>
+	<string>Touch released · light off</string>
+	<key>Trackpad</key>
+	<string>Trackpad</string>
+	<key>Trackpad and optional typing response</key>
+	<string>Trackpad and optional typing response</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>Trackpad events are unavailable on this macOS build</string>
+	<key>Trackpad input unavailable</key>
+	<string>Trackpad input unavailable</string>
+	<key>Trackpad · unavailable</key>
+	<string>Trackpad · unavailable</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>Turn logo output on or off · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>Turn off the closed-lid session and let cleanup finish before changing its duration.</string>
+	<key>Typing</key>
+	<string>Typing</string>
+	<key>Typing active · light on</key>
+	<string>Typing active · light on</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>Typing input is disabled in preview.</string>
+	<key>Typing response is off</key>
+	<string>Typing response is off</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>Update paused. Finish restoring the light, then retry installation.</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>Updates are unavailable in preview.</string>
+	<key>Uses the brightness set above.</key>
+	<string>Uses the brightness set above.</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>Verifying previous light cleanup before reconnecting</string>
+	<key>Version {version} · t0nyz</key>
+	<string>Version {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>Waiting</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>Waiting for closed-lid cleanup</string>
+	<key>Waiting for keys…</key>
+	<string>Waiting for keys…</string>
+	<key>Waiting for light output</key>
+	<string>Waiting for light output</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>Waiting for macOS to finish the system audio request and cleanup.</string>
+	<key>Waiting for touch</key>
+	<string>Waiting for touch</string>
+	<key>Waiting for {source} touch</key>
+	<string>Waiting for {source} touch</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>Waiting to reconnect after wake</string>
+	<key>Watching your agents</key>
+	<string>Watching your agents</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</string>
+	<key>While plugged in</key>
+	<string>While plugged in</string>
+	<key>Working</key>
+	<string>Working</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>Working, waiting, or needs your attention</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</string>
+	<key>Your light</key>
+	<string>Your light</string>
+	<key>attention</key>
+	<string>attention</string>
+	<key>both</key>
+	<string>both</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</string>
+	<key>minutes</key>
+	<string>minutes</string>
+	<key>screen</key>
+	<string>screen</string>
+	<key>trackpad</key>
+	<string>trackpad</string>
+	<key>waiting</key>
+	<string>waiting</string>
+	<key>working</key>
+	<string>working</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>{mode} brightness preview, {value} percent. {status}</string>
+	<key>{mode} mode</key>
+	<string>{mode} mode</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · port {port}</string>
+	<key>{value} percent</key>
+	<string>{value} percent</string>
+	<key>{value} s</key>
+	<string>{value} s</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>{value}% requested · hardware enabled</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ Buy me a coffee</string>
+</dict>
+</plist>

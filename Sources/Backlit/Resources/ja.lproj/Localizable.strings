@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>0%にすると点滅の間は完全に消灯します。</string>
+	<key>A compatible live Mac is required.</key>
+	<string>対応する実機のMacが必要です。</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>新しいペアリングキーを作成できなかったため、Home Assistantとの共有をオフにしました。再度オンにする前に「新しいペアリングキー」をもう一度選んでください。({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>新しいペアリングキーを作成しました。コピーしてHome Assistantを更新してください。古いキーは無効です。</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>前回のライトセッションの復元が必要です。「ライトを復元」で後処理を完了してください。</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>待機中は柔らかく点灯し、作業中はゆっくり点滅します。離席中にエージェントが応答を必要とすると2回点滅します。</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>キーを交換できなかったため、AIアクセスはオフのままです。 </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>キーを交換できなかったため、AIアクセスはオフのままです。 {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>隔離プレビューではAI接続は無効です。</string>
+	<key>Access key</key>
+	<string>アクセスキー</string>
+	<key>Actual battery-driven logo output</key>
+	<string>バッテリー連動の実際のロゴ出力</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>再生音量に合わせて変化します。強度で反応を調整し、明るさ設定が上限になります。</string>
+	<key>Agents</key>
+	<string>エージェント</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Backlitリンクとほかのアプリを許可</string>
+	<key>Allow connections from your local network</key>
+	<string>ローカルネットワークからの接続を許可</string>
+	<key>Allow light changes</key>
+	<string>ライトの変更を許可</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Backlitリンクによるライトの変更を許可します。このビルドではネイティブのショートカットアクションは利用できません。</string>
+	<key>Also respond to typing</key>
+	<string>タイピングにも反応</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>環境光による明るさ制限は変更されませんでした。</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>アップデートが待機中です。「アップデートをインストールして再起動」を選ぶか、終了前にアップデート画面でスキップしてください。</string>
+	<key>Appearance</key>
+	<string>外観</string>
+	<key>Assistant setup</key>
+	<string>アシスタントの設定</string>
+	<key>Assistants &amp; integrations</key>
+	<string>アシスタントと連携</string>
+	<key>Attention</key>
+	<string>応答が必要</string>
+	<key>Automatic level</key>
+	<string>自動レベル</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>コーディングセッションの状況をライトで自動表示します。MCPとは独立しています。</string>
+	<key>Automatic pulse</key>
+	<string>自動点滅</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>安全確認は3回の試行後に停止しました。設定でライトを復元し、「画面を閉じてもロゴを点灯」をオフにしてからオンにすると再試行できます。</string>
+	<key>Backlight</key>
+	<string>バックライト</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlitはシステムの再生音をこのMac内で解析し、音楽に合わせてロゴを光らせます。音声は録音もアップロードもしません。</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Backlitリンクをコピーしました。カスタムアプリリンクに対応したランチャーで使用してください。</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlitは音楽モードでシステムの再生音を使用します。画面や音声の内容を保存・送信することはありません。</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Macがスリープ解除され、ロックが解除されるとBacklitが再接続します。</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Macがスリープ解除されると、Backlitが後処理を確認して再接続します。</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — プレビュー</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>Backlitのフックを削除しました。既存のほかのフックは保持されました。</string>
+	<key>Balanced</key>
+	<string>バランス</string>
+	<key>Battery</key>
+	<string>バッテリー</string>
+	<key>Battery charging behavior</key>
+	<string>充電中のライト動作</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>バッテリーモードでは明るさを自動調整します。明るさのショートカットを使うには手動の動作を選択してください。</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>充電時の点滅周期（秒）</string>
+	<key>Battery state unavailable</key>
+	<string>バッテリー状態を取得できません</string>
+	<key>Battery-driven output</key>
+	<string>バッテリー連動出力</string>
+	<key>Beat intensity</key>
+	<string>ビートの強度</string>
+	<key>Behavior</key>
+	<string>動作</string>
+	<key>Blink</key>
+	<string>点滅</string>
+	<key>Blink on click</key>
+	<string>クリック時に点滅</string>
+	<key>Blink on trackpad click</key>
+	<string>トラックパッドのクリック時に点滅</string>
+	<key>Breathe</key>
+	<string>呼吸</string>
+	<key>Breathing</key>
+	<string>呼吸点灯中</string>
+	<key>Breathing cycle seconds</key>
+	<string>呼吸周期（秒）</string>
+	<key>Breathing pace</key>
+	<string>呼吸の速さ</string>
+	<key>Brightness</key>
+	<string>明るさ</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>明るさのショートカットは手動の明るさを5%ずつ変更します。現在の動作とオン・オフ状態は変わりません。バッテリーモードの明るさは自動のままです。</string>
+	<key>CONNECTIONS</key>
+	<string>接続</string>
+	<key>Cancel</key>
+	<string>キャンセル</string>
+	<key>Change </key>
+	<string>変更：</string>
+	<key>Charge-ready signal</key>
+	<string>充電目標到達の合図</string>
+	<key>Charge-ready threshold</key>
+	<string>充電目標のしきい値</string>
+	<key>Charging</key>
+	<string>充電中</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>充電時の点滅の最低輝度</string>
+	<key>Check for Updates</key>
+	<string>アップデートを確認</string>
+	<key>Choose a custom configuration folder</key>
+	<string>カスタム設定フォルダを選択</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>{agent}の設定フォルダを選択</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>後処理中です。設定は保存されています。</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>後処理は終了しましたが、保存済みの閉じた画面のセッションの制御返却は未確認です。</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>閉じた画面のセッションの後処理を確認できませんでした。設定で電源の復元を確認してから再試行してください。</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>閉じた画面のセッションの後処理中です。完了後に「ライトを復元」を再試行してください。</string>
+	<key>Closed-lid duration</key>
+	<string>画面を閉じた状態の点灯時間</string>
+	<key>Closed-lid duration amount</key>
+	<string>画面を閉じた状態の点灯時間の値</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>エラーにより画面を閉じた状態の点灯を一時停止</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>エラーにより画面を閉じた状態の点灯が一時停止し、ロゴは消灯しています。設定でライトを復元し、「画面を閉じてもロゴを点灯」をオフにしてからオンにして再試行してください。</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>隔離プレビューでは画面を閉じた状態の動作は利用できません。</string>
+	<key>Coding agent status</key>
+	<string>コーディングエージェントの状態</string>
+	<key>Coding status hooks</key>
+	<string>コーディング状況フック</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>対応する発光ロゴを検出</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>対応するロゴのハードウェアを検出しました。</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>対応するロゴのハードウェアを利用できません。</string>
+	<key>Connect</key>
+	<string>接続</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>BacklitのロゴライトをローカルネットワークのHome Assistantに接続します。</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>{agent}のコーディング状況フックを接続</string>
+	<key>Connecting to system audio…</key>
+	<string>システムオーディオに接続中…</string>
+	<key>Connecting to your MacBook</key>
+	<string>MacBookに接続中</string>
+	<key>Connections</key>
+	<string>接続</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>隔離プレビューでは接続は無効です。</string>
+	<key>Constant brightness</key>
+	<string>一定の明るさ</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>指示に応じてライトを操作するか、コーディング状況を自動で反映します。</string>
+	<key>Copy</key>
+	<string>コピー</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Claude Codeの設定をコピー</string>
+	<key>Copy Codex Setup</key>
+	<string>Codexの設定をコピー</string>
+	<key>Copy Pairing Key</key>
+	<string>ペアリングキーをコピー</string>
+	<key>Copy Toggle Link</key>
+	<string>切り替えリンクをコピー</string>
+	<key>Create New Key</key>
+	<string>新しいキーを作成</string>
+	<key>Create a new pairing key?</key>
+	<string>新しいペアリングキーを作成しますか？</string>
+	<key>Currently using {language}</key>
+	<string>現在の言語：{language}</string>
+	<key>Dark</key>
+	<string>ダーク</string>
+	<key>Dark between beats</key>
+	<string>ビートの間は消灯</string>
+	<key>Decrease logo brightness</key>
+	<string>ロゴを暗くする</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>デフォルト：充電中に自動点滅、周期6秒、最低輝度0%、充電目標の合図はオフ。</string>
+	<key>Dim to</key>
+	<string>最低輝度</string>
+	<key>Disable</key>
+	<string>無効にする</string>
+	<key>Disconnect</key>
+	<string>切断</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>{agent}のコーディング状況フックを切断</string>
+	<key>Dismiss notice</key>
+	<string>通知を閉じる</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>画面の明るさ設定は変更しません。</string>
+	<key>Download Latest Version</key>
+	<string>最新バージョンをダウンロード</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>アプリをダウンロードし、Backlitを終了してアプリケーションフォルダのものと置き換えてください。</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>プレビューではダウンロードは無効です。</string>
+	<key>Duration</key>
+	<string>時間</string>
+	<key>Duration: {value} s</key>
+	<string>時間：{value}秒</string>
+	<key>Edit</key>
+	<string>編集</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Home Assistantブリッジを有効化</string>
+	<key>Enable or retry typing access</key>
+	<string>タイピングへのアクセスを有効化または再試行</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>実験的なフィルタが有効です。キーボードでShift + 明るさキーを試してください。画面への影響の抑制は未確認です。</string>
+	<key>Fade in and out</key>
+	<string>明暗を繰り返す</string>
+	<key>Faster</key>
+	<string>速く</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>明るさのショートカットを使う前にライトの復元を完了してください。</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>前回のセッションの復元を完了して再接続します。</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>次のセッションを始める前に、前回の閉じた画面のセッションの後処理を完了してください。</string>
+	<key>Follow battery charge</key>
+	<string>バッテリー残量に連動</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Macの設定に従うか、外観を選択します。</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Macの優先する言語に従うか、Backlitの言語を選択します。</string>
+	<key>Following your battery</key>
+	<string>バッテリーに連動中</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>電源接続中もバッテリー残量に連動します。</string>
+	<key>Fully charged</key>
+	<string>充電完了</string>
+	<key>General</key>
+	<string>一般</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>システム全体のトラックパッド · イベント駆動、入力の定期取得なし</string>
+	<key>Glow</key>
+	<string>点灯</string>
+	<key>Glowing</key>
+	<string>点灯中</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>ハードウェアの明るさキーはmacOSが処理します。</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>隔離プレビューではハードウェアキーの取得は無効です。</string>
+	<key>Hide Dock icon</key>
+	<string>Dockアイコンを非表示</string>
+	<key>Hooks installed · start a new session</key>
+	<string>フックをインストール済み · 新しいセッションを開始</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>フックをインストール済み · Codexで信頼を承認</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>フックの確認が必要 · 再接続するかエージェント設定を確認</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>フックを保存しました。Codex Settings → Hooksで確認して信頼を承認し、新しいセッションを開始してください。</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>フックを保存しました。エージェント設定を確認し、新しいClaude Codeセッションを開始してください。</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>フックが送信するのはセッション識別子と状態だけです。プロンプト、コード、ツール出力がBacklitに送られることはありません。</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>隔離プレビュー</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>アップデート後、Backlitが有効になっていてもアクセスが拒否される場合は、古いBacklitの項目を削除し、インストール済みのアプリを再追加して有効にし、Backlitを開き直してください。</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>アクセスがオフの場合は「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」でBacklitを許可してください。</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>このビルドではアプリ内アップデートはまだ有効ではありません。発行元が信頼できる更新フィードと署名キーを含める必要があります。</string>
+	<key>Increase logo brightness</key>
+	<string>ロゴを明るくする</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>タイピングへの反応には入力監視の権限が必要です</string>
+	<key>Input active · light on</key>
+	<string>入力中 · 点灯</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>入力を利用できません · 別の動作を選択</string>
+	<key>Install Update and Relaunch</key>
+	<string>アップデートをインストールして再起動</string>
+	<key>Integration Folder</key>
+	<string>連携フォルダ</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>メニューバーからワンクリックでBacklitを開けます。</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Backlitをメニューバーに表示します。メニューバーのアイコンを隠すと、先にDockアイコンが再表示されます。</string>
+	<key>Keep logo on with lid closed</key>
+	<string>画面を閉じてもロゴを点灯</string>
+	<key>Keep on for</key>
+	<string>点灯時間</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Macをスリープさせず、画面を閉じても内蔵ディスプレイが点灯し続ける場合があります。上限は30分で、低残量、高温、低電力モードでも停止します。通気のよい硬い面に置き、絶対にバッグに入れないでください。</string>
+	<key>LIVE PREVIEW</key>
+	<string>ライブプレビュー</string>
+	<key>LOGO CONNECTED</key>
+	<string>ロゴ接続済み</string>
+	<key>LOGO CONTROL</key>
+	<string>ロゴ制御</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>ロゴを利用できません</string>
+	<key>Language</key>
+	<string>言語</string>
+	<key>Last access check: </key>
+	<string>前回のアクセス確認：</string>
+	<key>Last access check: {diagnostic}</key>
+	<string>前回のアクセス確認：{diagnostic}</string>
+	<key>Light</key>
+	<string>ライト</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>ライトの後処理を確認しました。自動的に再接続します。</string>
+	<key>Light output paused</key>
+	<string>ライト出力を一時停止</string>
+	<key>Light recovery is still in progress.</key>
+	<string>ライトの復元はまだ進行中です。</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>ライトの復元はまだ進行中です。完了後に終了を再試行してください。</string>
+	<key>Light up while typing</key>
+	<string>タイピング中に点灯</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>リスナーの障害によりローカル接続をオフにしました。 </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>リスナーの障害によりローカル接続をオフにしました。 {detail}</string>
+	<key>Logo and power</key>
+	<string>ロゴと電源</string>
+	<key>Logo brightness</key>
+	<string>ロゴの明るさ</string>
+	<key>Logo control enabled</key>
+	<string>ロゴ制御が有効</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>ロゴ制御を利用できません：{detail}</string>
+	<key>Logo off</key>
+	<string>ロゴ消灯</string>
+	<key>Logo off · hardware disabled</key>
+	<string>ロゴ消灯 · ハードウェア無効</string>
+	<key>Logo off · lid closed</key>
+	<string>ロゴ消灯 · 画面を閉じています</string>
+	<key>Logo on</key>
+	<string>ロゴ点灯</string>
+	<key>Logo preview, {value} percent</key>
+	<string>ロゴのプレビュー、{value}パーセント</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>ロゴの状態を取得できません · ハードウェアを制御していません</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>ロゴの状態を取得できません · {value}%を要求</string>
+	<key>Logo unchanged</key>
+	<string>ロゴは変更されません</string>
+	<key>MCP access</key>
+	<string>MCPアクセス</string>
+	<key>MCP control</key>
+	<string>MCP制御</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>MacBook PROLEDロゴ制御</string>
+	<key>Manage Connections</key>
+	<string>接続を管理</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>手動のロゴ輝度：{value}%</string>
+	<key>Match battery level</key>
+	<string>バッテリー残量に合わせる</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>電源を外すとバッテリー残量に連動します。</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>画面を閉じるたびに最大30分です。スリープ時間も含まれ、アプリを再起動してもタイマーはリセットされません。この制限は安全な温度を保証するものではありません。</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · デフォルトはオフ</string>
+	<key>Moving with your music</key>
+	<string>音楽に合わせて変化中</string>
+	<key>Music</key>
+	<string>音楽</string>
+	<key>Music intensity</key>
+	<string>音楽への反応の強度</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>隔離プレビューではネットワーク共有は無効です。</string>
+	<key>New Pairing Key</key>
+	<string>新しいペアリングキー</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>充電時に点滅せず、電源接続中はロゴ出力を100%に保ちます。</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>対応する発光ロゴが見つかりませんでした。</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>画面を閉じたときの通常のスリープ動作を復元しました。残っているセッションファイルを削除できませんでした。</string>
+	<key>Not connected</key>
+	<string>未接続</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>確認できたセッション数：{count} · {state}</string>
+	<key>Off</key>
+	<string>オフ</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>デフォルトはオフです。別のデバイスのHome Assistantから使う場合はネットワークアクセスを有効にしてください。</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>デフォルトはオフです。アクセシビリティと入力監視の権限が必要です。キーボードによって対応状況が異なるため、画面の明るさも変わらないことを確認してください。通常のショートカットにはこれらの権限は不要です。</string>
+	<key>Off · lid closed</key>
+	<string>オフ · 画面を閉じています</string>
+	<key>On battery</key>
+	<string>バッテリー使用中</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>指示したときにアシスタントがライトの状態を確認または変更できます。</string>
+	<key>Open Accessibility</key>
+	<string>アクセシビリティを開く</string>
+	<key>Open Input Monitoring</key>
+	<string>入力監視を開く</string>
+	<key>Open Privacy Settings</key>
+	<string>プライバシー設定を開く</string>
+	<key>Open at login</key>
+	<string>ログイン時に開く</string>
+	<key>Open workspace</key>
+	<string>ワークスペースを開く</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>任意の環境光制限の上書きです。macOSが管理者の承認を求めます。以前の制限値は保存されます。</string>
+	<key>Optional local light integration</key>
+	<string>任意のローカルライト連携</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>任意の機能：電源接続中に設定した充電量に達すると、通常のバッテリーモードを短時間だけ上書きします。残量が下がるか電源を外すまで繰り返しません。</string>
+	<key>Other apps</key>
+	<string>ほかのアプリ</string>
+	<key>Override ambient brightness limit</key>
+	<string>環境光による明るさ制限を上書き</string>
+	<key>PREVIEW MODE</key>
+	<string>プレビューモード</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>ペアリングキーをコピーしました。Home Assistantに貼り付け、他人に知られないようにしてください。</string>
+	<key>Paste</key>
+	<string>ペースト</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>エラー後に一時停止しています。再試行の前にライトを復元してください。</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>エラー後に一時停止しています。復元後、「画面を閉じてもロゴを点灯」をオフにしてからオンにしてください。</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>再生音のみ。マイクは使わず、録音もしません。</string>
+	<key>Plugged in · Not charging</key>
+	<string>電源接続中 · 充電していません</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Command、Control、Optionのいずれかと通常のキーを押してください。Escapeでキャンセルします。</string>
+	<key>Preview only</key>
+	<string>プレビューのみ</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>プレビューではサンプル波形を使用します。</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>プレビューではサンプル波形を使い、実際のシステムオーディオは開始しません。</string>
+	<key>Preview · compatible logo not found</key>
+	<string>プレビュー · 対応ロゴが見つかりません</string>
+	<key>Preview · logo unchanged</key>
+	<string>プレビュー · ロゴは変更されません</string>
+	<key>Preview · {value}% requested</key>
+	<string>プレビュー · {value}%を要求</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>前回のライトの後処理を確認しました。自動的に再接続します。</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>前回のセッションを確認しました。保存した設定で再接続します。</string>
+	<key>Pulse</key>
+	<string>ゆっくり点滅</string>
+	<key>Pulse cycle</key>
+	<string>点滅周期</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>充電中だけゆっくり点滅し、充電が一時停止または完了すると点灯し続けます。</string>
+	<key>Pulsing while charging</key>
+	<string>充電中に点滅</string>
+	<key>Punchy</key>
+	<string>力強く</string>
+	<key>Quit</key>
+	<string>終了</string>
+	<key>Quit Backlit</key>
+	<string>Backlitを終了</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>ロゴの設定を変更する前に{app}を終了してください。</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>終了すると、このBacklitセッションの開始前に保存した元のロゴ設定に戻ります。ロゴが再び点灯する場合があります。</string>
+	<key>Ready at</key>
+	<string>目標充電量</string>
+	<key>Ready for the next lid closure.</key>
+	<string>次に画面を閉じる準備ができています。</string>
+	<key>Ready for trackpad contact</key>
+	<string>トラックパッドへの接触を待機</string>
+	<key>Ready for trackpad or typing</key>
+	<string>トラックパッドまたはタイピングを待機</string>
+	<key>Ready for your music</key>
+	<string>音楽を待機</string>
+	<key>Ready for {source} touch</key>
+	<string>{source}へのタッチを待機</string>
+	<key>Reconnect</key>
+	<string>再接続</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>{agent}のコーディング状況フックを再接続</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>MacBookに再接続中</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>復元は未確認です。画面を閉じた状態の設定は保存され、一時停止のままです。設定で復元を確認してください。</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>設定を保存しました。次のタイマー付きセッションを始める前に画面を開いてください。</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>設定を保存しました。Macの安全設定により一時停止しています。</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>設定を保存しました。プレビューでは画面を閉じた状態のセッションを開始しません。</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>設定を保存しました。画面の開閉状態とタイマーの確認を待っています。</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>設定を保存しました。Macとライトの準備が整うのを待っています。</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>設定を保存しました。再接続の前に前回のセッションの確認を待っています。</string>
+	<key>Replace AI Key</key>
+	<string>AIキーを交換</string>
+	<key>Replace Key</key>
+	<string>キーを交換</string>
+	<key>Replace the AI connection key?</key>
+	<string>AI接続キーを交換しますか？</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>ほかの人に見られた可能性がある場合はペアリングキーを交換してください</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>復元を要求します。システムへの制御返却は未確認のため、保存した閉じた画面での点灯設定は一時停止のままです。</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>入力監視の権限が必要です。入力のタイミングのみを使用し、文字は読み取りも保存もしません。セキュア入力により反応が一時停止する場合があります。</string>
+	<key>Reset</key>
+	<string>リセット</string>
+	<key>Respond to system playback</key>
+	<string>システムの再生音に反応</string>
+	<key>Response</key>
+	<string>反応</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>復元を要求しました。システムへの制御返却が未確認のため、保存した閉じた画面での点灯設定は一時停止のままです。</string>
+	<key>Restore Battery Defaults</key>
+	<string>バッテリー設定を初期値に戻す</string>
+	<key>Restore Light</key>
+	<string>ライトを復元</string>
+	<key>Restore and Quit</key>
+	<string>復元して終了</string>
+	<key>Restore the logo and quit?</key>
+	<string>ロゴを復元して終了しますか？</string>
+	<key>Restore your light</key>
+	<string>ライトを復元</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>環境光の制限を変更する前にライトを復元してください。</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>前回の画面を閉じたセッションに復元が必要です。終了前にライトを復元してください。</string>
+	<key>Restore your light before starting another session.</key>
+	<string>次のセッションを始める前にライトを復元してください。</string>
+	<key>Restore your light to continue</key>
+	<string>続行するにはライトを復元してください</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>前回の閉じた画面のセッションを完了するにはライトを復元してください</string>
+	<key>Retry System Audio</key>
+	<string>システムオーディオを再試行</string>
+	<key>Review Closed-lid Pause</key>
+	<string>閉じた画面での点灯の一時停止を確認</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>保存した明るさ：{value}% · ロゴ消灯</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>保存した復元時刻を確認できませんでした。ライトを復元し、画面を閉じた状態の点灯をオフにしてからオンにして再試行してください。</string>
+	<key>Select All</key>
+	<string>すべてを選択</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>セッションのメタデータが不完全です。このスナップショットには一部のコーディングセッションが含まれていない可能性があります。</string>
+	<key>Session snapshot incomplete</key>
+	<string>セッション情報が不完全です</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>セッション数：{count} · {state}</string>
+	<key>Settings</key>
+	<string>設定</string>
+	<key>Settings…</key>
+	<string>設定…</string>
+	<key>Setup</key>
+	<string>設定</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>設定コマンドをコピーしました。このMacのエージェントのターミナルで実行し、MCP接続を確認してください。</string>
+	<key>Setup guide</key>
+	<string>設定ガイド</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + 明るさ調節キー（実験的機能）</string>
+	<key>Show Update Progress</key>
+	<string>アップデートの進行状況を表示</string>
+	<key>Show menu bar icon</key>
+	<string>メニューバーにアイコンを表示</string>
+	<key>Signal</key>
+	<string>合図</string>
+	<key>Slower</key>
+	<string>遅く</string>
+	<key>Smooth</key>
+	<string>なめらか</string>
+	<key>Start update checks from Settings.</key>
+	<string>設定からアップデートの確認を開始してください。</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>画面を閉じた状態の安全確認を開始中…</string>
+	<key>State unavailable</key>
+	<string>状態を取得できません</string>
+	<key>Status only</key>
+	<string>状態の確認のみ</string>
+	<key>Steady</key>
+	<string>常時点灯</string>
+	<key>Steady brightness</key>
+	<string>一定の明るさ</string>
+	<key>Steady while plugged in</key>
+	<string>電源接続中は点灯</string>
+	<key>System</key>
+	<string>システム</string>
+	<key>System Default</key>
+	<string>システムのデフォルト</string>
+	<key>System audio follows Music mode.</key>
+	<string>システムオーディオは音楽モードに連動します。</string>
+	<key>System audio is unavailable.</key>
+	<string>システムオーディオを利用できません。</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>ライトがオンでMacが使用中の場合、音楽モードでシステムオーディオが開始します。</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>AI接続キーを交換しました。すべてのアシスタント接続を停止するにはAIアクセスをオフにしてください。</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>現在のキーは直ちに無効になります。Home Assistantで再びライトを制御するには、新しいキーの入力が必要です。</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>タイピングが止まると、まもなく消灯します。画面を閉じた状態では外付けキーボードを使用してください。</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>ロゴのハードウェアは白色光を発します。Backlitが変更するのはロゴの明るさとリズムだけで、画面の明るさは変更しません。</string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>以前のキーは無効になります。AIアクセスが有効な間はローカルアシスタントが再接続できます。Home Assistantのキーは変更されません。</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>保存したロゴと画面開閉の設定を復元しました。</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>これは隔離プレビューです。実際のロゴは変更されません。</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>このアップデートは、このビルドまたはMacに対応していません。</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>タイマーが終了しました。次のタイマー付きセッションを始めるには画面を開いてください。</string>
+	<key>Toggle logo</key>
+	<string>ロゴの点灯を切り替え</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>タッチを検出 · 触れ続けると点灯</string>
+	<key>Touch released · light off</key>
+	<string>タッチ終了 · 消灯</string>
+	<key>Trackpad</key>
+	<string>トラックパッド</string>
+	<key>Trackpad and optional typing response</key>
+	<string>トラックパッドと任意のタイピング反応</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>このmacOSビルドではトラックパッドのイベントを取得できません</string>
+	<key>Trackpad input unavailable</key>
+	<string>トラックパッド入力を利用できません</string>
+	<key>Trackpad · unavailable</key>
+	<string>トラックパッド · 利用不可</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>ロゴの点灯・消灯を切り替え · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>環境光の制限を変更する前に、画面を閉じた状態の点灯をオフにして後処理を完了してください。</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>時間を変更する前に、閉じた画面での点灯をオフにして後処理が完了するまでお待ちください。</string>
+	<key>Typing</key>
+	<string>タイピング</string>
+	<key>Typing active · light on</key>
+	<string>タイピング中 · 点灯</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>プレビューではタイピング入力は無効です。</string>
+	<key>Typing response is off</key>
+	<string>タイピングへの反応はオフ</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>電源を外すと、ロゴの明るさは0%までバッテリー残量に連動します。手動の明るさ設定はバッテリーモードに影響しません。</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>アップデートを一時停止しました。ライトの復元を完了してからインストールを再試行してください。</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>プレビューではアップデートを利用できません。</string>
+	<key>Uses the brightness set above.</key>
+	<string>上で設定した明るさを使用します。</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>再接続前に前回のライトの後処理を確認中</string>
+	<key>Version {version} · t0nyz</key>
+	<string>バージョン {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>待機中</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>閉じた画面のセッションの後処理を待機中</string>
+	<key>Waiting for keys…</key>
+	<string>キー入力を待機中…</string>
+	<key>Waiting for light output</key>
+	<string>ライト出力を待機中</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>macOSによるシステムオーディオの要求処理と後処理の完了を待っています。</string>
+	<key>Waiting for touch</key>
+	<string>タッチを待機中</string>
+	<key>Waiting for {source} touch</key>
+	<string>{source}へのタッチを待機中</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>スリープ解除後の再接続を待機中</string>
+	<key>Watching your agents</key>
+	<string>エージェントを監視中</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>非表示の場合は、DockまたはアプリケーションからBacklitを開き直してください。設定はアプリのメニューから引き続き開けます。</string>
+	<key>While plugged in</key>
+	<string>電源接続中</string>
+	<key>Working</key>
+	<string>作業中</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>作業中、待機中、または応答が必要</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>どのアプリを開いていても動作します。指を置くと点灯し、すべての指を離すと消灯します。</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>モードの切り替えやBacklitの終了は可能です。後処理が終わると再試行できます。</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>アシスタントがライトの状態をモデル提供元に送信する場合があります。音楽とタイピングには、まずBacklitでアクセスを有効にする必要があります。状態フックは独立しています。</string>
+	<key>Your light</key>
+	<string>ロゴライト</string>
+	<key>attention</key>
+	<string>応答が必要</string>
+	<key>both</key>
+	<string>画面またはトラックパッド</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOSでDockアイコンを表示できませんでした。Backlitのメニューバー項目は引き続き表示されます。</string>
+	<key>minutes</key>
+	<string>分</string>
+	<key>screen</key>
+	<string>画面</string>
+	<key>trackpad</key>
+	<string>トラックパッド</string>
+	<key>waiting</key>
+	<string>待機中</string>
+	<key>working</key>
+	<string>作業中</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>{mode}の明るさのプレビュー、{value}パーセント。{status}</string>
+	<key>{mode} mode</key>
+	<string>{mode}モード</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · ポート {port}</string>
+	<key>{value} percent</key>
+	<string>{value}パーセント</string>
+	<key>{value} s</key>
+	<string>{value}秒</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>{value}%を要求 · ハードウェア有効</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ コーヒーで応援</string>
+</dict>
+</plist>

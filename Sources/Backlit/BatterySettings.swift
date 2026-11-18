@@ -48,39 +48,39 @@ struct BatterySettingsControls: View {
     @ObservedObject var model: AppModel
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Picker("While plugged in", selection: $model.batteryOptions.chargingStyle) {
-                ForEach(BatteryChargeStyle.allCases) { style in Text(style.title).tag(style) }
-            }.accessibilityLabel("Battery charging behavior")
+            Picker(model.l("While plugged in"), selection: $model.batteryOptions.chargingStyle) {
+                ForEach(BatteryChargeStyle.allCases) { style in Text(model.l(style.title)).tag(style) }
+            }.accessibilityLabel(model.l("Battery charging behavior"))
             if model.batteryOptions.chargingStyle == .breathe {
-                HStack { Text("Pulse cycle"); Spacer(); Text(String(format: "%.1f seconds", model.batteryOptions.pulsePeriod)).monospacedDigit() }
-                Slider(value: $model.batteryOptions.pulsePeriod, in: 3...10, step: 0.5).accessibilityLabel("Battery pulse cycle seconds")
-                HStack { Text("Dim to"); Spacer(); Text("\(Effects.percent(model.batteryOptions.pulseMinimum))%").monospacedDigit() }
-                Slider(value: $model.batteryOptions.pulseMinimum, in: 0...1).accessibilityLabel("Charging pulse minimum brightness")
-                Text("0% goes fully dark between pulses.").foregroundStyle(.secondary)
-                Text("Pulses only while actively charging, then stays solid when charging pauses or finishes.").foregroundStyle(.secondary)
+                HStack { Text(model.l("Pulse cycle")); Spacer(); Text(model.lf("{value} s", arguments:["value":model.formattedDecimal(model.batteryOptions.pulsePeriod)])).monospacedDigit() }
+                Slider(value: $model.batteryOptions.pulsePeriod, in: 3...10, step: 0.5).accessibilityLabel(model.l("Battery pulse cycle seconds"))
+                HStack { Text(model.l("Dim to")); Spacer(); Text(model.formattedPercent(model.batteryOptions.pulseMinimum)).monospacedDigit() }
+                Slider(value: $model.batteryOptions.pulseMinimum, in: 0...1).accessibilityLabel(model.l("Charging pulse minimum brightness"))
+                Text(model.l("0% goes fully dark between pulses.")).foregroundStyle(.secondary)
+                Text(model.l("Pulses only while actively charging, then stays solid when charging pauses or finishes.")).foregroundStyle(.secondary)
             } else if model.batteryOptions.chargingStyle == .steady {
-                Text("No charging pulse. Holds 100% logo output while plugged in.").foregroundStyle(.secondary)
+                Text(model.l("No charging pulse. Holds 100% logo output while plugged in.")).foregroundStyle(.secondary)
             } else {
-                Text("Follows the battery percentage while plugged in too.").foregroundStyle(.secondary)
+                Text(model.l("Follows the battery percentage while plugged in too.")).foregroundStyle(.secondary)
             }
-            Text("Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.").foregroundStyle(.secondary)
+            Text(model.l("Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.")).foregroundStyle(.secondary)
             Divider()
-            Toggle("Charge-ready signal", isOn: $model.batteryOptions.readyEnabled).toggleStyle(.switch).controlSize(.small)
+            Toggle(model.l("Charge-ready signal"), isOn: $model.batteryOptions.readyEnabled).toggleStyle(.switch).controlSize(.small)
             if model.batteryOptions.readyEnabled {
                 HStack {
-                    Text("Ready at")
-                    Slider(value: $model.batteryOptions.readyThreshold, in: 0.5...1, step: 0.01).accessibilityLabel("Charge-ready threshold")
-                    Text("\(Int((model.batteryOptions.readyThreshold * 100).rounded()))%").monospacedDigit()
+                    Text(model.l("Ready at"))
+                    Slider(value: $model.batteryOptions.readyThreshold, in: 0.5...1, step: 0.01).accessibilityLabel(model.l("Charge-ready threshold"))
+                    Text(model.formattedPercent(model.batteryOptions.readyThreshold)).monospacedDigit()
                 }
-                Picker("Signal", selection: $model.batteryOptions.readyStyle) {
-                    ForEach(BatteryReadyStyle.allCases) { style in Text(style.title).tag(style) }
+                Picker(model.l("Signal"), selection: $model.batteryOptions.readyStyle) {
+                    ForEach(BatteryReadyStyle.allCases) { style in Text(model.l(style.title)).tag(style) }
                 }
-                Stepper("For \(Int(model.batteryOptions.readyDuration)) seconds", value: $model.batteryOptions.readyDuration, in: 1...60)
-                Text("Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.").foregroundStyle(.secondary)
+                Stepper(model.lf("Duration: {value} s", arguments:["value":model.formattedInteger(Int(model.batteryOptions.readyDuration))]), value: $model.batteryOptions.readyDuration, in: 1...60)
+                Text(model.l("Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.")).foregroundStyle(.secondary)
             }
-            Button("Restore Battery Defaults") { model.batteryOptions = BatteryResponseOptions() }
+            Button(model.l("Restore Battery Defaults")) { model.batteryOptions = BatteryResponseOptions() }
                 .disabled(model.batteryOptions == BatteryResponseOptions())
-            Text("Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.").font(.system(size: 10)).foregroundStyle(.tertiary)
+            Text(model.l("Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.")).font(.system(size: 10)).foregroundStyle(.tertiary)
         }.font(.system(size: 12))
     }
 }

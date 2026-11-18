@@ -1,3 +1,32 @@
+## Backlit 0.2.11
+
+Prepared locally; not published. Public downloads remain unchanged until an
+explicitly approved release passes exact-tag CI.
+
+### Interface languages
+
+- Adds Spanish, French, German, Japanese, Korean, Brazilian Portuguese,
+  Simplified Chinese and Thai alongside English and Traditional Chinese.
+- System Default follows macOS language preferences for Backlit. A manual
+  language choice is available in Settings; existing choices are preserved.
+- Mac regional number conventions remain independent of interface language.
+- Native String Catalogs provide interface and permission-description resources;
+  actionable connection errors preserve app names and diagnostic details.
+- Includes localized menu, shortcut and accessibility text, including reconnect
+  controls, with layout and placeholder regression coverage.
+
+### Limits
+
+Translations have automated consistency checks and sampled visual review, not a
+complete native-speaker or live VoiceOver audit. macOS permission dialogs follow
+its app-language choice and can require relaunch; the in-app choice does not
+change system preferences. Some low-level diagnostics remain in English.
+
+This remains an ad-hoc signed, non-notarized arm64 build. In-app updates are not
+enabled without a trusted publisher feed and signing key. Existing hardware,
+permission and closed-lid safety limits are unchanged. No new hardware-compatibility
+claim is made by this language update.
+
 ## Backlit 0.2.10
 
 The 0.2.9 tag is retained as a failed release attempt: packaging fixtures inherited the CI tag and stopped verification before any release files were published. 0.2.10 fixes that fixture isolation without weakening production package validation.

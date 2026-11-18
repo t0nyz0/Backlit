@@ -6,11 +6,13 @@
 <key>CFBundleIdentifier</key><string>local.backlit</string>
 <key>CFBundleExecutable</key><string>Backlit</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>0.2.10</string>
-<key>CFBundleVersion</key><string>56</string>
+<key>CFBundleShortVersionString</key><string>0.2.11</string>
+<key>CFBundleVersion</key><string>57</string>
 <key>CFBundleIconFile</key><string>Backlit</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>local.backlit.controls</string><key>CFBundleURLSchemes</key><array><string>backlit</string></array></dict></array>
+<key>CFBundleDevelopmentRegion</key><string>en</string>
+<key>CFBundleLocalizations</key><array><string>en</string><string>es</string><string>fr</string><string>de</string><string>ja</string><string>ko</string><string>pt-BR</string><string>zh-Hans</string><string>zh-Hant</string><string>th</string></array>
 <key>NSPrincipalClass</key><string>NSApplication</string>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSAudioCaptureUsageDescription</key><string>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</string>

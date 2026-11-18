@@ -1,0 +1,204 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSAudioCaptureUsageDescription": {
+      "comment": "Native macOS privacy permission purpose. Preserve privacy guarantees and product names.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analiza localmente el audio del sistema para que el logo responda a la música. No se graba ni se sube audio."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analyse localement le son du système pour faire réagir le logo à la musique. Aucun son n’est enregistré ni envoyé."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analysiert die Systemwiedergabe lokal, damit Ihr Logo auf Musik reagiert. Es wird kein Audio aufgezeichnet oder hochgeladen."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlitはシステムの再生音をこのMac内で解析し、音楽に合わせてロゴを光らせます。音声は録音もアップロードもしません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit은 시스템 재생 오디오를 기기에서 분석해 로고가 음악에 반응하게 합니다. 오디오를 녹음하거나 업로드하지 않습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Backlit analisa localmente o áudio do sistema para fazer o logo responder à música. Nenhum áudio é gravado ou enviado."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit 在本机分析系统播放音频，使徽标响应音乐。不会录制或上传音频。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit 在本機分析系統播放音訊，使徽標響應音樂。不會錄制或上傳音訊。"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit วิเคราะห์เสียงที่ระบบเล่นภายในเครื่องเพื่อให้โลโก้ตอบสนองต่อเพลง ไม่มีการบันทึกหรืออัปโหลดเสียง"
+          }
+        }
+      }
+    },
+    "NSLocalNetworkUsageDescription": {
+      "comment": "Native macOS privacy permission purpose. Preserve privacy guarantees and product names.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect the Backlit logo light to your Home Assistant instance on your local network."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conecta la luz del logo de Backlit a tu instancia de Home Assistant en la red local."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectez la lumière du logo Backlit à votre instance Home Assistant sur votre réseau local."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Backlit-Logobeleuchtung mit Ihrer Home-Assistant-Instanz im lokalen Netzwerk verbinden."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BacklitのロゴライトをローカルネットワークのHome Assistantに接続します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit 로고 조명을 로컬 네트워크의 Home Assistant에 연결합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conecte a luz do logo do Backlit à sua instância do Home Assistant na rede local."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通过本地网络将 Backlit 徽标灯连接到您的 Home Assistant 实例。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通過本地網路將 Backlit 徽標燈連接到您的 Home Assistant 實例。"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เชื่อมต่อไฟโลโก้ Backlit กับ Home Assistant ในเครือข่ายภายในของคุณ"
+          }
+        }
+      }
+    },
+    "NSScreenCaptureUsageDescription": {
+      "comment": "Native macOS privacy permission purpose. Preserve privacy guarantees and product names.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit usa el audio de reproducción del sistema en el modo Música. No guarda ni transmite contenido de pantalla ni audio."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit utilise le son du système pour le mode Musique. Il n’enregistre ni ne transmet le contenu de l’écran ou le son."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit verwendet Systemwiedergabe-Audio für den Musikmodus. Bildschirm- und Audioinhalte werden weder gespeichert noch übertragen."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlitは音楽モードでシステムの再生音を使用します。画面や音声の内容を保存・送信することはありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit은 음악 모드에 시스템 재생 오디오를 사용합니다. 화면이나 오디오 내용을 저장하거나 전송하지 않습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Backlit usa o áudio reproduzido pelo sistema no modo Música. Não salva nem transmite conteúdo da tela ou áudio."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit 在音乐模式中使用系统播放音频，不保存或传输屏幕或音频内容。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit 在音樂模式中使用系統播放音訊，不保存或傳輸螢幕或音訊內容。"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit ใช้เสียงที่ระบบเล่นสำหรับโหมดเพลง ไม่บันทึกหรือส่งเนื้อหาหน้าจอหรือเสียง"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

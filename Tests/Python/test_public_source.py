@@ -19,7 +19,7 @@ import zipfile
 PROJECT = Path(__file__).resolve().parents[2]
 PUBLIC_DOCS = [
     'HOME-ASSISTANT.md', 'MCP.md', 'SHORTCUTS.md', 'ICON.md', 'PRIVACY.md',
-    'ATTRIBUTION.md', 'VALIDATION.md', 'RELEASE.md',
+    'ATTRIBUTION.md', 'VALIDATION.md', 'RELEASE.md', 'LOCALIZATION.md',
 ]
 
 

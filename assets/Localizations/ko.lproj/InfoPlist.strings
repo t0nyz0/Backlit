@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Backlit은 시스템 재생 오디오를 기기에서 분석해 로고가 음악에 반응하게 합니다. 오디오를 녹음하거나 업로드하지 않습니다.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Backlit 로고 조명을 로컬 네트워크의 Home Assistant에 연결합니다.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Backlit은 음악 모드에 시스템 재생 오디오를 사용합니다. 화면이나 오디오 내용을 저장하거나 전송하지 않습니다.</string>
+</dict>
+</plist>

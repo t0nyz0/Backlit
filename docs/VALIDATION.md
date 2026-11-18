@@ -1,5 +1,31 @@
 # Backlit validation
 
+## 0.2.11 — local multilingual preparation, build 57
+
+This section records local preparation, not publication or exact-tag CI. The
+previous multilingual preview was installed on November 18, 2026; its signature,
+executable identity, process launch and semantic preference preservation passed.
+The final prepared artifact is built separately from a clean local revision and
+is not claimed to be the currently running app.
+
+- Before the final reconnect-label correction, 888 Swift tests passed. The Python
+  suite completed 85 tests with three optional official-signing-tool fixtures
+  skipped. Final clean-revision results and artifact hashes accompany the private
+  candidate handoff rather than being retroactively attributed to this snapshot.
+- Apple-compiled String Catalogs cover ten languages. Validation checks complete
+  keys, nonempty text, placeholder preservation, permission resources and packaged
+  resources. Reconnect button/accessibility labels have dedicated coverage.
+- A relocated signed app loaded its own resources outside the checkout. Fresh
+  processes verified language negotiation and independent regional formatting
+  without changing saved Mac preferences or starting light control.
+- Offscreen minimum-size layouts were rendered for all ten languages and both
+  appearances, with sampled visual review. These are not live desktop captures or
+  a comprehensive clipping/VoiceOver audit. Native-speaker review remains open.
+- Local Developer ID signing/notarization was not available during preparation;
+  the app remains ad-hoc signed with hardened runtime. Automatic updates remain
+  disabled. Hardware behavior was not requalified by the localization checks.
+
+
 ## 0.2.10 — release qualification, build 56
 
 The functionally equivalent 0.2.9 build 55 was installed locally on November 17, 2026 and matched the verified candidate bundle. Saved preferences were preserved. The app remained responsive with no recovery fault; the observed closed-lid state had no active timed lighting session, so output was safely paused. This does not establish fresh closed-lid output or live automatic-fault recovery for build 55. These local checks preceded public release publication; public artifacts are separately identified by exact-tag CI and BUILD-INFO.json. The candidate adds native `FinalNits` readback compatibility, bounded token-bound automatic recovery, explicit Restore Light retry, ambient-service reconnection, closed-lid toggle ordering, a corrected startup Dock warning, and a 3–30 second breathing range.

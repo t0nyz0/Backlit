@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Backlitはシステムの再生音をこのMac内で解析し、音楽に合わせてロゴを光らせます。音声は録音もアップロードもしません。</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>BacklitのロゴライトをローカルネットワークのHome Assistantに接続します。</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Backlitは音楽モードでシステムの再生音を使用します。画面や音声の内容を保存・送信することはありません。</string>
+</dict>
+</plist>

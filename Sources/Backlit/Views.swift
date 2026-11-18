@@ -53,9 +53,9 @@ struct LogoPreview: View {
     var compact = false
     init(model:AppModel,compact:Bool=false) { self.model=model;self.presentation=model.presentation;self.compact=compact }
     var statusHeading: LogoControlHeading {
-        LogoControlHeading(title: model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW",
-            status: model.status,
-            detail: model.device.available ? "Compatible illuminated logo detected" : model.device.explanation,
+        LogoControlHeading(title: model.l(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW"),
+            status: model.l(model.status),
+            detail: model.l(model.device.available ? "Compatible illuminated logo detected" : model.device.explanation),
             controlling: model.controlling)
     }
     var body: some View {
@@ -66,26 +66,26 @@ struct LogoPreview: View {
                     if compact {
                         HStack(spacing: 5) {
                             Circle().fill(model.controlling ? Color.green : .white.opacity(0.45)).frame(width: 5, height: 5)
-                            Text(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW").font(.system(size: 9, weight: .semibold)).tracking(1.5)
+                            Text(model.l(model.controlling ? "LOGO CONTROL" : "LIVE PREVIEW")).font(.system(size: 9, weight: .semibold)).tracking(1.5)
                         }
                         Spacer()
                     } else {
                         statusHeading
                         VStack(alignment: .trailing, spacing: 10) {
-                            Toggle(model.t("Logo on","標誌開啟"),isOn:$model.enabled).toggleStyle(.switch).labelsHidden().controlSize(.small).help("Turn logo output on or off · \(model.shortcutLabel)")
+                            Toggle(model.t("Logo on","標誌開啟"),isOn:$model.enabled).toggleStyle(.switch).labelsHidden().controlSize(.small).help(model.lf("Turn logo output on or off · {shortcut}", arguments:["shortcut":model.shortcutLabel]))
                             if !model.demo && model.needsLightRecovery && (!model.controlWanted || !model.controlling) {
                                 Button(model.t("Restore Light","還原燈光")){model.repairAndResume()}.buttonStyle(.bordered).controlSize(.small)
                             } else if !model.demo && model.savedLidPauseNeedsReview {
-                                Button("Review Closed-lid Pause") { model.selectedPage = "settings" }.buttonStyle(.bordered).controlSize(.small)
+                                Button(model.l("Review Closed-lid Pause")) { model.selectedPage = "settings" }.buttonStyle(.bordered).controlSize(.small)
                             }
                         }
                     }
                 }
                 Spacer()
-                HStack { Text(model.mode.title).font(.system(size:11,weight:.medium)); Spacer(); if !model.controlling {Text("Logo unchanged").font(.system(size:10)).opacity(0.6)} }
+                HStack { Text(model.l(model.mode.title)).font(.system(size:11,weight:.medium)); Spacer(); if !model.controlling {Text(model.l("Logo unchanged")).font(.system(size:10)).opacity(0.6)} }
             }.foregroundStyle(.white.opacity(0.85)).padding(18)
         }.frame(height:compact ? 210 : 234)
-            .accessibilityElement(children:.contain).accessibilityLabel("\(model.mode.title) brightness preview, \(Effects.percent(presentation.level)) percent. \(model.controlling ? "Logo control enabled" : "Preview only")")
+            .accessibilityElement(children:.contain).accessibilityLabel(model.lf("{mode} brightness preview, {value} percent. {status}", arguments:["mode":model.l(model.mode.title),"value":model.formattedInteger(Effects.percent(presentation.level)),"status":model.l(model.controlling ? "Logo control enabled" : "Preview only")]))
     }
 }
 
@@ -102,7 +102,7 @@ struct RootView: View {
                 }
                 Spacer()
                 VStack(alignment:.leading,spacing:8) {
-                    Label(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : model.hardwareFailure != nil ? "LOGO UNAVAILABLE" : "PREVIEW MODE",systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
+                    Label(model.l(model.demo ? "ISOLATED PREVIEW" : model.controlling ? "LOGO CONNECTED" : model.hardwareFailure != nil ? "LOGO UNAVAILABLE" : "PREVIEW MODE"),systemImage:model.controlling ? "checkmark.circle.fill" : "circle.dotted").font(.system(size:9,weight:.semibold)).foregroundStyle(.secondary)
                     Text("Backlit \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development")").font(.system(size:10)).foregroundStyle(.tertiary).padding(.top,10)
                 }.padding(.bottom,8)
             }.padding(22).frame(width:200).background(Color(nsColor:.windowBackgroundColor))
@@ -115,18 +115,18 @@ struct RootView: View {
                 }.padding(34).frame(maxWidth:980)
             }.background(BacklitPalette.canvas)
         }.frame(minWidth:1020,minHeight:760)
-            .preferredColorScheme(model.colorScheme)
-            .alert("Backlit",isPresented:Binding(get:{model.error != nil},set:{if !$0 {model.error=nil}})){ if model.audioPermissionHelp {Button("Open Privacy Settings"){model.openAudioPrivacy();model.error=nil}}; Button("OK"){model.error=nil} } message:{Text(model.error ?? "")}
+            .preferredColorScheme(model.colorScheme).environment(\.locale, model.formattingLocale)
+            .alert("Backlit",isPresented:Binding(get:{model.error != nil},set:{if !$0 {model.error=nil}})){ if model.audioPermissionHelp {Button(model.l("Open Privacy Settings")){model.openAudioPrivacy();model.error=nil}}; Button(model.l("OK")){model.error=nil} } message:{Text(model.localizedError)}
             .overlay(alignment:.bottom) {
                 if let notice = model.notice {
-                    HStack { Image(systemName:"info.circle.fill"); Text(notice).font(.system(size:12)); Button {model.notice=nil} label:{Image(systemName:"xmark")} .buttonStyle(.plain) }
+                    HStack { Image(systemName:"info.circle.fill"); Text(model.l(notice)).font(.system(size:12)); Button {model.notice=nil} label:{Image(systemName:"xmark")} .buttonStyle(.plain).accessibilityLabel(model.l("Dismiss notice")) }
                         .padding(14).background(.regularMaterial,in:RoundedRectangle(cornerRadius:14)).shadow(color:.black.opacity(0.08),radius:15).padding(18).frame(maxWidth:750)
                 }
             }
     }
     func nav(_ id: String,_ title: String,_ icon: String) -> some View {
         Button { model.selectedPage=id } label: {
-            HStack(spacing:10) {Image(systemName:icon).frame(width:20);Text(title);Spacer()}.font(.system(size:13,weight:model.selectedPage == id ? .semibold : .medium))
+            HStack(spacing:10) {Image(systemName:icon).frame(width:20);Text(title).lineLimit(1).minimumScaleFactor(0.85);Spacer()}.font(.system(size:13,weight:model.selectedPage == id ? .semibold : .medium))
                 .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal,12).padding(.vertical,11)
                 .foregroundStyle(model.selectedPage == id ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.65))
                 .background(model.selectedPage == id ? Color.primary : .clear,in:RoundedRectangle(cornerRadius:10))
@@ -151,11 +151,11 @@ struct BatteryOutputReadout: View {
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("\(Effects.percent(presentation.level))%")
+            Text(model.formattedPercent(presentation.level))
                 .font(.system(size: compact ? 18 : 38, weight: .medium)).monospacedDigit()
-                .accessibilityLabel("Actual battery-driven logo output")
-                .accessibilityValue("\(Effects.percent(presentation.level)) percent")
-            Text("Matches battery charge when unplugged.")
+                .accessibilityLabel(model.l("Actual battery-driven logo output"))
+                .accessibilityValue(model.lf("{value} percent", arguments:["value":model.formattedInteger(Effects.percent(presentation.level))]))
+            Text(model.l("Matches battery charge when unplugged."))
                 .font(.system(size: compact ? 10 : 11)).foregroundStyle(.secondary)
         }
     }
@@ -168,15 +168,24 @@ struct AgentSessionSummary: View {
     var body: some View {
         let status = model.agentSessionStatus
         VStack(alignment: .leading, spacing: 6) {
-            Label(compact ? status.menuSummary : status.workspaceSummary, systemImage: "terminal")
+            Label(summary(status), systemImage: "terminal")
                 .font(.system(size: compact ? 11 : 13, weight: compact ? .regular : .medium))
                 .foregroundStyle(compact ? .secondary : .primary)
                 .fixedSize(horizontal: false, vertical: true)
             if let warning = status.warning {
-                Text(warning).font(.system(size: 11)).foregroundStyle(.secondary)
+                Text(model.l(warning)).font(.system(size: 11)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+    }
+    private func summary(_ status: AgentSessionStatus) -> String {
+        guard status.observedCount > 0 else {
+            return model.l(status.incomplete ? "Session snapshot incomplete" : "Waiting for an agent")
+        }
+        let state = model.l(status.observedState.rawValue.capitalized)
+        if compact && !status.incomplete { return state }
+        return model.lf(status.incomplete ? "Observed sessions: {count} · {state}" : "Sessions: {count} · {state}",
+            arguments: ["count": model.formattedInteger(status.observedCount), "state": state])
     }
 }
 
@@ -190,45 +199,45 @@ struct LightPage: View {
             }.frame(maxWidth:.infinity)
             VStack(spacing:18) {
                 if model.mode == .battery {
-                    Surface("Battery-driven output") { BatteryOutputReadout(model: model) }
+                    Surface(model.l("Battery-driven output")) { BatteryOutputReadout(model: model) }
                 } else {
                 Surface(model.t("Brightness","亮度")) {
-                    HStack(alignment:.firstTextBaseline,spacing:4) { Text("\(Effects.percent(model.brightness))").font(.system(size:38,weight:.medium)).monospacedDigit(); Text("%").font(.system(size:19)).foregroundStyle(.secondary); Spacer(); Image(systemName:"sun.max").font(.system(size:23,weight:.light)).foregroundStyle(.secondary) }
-                    Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness")
+                    HStack(alignment:.firstTextBaseline,spacing:4) { Text(model.formattedPercent(model.brightness)).font(.system(size:38,weight:.medium)).monospacedDigit(); Spacer(); Image(systemName:"sun.max").font(.system(size:23,weight:.light)).foregroundStyle(.secondary) }
+                    Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel(model.l("Logo brightness"))
                     Text(model.t("Does not change your screen brightness setting.","不會更改螢幕亮度設定。" )).font(.system(size:11)).foregroundStyle(.secondary)
                 }
                 }
                 Surface {
                     if model.mode == .breathe {
-                        HStack {Text(model.t("Breathing pace","呼吸速度")).fontWeight(.medium);Spacer();Text(String(format:"%.1f s",model.period)).monospacedDigit().foregroundStyle(.secondary)}
-                        Slider(value:$model.period,in:Effects.breathingPeriodRange).tint(.primary).accessibilityLabel("Breathing cycle seconds")
-                        HStack {Text("Faster");Spacer();Text("Slower")}.font(.system(size:10)).foregroundStyle(.secondary)
+                        HStack {Text(model.t("Breathing pace","呼吸速度")).fontWeight(.medium);Spacer();Text(model.lf("{value} s", arguments:["value":model.formattedDecimal(model.period)])).monospacedDigit().foregroundStyle(.secondary)}
+                        Slider(value:$model.period,in:Effects.breathingPeriodRange).tint(.primary).accessibilityLabel(model.l("Breathing cycle seconds"))
+                        HStack {Text(model.l("Faster"));Spacer();Text(model.l("Slower"))}.font(.system(size:10)).foregroundStyle(.secondary)
                     } else if model.mode == .music {
                         MusicResponseControls(model: model)
                         HStack {Text(model.t("Beat intensity","節拍強度")).fontWeight(.medium);Spacer();Image(systemName:"waveform")}
-                        Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel("Music intensity")
+                        Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel(model.l("Music intensity"))
                         Toggle(model.t("Dark between beats","節拍之間熄滅"),isOn:$model.strobe).toggleStyle(.switch).controlSize(.small)
                         MusicCaptureStatus(model: model)
                     } else if model.mode == .battery {
-                        Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
+                        Label("\(model.formattedPercent(model.battery)) · \(model.l(model.batteryPowerLabel))", systemImage: model.charging ? "bolt.battery" : "battery.75percent").font(.system(size: 14, weight: .medium))
                         BatterySettingsControls(model: model)
                     } else if model.mode == .agents {
                         AgentSessionSummary(model: model)
-                        Text("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.").font(.system(size:12)).foregroundStyle(.secondary)
-                        Button("Manage Connections"){model.selectedPage="connections"}
+                        Text(model.l("A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.")).font(.system(size:12)).foregroundStyle(.secondary)
+                        Button(model.l("Manage Connections")){model.selectedPage="connections"}
                     } else if model.mode == .typing {
-                        Label("Light up while typing", systemImage: "keyboard").font(.system(size: 13, weight: .medium))
+                        Label(model.l("Light up while typing"), systemImage: "keyboard").font(.system(size: 13, weight: .medium))
                         TypingResponseControls(model: model)
-                        Text("The light turns off shortly after typing stops. With the lid closed, use an external keyboard.").font(.system(size: 11)).foregroundStyle(.secondary)
+                        Text(model.l("The light turns off shortly after typing stops. With the lid closed, use an external keyboard.")).font(.system(size: 11)).foregroundStyle(.secondary)
                     } else if model.mode == .touch {
-                        Label(model.unavailableTouchMessage == nil ? model.touchStatus : "Trackpad input unavailable",systemImage:"hand.tap").font(.system(size:12,weight:.medium))
-                        if model.unavailableTouchMessage == nil && model.touchSource != .screen {Toggle("Blink on trackpad click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)}
+                        Label(model.l(model.unavailableTouchMessage == nil ? model.touchStatus : "Trackpad input unavailable"),systemImage:"hand.tap").font(.system(size:12,weight:.medium))
+                        if model.unavailableTouchMessage == nil && model.touchSource != .screen {Toggle(model.l("Blink on trackpad click"),isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)}
                         TypingResponseControls(model: model)
                         if let message = model.unavailableTouchMessage {
-                            Text(message).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+                            Text(model.l(message)).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
                         } else {
-                            Text("Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.").font(.system(size:11)).foregroundStyle(.secondary)
-                            Text("Global trackpad · event-driven, no input polling").font(.system(size:10)).foregroundStyle(.tertiary)
+                            Text(model.l("Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.")).font(.system(size:11)).foregroundStyle(.secondary)
+                            Text(model.l("Global trackpad · event-driven, no input polling")).font(.system(size:10)).foregroundStyle(.tertiary)
                         }
                     } else {
                         Label(model.t("Steady brightness","簡單、優雅地亮著。"),systemImage:"circle.fill").font(.system(size:13,weight:.medium))
@@ -244,14 +253,14 @@ struct LightPage: View {
         return Button {model.mode=mode} label: {
             HStack(spacing:12) {
                 Image(systemName:mode.symbol).font(.system(size:17,weight:.medium)).frame(width:34,height:34).foregroundStyle(selected ? Color(nsColor:.windowBackgroundColor) : Color.primary.opacity(0.6)).background(selected ? Color.primary : Color.primary.opacity(0.045),in:RoundedRectangle(cornerRadius:10))
-                VStack(alignment:.leading,spacing:3){Text(mode.title).font(.system(size:12,weight:.semibold));Text(mode == .touch && !model.touchAvailable ? "Input unavailable · choose another behavior" : subtitles[mode]!).font(.system(size:10)).foregroundStyle(.secondary)}
+                VStack(alignment:.leading,spacing:3){Text(model.l(mode.title)).font(.system(size:12,weight:.semibold));Text(model.l(mode == .touch && !model.touchAvailable ? "Input unavailable · choose another behavior" : subtitles[mode]!)).font(.system(size:10)).foregroundStyle(.secondary)}
                 Spacer();if selected {Image(systemName:"checkmark").font(.system(size:11,weight:.bold))}
             }.frame(maxWidth:.infinity,alignment:.leading).padding(6)
                 .contentShape(Rectangle())
                 .background(selected ? Color.primary.opacity(0.045) : .clear,in:RoundedRectangle(cornerRadius:12))
         }.buttonStyle(.plain).disabled(!model.availableModes.contains(mode))
-            .accessibilityLabel("\(mode.title) mode").accessibilityAddTraits(selected ? .isSelected : [])
-            .accessibilityHint(mode == .touch && !model.touchAvailable ? "Input unavailable. Enable typing response or choose another behavior." : "")
+            .accessibilityLabel(model.lf("{mode} mode", arguments:["mode":model.l(mode.title)])).accessibilityAddTraits(selected ? .isSelected : [])
+            .accessibilityHint(model.l(mode == .touch && !model.touchAvailable ? "Input unavailable. Enable typing response or choose another behavior." : ""))
     }
 }
 
@@ -259,11 +268,11 @@ struct ConnectionsPage: View {
     @ObservedObject var model: AppModel
     @State private var showHomeSetup=false
     var body: some View {
-        PageHeading(eyebrow: "CONNECTIONS", title: model.t("Assistants & integrations", "助理與整合"),
+        PageHeading(eyebrow: model.l("CONNECTIONS"), title: model.t("Assistants & integrations", "助理與整合"),
             subtitle: model.t("Control your light on request, or reflect coding activity automatically.", "依要求控制燈光，或自動反映程式工作狀態。"))
         MCPConnections(model: model)
         ConnectionSettingsSection(model.t("Coding status hooks", "程式狀態掛鉤"),
-            detail: "Automatic light feedback from coding sessions. Independent of MCP.") {
+            detail: model.l("Automatic light feedback from coding sessions. Independent of MCP.")) {
             VStack(alignment: .leading, spacing: 10) {
                 ConnectionSettingsGroup {
                     ForEach(CodingAgent.allCases) { agent in
@@ -275,29 +284,29 @@ struct ConnectionsPage: View {
                                 .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 9))
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(agent.title).font(.system(size: 13, weight: .semibold))
-                                Text(connected ? (agent == .codex ? "Hooks installed · trust them in Codex" : "Hooks installed · start a new session") : installation.canDisconnect ? "Hooks need review · reconnect or check agent settings" : "Working, waiting, or needs your attention")
+                                Text(model.l(connected ? (agent == .codex ? "Hooks installed · trust them in Codex" : "Hooks installed · start a new session") : installation.canDisconnect ? "Hooks need review · reconnect or check agent settings" : "Working, waiting, or needs your attention"))
                                     .font(.system(size: 11)).foregroundStyle(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             Spacer(minLength: 8)
                             Button { model.chooseFolder(agent) } label: { Image(systemName: "folder") }
-                                .help("Choose a custom configuration folder")
-                                .accessibilityLabel("Choose \(agent.title) configuration folder")
+                                .help(model.l("Choose a custom configuration folder"))
+                                .accessibilityLabel(model.lf("Choose {agent} configuration folder", arguments:["agent":agent.title]))
                             if !connected {
                                 Button(installation.canDisconnect ? model.t("Reconnect", "重新連接") : model.t("Connect", "連接")) {
                                     model.connectAgent(agent, true)
-                                }.accessibilityLabel("\(installation.canDisconnect ? "Reconnect" : "Connect") \(agent.title) coding status hooks")
+                                }.accessibilityLabel(model.lf(installation.canDisconnect ? "Reconnect {agent} coding status hooks" : "Connect {agent} coding status hooks", arguments:["agent":agent.title]))
                             }
                             if installation.canDisconnect {
                                 Button(model.t("Disconnect", "中斷連接")) { model.connectAgent(agent, false) }
-                                    .accessibilityLabel("Disconnect \(agent.title) coding status hooks")
+                                    .accessibilityLabel(model.lf("Disconnect {agent} coding status hooks", arguments:["agent":agent.title]))
                             }
                         }.padding(.vertical, 14).controlSize(.regular)
                         if agent == .claude { Divider() }
                     }
                 }
-                if let warning = model.agentMetadataWarning { Text(warning).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
-                Text("Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.")
+                if let warning = model.agentMetadataWarning { Text(model.l(warning)).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
+                Text(model.l("Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit."))
                     .font(.system(size: 10)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true).padding(.horizontal, 6)
             }
@@ -306,19 +315,19 @@ struct ConnectionsPage: View {
         Surface {
             HStack(spacing:14) {
                 Image(systemName:"house").font(.system(size:20)).frame(width:42,height:42)
-                VStack(alignment:.leading,spacing:4){Text("Home Assistant").font(.system(size:14,weight:.semibold));Text("Optional local light integration").font(.system(size:11)).foregroundStyle(.secondary)}
-                Spacer();Toggle("Enable Home Assistant bridge",isOn:Binding(get:{model.bridgeEnabled},set:{model.configureBridge(enabled:$0,lan:model.bridgeLAN)})).toggleStyle(.switch).labelsHidden()
+                VStack(alignment:.leading,spacing:4){Text("Home Assistant").font(.system(size:14,weight:.semibold));Text(model.l("Optional local light integration")).font(.system(size:11)).foregroundStyle(.secondary)}
+                Spacer();Toggle(model.l("Enable Home Assistant bridge"),isOn:Binding(get:{model.bridgeEnabled},set:{model.configureBridge(enabled:$0,lan:model.bridgeLAN)})).toggleStyle(.switch).labelsHidden()
             }
-            DisclosureGroup("Setup",isExpanded:$showHomeSetup) {
+            DisclosureGroup(model.l("Setup"),isExpanded:$showHomeSetup) {
                 VStack(alignment:.leading,spacing:12) {
                     Toggle(model.t("Allow connections from your local network","允許本地網路連接"),isOn:Binding(get:{model.bridgeLAN},set:{model.configureBridge(enabled:model.bridgeEnabled,lan:$0)})).toggleStyle(.switch).controlSize(.small)
-                    Text(model.bridgeEnabled ? model.bridgeStatus + " · port 48261" : "Off by default. Enable network access for Home Assistant on another device.").font(.system(size:11)).foregroundStyle(.secondary)
+                    Text(model.bridgeEnabled ? model.lf("{status} · port {port}", arguments: ["status":model.l(model.bridgeStatus),"port":"48261"]) : model.l("Off by default. Enable network access for Home Assistant on another device.")).font(.system(size:11)).foregroundStyle(.secondary)
                     HStack {
-                        Button("Copy Pairing Key"){model.copyPairingKey()}.disabled(!model.bridgeEnabled)
-                        Button("New Pairing Key"){model.regeneratePairingKey()}.disabled(model.demo)
-                            .help("Replace the pairing key if it may have been seen by someone else")
-                        Button("Integration Folder") {if let folder=Bundle.main.resourceURL?.appendingPathComponent("HomeAssistant"){NSWorkspace.shared.open(folder)}}
-                        Spacer();Link("Setup guide",destination:URL(string:"https://github.com/t0nyz0/Backlit/blob/main/docs/HOME-ASSISTANT.md")!)
+                        Button(model.l("Copy Pairing Key")){model.copyPairingKey()}.disabled(!model.bridgeEnabled)
+                        Button(model.l("New Pairing Key")){model.regeneratePairingKey()}.disabled(model.demo)
+                            .help(model.l("Replace the pairing key if it may have been seen by someone else"))
+                        Button(model.l("Integration Folder")) {if let folder=Bundle.main.resourceURL?.appendingPathComponent("HomeAssistant"){NSWorkspace.shared.open(folder)}}
+                        Spacer();Link(model.l("Setup guide"),destination:URL(string:"https://github.com/t0nyz0/Backlit/blob/main/docs/HOME-ASSISTANT.md")!)
                     }.font(.system(size:11))
                 }.padding(.top,10)
             }.font(.system(size:12))
@@ -330,32 +339,45 @@ struct ConnectionsPage: View {
 
 struct SettingsPage: View {
     @ObservedObject var model: AppModel
+    var languageSelection: Binding<String> {
+        Binding(get: { model.language == "system" || AppLanguage(rawValue: model.language) != nil ? model.language : "en" },
+                set: { model.language = $0 })
+    }
     var body: some View {
         Text(model.t("Settings","設定")).font(.system(size:31,weight:.semibold))
         Surface(model.t("General","融入你的 Mac")) {
-            settingRow("Appearance","Follow your Mac, or choose a look.") {Picker("Appearance",selection:$model.appearance){Text("System").tag("system");Text("Light").tag("light");Text("Dark").tag("dark")}.labelsHidden().frame(width:150)}
+            settingRow("Appearance","Follow your Mac, or choose a look.") {Picker(model.l("Appearance"),selection:$model.appearance){Text(model.l("System")).tag("system");Text(model.l("Light")).tag("light");Text(model.l("Dark")).tag("dark")}.labelsHidden().frame(width:150)}
             Divider()
-            settingRow("Language","English / 繁體中文") {Picker("Language",selection:$model.language){Text("English").tag("en");Text("繁體中文").tag("zh-Hant")}.labelsHidden().frame(width:150)}
+            settingRow(model.l("Language"), model.lf("Currently using {language}", arguments: ["language": model.resolvedLanguage.nativeName])) {
+                Picker(model.l("Language"), selection: languageSelection) {
+                    Text(model.l("System Default")).tag("system")
+                    Divider()
+                    ForEach(AppLanguage.allCases, id: \.rawValue) { language in
+                        Text(language.nativeName).tag(language.rawValue)
+                    }
+                }.labelsHidden().frame(minWidth: 180, idealWidth: 205)
+                    .accessibilityHint(model.l("Follow your Mac’s preferred languages, or choose a language for Backlit."))
+            }
             Divider()
             settingRow("Hide Dock icon", "Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.") {
-                Toggle("Hide Dock icon", isOn: Binding(get: { !model.dockIconVisible }, set: { model.dockIconVisible = !$0 }))
+                Toggle(model.l("Hide Dock icon"), isOn: Binding(get: { !model.dockIconVisible }, set: { model.dockIconVisible = !$0 }))
                     .labelsHidden().toggleStyle(.switch).disabled(!model.menuBarIconVisible)
             }
             Divider()
             settingRow("Show menu bar icon", "When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.") {
-                Toggle("Show menu bar icon", isOn: $model.menuBarIconVisible).labelsHidden().toggleStyle(.switch)
+                Toggle(model.l("Show menu bar icon"), isOn: $model.menuBarIconVisible).labelsHidden().toggleStyle(.switch)
             }
             Divider()
-            settingRow(model.t("Open at login","登入時開啟"),"Keep Backlit a click away in the menu bar.") {Toggle("Open at login",isOn:Binding(get:{model.loginEnabled},set:{model.setLogin($0)})).labelsHidden().toggleStyle(.switch)}
+            settingRow(model.t("Open at login","登入時開啟"),"Keep Backlit a click away in the menu bar.") {Toggle(model.l("Open at login"),isOn:Binding(get:{model.loginEnabled},set:{model.setLogin($0)})).labelsHidden().toggleStyle(.switch)}
             Divider()
             LogoShortcutControls(model:model)
         }
         Surface(model.t("Logo and power","進階控制")) {
-            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔蓋時 Mac 保持喚醒，內建螢幕可能仍亮著。最長 30 分鐘；電量不足、過熱或開啟低耗電模式時也會停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle("Keep logo on with lid closed",isOn:Binding(get:{model.lidRequested},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
-            Text(model.lidPreferenceStatus).font(.system(size: 11)).foregroundStyle(.secondary)
+            settingRow(model.t("Keep logo on with lid closed","闔上螢幕時保持發光"),model.t("Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.","闔蓋時 Mac 保持喚醒，內建螢幕可能仍亮著。最長 30 分鐘；電量不足、過熱或開啟低耗電模式時也會停止。請放在通風的硬質平面上，切勿放入袋中。")) {Toggle(model.l("Keep logo on with lid closed"),isOn:Binding(get:{model.lidRequested},set:{model.setLid($0)})).labelsHidden().toggleStyle(.switch)}
+            Text(model.l(model.lidPreferenceStatus)).font(.system(size: 11)).foregroundStyle(.secondary)
             LidDurationControls(model: model)
             Divider()
-            settingRow(model.t("Override ambient brightness limit","任何環境下的全亮度"),"Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.") {Toggle("Override ambient brightness limit",isOn:Binding(get:{model.ambientUnlocked},set:{model.setAmbient($0)})).labelsHidden().toggleStyle(.switch)}
+            settingRow(model.t("Override ambient brightness limit","任何環境下的全亮度"),"Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.") {Toggle(model.l("Override ambient brightness limit"),isOn:Binding(get:{model.ambientUnlocked},set:{model.setAmbient($0)})).labelsHidden().toggleStyle(.switch)}
             if !model.demo && (model.needsLightRecovery || model.savedLidPauseNeedsReview) && (!model.controlWanted || !model.controlling) {
                 Divider()
                 settingRow(model.t("Restore your light","還原你的燈光"), model.savedLidRecoveryUnconfirmed
@@ -364,14 +386,14 @@ struct SettingsPage: View {
             }
         }
         Surface {
-            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development") · t0nyz").font(.system(size:11)).foregroundStyle(.secondary)};Spacer();UpdateControls(updater: model.updater, preview: model.demo)}
+            HStack(spacing:14) {BrandGlyph(size:52);VStack(alignment:.leading,spacing:4){Text("Backlit").font(.system(size:18,weight:.semibold));Text(model.lf("Version {version} · t0nyz", arguments:["version":Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development"])).font(.system(size:11)).foregroundStyle(.secondary)};Spacer();UpdateControls(updater: model.updater, preview: model.demo, localize: model.l)}
             Divider()
-            HStack {Link("GitHub ↗",destination:URL(string:"https://github.com/t0nyz0/Backlit")!);Text("·").foregroundStyle(.tertiary);Link("t0nyz.com ↗",destination:URL(string:"https://t0nyz.com")!);Spacer();Link("☕ Buy me a coffee",destination:URL(string:"https://buymeacoffee.com/tonyz")!)}.font(.system(size:12))
+            HStack {Link("GitHub ↗",destination:URL(string:"https://github.com/t0nyz0/Backlit")!);Text("·").foregroundStyle(.tertiary);Link("t0nyz.com ↗",destination:URL(string:"https://t0nyz.com")!);Spacer();Link(model.l("☕ Buy me a coffee"),destination:URL(string:"https://buymeacoffee.com/tonyz")!)}.font(.system(size:12))
         }
-        Text("The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. ").font(.system(size:11)).foregroundStyle(.secondary)
+        Text(model.l("The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. ")).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
     }
     func settingRow<Accessory:View>(_ title: String,_ subtitle: String,@ViewBuilder accessory:()->Accessory) -> some View {
-        HStack(spacing:22){VStack(alignment:.leading,spacing:5){Text(title).font(.system(size:13,weight:.medium));Text(subtitle).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)};Spacer(minLength:20);accessory()}
+        HStack(spacing:22){VStack(alignment:.leading,spacing:5){Text(model.l(title)).font(.system(size:13,weight:.medium)).fixedSize(horizontal:false,vertical:true);Text(model.l(subtitle)).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)};Spacer(minLength:20);accessory()}
     }
 }
 
@@ -404,12 +426,14 @@ struct LidDurationControls: View {
 }
 
 struct ShortcutRecorder: NSViewRepresentable {
+    var prompt = "Waiting for keys…"
     var capture: (LogoShortcut)->Void
     var invalid: (String)->Void
     var cancel: ()->Void
     func makeNSView(context:Context)->KeyView {let view=KeyView();updateNSView(view,context:context);return view}
-    func updateNSView(_ view:KeyView,context:Context){view.capture=capture;view.invalid=invalid;view.cancel=cancel}
+    func updateNSView(_ view:KeyView,context:Context){view.prompt=prompt;view.needsDisplay=true;view.setAccessibilityLabel(prompt);view.capture=capture;view.invalid=invalid;view.cancel=cancel}
     final class KeyView:NSView {
+        var prompt = "Waiting for keys…"
         var capture:((LogoShortcut)->Void)?
         var invalid:((String)->Void)?
         var cancel:(()->Void)?
@@ -420,20 +444,26 @@ struct ShortcutRecorder: NSViewRepresentable {
             do {capture?(try LogoShortcut.capture(event))} catch {invalid?(error.localizedDescription)}
         }
         override func performKeyEquivalent(with event:NSEvent)->Bool {keyDown(with:event);return true}
-        override func draw(_ dirtyRect:NSRect){("Waiting for keys…" as NSString).draw(at:NSPoint(x:70,y:24),withAttributes:[.font:NSFont.systemFont(ofSize:15),.foregroundColor:NSColor.secondaryLabelColor])}
+        override func draw(_ dirtyRect:NSRect){(prompt as NSString).draw(in:NSRect(x:12,y:20,width:bounds.width-24,height:44),withAttributes:[.font:NSFont.systemFont(ofSize:15),.foregroundColor:NSColor.secondaryLabelColor])}
     }
 }
 
 /// Small instrument-style lid preview; the menu remains a compact control strip.
 struct MenuLidPreview: View {
     @ObservedObject var presentation:LightPresentation
+    let language: AppLanguage
+    var formattingLocale: Locale = .autoupdatingCurrent
+    var accessibilityText: String {
+        Localization.format(Localization.text("Logo preview, {value} percent", language: language),
+            arguments: ["value": Effects.percent(presentation.level).formatted(.number.locale(formattingLocale))])
+    }
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius:8).fill(LinearGradient(colors:[Color(white:0.30),Color(white:0.13)],startPoint:.topLeading,endPoint:.bottomTrailing))
                 .overlay(RoundedRectangle(cornerRadius:8).stroke(.white.opacity(0.25),lineWidth:0.6))
             MenuLightMark(level: presentation.level)
             VStack {Spacer();Capsule().fill(.white.opacity(0.22)).frame(height:1).padding(.horizontal,14).padding(.bottom,4)}
-        }.frame(width:88,height:60).accessibilityLabel("Logo preview, \(Effects.percent(presentation.level)) percent")
+        }.frame(width:88,height:60).accessibilityLabel(accessibilityText)
     }
 }
 
@@ -445,40 +475,40 @@ struct MenuView: View {
                 BrandGlyph(size:30)
                 VStack(alignment:.leading,spacing:2) { Text("Backlit").font(.system(size:16,weight:.semibold));Text(model.t("MacBook PROLED Logo Control","MacBook 標誌控制")).font(.system(size:10)).foregroundStyle(.secondary) }
                 Spacer()
-                Button {model.openWindow?()} label:{Image(systemName:"arrow.up.right.square").font(.system(size:15))}.buttonStyle(.plain).help("Open workspace")
+                Button {model.openWindow?()} label:{Image(systemName:"arrow.up.right.square").font(.system(size:15))}.buttonStyle(.plain).help(model.l("Open workspace")).accessibilityLabel(model.l("Open workspace"))
             }
             Divider()
             HStack(spacing:12) {
-                MenuLidPreview(presentation:model.presentation)
-                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.status).font(.system(size:10)).foregroundStyle(.secondary).lineLimit(2).fixedSize(horizontal:false,vertical:true)}
-                Spacer();Toggle("Backlight",isOn:$model.enabled).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                MenuLidPreview(presentation:model.presentation, language:model.resolvedLanguage, formattingLocale:model.formattingLocale)
+                VStack(alignment:.leading,spacing:4) {Text(model.t("Backlight","背光")).font(.system(size:13,weight:.semibold));Text(model.l(model.status)).font(.system(size:10)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)}
+                Spacer();Toggle(model.l("Backlight"),isOn:$model.enabled).labelsHidden().toggleStyle(.switch).controlSize(.small)
             }
             HStack {
                 Text(model.t("Behavior","模式")).font(.system(size:12)).foregroundStyle(.secondary)
                 Spacer()
-                Picker("Behavior",selection:$model.mode) {ForEach(model.presentedModes){mode in Label(mode == .touch && !model.touchAvailable ? "Trackpad · unavailable" : mode.title,systemImage:mode.symbol).tag(mode).disabled(!model.availableModes.contains(mode))}}.labelsHidden().pickerStyle(.menu).frame(width:150)
+                Picker(model.l("Behavior"),selection:$model.mode) {ForEach(model.presentedModes){mode in Label(model.l(mode == .touch && !model.touchAvailable ? "Trackpad · unavailable" : mode.title),systemImage:mode.symbol).tag(mode).disabled(!model.availableModes.contains(mode))}}.labelsHidden().pickerStyle(.menu).frame(width:150)
             }
             if model.mode == .battery {
-                Text("Battery-driven output").font(.system(size: 12, weight: .medium))
+                Text(model.l("Battery-driven output")).font(.system(size: 12, weight: .medium))
                 BatteryOutputReadout(model: model, compact: true)
             } else {
             VStack(spacing:10) {
-                HStack {Text(model.t("Brightness","亮度")).font(.system(size:12,weight:.medium));Spacer();Text("\(Effects.percent(model.brightness))%").font(.system(size:12)).monospacedDigit().foregroundStyle(.secondary)}
-                HStack(spacing:10) {Image(systemName:"sun.min");Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel("Logo brightness");Image(systemName:"sun.max")}.font(.system(size:12)).foregroundStyle(.secondary)
+                HStack {Text(model.t("Brightness","亮度")).font(.system(size:12,weight:.medium));Spacer();Text(model.formattedPercent(model.brightness)).font(.system(size:12)).monospacedDigit().foregroundStyle(.secondary)}
+                HStack(spacing:10) {Image(systemName:"sun.min");Slider(value:$model.brightness,in:0...1).tint(.primary).accessibilityLabel(model.l("Logo brightness"));Image(systemName:"sun.max")}.font(.system(size:12)).foregroundStyle(.secondary)
             }
             }
             if model.mode == .breathe {
-                VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(String(format:"%.1f seconds",model.period)).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:Effects.breathingPeriodRange).tint(.primary).accessibilityLabel("Breathing cycle seconds")}
+                VStack(spacing:8) {HStack {Text(model.t("Breathing pace","呼吸速度"));Spacer();Text(model.lf("{value} s", arguments:["value":model.formattedDecimal(model.period)])).monospacedDigit().foregroundStyle(.secondary)}.font(.system(size:11));Slider(value:$model.period,in:Effects.breathingPeriodRange).tint(.primary).accessibilityLabel(model.l("Breathing cycle seconds"))}
             } else if model.mode == .music {
                 MusicResponseControls(model: model).font(.system(size:11))
-                VStack(spacing:8) {HStack{Text("Beat intensity");Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel("Music intensity")};Toggle("Dark between beats",isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);MusicCaptureStatus(model: model)}.font(.system(size:11))
+                VStack(spacing:8) {HStack{Text(model.l("Beat intensity"));Slider(value:$model.musicIntensityPosition,in:0...1).tint(.primary).accessibilityLabel(model.l("Music intensity"))};Toggle(model.l("Dark between beats"),isOn:$model.strobe).toggleStyle(.switch).controlSize(.small);MusicCaptureStatus(model: model)}.font(.system(size:11))
             } else if model.mode == .battery {
-                Label("\(Effects.percent(model.battery))% · \(model.batteryPowerLabel)",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
+                Label("\(model.formattedPercent(model.battery)) · \(model.l(model.batteryPowerLabel))",systemImage:"battery.75percent").font(.system(size:11)).foregroundStyle(.secondary)
             } else if model.mode == .typing {
                 TypingResponseControls(model: model).font(.system(size: 11))
             } else if model.mode == .touch {
                 TypingResponseControls(model: model).font(.system(size:11))
-                VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle("Blink on click",isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.unavailableTouchMessage ?? model.touchStatus,systemImage:"hand.tap").fixedSize(horizontal:false,vertical:true).font(.system(size:11)).foregroundStyle(.secondary)}
+                VStack(alignment:.leading,spacing:8) {if model.touchSource != .screen {Toggle(model.l("Blink on click"),isOn:$model.touchClickBlink).toggleStyle(.switch).controlSize(.small)};Label(model.l(model.unavailableTouchMessage ?? model.touchStatus),systemImage:"hand.tap").fixedSize(horizontal:false,vertical:true).font(.system(size:11)).foregroundStyle(.secondary)}
             } else if model.mode == .agents {
                 AgentSessionSummary(model: model, compact: true)
             }
@@ -489,8 +519,8 @@ struct MenuView: View {
             HStack {
                 Button {model.selectedPage="settings";model.openWindow?()} label:{Label(model.t("Settings","設定"),systemImage:"gearshape")}.buttonStyle(.plain)
                 Spacer();Text(model.shortcutLabel).font(.system(size:10)).foregroundStyle(.tertiary)
-                Button("Quit"){model.quit()}.buttonStyle(.plain).padding(.leading,10)
+                Button(model.l("Quit")){model.quit()}.buttonStyle(.plain).padding(.leading,10)
             }.font(.system(size:11))
-        }.padding(20).frame(width:320).background(Color(nsColor:.windowBackgroundColor)).preferredColorScheme(model.colorScheme)
+        }.padding(20).frame(width:320).background(Color(nsColor:.windowBackgroundColor)).preferredColorScheme(model.colorScheme).environment(\.locale, model.formattingLocale)
     }
 }

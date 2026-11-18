@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Backlit 在本機分析系統播放音訊，使徽標響應音樂。不會錄制或上傳音訊。</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>通過本地網路將 Backlit 徽標燈連接到您的 Home Assistant 實例。</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Backlit 在音樂模式中使用系統播放音訊，不保存或傳輸螢幕或音訊內容。</string>
+</dict>
+</plist>

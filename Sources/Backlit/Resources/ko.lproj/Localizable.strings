@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>0%로 설정하면 맥박 사이에 완전히 꺼집니다.</string>
+	<key>A compatible live Mac is required.</key>
+	<string>호환되는 실제 Mac이 필요합니다.</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>새 페어링 키를 생성하지 못해 Home Assistant 공유가 꺼졌습니다. 공유를 다시 켜기 전에 새 페어링 키를 다시 선택하세요. ({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>새 페어링 키를 만들었습니다. 복사해 Home Assistant를 업데이트하세요. 이전 키는 더 이상 작동하지 않습니다.</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>이전 조명 세션을 복원해야 합니다. ‘조명 복원’으로 정리를 완료하세요.</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>대기 중에는 은은하게, 작업 중에는 맥박처럼 빛납니다. 자리를 비운 동안 에이전트가 응답을 필요로 하면 두 번 깜박입니다.</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>키를 교체하지 못해 AI 접근은 꺼진 상태로 유지됩니다. </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>키를 교체하지 못해 AI 접근은 꺼진 상태로 유지됩니다. {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>격리된 미리보기에서는 AI 연결이 비활성화됩니다.</string>
+	<key>Access key</key>
+	<string>접근 키</string>
+	<key>Actual battery-driven logo output</key>
+	<string>실제 배터리 연동 로고 출력</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>재생 음량에 맞춰 조절합니다. 강도는 반응을 조절하고 밝기 설정은 최대 밝기를 정합니다.</string>
+	<key>Agents</key>
+	<string>에이전트</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Backlit 링크 및 다른 앱 허용</string>
+	<key>Allow connections from your local network</key>
+	<string>로컬 네트워크 연결 허용</string>
+	<key>Allow light changes</key>
+	<string>조명 변경 허용</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Backlit 링크가 조명을 변경하도록 허용합니다. 이 빌드에서는 기본 단축어 동작을 사용할 수 없습니다.</string>
+	<key>Also respond to typing</key>
+	<string>타이핑에도 반응</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>주변광 밝기 제한은 변경되지 않았습니다.</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>업데이트가 대기 중입니다. ‘업데이트 설치 후 다시 실행’을 선택하거나 종료 전에 업데이트 창에서 건너뛰세요.</string>
+	<key>Appearance</key>
+	<string>모양</string>
+	<key>Assistant setup</key>
+	<string>어시스턴트 설정</string>
+	<key>Assistants &amp; integrations</key>
+	<string>어시스턴트 및 연동</string>
+	<key>Attention</key>
+	<string>응답 필요</string>
+	<key>Automatic level</key>
+	<string>자동 레벨</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>코딩 세션 상태를 조명으로 자동 표시합니다. MCP와 별개입니다.</string>
+	<key>Automatic pulse</key>
+	<string>자동 맥박</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>안전 확인이 세 번 시도 후 중단되었습니다. 설정에서 조명을 복원한 다음 ‘덮개를 닫아도 로고 켜기’를 껐다 켜서 다시 시도하세요.</string>
+	<key>Backlight</key>
+	<string>백라이트</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlit은 시스템 재생 오디오를 기기에서 분석해 로고가 음악에 반응하게 합니다. 오디오를 녹음하거나 업로드하지 않습니다.</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Backlit 링크를 복사했습니다. 사용자 지정 앱 링크를 지원하는 실행 도구에서 사용하세요.</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlit은 음악 모드에 시스템 재생 오디오를 사용합니다. 화면이나 오디오 내용을 저장하거나 전송하지 않습니다.</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Mac이 깨어 있고 잠금이 해제되면 Backlit이 다시 연결합니다.</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Mac이 깨어나면 Backlit이 정리를 확인하고 다시 연결합니다.</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — 미리보기</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>Backlit 훅을 제거했습니다. 기존의 다른 훅은 유지되었습니다.</string>
+	<key>Balanced</key>
+	<string>균형 있게</string>
+	<key>Battery</key>
+	<string>배터리</string>
+	<key>Battery charging behavior</key>
+	<string>배터리 충전 중 동작</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>배터리 모드는 밝기를 자동으로 제어합니다. 밝기 단축키를 사용하려면 수동 동작을 선택하세요.</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>배터리 맥박 주기(초)</string>
+	<key>Battery state unavailable</key>
+	<string>배터리 상태 확인 불가</string>
+	<key>Battery-driven output</key>
+	<string>배터리 연동 출력</string>
+	<key>Beat intensity</key>
+	<string>비트 강도</string>
+	<key>Behavior</key>
+	<string>동작</string>
+	<key>Blink</key>
+	<string>깜박임</string>
+	<key>Blink on click</key>
+	<string>클릭 시 깜박임</string>
+	<key>Blink on trackpad click</key>
+	<string>트랙패드 클릭 시 깜박임</string>
+	<key>Breathe</key>
+	<string>숨쉬기</string>
+	<key>Breathing</key>
+	<string>숨쉬는 중</string>
+	<key>Breathing cycle seconds</key>
+	<string>숨쉬기 주기(초)</string>
+	<key>Breathing pace</key>
+	<string>숨쉬기 속도</string>
+	<key>Brightness</key>
+	<string>밝기</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>밝기 단축키는 수동 밝기를 5%씩 변경합니다. 현재 동작과 켜짐/꺼짐 상태는 유지됩니다. 배터리 모드 밝기는 자동으로 유지됩니다.</string>
+	<key>CONNECTIONS</key>
+	<string>연결</string>
+	<key>Cancel</key>
+	<string>취소</string>
+	<key>Change </key>
+	<string>변경: </string>
+	<key>Charge-ready signal</key>
+	<string>충전 목표 도달 신호</string>
+	<key>Charge-ready threshold</key>
+	<string>충전 목표 임계값</string>
+	<key>Charging</key>
+	<string>충전 중</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>충전 맥박 최소 밝기</string>
+	<key>Check for Updates</key>
+	<string>업데이트 확인</string>
+	<key>Choose a custom configuration folder</key>
+	<string>사용자 지정 설정 폴더 선택</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>{agent} 설정 폴더 선택</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>정리 중입니다. 선택한 설정은 저장되어 있습니다.</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>정리 작업이 반환되었지만 저장된 덮개 닫힘 세션의 제어 반환은 아직 확인되지 않았습니다.</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>덮개 닫힘 세션의 정리를 확인하지 못했습니다. 설정에서 전원 복구를 검토한 후 다시 시도하세요.</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>덮개 닫힘 세션을 정리 중입니다. 완료되면 ‘조명 복원’을 다시 시도하세요.</string>
+	<key>Closed-lid duration</key>
+	<string>덮개를 닫은 상태의 조명 시간</string>
+	<key>Closed-lid duration amount</key>
+	<string>덮개를 닫은 상태의 조명 시간 값</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>오류로 덮개 닫힘 조명이 일시 중지됨</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>오류로 덮개 닫힘 조명이 일시 중지되어 로고가 꺼져 있습니다. 설정에서 조명을 복원한 다음 ‘덮개를 닫아도 로고 켜기’를 껐다 켜서 다시 시도하세요.</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>격리된 미리보기에서는 덮개 닫힘 동작을 사용할 수 없습니다.</string>
+	<key>Coding agent status</key>
+	<string>코딩 에이전트 상태</string>
+	<key>Coding status hooks</key>
+	<string>코딩 상태 훅</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>호환되는 발광 로고 감지됨</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>호환되는 로고 하드웨어를 감지했습니다.</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>호환되는 로고 하드웨어를 사용할 수 없습니다.</string>
+	<key>Connect</key>
+	<string>연결</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>Backlit 로고 조명을 로컬 네트워크의 Home Assistant에 연결합니다.</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>{agent} 코딩 상태 훅 연결</string>
+	<key>Connecting to system audio…</key>
+	<string>시스템 오디오에 연결 중…</string>
+	<key>Connecting to your MacBook</key>
+	<string>MacBook에 연결 중</string>
+	<key>Connections</key>
+	<string>연결</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>격리된 미리보기에서는 연결이 비활성화됩니다.</string>
+	<key>Constant brightness</key>
+	<string>일정한 밝기</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>요청할 때 조명을 제어하거나 코딩 활동을 자동으로 반영합니다.</string>
+	<key>Copy</key>
+	<string>복사</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Claude Code 설정 복사</string>
+	<key>Copy Codex Setup</key>
+	<string>Codex 설정 복사</string>
+	<key>Copy Pairing Key</key>
+	<string>페어링 키 복사</string>
+	<key>Copy Toggle Link</key>
+	<string>전환 링크 복사</string>
+	<key>Create New Key</key>
+	<string>새 키 만들기</string>
+	<key>Create a new pairing key?</key>
+	<string>새 페어링 키를 만들까요?</string>
+	<key>Currently using {language}</key>
+	<string>현재 사용 언어: {language}</string>
+	<key>Dark</key>
+	<string>다크</string>
+	<key>Dark between beats</key>
+	<string>비트 사이에 끄기</string>
+	<key>Decrease logo brightness</key>
+	<string>로고 밝기 줄이기</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>기본값: 충전 중 자동 맥박, 6초 주기, 최소 밝기 0%, 충전 목표 신호 끔.</string>
+	<key>Dim to</key>
+	<string>최소 밝기</string>
+	<key>Disable</key>
+	<string>비활성화</string>
+	<key>Disconnect</key>
+	<string>연결 해제</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>{agent} 코딩 상태 훅 연결 해제</string>
+	<key>Dismiss notice</key>
+	<string>알림 닫기</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>화면 밝기 설정은 변경하지 않습니다.</string>
+	<key>Download Latest Version</key>
+	<string>최신 버전 다운로드</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>앱을 다운로드한 후 Backlit을 종료하고 응용 프로그램 폴더에서 교체하세요.</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>미리보기에서는 다운로드가 비활성화됩니다.</string>
+	<key>Duration</key>
+	<string>시간</string>
+	<key>Duration: {value} s</key>
+	<string>시간: {value}초</string>
+	<key>Edit</key>
+	<string>편집</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Home Assistant 브리지 활성화</string>
+	<key>Enable or retry typing access</key>
+	<string>타이핑 접근 활성화 또는 재시도</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>실험적 필터가 활성화되었습니다. 키보드에서 Shift + 밝기 키를 시험하세요. 화면 밝기 변경 억제는 아직 확인되지 않았습니다.</string>
+	<key>Fade in and out</key>
+	<string>밝아졌다 어두워지기</string>
+	<key>Faster</key>
+	<string>빠르게</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>밝기 단축키를 사용하기 전에 조명 복구를 완료하세요.</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>이전 세션 복구를 완료한 후 다시 연결합니다.</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>새 세션을 시작하기 전에 이전 덮개 닫힘 세션의 정리를 완료하세요.</string>
+	<key>Follow battery charge</key>
+	<string>배터리 잔량에 맞춤</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Mac 설정을 따르거나 모양을 선택하세요.</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Mac의 선호 언어를 따르거나 Backlit 언어를 선택하세요.</string>
+	<key>Following your battery</key>
+	<string>배터리에 맞추는 중</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>전원이 연결된 동안에도 배터리 잔량을 따릅니다.</string>
+	<key>Fully charged</key>
+	<string>충전 완료</string>
+	<key>General</key>
+	<string>일반</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>시스템 전체 트랙패드 · 이벤트 기반, 입력 폴링 없음</string>
+	<key>Glow</key>
+	<string>빛남</string>
+	<key>Glowing</key>
+	<string>빛나는 중</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>하드웨어 밝기 키는 macOS에서 처리합니다.</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>격리된 미리보기에서는 하드웨어 키 감지가 비활성화됩니다.</string>
+	<key>Hide Dock icon</key>
+	<string>Dock 아이콘 숨기기</string>
+	<key>Hooks installed · start a new session</key>
+	<string>훅 설치됨 · 새 세션 시작</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>훅 설치됨 · Codex에서 신뢰 설정</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>훅 검토 필요 · 다시 연결하거나 에이전트 설정 확인</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>훅을 저장했습니다. Codex Settings → Hooks에서 검토하고 신뢰한 뒤 새 세션을 시작하세요.</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>훅을 저장했습니다. 에이전트 설정을 검토한 뒤 새 Claude Code 세션을 시작하세요.</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>훅은 세션 식별자와 상태만 보냅니다. 프롬프트, 코드, 도구 출력은 Backlit에 전달되지 않습니다.</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>격리된 미리보기</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>업데이트 후 Backlit이 이미 활성화되어 있는데도 접근이 거부되면 이전 Backlit 항목을 제거하고 설치된 앱을 다시 추가한 뒤 활성화하고 Backlit을 다시 여세요.</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>접근이 꺼져 있으면 개인정보 보호 및 보안 → 화면 및 시스템 오디오 녹음에서 Backlit을 허용하세요.</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>이 빌드에서는 앱 내 업데이트가 아직 활성화되지 않았습니다. 배포자가 신뢰할 수 있는 업데이트 피드와 서명 키를 포함해야 합니다.</string>
+	<key>Increase logo brightness</key>
+	<string>로고 밝기 높이기</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>타이핑 반응에는 입력 모니터링 권한이 필요합니다</string>
+	<key>Input active · light on</key>
+	<string>입력 중 · 조명 켜짐</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>입력 사용 불가 · 다른 동작 선택</string>
+	<key>Install Update and Relaunch</key>
+	<string>업데이트 설치 후 다시 실행</string>
+	<key>Integration Folder</key>
+	<string>연동 폴더</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>메뉴 막대에서 클릭 한 번으로 Backlit을 여세요.</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Backlit을 메뉴 막대에 표시합니다. 메뉴 막대 아이콘을 숨기면 먼저 Dock 아이콘이 다시 표시됩니다.</string>
+	<key>Keep logo on with lid closed</key>
+	<string>덮개를 닫아도 로고 켜기</string>
+	<key>Keep on for</key>
+	<string>켜짐 유지 시간</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Mac을 깨어 있게 유지하며 덮개를 닫아도 내장 화면이 켜져 있을 수 있습니다. 최대 30분이며 배터리 부족, 과열 또는 저전력 모드에서도 중단됩니다. 통풍이 잘되는 단단한 표면에 놓고 절대 가방에 넣지 마세요.</string>
+	<key>LIVE PREVIEW</key>
+	<string>실시간 미리보기</string>
+	<key>LOGO CONNECTED</key>
+	<string>로고 연결됨</string>
+	<key>LOGO CONTROL</key>
+	<string>로고 제어</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>로고 사용 불가</string>
+	<key>Language</key>
+	<string>언어</string>
+	<key>Last access check: </key>
+	<string>최근 접근 확인: </string>
+	<key>Last access check: {diagnostic}</key>
+	<string>최근 접근 확인: {diagnostic}</string>
+	<key>Light</key>
+	<string>라이트</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>조명 정리를 확인했습니다. 자동으로 다시 연결합니다.</string>
+	<key>Light output paused</key>
+	<string>조명 출력 일시 중지</string>
+	<key>Light recovery is still in progress.</key>
+	<string>조명 복구가 아직 진행 중입니다.</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>조명 복구가 아직 진행 중입니다. 끝나면 종료를 다시 시도하세요.</string>
+	<key>Light up while typing</key>
+	<string>타이핑 중 켜기</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>리스너 오류로 로컬 연결이 꺼졌습니다. </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>리스너 오류로 로컬 연결이 꺼졌습니다. {detail}</string>
+	<key>Logo and power</key>
+	<string>로고 및 전원</string>
+	<key>Logo brightness</key>
+	<string>로고 밝기</string>
+	<key>Logo control enabled</key>
+	<string>로고 제어 활성화됨</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>로고 제어 사용 불가: {detail}</string>
+	<key>Logo off</key>
+	<string>로고 꺼짐</string>
+	<key>Logo off · hardware disabled</key>
+	<string>로고 꺼짐 · 하드웨어 비활성화</string>
+	<key>Logo off · lid closed</key>
+	<string>로고 꺼짐 · 덮개 닫힘</string>
+	<key>Logo on</key>
+	<string>로고 켜짐</string>
+	<key>Logo preview, {value} percent</key>
+	<string>로고 미리보기, {value}퍼센트</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>로고 상태 확인 불가 · 하드웨어 제어 안 함</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>로고 상태 확인 불가 · {value}% 요청됨</string>
+	<key>Logo unchanged</key>
+	<string>로고 변경 없음</string>
+	<key>MCP access</key>
+	<string>MCP 접근</string>
+	<key>MCP control</key>
+	<string>MCP 제어</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>MacBook PROLED 로고 제어</string>
+	<key>Manage Connections</key>
+	<string>연결 관리</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>수동 로고 밝기: {value}%</string>
+	<key>Match battery level</key>
+	<string>배터리 잔량에 맞추기</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>전원을 분리하면 배터리 잔량에 맞춰집니다.</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>덮개를 닫을 때마다 최대 30분입니다. 잠자기 시간도 포함되며 앱을 다시 실행해도 타이머가 초기화되지 않습니다. 이 제한이 안전한 온도를 보장하지는 않습니다.</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · 기본적으로 꺼짐</string>
+	<key>Moving with your music</key>
+	<string>음악에 맞춰 움직이는 중</string>
+	<key>Music</key>
+	<string>음악</string>
+	<key>Music intensity</key>
+	<string>음악 반응 강도</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>격리된 미리보기에서는 네트워크 공유가 비활성화됩니다.</string>
+	<key>New Pairing Key</key>
+	<string>새 페어링 키</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>충전 맥박 없이 전원 연결 중 로고 출력을 100%로 유지합니다.</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>호환되는 발광 로고를 찾지 못했습니다.</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>덮개를 닫을 때의 일반 잠자기 동작을 복원했습니다. 남은 세션 파일은 제거하지 못했습니다.</string>
+	<key>Not connected</key>
+	<string>연결되지 않음</string>
+	<key>OK</key>
+	<string>확인</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>관찰된 세션: {count} · {state}</string>
+	<key>Off</key>
+	<string>끔</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>기본적으로 꺼져 있습니다. 다른 기기의 Home Assistant를 사용하려면 네트워크 접근을 활성화하세요.</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>기본적으로 꺼져 있습니다. 손쉬운 사용 및 입력 모니터링 권한이 필요합니다. 키보드마다 지원이 다르므로 화면 밝기도 바뀌지 않는지 확인하세요. 일반 단축키에는 이 권한이 필요하지 않습니다.</string>
+	<key>Off · lid closed</key>
+	<string>꺼짐 · 덮개 닫힘</string>
+	<key>On battery</key>
+	<string>배터리 사용 중</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>요청할 때 어시스턴트가 조명을 확인하거나 변경할 수 있습니다.</string>
+	<key>Open Accessibility</key>
+	<string>손쉬운 사용 열기</string>
+	<key>Open Input Monitoring</key>
+	<string>입력 모니터링 열기</string>
+	<key>Open Privacy Settings</key>
+	<string>개인정보 보호 설정 열기</string>
+	<key>Open at login</key>
+	<string>로그인 시 열기</string>
+	<key>Open workspace</key>
+	<string>작업 공간 열기</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>주변광 제한을 선택적으로 재정의합니다. macOS에서 관리자 승인을 요청하며 이전 제한값은 저장됩니다.</string>
+	<key>Optional local light integration</key>
+	<string>선택적 로컬 조명 연동</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>선택 사항: 전원 연결 중 충전량이 목표에 도달하면 일반 배터리 동작을 잠시 재정의합니다. 충전량이 줄거나 전원을 분리하기 전에는 반복하지 않습니다.</string>
+	<key>Other apps</key>
+	<string>다른 앱</string>
+	<key>Override ambient brightness limit</key>
+	<string>주변광 밝기 제한 재정의</string>
+	<key>PREVIEW MODE</key>
+	<string>미리보기 모드</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>페어링 키를 복사했습니다. Home Assistant에 붙여넣고 비공개로 보관하세요.</string>
+	<key>Paste</key>
+	<string>붙여넣기</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>오류 후 일시 중지되었습니다. 다시 시도하기 전에 조명을 복원하세요.</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>오류 후 일시 중지되었습니다. 복구 후 ‘덮개를 닫아도 로고 켜기’를 껐다 켜세요.</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>재생 오디오만 사용합니다. 마이크를 사용하거나 녹음하지 않습니다.</string>
+	<key>Plugged in · Not charging</key>
+	<string>전원 연결됨 · 충전 안 함</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Command, Control 또는 Option과 일반 키를 함께 누르세요. Escape로 취소합니다.</string>
+	<key>Preview only</key>
+	<string>미리보기 전용</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>미리보기는 샘플 파형을 사용합니다.</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>미리보기는 샘플 파형을 사용하며 실제 시스템 오디오는 시작하지 않습니다.</string>
+	<key>Preview · compatible logo not found</key>
+	<string>미리보기 · 호환 로고 없음</string>
+	<key>Preview · logo unchanged</key>
+	<string>미리보기 · 로고 변경 없음</string>
+	<key>Preview · {value}% requested</key>
+	<string>미리보기 · {value}% 요청됨</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>이전 조명 정리를 확인했습니다. 자동으로 다시 연결합니다.</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>이전 세션을 확인했습니다. 저장된 설정으로 다시 연결합니다.</string>
+	<key>Pulse</key>
+	<string>맥박</string>
+	<key>Pulse cycle</key>
+	<string>맥박 주기</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>실제로 충전 중일 때만 맥박처럼 빛나며 충전이 일시 중지되거나 끝나면 계속 켜집니다.</string>
+	<key>Pulsing while charging</key>
+	<string>충전 중 맥박</string>
+	<key>Punchy</key>
+	<string>강렬하게</string>
+	<key>Quit</key>
+	<string>종료</string>
+	<key>Quit Backlit</key>
+	<string>Backlit 종료</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>로고 설정을 변경하기 전에 {app}을(를) 종료하세요.</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>종료하면 이 Backlit 세션 전에 저장한 원래 로고 설정으로 복원됩니다. 로고가 다시 켜질 수 있습니다.</string>
+	<key>Ready at</key>
+	<string>목표 충전량</string>
+	<key>Ready for the next lid closure.</key>
+	<string>다음 덮개 닫힘을 기다리는 중입니다.</string>
+	<key>Ready for trackpad contact</key>
+	<string>트랙패드 접촉 대기</string>
+	<key>Ready for trackpad or typing</key>
+	<string>트랙패드 또는 타이핑 대기</string>
+	<key>Ready for your music</key>
+	<string>음악 대기</string>
+	<key>Ready for {source} touch</key>
+	<string>{source} 터치 준비됨</string>
+	<key>Reconnect</key>
+	<string>다시 연결</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>{agent} 코딩 상태 훅 다시 연결</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>MacBook에 다시 연결 중</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>복구가 확인되지 않았습니다. 덮개 닫힘 설정은 저장되어 일시 중지된 상태입니다. 설정에서 복구를 검토하세요.</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>설정을 저장했습니다. 새 타이머 세션을 시작하기 전에 덮개를 여세요.</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>설정을 저장했습니다. Mac 안전 설정으로 일시 중지되었습니다.</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>설정을 저장했습니다. 미리보기는 덮개 닫힘 세션을 시작하지 않습니다.</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>설정을 저장했습니다. 덮개와 타이머 상태 확인을 기다리는 중입니다.</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>설정을 저장했습니다. Mac과 조명이 준비되기를 기다리는 중입니다.</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>설정을 저장했습니다. 다시 연결하기 전에 이전 세션 확인을 기다리는 중입니다.</string>
+	<key>Replace AI Key</key>
+	<string>AI 키 교체</string>
+	<key>Replace Key</key>
+	<string>키 교체</string>
+	<key>Replace the AI connection key?</key>
+	<string>AI 연결 키를 교체할까요?</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>다른 사람이 보았을 가능성이 있으면 페어링 키를 교체하세요</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>복원을 요청합니다. 시스템으로의 제어 반환이 확인되지 않아 저장된 덮개 닫힘 설정은 일시 중지된 상태로 유지됩니다.</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>입력 모니터링 권한이 필요합니다. 타이밍만 사용하며 문자를 읽거나 저장하지 않습니다. 보안 입력으로 반응이 일시 중지될 수 있습니다.</string>
+	<key>Reset</key>
+	<string>재설정</string>
+	<key>Respond to system playback</key>
+	<string>시스템 재생 오디오에 반응</string>
+	<key>Response</key>
+	<string>반응</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>복원을 요청했습니다. 시스템으로의 제어 반환이 확인되지 않아 저장된 덮개 닫힘 설정은 일시 중지된 상태입니다.</string>
+	<key>Restore Battery Defaults</key>
+	<string>배터리 기본값 복원</string>
+	<key>Restore Light</key>
+	<string>조명 복원</string>
+	<key>Restore and Quit</key>
+	<string>복원 후 종료</string>
+	<key>Restore the logo and quit?</key>
+	<string>로고를 복원하고 종료할까요?</string>
+	<key>Restore your light</key>
+	<string>조명 복원</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>주변광 제한을 변경하기 전에 조명을 복원하세요.</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>이전 덮개 세션을 아직 복구해야 합니다. 종료 전에 조명을 복원하세요.</string>
+	<key>Restore your light before starting another session.</key>
+	<string>새 세션을 시작하기 전에 조명을 복원하세요.</string>
+	<key>Restore your light to continue</key>
+	<string>계속하려면 조명을 복원하세요</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>이전 덮개 세션을 끝내려면 조명을 복원하세요</string>
+	<key>Retry System Audio</key>
+	<string>시스템 오디오 재시도</string>
+	<key>Review Closed-lid Pause</key>
+	<string>덮개 닫힘 일시 중지 검토</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>저장된 밝기: {value}% · 로고 꺼짐</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>저장된 복구 시간을 확인하지 못했습니다. 조명을 복원한 다음 덮개 닫힘 조명을 껐다 켜서 다시 시도하세요.</string>
+	<key>Select All</key>
+	<string>모두 선택</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>세션 메타데이터가 불완전합니다. 이 스냅샷에 일부 코딩 세션이 누락되었을 수 있습니다.</string>
+	<key>Session snapshot incomplete</key>
+	<string>세션 스냅샷이 불완전함</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>세션: {count} · {state}</string>
+	<key>Settings</key>
+	<string>설정</string>
+	<key>Settings…</key>
+	<string>설정…</string>
+	<key>Setup</key>
+	<string>설정</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>설정 명령을 복사했습니다. 이 기기의 에이전트 터미널에서 실행한 다음 MCP 연결을 확인하세요.</string>
+	<key>Setup guide</key>
+	<string>설정 가이드</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + 하드웨어 밝기 키(실험적)</string>
+	<key>Show Update Progress</key>
+	<string>업데이트 진행 상황 표시</string>
+	<key>Show menu bar icon</key>
+	<string>메뉴 막대 아이콘 표시</string>
+	<key>Signal</key>
+	<string>신호</string>
+	<key>Slower</key>
+	<string>느리게</string>
+	<key>Smooth</key>
+	<string>부드럽게</string>
+	<key>Start update checks from Settings.</key>
+	<string>설정에서 업데이트 확인을 시작하세요.</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>덮개 닫힘 안전 확인 시작 중…</string>
+	<key>State unavailable</key>
+	<string>상태 확인 불가</string>
+	<key>Status only</key>
+	<string>상태 확인만</string>
+	<key>Steady</key>
+	<string>항상 켜기</string>
+	<key>Steady brightness</key>
+	<string>일정한 밝기</string>
+	<key>Steady while plugged in</key>
+	<string>전원 연결 중 계속 켜짐</string>
+	<key>System</key>
+	<string>시스템</string>
+	<key>System Default</key>
+	<string>시스템 기본값</string>
+	<key>System audio follows Music mode.</key>
+	<string>시스템 오디오는 음악 모드를 따릅니다.</string>
+	<key>System audio is unavailable.</key>
+	<string>시스템 오디오를 사용할 수 없습니다.</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>조명이 켜져 있고 Mac이 활성 상태일 때 음악 모드와 함께 시스템 오디오가 시작됩니다.</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>AI 연결 키를 교체했습니다. 모든 어시스턴트 연결을 중단하려면 AI 접근을 끄세요.</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>현재 키는 즉시 작동을 멈춥니다. Home Assistant가 조명을 다시 제어하려면 새 키를 입력해야 합니다.</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>타이핑을 멈추면 잠시 후 조명이 꺼집니다. 덮개를 닫은 상태에서는 외장 키보드를 사용하세요.</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>로고 하드웨어는 흰빛을 냅니다. Backlit은 로고의 밝기와 리듬만 바꾸며 화면 밝기는 바꾸지 않습니다.</string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>이전 키는 더 이상 작동하지 않습니다. AI 접근이 켜져 있으면 로컬 어시스턴트가 다시 연결할 수 있습니다. Home Assistant 키는 바뀌지 않습니다.</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>저장된 로고 및 덮개 설정을 복원했습니다.</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>격리된 미리보기입니다. 실제 로고는 변경되지 않습니다.</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>이 업데이트는 이 빌드 또는 Mac과 호환되지 않습니다.</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>타이머가 끝났습니다. 새 타이머 세션을 시작하려면 덮개를 다시 여세요.</string>
+	<key>Toggle logo</key>
+	<string>로고 켜기/끄기</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>터치 감지됨 · 계속 누르면 켜짐 유지</string>
+	<key>Touch released · light off</key>
+	<string>터치 해제됨 · 조명 꺼짐</string>
+	<key>Trackpad</key>
+	<string>트랙패드</string>
+	<key>Trackpad and optional typing response</key>
+	<string>트랙패드 및 선택적 타이핑 반응</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>이 macOS 빌드에서는 트랙패드 이벤트를 사용할 수 없습니다</string>
+	<key>Trackpad input unavailable</key>
+	<string>트랙패드 입력 사용 불가</string>
+	<key>Trackpad · unavailable</key>
+	<string>트랙패드 · 사용 불가</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>로고 출력 켜기/끄기 · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>주변광 제한을 변경하기 전에 덮개 닫힘 조명을 끄고 정리를 완료하세요.</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>시간을 변경하기 전에 덮개를 닫은 상태의 세션을 끄고 정리가 끝날 때까지 기다리세요.</string>
+	<key>Typing</key>
+	<string>타이핑</string>
+	<key>Typing active · light on</key>
+	<string>타이핑 중 · 조명 켜짐</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>미리보기에서는 타이핑 입력이 비활성화됩니다.</string>
+	<key>Typing response is off</key>
+	<string>타이핑 반응 꺼짐</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>전원을 분리하면 로고 밝기는 0%까지 배터리 잔량을 따릅니다. 수동 밝기는 배터리 모드에 영향을 주지 않습니다.</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>업데이트가 일시 중지되었습니다. 조명 복원을 완료한 후 설치를 다시 시도하세요.</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>미리보기에서는 업데이트를 사용할 수 없습니다.</string>
+	<key>Uses the brightness set above.</key>
+	<string>위에서 설정한 밝기를 사용합니다.</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>다시 연결하기 전에 이전 조명 정리 확인 중</string>
+	<key>Version {version} · t0nyz</key>
+	<string>버전 {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>대기 중</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>덮개 닫힘 정리 대기 중</string>
+	<key>Waiting for keys…</key>
+	<string>키 입력 대기 중…</string>
+	<key>Waiting for light output</key>
+	<string>조명 출력 대기 중</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>macOS가 시스템 오디오 요청과 정리를 완료하기를 기다리는 중입니다.</string>
+	<key>Waiting for touch</key>
+	<string>터치 대기 중</string>
+	<key>Waiting for {source} touch</key>
+	<string>{source} 터치 대기 중</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>깨운 후 다시 연결 대기 중</string>
+	<key>Watching your agents</key>
+	<string>에이전트 상태 확인 중</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>숨겨진 경우 Dock이나 응용 프로그램에서 Backlit을 다시 여세요. 설정은 앱 메뉴에서 계속 사용할 수 있습니다.</string>
+	<key>While plugged in</key>
+	<string>전원 연결 중</string>
+	<key>Working</key>
+	<string>작업 중</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>작업 중, 대기 중 또는 응답 필요</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>어떤 앱이 열려 있어도 작동합니다. 손가락을 올리면 켜지고 모두 떼면 꺼집니다.</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>모드를 바꾸거나 Backlit을 종료할 수 있습니다. 정리가 끝나면 재시도할 수 있습니다.</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>어시스턴트가 조명 상태를 모델 제공업체로 보낼 수 있습니다. 음악과 타이핑은 먼저 Backlit에서 접근을 활성화해야 합니다. 상태 훅은 별개로 유지됩니다.</string>
+	<key>Your light</key>
+	<string>로고 조명</string>
+	<key>attention</key>
+	<string>응답 필요</string>
+	<key>both</key>
+	<string>화면 또는 트랙패드</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOS가 Dock 아이콘을 표시하지 못했습니다. Backlit은 메뉴 막대 항목을 계속 표시합니다.</string>
+	<key>minutes</key>
+	<string>분</string>
+	<key>screen</key>
+	<string>화면</string>
+	<key>trackpad</key>
+	<string>트랙패드</string>
+	<key>waiting</key>
+	<string>대기 중</string>
+	<key>working</key>
+	<string>작업 중</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>{mode} 밝기 미리보기, {value}퍼센트. {status}</string>
+	<key>{mode} mode</key>
+	<string>{mode} 모드</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · 포트 {port}</string>
+	<key>{value} percent</key>
+	<string>{value}퍼센트</string>
+	<key>{value} s</key>
+	<string>{value}초</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>{value}% 요청됨 · 하드웨어 활성화</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ 커피 한 잔 후원</string>
+</dict>
+</plist>

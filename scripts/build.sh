@@ -8,6 +8,7 @@ intent_protocols="$toolchain_usr/share/swift/SwiftConstantValues/AppIntents.json
 mkdir -p dist/appintents
 build_snapshot="$(mktemp "$PWD/dist/build-input.XXXXXX")"
 trap 'rm -f "$build_snapshot"' EXIT
+python3 scripts/compile-localizations.py --write
 python3 scripts/build-provenance.py capture "$build_snapshot"
 # The SDK definition is versioned on newer toolchains; the frontend consumes
 # a plain protocol-name array on both older and newer Swift compilers.
@@ -76,10 +77,21 @@ if not values:
 root.joinpath('dist/appintents/Backlit.swiftconstvalues').write_text(json.dumps(values) + '\n')
 print(f'Collected compiler constants from {len(constants)} release output(s).')
 PY_CONSTANTS
+python3 scripts/check-localizations.py
 app_bundle="$PWD/dist/Backlit.app"
 mkdir -p "$app_bundle/Contents/MacOS" "$app_bundle/Contents/Resources"
 cp "$binary_dir/Backlit" "$app_bundle/Contents/MacOS/Backlit"
 cp assets/Info.plist "$app_bundle/Contents/Info.plist"
+# Copy SwiftPM’s compiled native interface resources into the standalone app.
+[ -d "$binary_dir/Backlit_Backlit.bundle" ] || { echo "Missing compiled interface resource bundle." >&2; exit 1; }
+rm -rf "$app_bundle/Contents/Resources/Backlit_Backlit.bundle"
+ditto "$binary_dir/Backlit_Backlit.bundle" "$app_bundle/Contents/Resources/Backlit_Backlit.bundle"
+# Native macOS privacy dialogs use localized InfoPlist strings.
+for locale in assets/Localizations/*.lproj; do
+    [ -d "$locale" ] || continue
+    mkdir -p "$app_bundle/Contents/Resources/$(basename "$locale")"
+    cp "$locale/InfoPlist.strings" "$app_bundle/Contents/Resources/$(basename "$locale")/InfoPlist.strings"
+done
 mkdir -p "$app_bundle/Contents/Frameworks"
 ditto "$binary_dir/Sparkle.framework" "$app_bundle/Contents/Frameworks/Sparkle.framework"
 codesign --verify --strict "$app_bundle/Contents/Frameworks/Sparkle.framework"
@@ -94,6 +106,7 @@ rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' inte
 rm -rf "$app_bundle/Contents/Resources/Integrations"
 bash scripts/shortcuts-metadata.sh extract "$app_bundle" "$target_triple"
 strip -S "$app_bundle/Contents/MacOS/Backlit"
+python3 scripts/check-localizations.py --app "$app_bundle"
 # Seal exact source/build identity with the bundle before signing.
 python3 scripts/build-provenance.py write "$app_bundle" --snapshot "$build_snapshot"
 # Hardened runtime makes macOS ignore DYLD_INSERT_LIBRARIES and similar

@@ -4,6 +4,35 @@ import Carbon
 import IOKit
 
 let arguments = CommandLine.arguments
+// Pure packaged-binary smoke check: never creates NSApplication or touches devices.
+if arguments == [arguments[0], "--verify-localizations"] {
+    let rows = AppLanguage.allCases.map { language in
+        ["language": language.rawValue, "name": language.nativeName,
+         "settings": Localization.text("Settings", language: language),
+         "system_default": Localization.text("System Default", language: language)]
+    }
+    do {
+        let data = try JSONSerialization.data(withJSONObject: rows, options: [.sortedKeys])
+        FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data("\n".utf8))
+        exit(0)
+    } catch { exit(1) }
+}
+// Read-only process-level probe. Foundation's standard -AppleLanguages and
+// -AppleLocale launch arguments can exercise app/region choices without persisting
+// preferences or starting the application/device controller.
+if arguments.dropFirst().first == "--verify-language-preferences" {
+    let language = AppLanguage.resolve(preference: "system", preferredLanguages: AppLanguage.systemPreferredLanguages)
+    let result: [String: Any] = ["language": language.rawValue,
+        "settings": Localization.text("Settings", language: language),
+        "region": Locale.current.identifier,
+        "packaged_resources": LocalizationCatalogs.resourceBundle.bundleURL.standardizedFileURL.path.hasPrefix(Bundle.main.bundleURL.standardizedFileURL.path + "/Contents/Resources/"),
+        "decimal": 6.5.formatted(.number.precision(.fractionLength(1)).locale(.current))]
+    do {
+        let data = try JSONSerialization.data(withJSONObject: result, options: [.sortedKeys])
+        FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data("\n".utf8))
+        exit(0)
+    } catch { exit(1) }
+}
 if arguments.contains("--mcp") {
     guard Array(arguments.dropFirst()) == ["--mcp"] else {
         FileHandle.standardError.write(Data("Use Backlit --mcp without other options.\n".utf8)); exit(2)
@@ -97,6 +126,7 @@ if arguments.contains("--verify-hardware") {
     var lastTooltipStatus = ""
     let shortcuts = MacGlobalShortcuts()
     var quitObserver: NSObjectProtocol?
+    var languageObserver: NSObjectProtocol?
     private var pendingTerminationReason: QuitReason?
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
@@ -107,9 +137,19 @@ if arguments.contains("--verify-hardware") {
             NSApp.applicationIconImage = icon
             NSApp.dockTile.display()
         }
+        languageObserver = NotificationCenter.default.addObserver(forName: NSLocale.currentLocaleDidChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.model.refreshPreferredLanguages() }
+        }
         buildMenus()
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:860),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
-        window.title = model.demo ? "Backlit — Preview" : "Backlit"; window.titlebarAppearsTransparent = true; window.delegate = self
+        window.title = model.demo ? model.l("Backlit — Preview") : "Backlit";
+        model.onLanguageChange = { [weak self] in
+            guard let self else { return }
+            self.buildMenus()
+            self.window?.title = self.model.demo ? self.model.l("Backlit — Preview") : "Backlit"
+            self.lastTooltipUpdate = -Double.infinity
+            self.updateIcon()
+        }; window.titlebarAppearsTransparent = true; window.delegate = self
         let hosting=NSHostingView(rootView:RootView(model:model))
         hosting.allowedTouchTypes = .direct
         window.contentView=hosting; window.center(); window.isReleasedWhenClosed = false
@@ -162,6 +202,7 @@ if arguments.contains("--verify-hardware") {
         appIconVisibilityReconciler.request()
     }
     func applicationDidBecomeActive(_ notification: Notification) {
+        model.refreshPreferredLanguages()
         appIconVisibilityReconciler.request()
     }
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
@@ -213,7 +254,7 @@ if arguments.contains("--verify-hardware") {
             lastIconStep = step
         }
         let now=ProcessInfo.processInfo.systemUptime
-        let tooltip = "Backlit · \(model.mode.title) · \(logoStatus.detail)"
+        let tooltip = "Backlit · \(model.l(model.mode.title)) · \(model.l(logoStatus.detail))"
         if now-lastTooltipUpdate>=1 {
             lastTooltipStatus=tooltip;lastTooltipUpdate=now
             status?.button?.toolTip=tooltip
@@ -238,10 +279,10 @@ if arguments.contains("--verify-hardware") {
     @objc func settings() {model.selectedPage="settings";showWindow()}
     func buildMenus() {
         let menu=NSMenu();let root=NSMenuItem();menu.addItem(root);let app=NSMenu();root.submenu=app
-        let setting=NSMenuItem(title:"Settings…",action:#selector(settings),keyEquivalent:",");setting.target=self;app.addItem(setting)
-        app.addItem(.separator());let quit=NSMenuItem(title:"Quit Backlit",action:#selector(quit),keyEquivalent:"q");quit.target=self;app.addItem(quit)
-        let editRoot=NSMenuItem(title:"Edit",action:nil,keyEquivalent:"");let edit=NSMenu(title:"Edit");editRoot.submenu=edit
-        for (name,selector,key) in [("Copy","copy:","c"),("Paste","paste:","v"),("Select All","selectAll:","a")] {edit.addItem(NSMenuItem(title:name,action:NSSelectorFromString(selector),keyEquivalent:key))}
+        let setting=NSMenuItem(title:model.l("Settings…"),action:#selector(settings),keyEquivalent:",");setting.target=self;app.addItem(setting)
+        app.addItem(.separator());let quit=NSMenuItem(title:model.l("Quit Backlit"),action:#selector(quit),keyEquivalent:"q");quit.target=self;app.addItem(quit)
+        let editRoot=NSMenuItem(title:model.l("Edit"),action:nil,keyEquivalent:"");let edit=NSMenu(title:model.l("Edit"));editRoot.submenu=edit
+        for (name,selector,key) in [(model.l("Copy"),"copy:","c"),(model.l("Paste"),"paste:","v"),(model.l("Select All"),"selectAll:","a")] {edit.addItem(NSMenuItem(title:name,action:NSSelectorFromString(selector),keyEquivalent:key))}
         menu.addItem(editRoot);NSApp.mainMenu=menu
     }
     func capture(_ view:NSView,to file:URL) throws {
@@ -257,7 +298,7 @@ if arguments.contains("--verify-hardware") {
             // Documentation captures include the full settings panel without
             // changing the normal app's window size.
             window.setContentSize(NSSize(width: 1100, height: 1120))
-            model.language="en"
+            model.languageOverride = .english
             model.mode = .battery; model.batteryOptions = BatteryResponseOptions(); model.enabled = true
             try await Task.sleep(nanoseconds:2_200_000_000)
             for appearance in ["light","dark"] {

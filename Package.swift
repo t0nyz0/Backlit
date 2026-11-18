@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "Backlit",
+    defaultLocalization: "en",
     platforms: [.macOS(.v14)],
     products: [.executable(name: "Backlit", targets: ["Backlit"])],
     dependencies: [
@@ -10,7 +11,7 @@ let package = Package(
         .package(url: "https://github.com/modelcontextprotocol/swift-sdk", exact: "0.12.1")
     ],
     targets: [
-        .executableTarget(name: "Backlit", dependencies: [.product(name: "Sparkle", package: "Sparkle"), .product(name: "MCP", package: "swift-sdk")], linkerSettings: [.linkedFramework("Carbon"), .linkedFramework("IOKit"), .linkedFramework("ScreenCaptureKit"), .linkedFramework("CoreAudio"), .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]),
+        .executableTarget(name: "Backlit", dependencies: [.product(name: "Sparkle", package: "Sparkle"), .product(name: "MCP", package: "swift-sdk")], resources: [.process("Resources")], linkerSettings: [.linkedFramework("Carbon"), .linkedFramework("IOKit"), .linkedFramework("ScreenCaptureKit"), .linkedFramework("CoreAudio"), .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]),
         .testTarget(name: "BacklitTests", dependencies: ["Backlit"])
     ]
 )
