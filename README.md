@@ -21,6 +21,12 @@ Native Swift. Local processing. No account required.
 
 > Requires a physically illuminated, independently controlled logo. Ad-hoc signed with the hardened runtime; not Developer ID signed or notarized.
 
+## Downloads
+
+![App downloads across all releases, split into DMG and app ZIP, with the latest sample date](docs/media/downloads.svg)
+
+Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/Backlit/releases) · [Counting method and update status](docs/downloads/README.md)
+
 ## Seven ways to light up
 
 | Behavior | What it does |
@@ -45,12 +51,6 @@ White light only. Brightness and timing are adjustable.
 </p>
 
 *Historical 0.2.5 isolated preview. Some controls and layouts have since changed; the illustrated light is not a hardware measurement. [Provenance](docs/media/README.md).*
-
-## Downloads
-
-![App downloads across all releases, split into DMG and app ZIP, with the latest sample date](docs/media/downloads.svg)
-
-Observed counts from GitHub releases. [View releases](https://github.com/t0nyz0/Backlit/releases) · [Counting method and update status](docs/downloads/README.md)
 
 ## Connections
 
