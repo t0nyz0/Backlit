@@ -1,24 +1,40 @@
 <p align="center"><a href="https://t0nyz.com/counter/backlit/hero.svg?v=3"><img src="https://t0nyz.com/counter/backlit/hero.svg?v=3" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. Live app download total, actual last successful update time, and source/build metadata."></a></p>
 
-Control the brightness of a compatible MacBook PROLED’s illuminated Apple logo.
-Native Swift. Local processing. No account required.
+Make your MacBook’s illuminated Apple logo yours. Set its brightness, let it breathe or react to music, or see when a coding agent needs you. Everything runs locally; no account required.
 
 ## Get Backlit
 
 [![Download Backlit for Apple silicon — latest ZIP or DMG](docs/media/download-backlit.svg)](https://t0nyz.com/backlit/install)
 
-1. Download the [latest ZIP or DMG](https://github.com/t0nyz0/Backlit/releases).
-2. Quit Backlit, then move the new app to **Applications**.
-3. Open Backlit and choose a behavior.
+For compatible MacBook Pro models with PROLED XDR and an illuminated logo. Download the [latest ZIP or DMG](https://github.com/t0nyz0/Backlit/releases), move Backlit to **Applications**, and open it. If you’re updating, quit the old copy first.
 
-<p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/media/light-dark.png">
-  <img src="docs/media/light-light.png" width="780" alt="Backlit native app showing logo preview, behaviors and brightness controls">
-</picture>
-</p>
+## One click from the macOS menu bar
 
-*Historical 0.2.5 isolated preview. Some controls and layouts have since changed; the illustrated light is not a hardware measurement. [Provenance](docs/media/README.md).*
+Click the Backlit icon to open its popover. Toggle the light, choose a behavior, or change brightness when the mode allows it. **Option-click** or **Control–Command–B** toggles the light directly.
+
+<p align="center"><img src="docs/media/preview/menu-bar.jpg" width="780" alt="Backlit’s highlighted macOS menu bar icon and the open light-mode popover with a logo preview and behavior picker"></p>
+
+*Illustrated menu bar framing around a real light-mode Backlit 0.2.5 preview capture.*
+
+## Backlit main window
+
+Open the main window to see the logo preview, choose a behavior, and fine-tune its controls.
+
+<p align="center"><img src="docs/media/light-light.png" width="780" alt="Backlit’s light-mode main window with the logo preview, behavior list, and battery-output settings"></p>
+
+*Historical Backlit 0.2.5 isolated capture; some layouts have changed. [Capture details](docs/media/README.md).*
+
+## See the light in action
+
+![Three simulated lid previews: Breathe fades smoothly, Music responds to bass hits, and Battery glows brighter at higher charge.](docs/media/preview/light-effects.gif)
+
+*Illustrative loops, not hardware footage. Music uses simulated bass hits; Battery shows unplugged examples.*
+
+## What the controls change
+
+![Brightness adjusts the logo’s intensity, Cycle changes the time between pulses, and Dim to controls the low point of each breath.](docs/media/preview/settings.gif)
+
+*Illustrated controls; not a screen recording.*
 
 ## Seven ways to light up
 
@@ -70,10 +86,6 @@ The logo supports white light. Brightness and timing are adjustable; RGB colors 
 Selecting Music starts system audio automatically after macOS permits it; switching to another behavior stops capture. If access fails, use Retry System Audio or open the privacy settings shown in the app. On macOS 14.2+, a private Core Audio tap captures playback without display/window capture or microphone input. No audio is saved or uploaded.
 
 ## Menu bar and shortcuts
-
-<p align="center"><img src="docs/media/menu-light.png" width="320" alt="Backlit menu with a small logo preview, behavior picker, and brightness controls"></p>
-
-*Historical 0.2.5 menu capture; newer status and recovery controls are not shown.*
 
 The menu includes a small preview and controls for the selected behavior. Battery shows its actual battery-driven output; the other behaviors retain manual brightness. Backlit’s own outlined status icon remains visible when dim; its center follows current output. **Control–Command–B** or **Option-click** toggles the light. Toggle and brightness-up/down shortcuts are configurable in Settings. You can hide the menu bar icon in Settings and reopen Backlit from the Dock or Applications. Settings also offers **Hide Dock icon**. New defaults show the menu-bar icon and hide the Dock icon; saved choices are preserved. Hiding the menu-bar icon restores the Dock icon first so the app stays reachable. This does not remove shortcuts you have pinned to the macOS Dock.
 
