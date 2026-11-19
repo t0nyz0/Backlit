@@ -9,10 +9,26 @@ enum LocalizationCatalogs {
            let bundle = Bundle(url: url) { return bundle }
         return Bundle.module
     }()
+    // SwiftPM versions differ in whether script/region directory names are
+    // preserved (zh-Hant) or normalized (zh-hant). Resolve the actual resource
+    // URL without changing the canonical language preference or translated text.
+    static func languageBundle(_ language: AppLanguage, in resources: Bundle) -> Bundle? {
+        guard let root = resources.resourceURL,
+              let entries = try? FileManager.default.contentsOfDirectory(at: root,
+                  includingPropertiesForKeys: [.isDirectoryKey]) else { return nil }
+        return languageBundle(language, directories: entries)
+    }
+    static func languageBundle(_ language: AppLanguage, directories: [URL]) -> Bundle? {
+        let matches = directories.filter {
+            $0.lastPathComponent.caseInsensitiveCompare(language.rawValue + ".lproj") == .orderedSame
+                && (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+        }
+        guard matches.count == 1 else { return nil }
+        return Bundle(url: matches[0])
+    }
     private static let languageBundles: [String: Bundle] = Dictionary(uniqueKeysWithValues:
         AppLanguage.allCases.compactMap { language in
-            guard let url = resourceBundle.url(forResource: language.rawValue, withExtension: "lproj"),
-                  let bundle = Bundle(url: url) else { return nil }
+            guard let bundle = languageBundle(language, in: resourceBundle) else { return nil }
             return (language.rawValue, bundle)
         })
     static func localizedString(_ key: String, language: AppLanguage) -> String {
