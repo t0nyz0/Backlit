@@ -32,7 +32,6 @@ text{{font-family:{FONT}}}
 .breathe{{animation:breathe 4.5s ease-in-out infinite}}
 .beat{{animation:beat 1.1s ease-out infinite}}
 .eq{{transform-box:fill-box;transform-origin:50% 100%;animation:eq 1.1s ease-in-out infinite}}
-@media (prefers-reduced-motion:reduce){{.breathe,.beat,.eq{{animation:none}}}}
 """
 
 DEFS = """
