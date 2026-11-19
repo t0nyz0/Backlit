@@ -58,6 +58,7 @@ struct TypingActivity {
 /// application identities, or key-up events are read or retained.
 /// Secure-input sessions may suppress events; no bypass or polling is used.
 @MainActor final class TypingInput {
+    static var readyStatus: String { "Ready for typing" }
     var onActivity:((Bool)->Void)?
     var onStatus:((String)->Void)?
     private(set) var running=false
@@ -126,7 +127,7 @@ struct TypingActivity {
         tap=candidate;source=runLoopSource;context=retained;running=true
         CFRunLoopAddSource(CFRunLoopGetMain(),runLoopSource,.commonModes)
         CGEvent.tapEnable(tap:candidate,enable:true)
-        status="Ready for typing"
+        status=Self.readyStatus
         return true
     }
     func stop() {

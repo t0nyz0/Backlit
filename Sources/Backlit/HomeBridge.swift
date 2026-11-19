@@ -167,6 +167,10 @@ private final class BridgeSession {
 }
 
 final class HomeBridge {
+    /// Shared by the actual listener callback and isolated presentation tests.
+    static func readyStatus(lan: Bool) -> String {
+        lan ? "Available on your local network" : "Available on this Mac"
+    }
     private var listener: NWListener?
     private var session: BridgeSession?
     private var listenerStarted = false
@@ -199,7 +203,7 @@ final class HomeBridge {
                 }
                 guard current.isActive else { return }
                 switch state {
-                case .ready: self?.onStatus?(lan ? "Available on your local network" : "Available on this Mac")
+                case .ready: self?.onStatus?(Self.readyStatus(lan: lan))
                 case .failed(let error):
                     self?.onStatus?(error.localizedDescription)
                     self?.onFailure?(error.localizedDescription)

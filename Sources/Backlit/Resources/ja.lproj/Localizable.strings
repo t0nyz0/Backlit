@@ -12,6 +12,10 @@
 	<string>新しいペアリングキーを作成しました。コピーしてHome Assistantを更新してください。古いキーは無効です。</string>
 	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
 	<string>前回のライトセッションの復元が必要です。「ライトを復元」で後処理を完了してください。</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>前回のセッションの復元が必要です。まず「ロゴ設定を復元」を選択してください。</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>前回のセッションの復元記録が残っています。「ライトを復元」は復元を要求できますが、システムへの制御返却を確認するものではありません。</string>
 	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
 	<string>待機中は柔らかく点灯し、作業中はゆっくり点滅します。離席中にエージェントが応答を必要とすると2回点滅します。</string>
 	<key>AI access remains off because its key could not be replaced. </key>
@@ -22,12 +26,26 @@
 	<string>隔離プレビューではAI接続は無効です。</string>
 	<key>Access key</key>
 	<string>アクセスキー</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>動作中です。安全上の制限は引き続き適用されます。</string>
 	<key>Actual battery-driven logo output</key>
 	<string>バッテリー連動の実際のロゴ出力</string>
 	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
 	<string>再生音量に合わせて変化します。強度で反応を調整し、明るさ設定が上限になります。</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>接続中にエージェント設定が作成されました。何も上書きしていません。設定を確認して再試行してください。</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>接続中にエージェント設定が変更されました。再試行してください。</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>エージェント設定がシンボリックリンクまたは特殊ファイルです。まず実際のフォルダを選択してください。</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>エージェント設定はJSONオブジェクトである必要があります。何も変更されていません。</string>
 	<key>Agents</key>
 	<string>エージェント</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>アクセシビリティでBacklitを許可してから、この設定を再度有効にしてください。通常のショートカットには新たな権限は不要です。</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>入力監視でBacklitを許可してから、この設定を再度有効にしてください。入力の監視が許可されるまで、ハードウェアキーのフィルタはオフのままです。</string>
 	<key>Allow Backlit links and other apps</key>
 	<string>Backlitリンクとほかのアプリを許可</string>
 	<key>Allow connections from your local network</key>
@@ -42,6 +60,10 @@
 	<string>環境光による明るさ制限は変更されませんでした。</string>
 	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
 	<string>アップデートが待機中です。「アップデートをインストールして再起動」を選ぶか、終了前にアップデート画面でスキップしてください。</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>別の制御アプリがロゴを変更したか、状態を取得できません。復元情報は保持されました。</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>別の制御アプリがロゴを変更しました。Backlitは設定の書き込みを停止し、復元情報を保持しています。</string>
 	<key>Appearance</key>
 	<string>外観</string>
 	<key>Assistant setup</key>
@@ -50,18 +72,44 @@
 	<string>アシスタントと連携</string>
 	<key>Attention</key>
 	<string>応答が必要</string>
+	<key>Authorization was cancelled.</key>
+	<string>認証がキャンセルされました。</string>
 	<key>Automatic level</key>
 	<string>自動レベル</string>
 	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
 	<string>コーディングセッションの状況をライトで自動表示します。MCPとは独立しています。</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>ライトの自動復元はまだ再開できません。</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>ライトの自動復元は3回の試行後に停止しました。再試行の前にライトを復元してください。</string>
 	<key>Automatic pulse</key>
 	<string>自動点滅</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>自動復元処理は、記録されたフェードセッションの管理権を失いました。</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>自動復元の時刻を確認できませんでした。</string>
 	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
 	<string>安全確認は3回の試行後に停止しました。設定でライトを復元し、「画面を閉じてもロゴを点灯」をオフにしてからオンにすると再試行できます。</string>
+	<key>Available on this Mac</key>
+	<string>このMacで利用可能</string>
+	<key>Available on your local network</key>
+	<string>ローカルネットワークで利用可能</string>
 	<key>Backlight</key>
 	<string>バックライト</string>
 	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
 	<string>Backlitはシステムの再生音をこのMac内で解析し、音楽に合わせてロゴを光らせます。音声は録音もアップロードもしません。</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlitはシステムオーディオに接続できませんでした。「システム設定」→「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」でBacklitを許可し、Backlitを開き直して再試行してください。（macOSコード {code}）</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlitはシステムオーディオを準備できませんでした。「システム設定」→「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」でBacklitを許可し、Backlitを開き直して再試行してください。（macOSコード {code}）</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlitはオーディオ形式を読み取れませんでした。「システム設定」→「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」でBacklitを許可し、Backlitを開き直して再試行してください。（macOSコード {code}）</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlitはシステムオーディオを要求できませんでした。「システム設定」→「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」でBacklitを許可し、Backlitを開き直して再試行してください。（macOSコード {code}）</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlitはシステムオーディオを開始できませんでした。「システム設定」→「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」でBacklitを許可し、Backlitを開き直して再試行してください。（macOSコード {code}）</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlitは別のウインドウですでに実行中です。インストール済みのアプリを使用してください。</string>
 	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
 	<string>Backlitリンクをコピーしました。カスタムアプリリンクに対応したランチャーで使用してください。</string>
 	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
@@ -114,6 +162,8 @@
 	<string>接続</string>
 	<key>Cancel</key>
 	<string>キャンセル</string>
+	<key>Cannot reopen the power service.</key>
+	<string>電源サービスを再度開けません。</string>
 	<key>Change </key>
 	<string>変更：</string>
 	<key>Charge-ready signal</key>
@@ -186,6 +236,24 @@
 	<string>ペアリングキーをコピー</string>
 	<key>Copy Toggle Link</key>
 	<string>切り替えリンクをコピー</string>
+	<key>Could not generate a pairing key.</key>
+	<string>ペアリングキーを生成できませんでした。</string>
+	<key>Could not open the logo session lock.</key>
+	<string>ロゴセッションのロックを開けませんでした。</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>ディスプレイとキーボードの動作を維持できませんでした。画面を閉じた状態の点灯を停止しました。</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>元のロゴ設定を読み取れませんでした。</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>画面を閉じたときの通常のスリープ動作を復元できませんでした。</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>実際の画面開閉状態を復元できませんでした。復元情報は保持されています。</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>ロゴの実際の画面開閉状態を復元できませんでした。復元情報は保持されています。</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>画面を閉じた状態の点灯を安全に適用できませんでした。再試行の前にライトを復元してください。</string>
+	<key>Could not start typing response</key>
+	<string>タイピングへの反応を開始できませんでした</string>
 	<key>Create New Key</key>
 	<string>新しいキーを作成</string>
 	<key>Create a new pairing key?</key>
@@ -224,6 +292,8 @@
 	<string>時間：{value}秒</string>
 	<key>Edit</key>
 	<string>編集</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>まず「接続」でBacklitリンクとほかのアプリを有効にしてください。</string>
 	<key>Enable Home Assistant bridge</key>
 	<string>Home Assistantブリッジを有効化</string>
 	<key>Enable or retry typing access</key>
@@ -254,18 +324,24 @@
 	<string>充電完了</string>
 	<key>General</key>
 	<string>一般</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>グローバルショートカットを利用できません。</string>
 	<key>Global trackpad · event-driven, no input polling</key>
 	<string>システム全体のトラックパッド · イベント駆動、入力の定期取得なし</string>
 	<key>Glow</key>
 	<string>点灯</string>
 	<key>Glowing</key>
 	<string>点灯中</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>ハードウェアの明るさキーはmacOSに任せます。矢印、文字、その他の通常のキーを使用してください。</string>
 	<key>Hardware brightness keys use macOS.</key>
 	<string>ハードウェアの明るさキーはmacOSが処理します。</string>
 	<key>Hardware-key capture is disabled in isolated preview.</key>
 	<string>隔離プレビューではハードウェアキーの取得は無効です。</string>
 	<key>Hide Dock icon</key>
 	<string>Dockアイコンを非表示</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>キーチェーンのキーを利用できないため、Home Assistantをオフにしました。「接続」で再度有効にしてください。</string>
 	<key>Hooks installed · start a new session</key>
 	<string>フックをインストール済み · 新しいセッションを開始</string>
 	<key>Hooks installed · trust them in Codex</key>
@@ -288,6 +364,8 @@
 	<string>このビルドではアプリ内アップデートはまだ有効ではありません。発行元が信頼できる更新フィードと署名キーを含める必要があります。</string>
 	<key>Increase logo brightness</key>
 	<string>ロゴを明るくする</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>入力監視は許可されていますが、macOSがタイピングイベントのリスナーを作成できませんでした。Backlitを開き直して再試行してください。</string>
 	<key>Input Monitoring permission is required for typing response</key>
 	<string>タイピングへの反応には入力監視の権限が必要です</string>
 	<key>Input active · light on</key>
@@ -298,6 +376,8 @@
 	<string>アップデートをインストールして再起動</string>
 	<key>Integration Folder</key>
 	<string>連携フォルダ</string>
+	<key>Invalid saved duration</key>
+	<string>保存された時間が無効です</string>
 	<key>Keep Backlit a click away in the menu bar.</key>
 	<string>メニューバーからワンクリックでBacklitを開けます。</string>
 	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
@@ -308,6 +388,10 @@
 	<string>点灯時間</string>
 	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
 	<string>Macをスリープさせず、画面を閉じても内蔵ディスプレイが点灯し続ける場合があります。上限は30分で、低残量、高温、低電力モードでも停止します。通気のよい硬い面に置き、絶対にバッグに入れないでください。</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>キーボードの安全制御を利用できません。画面を閉じた状態の点灯は有効になりませんでした。</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>キーチェーンにペアリングキーを保存できませんでした。</string>
 	<key>LIVE PREVIEW</key>
 	<string>ライブプレビュー</string>
 	<key>LOGO CONNECTED</key>
@@ -322,10 +406,14 @@
 	<string>前回のアクセス確認：</string>
 	<key>Last access check: {diagnostic}</key>
 	<string>前回のアクセス確認：{diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>従来方式のマッピング確認は、実際に画面を開いている場合のみ利用できます。</string>
 	<key>Light</key>
 	<string>ライト</string>
 	<key>Light cleanup verified. Reconnecting automatically.</key>
 	<string>ライトの後処理を確認しました。自動的に再接続します。</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>ライトまたは画面開閉状態の復元は未確認です。復元情報は保持されました。</string>
 	<key>Light output paused</key>
 	<string>ライト出力を一時停止</string>
 	<key>Light recovery is still in progress.</key>
@@ -344,8 +432,16 @@
 	<string>ロゴの明るさ</string>
 	<key>Logo control enabled</key>
 	<string>ロゴ制御が有効</string>
+	<key>Logo control has not been enabled.</key>
+	<string>ロゴ制御は有効になっていません。</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>システムの状態変化後にロゴ制御を復旧しています。</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>画面を開いた状態と閉じた状態のロゴ制御を切り替えています。</string>
 	<key>Logo control unavailable: {detail}</key>
 	<string>ロゴ制御を利用できません：{detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>ロゴのマッピングを利用できません。復元情報は保持されました。</string>
 	<key>Logo off</key>
 	<string>ロゴ消灯</string>
 	<key>Logo off · hardware disabled</key>
@@ -356,6 +452,8 @@
 	<string>ロゴ点灯</string>
 	<key>Logo preview, {value} percent</key>
 	<string>ロゴのプレビュー、{value}パーセント</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>ロゴの復元制御を利用できません。復元情報は保持されています。</string>
 	<key>Logo state unavailable · not controlling hardware</key>
 	<string>ロゴの状態を取得できません · ハードウェアを制御していません</string>
 	<key>Logo state unavailable · {value}% requested</key>
@@ -366,6 +464,8 @@
 	<string>MCPアクセス</string>
 	<key>MCP control</key>
 	<string>MCP制御</string>
+	<key>Mac is sleeping</key>
+	<string>Macはスリープ中です</string>
 	<key>MacBook PROLED Logo Control</key>
 	<string>MacBook PROLEDロゴ制御</string>
 	<key>Manage Connections</key>
@@ -394,6 +494,10 @@
 	<string>充電時に点滅せず、電源接続中はロゴ出力を100%に保ちます。</string>
 	<key>No compatible illuminated logo was detected.</key>
 	<string>対応する発光ロゴが見つかりませんでした。</string>
+	<key>No display is available for system audio capture.</key>
+	<string>システムオーディオの取得に利用できるディスプレイがありません。</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>トラックパッド入力を利用できません。タイピングへの反応を有効にするか、別の動作を選択してください。</string>
 	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
 	<string>画面を閉じたときの通常のスリープ動作を復元しました。残っているセッションファイルを削除できませんでした。</string>
 	<key>Not connected</key>
@@ -444,10 +548,18 @@
 	<string>エラー後に一時停止しています。再試行の前にライトを復元してください。</string>
 	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
 	<string>エラー後に一時停止しています。復元後、「画面を閉じてもロゴを点灯」をオフにしてからオンにしてください。</string>
+	<key>Paused in Low Power Mode</key>
+	<string>低電力モードのため一時停止</string>
+	<key>Paused while your Mac cools down</key>
+	<string>Macの温度が下がるまで一時停止</string>
+	<key>Paused with your display</key>
+	<string>ディスプレイとともに一時停止</string>
 	<key>Playback only. No microphone. Nothing recorded.</key>
 	<string>再生音のみ。マイクは使わず、録音もしません。</string>
 	<key>Plugged in · Not charging</key>
 	<string>電源接続中 · 充電していません</string>
+	<key>Power service unavailable.</key>
+	<string>電源サービスを利用できません。</string>
 	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
 	<string>Command、Control、Optionのいずれかと通常のキーを押してください。Escapeでキャンセルします。</string>
 	<key>Preview only</key>
@@ -462,6 +574,8 @@
 	<string>プレビュー · ロゴは変更されません</string>
 	<key>Preview · {value}% requested</key>
 	<string>プレビュー · {value}%を要求</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>前のエフェクトの後処理が続いています。次の安全確認まで待機しています。</string>
 	<key>Previous light cleanup verified. Reconnecting automatically.</key>
 	<string>前回のライトの後処理を確認しました。自動的に再接続します。</string>
 	<key>Previous session verified. Reconnecting your remembered choice.</key>
@@ -482,6 +596,12 @@
 	<string>Backlitを終了</string>
 	<key>Quit {app} before changing logo settings.</key>
 	<string>ロゴの設定を変更する前に{app}を終了してください。</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>Backlitにロゴの制御を渡す前に、{app}を終了してください。</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>前回のBacklitセッションを復元する前に、{app}を終了してください。</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>Backlitを使うには{app}を終了してください</string>
 	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
 	<string>終了すると、このBacklitセッションの開始前に保存した元のロゴ設定に戻ります。ロゴが再び点灯する場合があります。</string>
 	<key>Ready at</key>
@@ -492,6 +612,8 @@
 	<string>トラックパッドへの接触を待機</string>
 	<key>Ready for trackpad or typing</key>
 	<string>トラックパッドまたはタイピングを待機</string>
+	<key>Ready for typing</key>
+	<string>タイピングを待機</string>
 	<key>Ready for your music</key>
 	<string>音楽を待機</string>
 	<key>Ready for {source} touch</key>
@@ -502,6 +624,8 @@
 	<string>{agent}のコーディング状況フックを再接続</string>
 	<key>Reconnecting to your MacBook</key>
 	<string>MacBookに再接続中</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>確認中に復元処理の管理主体が変わりました。再試行の前にライトを復元してください。</string>
 	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
 	<string>復元は未確認です。画面を閉じた状態の設定は保存され、一時停止のままです。設定で復元を確認してください。</string>
 	<key>Remembered. Open the lid before starting another timed session.</key>
@@ -512,6 +636,8 @@
 	<string>設定を保存しました。プレビューでは画面を閉じた状態のセッションを開始しません。</string>
 	<key>Remembered. Waiting for a verified lid and timer state.</key>
 	<string>設定を保存しました。画面の開閉状態とタイマーの確認を待っています。</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>設定を保存しました。スリープとロックが解除された状態で、新たなハードウェア安全確認を待っています。</string>
 	<key>Remembered. Waiting for your Mac and light to be ready.</key>
 	<string>設定を保存しました。Macとライトの準備が整うのを待っています。</string>
 	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
@@ -542,6 +668,8 @@
 	<string>ライトを復元</string>
 	<key>Restore and Quit</key>
 	<string>復元して終了</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>サービスに再接続する前に、現在のロゴセッションを復元してください。</string>
 	<key>Restore the logo and quit?</key>
 	<string>ロゴを復元して終了しますか？</string>
 	<key>Restore your light</key>
@@ -560,6 +688,10 @@
 	<string>システムオーディオを再試行</string>
 	<key>Review Closed-lid Pause</key>
 	<string>閉じた画面での点灯の一時停止を確認</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>確認中に安全状態が変化しました。Backlitは再接続の前に再確認します。</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>安全確認に失敗しました：{detail} 再試行の前にライトを復元してください。</string>
 	<key>Saved brightness: {value}% · logo is off</key>
 	<string>保存した明るさ：{value}% · ロゴ消灯</string>
 	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
@@ -612,26 +744,86 @@
 	<string>システム</string>
 	<key>System Default</key>
 	<string>システムのデフォルト</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>Backlitのシステムオーディオへのアクセスはオフです。「システム設定」→「プライバシーとセキュリティ」→「画面収録とシステムオーディオ録音」で許可し、Backlitを開き直すか「システムオーディオを再試行」を選択してください。Backlitは画面やマイクを録画・録音しません。</string>
 	<key>System audio follows Music mode.</key>
 	<string>システムオーディオは音楽モードに連動します。</string>
 	<key>System audio is unavailable.</key>
 	<string>システムオーディオを利用できません。</string>
 	<key>System audio starts with Music when your light is on and your Mac is active.</key>
 	<string>ライトがオンでMacが使用中の場合、音楽モードでシステムオーディオが開始します。</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>システムオーディオは準備が整う前に停止しました。</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>そのキーの組み合わせは、別のBacklitアクションに割り当てられています。</string>
 	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
 	<string>AI接続キーを交換しました。すべてのアシスタント接続を停止するにはAIアクセスをオフにしてください。</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>キーチェーンのキーを利用できないため、MCP接続をオフにしました。「接続」で再度有効にしてください。</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>環境光による明るさの変更を確認できませんでした。再試行の前に保存した制限値を復元してください。</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>確認中に自動復元の設定が変更されました。</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>明るさキーのフィルタを開始できませんでした。通常のショートカットは引き続き使用できます。</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>明るさ制限の要求を準備できませんでした。</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>画面を閉じた状態のヘルパーを引き継げませんでした。</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>画面を閉じた状態の親プロセスを確認できませんでした。</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>画面を閉じた状態の復元設定を保存できませんでした。再試行の前にライトを復元してください。</string>
 	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
 	<string>現在のキーは直ちに無効になります。Home Assistantで再びライトを制御するには、新しいキーの入力が必要です。</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>該当する前回のライトセッションの後処理は確認されていません。</string>
 	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
 	<string>タイピングが止まると、まもなく消灯します。画面を閉じた状態では外付けキーボードを使用してください。</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>このバージョンのmacOSのロゴ制御サービスは、未対応のインターフェイスを使用しています。</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>このバージョンのmacOSではロゴ制御サービスを利用できません。</string>
+	<key>The logo control service is unavailable.</key>
+	<string>ロゴ制御サービスを利用できません。</string>
 	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
 	<string>ロゴのハードウェアは白色光を発します。Backlitが変更するのはロゴの明るさとリズムだけで、画面の明るさは変更しません。</string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>ロゴサービスが要求した明るさを確認しませんでした。</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>環境光の制限を変更した後、ロゴサービスに再接続できていません。再試行の前にライトを復元してください。</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>ロゴの消灯状態を確認できませんでした。フェードの復元情報は保持されています。</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>システム側のロゴ輝度ソースが変更されました。ロゴ制御を停止しました。</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>前回の自動復元は開始を許可されていません。</string>
 	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
 	<string>以前のキーは無効になります。AIアクセスが有効な間はローカルアシスタントが再接続できます。Home Assistantのキーは変更されません。</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>前のローカル接続はまだ終了処理中です。共有をオフにしてからオンにして再試行してください。</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>復元設定が無効のため、変更せずに保持しました。</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>保存された自動復元記録が無効です。再試行の前にライトを復元してください。</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>保存した画面を閉じた状態の設定が無効です。</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>保存された画面を閉じた状態のエラーは、自動後処理の対象ではありません。</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>画面を閉じた状態の安全情報を保存できませんでした。</string>
 	<key>The saved logo and lid settings were restored.</key>
 	<string>保存したロゴと画面開閉の設定を復元しました。</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>保存された復元情報は、別の閉じた画面の設定に属しています。</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>保存された復元情報は、別のライトセッションに属しています。</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>安全確認の結果を保存できませんでした。再試行の前にライトを復元してください。</string>
 	<key>This is an isolated preview. Your real logo is unchanged.</key>
 	<string>これは隔離プレビューです。実際のロゴは変更されません。</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>この出力デバイスは未対応のシステムオーディオ形式を使用しています。</string>
 	<key>This update is incompatible with this build or Mac.</key>
 	<string>このアップデートは、このビルドまたはMacに対応していません。</string>
 	<key>Timer finished. Reopen the lid to begin another timed session.</key>
@@ -660,18 +852,34 @@
 	<string>時間を変更する前に、閉じた画面での点灯をオフにして後処理が完了するまでお待ちください。</string>
 	<key>Typing</key>
 	<string>タイピング</string>
+	<key>Typing access is allowed</key>
+	<string>タイピングへのアクセスは許可されています</string>
+	<key>Typing access is no longer available</key>
+	<string>タイピングへのアクセスが利用できなくなりました</string>
 	<key>Typing active · light on</key>
 	<string>タイピング中 · 点灯</string>
 	<key>Typing input is disabled in preview.</key>
 	<string>プレビューではタイピング入力は無効です。</string>
 	<key>Typing response is off</key>
 	<string>タイピングへの反応はオフ</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>macOSによりタイピングへの反応が一時停止しました。再開するにはオフにしてからオンにしてください</string>
 	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
 	<string>電源を外すと、ロゴの明るさは0%までバッテリー残量に連動します。手動の明るさ設定はバッテリーモードに影響しません。</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>イベントの形式を認識できません。何も変更されていません。</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>フックのグループを認識できません。何も変更されていません。</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>フックの形式を認識できません。何も変更されていません。</string>
 	<key>Update paused. Finish restoring the light, then retry installation.</key>
 	<string>アップデートを一時停止しました。ライトの復元を完了してからインストールを再試行してください。</string>
 	<key>Updates are unavailable in preview.</key>
 	<string>プレビューではアップデートを利用できません。</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>Command、Control、Optionのいずれかと通常のキーを組み合わせてください。Shiftだけの組み合わせとハードウェアの明るさキーには対応していません。</string>
+	<key>User session inactive</key>
+	<string>ユーザーセッションが非アクティブです</string>
 	<key>Uses the brightness set above.</key>
 	<string>上で設定した明るさを使用します。</string>
 	<key>Verifying previous light cleanup before reconnecting</key>
@@ -680,8 +888,12 @@
 	<string>バージョン {version} · t0nyz</string>
 	<key>Waiting</key>
 	<string>待機中</string>
+	<key>Waiting for an agent</key>
+	<string>エージェントを待機中</string>
 	<key>Waiting for closed-lid cleanup</key>
 	<string>閉じた画面のセッションの後処理を待機中</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>画面を閉じた状態の安全確認を待っています。</string>
 	<key>Waiting for keys…</key>
 	<string>キー入力を待機中…</string>
 	<key>Waiting for light output</key>
@@ -712,12 +924,30 @@
 	<string>アシスタントがライトの状態をモデル提供元に送信する場合があります。音楽とタイピングには、まずBacklitでアクセスを有効にする必要があります。状態フックは独立しています。</string>
 	<key>Your light</key>
 	<string>ロゴライト</string>
+	<key>Your light is ready.</key>
+	<string>ライトの準備ができました。</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>ライトを復元しました。再試行するには、画面を閉じた状態の点灯をオフにしてからオンにしてください。</string>
 	<key>attention</key>
 	<string>応答が必要</string>
 	<key>both</key>
 	<string>画面またはトラックパッド</string>
 	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
 	<string>macOSでDockアイコンを表示できませんでした。Backlitのメニューバー項目は引き続き表示されます。</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOSが明るさキーのフィルタを許可しませんでした。アクセシビリティと入力監視の設定を確認するか、通常のショートカットを使用してください。</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOSが復元を確認しませんでした。復元ファイルは保持されています。</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOSが画面を閉じた状態の点灯を拒否しました。再試行の前に画面開閉セッションを復元してください。</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOSがロゴの明るさ変更を拒否しました。再試行の前にロゴ設定を復元してください。</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>実行中のBacklitへの入力監視をmacOSがまだ拒否しています。「入力監視」を開き、インストール済みのアプリを許可してからBacklitを開き直してください。</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOSがハードウェアキーの制御を停止しました。明るさキーは再びmacOSが処理します。通常のショートカットを使用するか、この設定を再度有効にしてください。</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOSのシステムオーディオ接続がタイムアウトしました。</string>
 	<key>minutes</key>
 	<string>分</string>
 	<key>screen</key>

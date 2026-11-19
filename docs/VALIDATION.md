@@ -12,6 +12,11 @@ is not claimed to be the currently running app.
   suite completed 85 tests with three optional official-signing-tool fixtures
   skipped. Final clean-revision results and artifact hashes accompany the private
   candidate handoff rather than being retroactively attributed to this snapshot.
+- A subsequent local parity correction expands the catalog to 485 keys in each
+  language, adds source-driven static-message coverage and inert behavioral tests
+  for statuses, shortcut conflicts, permission results and composite failures.
+  It remains uninstalled pending the owner's release/testing decision; exact final
+  suite counts and artifact identity accompany its candidate handoff.
 - Apple-compiled String Catalogs cover ten languages. Validation checks complete
   keys, nonempty text, placeholder preservation, permission resources and packaged
   resources. Reconnect button/accessibility labels have dedicated coverage.

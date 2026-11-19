@@ -13,6 +13,9 @@ def bundle_resources(bundle):
 
 def check(app=None):
     compiler.compile_catalogs(write=False)
+    guard_spec=importlib.util.spec_from_file_location('ui_localization_coverage',ROOT/'scripts/check-ui-localizations.py')
+    guard=importlib.util.module_from_spec(guard_spec);guard_spec.loader.exec_module(guard)
+    guard.check()
     info=plistlib.loads((app/'Contents/Info.plist' if app else ROOT/'assets/Info.plist').read_bytes())
     assert set(info['CFBundleLocalizations'])==compiler.LOCALES
     assert info.get('CFBundleDevelopmentRegion')=='en'

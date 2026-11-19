@@ -1,0 +1,217 @@
+{
+  "Enable Home Assistant in Connections first.": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Backlit is not ready.": {
+    "files": [
+      "AppModel",
+      "HomeBridge",
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Allow light changes in Backlit Connections first.": {
+    "files": [
+      "AppModel",
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Light updates are too frequent. Wait briefly and read status before retrying.": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Unavailable on this Mac": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Select Music in Backlit and allow system audio first": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Enable typing access in Backlit first": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Owned light cleanup was interrupted; waiting for a safe awake session before retrying.": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Internal lifecycle log, not a presented UI message."
+  },
+  "Owned cleanup verified; reconnecting the requested light behavior.": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Internal lifecycle log, not a presented UI message."
+  },
+  "Automatic cleanup retry limit reached; keeping recovery and stopping light control.": {
+    "files": [
+      "AppModel"
+    ],
+    "reason": "Internal lifecycle log, not a presented UI message."
+  },
+  "Request too large.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid HTTP headers.": {
+    "files": [
+      "HomeBridge",
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid HTTP request.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid header.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid header name.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid header value.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Duplicate header.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Chunked requests are not supported.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid content length.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Unexpected pipelined data.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Expected enabled, brightness, or effect.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Unknown effect.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "AI connection key required": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Pairing key required": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Unknown AI endpoint": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Backlit status is unavailable.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Light control is unavailable.": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Unknown endpoint": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Invalid request": {
+    "files": [
+      "HomeBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Forward Delete": {
+    "files": [
+      "GlobalShortcuts"
+    ],
+    "reason": "Standard physical key name, not translated shortcut identity."
+  },
+  "Invalid brightness.": {
+    "files": [
+      "LogoDevice",
+      "LogoDevice"
+    ],
+    "reason": "Low-level numeric diagnostic; not a user remedy instruction."
+  },
+  "Claude Code": {
+    "files": [
+      "AgentBridge"
+    ],
+    "reason": "Third-party product name."
+  },
+  "Session identifier must contain 1–256 ASCII letters, digits, hyphens, or underscores.": {
+    "files": [
+      "AgentBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Unknown agent state.": {
+    "files": [
+      "AgentBridge"
+    ],
+    "reason": "Protocol-only response or external-control eligibility; machine-facing English is intentional."
+  },
+  "Backlit bounded closed-lid session": {
+    "files": [
+      "RuntimeServices"
+    ],
+    "reason": "Power assertion identifier, not interface text."
+  }
+}

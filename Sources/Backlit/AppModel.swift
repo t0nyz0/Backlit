@@ -225,17 +225,22 @@ enum MusicCapturePolicy {
     }
     @Published var appearance = "system" { didSet { save() } }
     @Published var error: String? {
-        didSet { localizedErrorMessage = nil }
+        didSet { localizedErrorMessage = nil; localizedFailureGroup = nil }
     }
     private var localizedErrorMessage: AppDisplayError?
+    private var localizedFailureGroup: DisplayFailureGroup?
     var localizedError: String {
-        localizedErrorMessage?.render(language: resolvedLanguage) ?? l(error ?? "")
+        localizedFailureGroup?.render(language: resolvedLanguage) ?? localizedErrorMessage?.render(language: resolvedLanguage) ?? l(error ?? "")
     }
     func presentError(_ message: AppDisplayError) {
         // Keep diagnostics/protocol-facing state stable; render the typed message only
         // at the presentation boundary so changing language also updates an open alert.
         error = message.render(language: .english)
         localizedErrorMessage = message
+    }
+    func presentFailure(_ failure: Error) {
+        error = failure.localizedDescription
+        localizedFailureGroup = failure as? DisplayFailureGroup
     }
     @Published private(set) var hardwareFailure: String?
     @Published private var storedNotice: String?
@@ -595,7 +600,7 @@ enum MusicCapturePolicy {
                 let interruptedToken = self.ownedAutomaticRecoveryToken
                 do { if self.controlling { try self.restoreOwnedHardware() } }
                 catch {
-                    self.error = error.localizedDescription; safe = false
+                    self.presentFailure(error); safe = false
                     if !self.isStopping && self.controlWanted && self.lifecycleInterrupted {
                         self.deferLifecycleRecovery(error, token: interruptedToken)
                     }
@@ -717,14 +722,11 @@ enum MusicCapturePolicy {
         // itself still waits for fresh safety checks and its original deadline.
         let allowClosed = cachedLid && (keepClosed || (lidRequested && lidIntentController.intent?.blocked == false && !cachedLocked))
         let lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
-        var nextPause: String?
-        if systemSleeping { nextPause = "Mac is sleeping" }
-        else if let competingController { nextPause = "Quit \(competingController) to use Backlit" }
-        else if !consoleActive { nextPause = "User session inactive" }
-        else if ProcessInfo.processInfo.thermalState == .critical { nextPause = "Paused while your Mac cools down" }
-        else if (!demo || hardwareApply != nil) && mode != .agents && !allowClosed && (screenSleeping || cachedLocked) { nextPause = "Paused with your display" }
-        else if (!demo || hardwareApply != nil) && lowPower && mode != .agents && mode != .battery { nextPause = "Paused in Low Power Mode" }
-        else { nextPause = nil }
+        let nextPause = FramePausePolicy.message(systemSleeping: systemSleeping,
+            competingController: competingController, consoleActive: consoleActive,
+            criticalThermal: ProcessInfo.processInfo.thermalState == .critical,
+            liveHardware: !demo || hardwareApply != nil, mode: mode, allowClosed: allowClosed,
+            screenSleeping: screenSleeping, locked: cachedLocked, lowPower: lowPower)
         if pausedReason != nextPause {
             pausedReason = nextPause
         }
@@ -750,7 +752,7 @@ enum MusicCapturePolicy {
                         }
                     }
                     hardwareFailure = nil
-                } catch { hardwareFailure = error.localizedDescription; self.error = error.localizedDescription; lidIntentController.block(); controlWanted = false; stopLid(); releaseHardware() }
+                } catch { hardwareFailure = error.localizedDescription; self.presentFailure(error); lidIntentController.block(); controlWanted = false; stopLid(); releaseHardware() }
             }
         }
         reconnecting = controlWanted && (automaticRecoveryPending || device.automaticRecoveryPending)
@@ -1012,10 +1014,10 @@ enum MusicCapturePolicy {
         guard restore(), repairResumeAllowed, !isStopping, !controlOffPending,
               canReconnectHardware else { return }
         do { try clearAutomaticRecoveryAfterExplicitAction() }
-        catch { self.error = error.localizedDescription; return }
+        catch { self.presentFailure(error); return }
         if let requestedLidID {
             do { _ = try lidIntentController.rearmAfterExplicitRestore(expectedID: requestedLidID) }
-            catch { self.error = error.localizedDescription; return }
+            catch { self.presentFailure(error); return }
         }
         guard canReconnectLight else { return }
         savedLidRecoveryAllowed = true
@@ -1077,7 +1079,7 @@ enum MusicCapturePolicy {
                 deferLifecycleRecovery(error, token: interruptedToken)
             } else {
                 pendingLifecycleRecovery = nil
-                lidIntentController.block(); self.error = error.localizedDescription; controlWanted = false
+                lidIntentController.block(); self.presentFailure(error); controlWanted = false
             }
         }
     }
@@ -1101,7 +1103,7 @@ enum MusicCapturePolicy {
                 if audioRunning || audioStarting { stopAudio() }
                 return
             } catch {
-                hardwareFailure = error.localizedDescription; self.error = error.localizedDescription
+                hardwareFailure = error.localizedDescription; self.presentFailure(error)
                 lidIntentController.block(); controlWanted = false
                 return
             }
@@ -1173,7 +1175,7 @@ enum MusicCapturePolicy {
                 pendingLifecycleRecovery = nil
                 reconnecting = false
                 recoveryLogger.error("Automatic cleanup retry limit reached; keeping recovery and stopping light control.")
-                hardwareFailure = error.localizedDescription; self.error = error.localizedDescription
+                hardwareFailure = error.localizedDescription; self.presentFailure(error)
                 lidIntentController.block(); controlWanted = false
             }
             return false
@@ -1208,7 +1210,7 @@ enum MusicCapturePolicy {
                 try recovery.begin(token: token, reason: .lifecycle)
             } catch {
                 pendingLifecycleRecovery = nil; reconnecting = false
-                hardwareFailure = error.localizedDescription; self.error = error.localizedDescription
+                hardwareFailure = error.localizedDescription; self.presentFailure(error)
                 lidIntentController.block(); controlWanted = false
             }
             return false
@@ -1263,7 +1265,7 @@ enum MusicCapturePolicy {
                 restored = true
             }
         }
-        catch { self.error = error.localizedDescription; controlWanted = false }
+        catch { self.presentFailure(error); controlWanted = false }
         return restored && !recoveryBlocksAdmission && !lidStopPending && !lidStopper.hasOutstandingFilesystemWork
     }
     /// Owned journals exist during healthy operation too. Readiness therefore
@@ -1367,7 +1369,7 @@ enum MusicCapturePolicy {
                 lidPreferenceStatus = "Cleaning up. Your choice is remembered."
             } catch {
                 lidRequested = lidIntentController.intent != nil
-                self.error = error.localizedDescription
+                self.presentFailure(error)
                 lidPreferenceStatus = "Paused after an error. Restore your light before retrying."
             }
             return
@@ -1390,7 +1392,7 @@ enum MusicCapturePolicy {
             }
             synchronizeLidIntent(force: true)
         } catch {
-            lidRequested = lidIntentController.intent != nil; self.error = error.localizedDescription
+            lidRequested = lidIntentController.intent != nil; self.presentFailure(error)
             lidPreferenceStatus = "Paused after an error. Restore your light before retrying."
         }
     }
@@ -1404,7 +1406,7 @@ enum MusicCapturePolicy {
             if let record = try recovery.store.snapshot(), includeConfirmed || record.phase != .outputConfirmed {
                 try recovery.store.cancelPending()
             }
-        } catch { restorationUnconfirmed = true; self.error = error.localizedDescription }
+        } catch { restorationUnconfirmed = true; self.presentFailure(error) }
     }
     private func clearAutomaticRecoveryAfterExplicitAction() throws {
         try selectedAutomaticRecovery?.clearAfterExplicitRecovery()
@@ -1470,7 +1472,7 @@ enum MusicCapturePolicy {
             automaticStartupChecked = true
             automaticStartupPending = false
             controlWanted = false; restorationUnconfirmed = true
-            hardwareFailure = error.localizedDescription; self.error = error.localizedDescription
+            hardwareFailure = error.localizedDescription; self.presentFailure(error)
             return false
         }
     }
@@ -1507,7 +1509,7 @@ enum MusicCapturePolicy {
             }
         } catch {
             lidIntentController.block(detail: "The saved safety check could not be recorded. Restore your light before retrying.")
-            self.error = error.localizedDescription
+            self.presentFailure(error)
         }
     }
     private func currentLidIntentEnvironment() -> LidIntentEnvironment {
@@ -1590,7 +1592,7 @@ enum MusicCapturePolicy {
                 if lidIntentController.intent?.id != started.id { stopLid() }
                 else { lidPreferenceStatus = "Starting closed-lid safety checks…" }
             }
-        } catch { lidIntentController.block(); self.error = error.localizedDescription; lidPreferenceStatus = "Paused after an error. Restore your light before retrying." }
+        } catch { lidIntentController.block(); self.presentFailure(error); lidPreferenceStatus = "Paused after an error. Restore your light before retrying." }
     }
     func setPreviewLidSleep(_ sleeping: Bool) {
         guard demo else { return }
@@ -1675,7 +1677,7 @@ enum MusicCapturePolicy {
         } catch {
             // A helper failure may follow a partial privileged write. Unlike
             // cancellation, it is not evidence that the old state is intact.
-            self.error = error.localizedDescription
+            self.presentFailure(error)
         }
         // Discard any ownership request made by a callback inside the dialog.
         // Only the captured intent and the cancellation/cleanup gates may resume.
@@ -1696,12 +1698,12 @@ enum MusicCapturePolicy {
     func setLogin(_ value: Bool) {
         guard !demo else { return }
         do { if value { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }; objectWillChange.send() }
-        catch { self.error = error.localizedDescription }
+        catch { self.presentFailure(error) }
     }
     func connectAgent(_ agent: CodingAgent, _ enabled: Bool) {
         guard !demo else { notice = "Connections are disabled in isolated preview."; return }
         do { try AgentBridge.connect(agent,enabled:enabled); notice = enabled ? (agent == .codex ? "Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session." : "Hooks saved. Review your agent settings, then start a new Claude Code session.") : "Backlit's hooks were removed. Existing hooks were preserved."; objectWillChange.send() }
-        catch { self.error = error.localizedDescription }
+        catch { self.presentFailure(error) }
     }
     func chooseFolder(_ agent: CodingAgent) {
         let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true; panel.showsHiddenFiles = true
@@ -1720,11 +1722,11 @@ enum MusicCapturePolicy {
             bridgeEnabled = setup.homeAssistantEnabled
             defaults.set(bridgeEnabled, forKey: "bridge.enabled"); defaults.set(lan, forKey: "bridge.lan")
             defaults.set(mcpAccess.rawValue, forKey: "mcp.access")
-            if !setup.errors.isEmpty { self.error = setup.errors.joined(separator: "\n") }
+            if !setup.errors.isEmpty { self.presentFailure(DisplayFailureGroup(failures: setup.errors.map(RuntimeServices.failure), separator: "\n")) }
         } catch {
             bridge.stop(); bridgeEnabled = false; mcpAccess = .off
             defaults.set(false,forKey:"bridge.enabled"); defaults.set("off",forKey:"mcp.access")
-            self.error = error.localizedDescription
+            self.presentFailure(error)
         }
     }
     func configureMCPAccess(_ access: MCPAccess) {
@@ -1733,7 +1735,7 @@ enum MusicCapturePolicy {
             if access != .off { _ = try BridgeToken.value(account:BridgeToken.agentAccount) }
             mcpAccess = access; defaults.set(access.rawValue,forKey:"mcp.access")
             configureBridge(enabled:bridgeEnabled,lan:bridgeLAN,credentialIntent:.automaticResume)
-        } catch { self.error = error.localizedDescription }
+        } catch { self.presentFailure(error) }
     }
     func regenerateMCPKey() {
         guard !demo else { return }
@@ -1764,7 +1766,7 @@ enum MusicCapturePolicy {
     func copyPairingKey() {
         guard !demo else { return }
         do { let token = try BridgeToken.value(); NSPasteboard.general.clearContents(); NSPasteboard.general.setString(token,forType:.string); notice = "Pairing key copied. Paste it into Home Assistant; keep it private." }
-        catch { self.error = error.localizedDescription }
+        catch { self.presentFailure(error) }
     }
     /// The key travels over plain HTTP on the local network, so there must be
     /// a way to replace one that may have been seen. Explicit user action only.

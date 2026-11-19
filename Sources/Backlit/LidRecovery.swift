@@ -17,9 +17,9 @@ struct LidRecovery: Codable, Equatable {
     }
     func restore(forceNormalSleep: Bool = false, logo: () throws -> Void,
                  power: () throws -> Void) throws {
-        var failures: [String] = []
-        if logoOverride { do { try logo() } catch { failures.append(error.localizedDescription) } }
-        if needsRestore || forceNormalSleep { do { try power() } catch { failures.append(error.localizedDescription) } }
-        if !failures.isEmpty { throw RuntimeServices.failure(failures.joined(separator: " ")) }
+        var failures: [Error] = []
+        if logoOverride { do { try logo() } catch { failures.append(error) } }
+        if needsRestore || forceNormalSleep { do { try power() } catch { failures.append(error) } }
+        if !failures.isEmpty { throw DisplayFailureGroup(failures: failures, separator: " ") }
     }
 }

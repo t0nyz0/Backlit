@@ -19,10 +19,11 @@ final class AgentEventFileTests: XCTestCase {
         let events = directory.appendingPathComponent("events", isDirectory: true)
         try FileManager.default.createDirectory(at: events, withIntermediateDirectories: true)
         let target = directory.appendingPathComponent("outside-metadata")
-        try payload(at: now).write(to: target)
+        let original = try payload(at: now)
+        try original.write(to: target)
         try FileManager.default.createSymbolicLink(at: events.appendingPathComponent("linked.json"), withDestinationURL: target)
         XCTAssertTrue(AgentBridge.events(directory: events, now: now).isEmpty)
-        XCTAssertEqual(try Data(contentsOf: target), try payload(at: now), "Inspection must not alter the target")
+        XCTAssertEqual(try Data(contentsOf: target), original, "Inspection must not alter the target")
     }
 
     func testMetadataReadBoundaryPreservesTheExistingStrictFourKiBLimit() throws {

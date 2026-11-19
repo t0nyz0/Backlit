@@ -12,6 +12,10 @@
 	<string>Uma nova chave de pareamento foi criada. Copie-a e atualize o Home Assistant; a chave antiga não funciona mais.</string>
 	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
 	<string>Uma sessão de luz anterior precisa ser restaurada. Use Restaurar luz para concluir a limpeza.</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>Uma sessão anterior precisa ser restaurada. Primeiro escolha Restaurar ajustes do logo.</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>Uma sessão anterior ainda tem um registro de recuperação. Restaurar luz pode solicitar a restauração, mas não confirma a devolução do controle ao macOS.</string>
 	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
 	<string>Luz suave em repouso. Uma pulsação durante o trabalho. Duas piscadas quando um agente precisa de você e você está ausente.</string>
 	<key>AI access remains off because its key could not be replaced. </key>
@@ -22,12 +26,26 @@
 	<string>As conexões de IA estão desativadas na prévia isolada.</string>
 	<key>Access key</key>
 	<string>Chave de acesso</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>Ativo. Os limites de segurança continuam em vigor.</string>
 	<key>Actual battery-driven logo output</key>
 	<string>Nível real do logo conforme a bateria</string>
 	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
 	<string>Adapta-se ao nível do áudio. A intensidade ajusta a resposta; o brilho define o limite máximo.</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>Os ajustes do agente apareceram durante a conexão. Nada foi sobrescrito. Revise-os e tente novamente.</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>Os ajustes do agente mudaram durante a conexão. Tente novamente.</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>Os ajustes do agente são um link simbólico ou arquivo especial. Primeiro escolha sua pasta real.</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>Os ajustes do agente precisam ser um objeto JSON. Nada foi alterado.</string>
 	<key>Agents</key>
 	<string>Agentes</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>Permita o Backlit em Acessibilidade e ative esta opção novamente. Os atalhos comuns não precisam de novas permissões.</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>Permita o Backlit em Monitoramento de Entrada e ative esta opção novamente. O filtro de teclas físicas permanece desativado até que o acesso de escuta seja permitido.</string>
 	<key>Allow Backlit links and other apps</key>
 	<string>Permitir links do Backlit e outros apps</string>
 	<key>Allow connections from your local network</key>
@@ -42,6 +60,10 @@
 	<string>Os limites de brilho ambiente não foram alterados.</string>
 	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
 	<string>Há uma atualização aguardando. Escolha Instalar atualização e reabrir ou ignore-a na janela de atualização antes de sair.</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>Outro controlador alterou o logo ou seu estado está indisponível. Os dados de recuperação foram preservados.</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>Outro controlador alterou o logo. O Backlit parou de fazer alterações; os dados de recuperação foram preservados.</string>
 	<key>Appearance</key>
 	<string>Aparência</string>
 	<key>Assistant setup</key>
@@ -50,18 +72,44 @@
 	<string>Assistentes e integrações</string>
 	<key>Attention</key>
 	<string>Precisa de atenção</string>
+	<key>Authorization was cancelled.</key>
+	<string>A autorização foi cancelada.</string>
 	<key>Automatic level</key>
 	<string>Nível automático</string>
 	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
 	<string>Resposta automática da luz às sessões de programação. Independente do MCP.</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>A recuperação automática da luz não está pronta para retomar.</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>A recuperação automática da luz parou após três tentativas. Use Restaurar luz antes de tentar novamente.</string>
 	<key>Automatic pulse</key>
 	<string>Pulsação automática</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>A recuperação automática não controla mais a sessão de transição de brilho registrada.</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>Não foi possível verificar o tempo de recuperação automática.</string>
 	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
 	<string>As verificações automáticas de segurança pararam após três tentativas. Restaure a luz em Ajustes e depois desative e reative “Manter logo aceso com a tampa fechada” para tentar novamente.</string>
+	<key>Available on this Mac</key>
+	<string>Disponível neste Mac</string>
+	<key>Available on your local network</key>
+	<string>Disponível na sua rede local</string>
 	<key>Backlight</key>
 	<string>Iluminação do logo</string>
 	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
 	<string>O Backlit analisa localmente o áudio do sistema para fazer o logo responder à música. Nenhum áudio é gravado ou enviado.</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>O Backlit não conseguiu conectar o áudio do sistema. Permita o Backlit em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e Áudio do Sistema; depois reabra o Backlit e tente novamente. (Código do macOS {code})</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>O Backlit não conseguiu preparar o áudio do sistema. Permita o Backlit em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e Áudio do Sistema; depois reabra o Backlit e tente novamente. (Código do macOS {code})</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>O Backlit não conseguiu ler o formato de áudio. Permita o Backlit em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e Áudio do Sistema; depois reabra o Backlit e tente novamente. (Código do macOS {code})</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>O Backlit não conseguiu solicitar o áudio do sistema. Permita o Backlit em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e Áudio do Sistema; depois reabra o Backlit e tente novamente. (Código do macOS {code})</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>O Backlit não conseguiu iniciar o áudio do sistema. Permita o Backlit em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e Áudio do Sistema; depois reabra o Backlit e tente novamente. (Código do macOS {code})</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>O Backlit já está em execução em outra janela. Use a cópia instalada.</string>
 	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
 	<string>Link do Backlit copiado. Use-o com um iniciador compatível com links personalizados de apps.</string>
 	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
@@ -114,6 +162,8 @@
 	<string>CONEXÕES</string>
 	<key>Cancel</key>
 	<string>Cancelar</string>
+	<key>Cannot reopen the power service.</key>
+	<string>Não é possível reabrir o serviço de energia.</string>
 	<key>Change </key>
 	<string>Alterar </string>
 	<key>Charge-ready signal</key>
@@ -186,6 +236,24 @@
 	<string>Copiar chave de pareamento</string>
 	<key>Copy Toggle Link</key>
 	<string>Copiar link para ligar/desligar</string>
+	<key>Could not generate a pairing key.</key>
+	<string>Não foi possível gerar uma chave de pareamento.</string>
+	<key>Could not open the logo session lock.</key>
+	<string>Não foi possível abrir o bloqueio da sessão do logo.</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>Não foi possível preservar o comportamento da tela e do teclado. A luz com a tampa fechada foi interrompida.</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>Não foi possível ler a configuração original do logo.</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>Não foi possível restaurar o repouso normal ao fechar a tampa.</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>Não foi possível restaurar o estado real da tampa. Os dados de recuperação foram preservados.</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>Não foi possível restaurar o estado real da tampa para o logo. Os dados de recuperação foram preservados.</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>Não foi possível aplicar com segurança a luz com a tampa fechada. Use Restaurar luz antes de tentar novamente.</string>
+	<key>Could not start typing response</key>
+	<string>Não foi possível iniciar a resposta à digitação</string>
 	<key>Create New Key</key>
 	<string>Criar nova chave</string>
 	<key>Create a new pairing key?</key>
@@ -224,6 +292,8 @@
 	<string>Duração: {value} s</string>
 	<key>Edit</key>
 	<string>Editar</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>Primeiro ative os links do Backlit e outros apps em Conexões.</string>
 	<key>Enable Home Assistant bridge</key>
 	<string>Ativar ponte do Home Assistant</string>
 	<key>Enable or retry typing access</key>
@@ -254,18 +324,24 @@
 	<string>Carga completa</string>
 	<key>General</key>
 	<string>Geral</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>Os atalhos globais estão indisponíveis.</string>
 	<key>Global trackpad · event-driven, no input polling</key>
 	<string>Trackpad global · orientado a eventos, sem consulta contínua de entradas</string>
 	<key>Glow</key>
 	<string>Luz constante</string>
 	<key>Glowing</key>
 	<string>Aceso</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>As teclas físicas de brilho ficam sob controle do macOS. Use uma seta, letra ou outra tecla comum.</string>
 	<key>Hardware brightness keys use macOS.</key>
 	<string>As teclas físicas de brilho continuam usando o macOS.</string>
 	<key>Hardware-key capture is disabled in isolated preview.</key>
 	<string>A captura de teclas físicas está desativada na prévia isolada.</string>
 	<key>Hide Dock icon</key>
 	<string>Ocultar ícone do Dock</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>O Home Assistant foi desativado porque sua chave no Chaves está indisponível. Ative-o novamente em Conexões.</string>
 	<key>Hooks installed · start a new session</key>
 	<string>Hooks instalados · inicie uma nova sessão</string>
 	<key>Hooks installed · trust them in Codex</key>
@@ -288,6 +364,8 @@
 	<string>As atualizações no app ainda não estão ativadas nesta compilação. O publicador precisa incluir uma fonte de atualizações confiável e uma chave de assinatura.</string>
 	<key>Increase logo brightness</key>
 	<string>Aumentar brilho do logo</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>O Monitoramento de Entrada está permitido, mas o macOS não conseguiu criar o receptor de eventos de digitação. Reabra o Backlit e tente novamente.</string>
 	<key>Input Monitoring permission is required for typing response</key>
 	<string>A permissão de Monitoramento de Entrada é necessária para responder à digitação</string>
 	<key>Input active · light on</key>
@@ -298,6 +376,8 @@
 	<string>Instalar atualização e reabrir</string>
 	<key>Integration Folder</key>
 	<string>Pasta da integração</string>
+	<key>Invalid saved duration</key>
+	<string>Duração salva inválida</string>
 	<key>Keep Backlit a click away in the menu bar.</key>
 	<string>Mantenha o Backlit a um clique na barra de menus.</string>
 	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
@@ -308,6 +388,10 @@
 	<string>Manter aceso por</string>
 	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
 	<string>Mantém este Mac ativo e pode deixar a tela integrada acesa com a tampa fechada. Limitado a 30 minutos; também para por bateria fraca, calor ou Modo de Pouca Energia. Deixe-o em uma superfície rígida e ventilada, nunca em uma bolsa.</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>Os controles de segurança do teclado estão indisponíveis. A luz com a tampa fechada não foi ativada.</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>O Chaves não conseguiu salvar a chave de pareamento.</string>
 	<key>LIVE PREVIEW</key>
 	<string>PRÉVIA AO VIVO</string>
 	<key>LOGO CONNECTED</key>
@@ -322,10 +406,14 @@
 	<string>Última verificação de acesso: </string>
 	<key>Last access check: {diagnostic}</key>
 	<string>Última verificação de acesso: {diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>A verificação do mapeamento legado só está disponível com a tampa fisicamente aberta.</string>
 	<key>Light</key>
 	<string>Claro</string>
 	<key>Light cleanup verified. Reconnecting automatically.</key>
 	<string>Limpeza da luz verificada. Reconectando automaticamente.</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>A recuperação da luz ou da tampa continua sem confirmação. Os dados de recuperação foram preservados.</string>
 	<key>Light output paused</key>
 	<string>Luz pausada</string>
 	<key>Light recovery is still in progress.</key>
@@ -344,8 +432,16 @@
 	<string>Brilho do logo</string>
 	<key>Logo control enabled</key>
 	<string>Controle do logo ativado</string>
+	<key>Logo control has not been enabled.</key>
+	<string>O controle do logo não foi ativado.</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>O controle do logo está sendo recuperado após uma mudança de estado do sistema.</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>O controle do logo está alternando entre a iluminação com a tampa aberta e fechada.</string>
 	<key>Logo control unavailable: {detail}</key>
 	<string>Controle do logo indisponível: {detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>O mapeamento do logo está indisponível; os dados de recuperação foram preservados.</string>
 	<key>Logo off</key>
 	<string>Logo apagado</string>
 	<key>Logo off · hardware disabled</key>
@@ -356,6 +452,8 @@
 	<string>Logo aceso</string>
 	<key>Logo preview, {value} percent</key>
 	<string>Prévia do logo, {value} por cento</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>Os controles de recuperação do logo estão indisponíveis. Os dados de recuperação foram preservados.</string>
 	<key>Logo state unavailable · not controlling hardware</key>
 	<string>Estado do logo indisponível · sem controle do hardware</string>
 	<key>Logo state unavailable · {value}% requested</key>
@@ -366,6 +464,8 @@
 	<string>Acesso MCP</string>
 	<key>MCP control</key>
 	<string>Controle MCP</string>
+	<key>Mac is sleeping</key>
+	<string>O Mac está em repouso</string>
 	<key>MacBook PROLED Logo Control</key>
 	<string>Controle do logo MacBook PROLED</string>
 	<key>Manage Connections</key>
@@ -394,6 +494,10 @@
 	<string>Sem pulsação de carga. Mantém o logo em 100% quando conectado à energia.</string>
 	<key>No compatible illuminated logo was detected.</key>
 	<string>Nenhum logo iluminado compatível foi detectado.</string>
+	<key>No display is available for system audio capture.</key>
+	<string>Nenhuma tela está disponível para capturar o áudio do sistema.</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>Nenhuma entrada do trackpad está disponível. Ative a resposta à digitação ou escolha outro comportamento.</string>
 	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
 	<string>O repouso normal ao fechar a tampa foi restaurado. Não foi possível remover um arquivo de sessão restante.</string>
 	<key>Not connected</key>
@@ -444,10 +548,18 @@
 	<string>Pausado após um erro. Restaure a luz antes de tentar novamente.</string>
 	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
 	<string>Pausado após um erro. Após a recuperação, desative e reative “Manter logo aceso com a tampa fechada”.</string>
+	<key>Paused in Low Power Mode</key>
+	<string>Pausado no Modo de Pouca Energia</string>
+	<key>Paused while your Mac cools down</key>
+	<string>Pausado enquanto o Mac esfria</string>
+	<key>Paused with your display</key>
+	<string>Pausado junto com a tela</string>
 	<key>Playback only. No microphone. Nothing recorded.</key>
 	<string>Somente reprodução. Sem microfone. Nada é gravado.</string>
 	<key>Plugged in · Not charging</key>
 	<string>Conectado · sem carregar</string>
+	<key>Power service unavailable.</key>
+	<string>Serviço de energia indisponível.</string>
 	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
 	<string>Pressione Command, Control ou Option junto com uma tecla comum. Escape cancela.</string>
 	<key>Preview only</key>
@@ -462,6 +574,8 @@
 	<string>Prévia · logo inalterado</string>
 	<key>Preview · {value}% requested</key>
 	<string>Prévia · {value}% solicitado</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>A limpeza dos efeitos anteriores ainda está em andamento. Aguardando antes de outra verificação de segurança.</string>
 	<key>Previous light cleanup verified. Reconnecting automatically.</key>
 	<string>Limpeza da luz anterior verificada. Reconectando automaticamente.</string>
 	<key>Previous session verified. Reconnecting your remembered choice.</key>
@@ -482,6 +596,12 @@
 	<string>Sair do Backlit</string>
 	<key>Quit {app} before changing logo settings.</key>
 	<string>Encerre {app} antes de alterar os ajustes do logotipo.</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>Saia de {app} antes de dar ao Backlit o controle do logo.</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>Saia de {app} antes de restaurar uma sessão anterior do Backlit.</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>Saia de {app} para usar o Backlit</string>
 	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
 	<string>Sair restaura os ajustes nativos do logo salvos antes desta sessão do Backlit. O logo pode acender novamente.</string>
 	<key>Ready at</key>
@@ -492,6 +612,8 @@
 	<string>Pronto para o contato com o trackpad</string>
 	<key>Ready for trackpad or typing</key>
 	<string>Pronto para trackpad ou digitação</string>
+	<key>Ready for typing</key>
+	<string>Pronto para digitar</string>
 	<key>Ready for your music</key>
 	<string>Pronto para sua música</string>
 	<key>Ready for {source} touch</key>
@@ -502,6 +624,8 @@
 	<string>Reconectar hooks de status de programação do {agent}</string>
 	<key>Reconnecting to your MacBook</key>
 	<string>Reconectando ao MacBook</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>O responsável pela recuperação mudou durante a verificação. Restaure a luz antes de tentar novamente.</string>
 	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
 	<string>Recuperação não confirmada. Sua escolha para a tampa fechada está salva e continua pausada. Revise a recuperação em Ajustes.</string>
 	<key>Remembered. Open the lid before starting another timed session.</key>
@@ -512,6 +636,8 @@
 	<string>Salvo. A prévia nunca inicia uma sessão com a tampa fechada.</string>
 	<key>Remembered. Waiting for a verified lid and timer state.</key>
 	<string>Salvo. Aguardando um estado verificado da tampa e do temporizador.</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>Salvo. Aguardando novas verificações de segurança do hardware com o Mac ativo e desbloqueado.</string>
 	<key>Remembered. Waiting for your Mac and light to be ready.</key>
 	<string>Salvo. Aguardando o Mac e a luz ficarem prontos.</string>
 	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
@@ -542,6 +668,8 @@
 	<string>Restaurar luz</string>
 	<key>Restore and Quit</key>
 	<string>Restaurar e sair</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>Restaure a sessão atual do logo antes de reconectar seu serviço.</string>
 	<key>Restore the logo and quit?</key>
 	<string>Restaurar o logo e sair?</string>
 	<key>Restore your light</key>
@@ -560,6 +688,10 @@
 	<string>Tentar áudio do sistema novamente</string>
 	<key>Review Closed-lid Pause</key>
 	<string>Revisar pausa com a tampa fechada</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>O estado de segurança mudou durante a verificação. O Backlit verificará novamente antes de reconectar.</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>A verificação de segurança falhou: {detail} Restaure a luz antes de tentar novamente.</string>
 	<key>Saved brightness: {value}% · logo is off</key>
 	<string>Brilho salvo: {value}% · logo apagado</string>
 	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
@@ -612,26 +744,86 @@
 	<string>Sistema</string>
 	<key>System Default</key>
 	<string>Padrão do sistema</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>O acesso ao áudio do sistema está desativado para o Backlit. Permita-o em Ajustes do Sistema → Privacidade e Segurança → Gravação da Tela e Áudio do Sistema; depois reabra o Backlit ou escolha Tentar áudio do sistema novamente. O Backlit não grava sua tela nem seu microfone.</string>
 	<key>System audio follows Music mode.</key>
 	<string>O áudio do sistema acompanha o modo Música.</string>
 	<key>System audio is unavailable.</key>
 	<string>O áudio do sistema está indisponível.</string>
 	<key>System audio starts with Music when your light is on and your Mac is active.</key>
 	<string>O áudio do sistema inicia com Música quando a luz está acesa e o Mac está ativo.</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>O áudio do sistema parou antes de ficar pronto.</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>Essa combinação está atribuída a outra ação do Backlit.</string>
 	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
 	<string>A chave de conexão de IA foi substituída. Desative o acesso de IA para encerrar todas as conexões de assistentes.</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>A conexão MCP foi desativada porque sua chave no Chaves está indisponível. Ative-a novamente em Conexões.</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>Não foi possível confirmar a alteração do brilho ambiente. Restaure os limites salvos antes de tentar novamente.</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>A escolha de recuperação automática mudou durante a verificação.</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>Não foi possível iniciar o filtro de teclas de brilho. Os atalhos comuns continuam disponíveis.</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>Não foi possível preparar a solicitação de limite de brilho.</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>Não foi possível assumir o controle do auxiliar de tampa fechada.</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>Não foi possível verificar o processo pai da sessão com a tampa fechada.</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>Não foi possível salvar a escolha de recuperação com a tampa fechada. Restaure a luz antes de tentar novamente.</string>
 	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
 	<string>A chave atual para de funcionar imediatamente. O Home Assistant pedirá a nova chave antes de poder controlar a luz novamente.</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>A limpeza da sessão de luz anterior específica não foi verificada.</string>
 	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
 	<string>A luz apaga logo após você parar de digitar. Com a tampa fechada, use um teclado externo.</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>A interface do serviço de controle do logo não é compatível nesta versão do macOS.</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>O serviço de controle do logo está indisponível nesta versão do macOS.</string>
+	<key>The logo control service is unavailable.</key>
+	<string>O serviço de controle do logo está indisponível.</string>
 	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
 	<string>O hardware do logo produz luz branca. O Backlit altera seu brilho e ritmo, nunca o brilho da tela. </string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>O serviço do logo não confirmou o brilho solicitado.</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>O serviço do logo não reconectou após a alteração dos limites de luz ambiente. Use Restaurar luz antes de tentar novamente.</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>Não foi possível verificar se o logo estava apagado. Os dados de recuperação da transição de brilho foram preservados.</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>A fonte nativa de brilho do logo mudou. O controle do logo foi interrompido.</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>A recuperação automática anterior não foi autorizada.</string>
 	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
 	<string>A chave anterior para de funcionar. Seus assistentes locais podem reconectar enquanto o acesso de IA estiver ativado. A chave do Home Assistant continua a mesma.</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>A conexão local anterior ainda está sendo encerrada. Desative e reative o compartilhamento para tentar novamente.</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>A configuração de recuperação é inválida; ela foi mantida intacta.</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>O registro salvo de recuperação automática é inválido. Use Restaurar luz antes de tentar novamente.</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>A escolha salva para a tampa fechada é inválida.</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>A falha salva da sessão com a tampa fechada não permite limpeza automática.</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>Não foi possível registrar o estado de segurança da sessão com a tampa fechada.</string>
 	<key>The saved logo and lid settings were restored.</key>
 	<string>Os ajustes salvos do logo e da tampa foram restaurados.</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>A recuperação salva pertence a outra escolha para a tampa fechada.</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>A recuperação salva pertence a outra sessão de luz.</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>Não foi possível registrar a verificação de segurança. Restaure a luz antes de tentar novamente.</string>
 	<key>This is an isolated preview. Your real logo is unchanged.</key>
 	<string>Esta é uma prévia isolada. Seu logo real permanece inalterado.</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>Este dispositivo de saída usa um formato de áudio do sistema incompatível.</string>
 	<key>This update is incompatible with this build or Mac.</key>
 	<string>Esta atualização é incompatível com esta compilação ou este Mac.</string>
 	<key>Timer finished. Reopen the lid to begin another timed session.</key>
@@ -660,18 +852,34 @@
 	<string>Desative a sessão com a tampa fechada e aguarde a conclusão da limpeza antes de alterar sua duração.</string>
 	<key>Typing</key>
 	<string>Digitação</string>
+	<key>Typing access is allowed</key>
+	<string>Acesso à digitação permitido</string>
+	<key>Typing access is no longer available</key>
+	<string>O acesso à digitação não está mais disponível</string>
 	<key>Typing active · light on</key>
 	<string>Digitação ativa · luz acesa</string>
 	<key>Typing input is disabled in preview.</key>
 	<string>A entrada de digitação está desativada na prévia.</string>
 	<key>Typing response is off</key>
 	<string>Resposta à digitação desativada</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>O macOS pausou a digitação; desative e reative a resposta à digitação para retomar</string>
 	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
 	<string>Desconectado da energia, o brilho do logo acompanha a carga da bateria até 0%. O brilho manual não afeta o modo Bateria.</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>Formato de evento não reconhecido. Nada foi alterado.</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>Grupo de hooks não reconhecido. Nada foi alterado.</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>Formato de hooks não reconhecido. Nada foi alterado.</string>
 	<key>Update paused. Finish restoring the light, then retry installation.</key>
 	<string>Atualização pausada. Termine de restaurar a luz e tente a instalação novamente.</string>
 	<key>Updates are unavailable in preview.</key>
 	<string>As atualizações estão indisponíveis na prévia.</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>Use Command, Control ou Option junto com uma tecla comum. Shift sozinho e teclas físicas de brilho não são compatíveis.</string>
+	<key>User session inactive</key>
+	<string>Sessão do usuário inativa</string>
 	<key>Uses the brightness set above.</key>
 	<string>Usa o brilho definido acima.</string>
 	<key>Verifying previous light cleanup before reconnecting</key>
@@ -680,8 +888,12 @@
 	<string>Versão {version} · t0nyz</string>
 	<key>Waiting</key>
 	<string>Aguardando</string>
+	<key>Waiting for an agent</key>
+	<string>Aguardando um agente</string>
 	<key>Waiting for closed-lid cleanup</key>
 	<string>Aguardando a limpeza da sessão com a tampa fechada</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>Aguardando as verificações de segurança com a tampa fechada.</string>
 	<key>Waiting for keys…</key>
 	<string>Aguardando teclas…</string>
 	<key>Waiting for light output</key>
@@ -712,12 +924,30 @@
 	<string>Seu assistente pode enviar o status da luz ao provedor do modelo. O acesso a Música e Digitação precisa ser ativado no Backlit primeiro. Os hooks de status são independentes.</string>
 	<key>Your light</key>
 	<string>Sua luz</string>
+	<key>Your light is ready.</key>
+	<string>Sua luz está pronta.</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>Sua luz foi restaurada. Desative e reative a luz com a tampa fechada para tentar novamente.</string>
 	<key>attention</key>
 	<string>precisa de atenção</string>
 	<key>both</key>
 	<string>tela ou trackpad</string>
 	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
 	<string>O macOS não conseguiu mostrar o ícone do Dock. O Backlit manterá sua entrada na barra de menus disponível.</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>O macOS não permitiu o filtro de teclas de brilho. Revise Acessibilidade e Monitoramento de Entrada ou use os atalhos comuns.</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>O macOS não confirmou a restauração. O arquivo de recuperação foi preservado.</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>O macOS rejeitou a luz com a tampa fechada. Restaure a sessão da tampa antes de tentar novamente.</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>O macOS rejeitou a alteração de brilho do logo. Use Restaurar ajustes do logo antes de tentar novamente.</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>O macOS ainda nega o Monitoramento de Entrada a esta instância do Backlit. Abra Monitoramento de Entrada, conceda acesso ao app instalado e reabra o Backlit.</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>O macOS interrompeu o controle das teclas físicas. As teclas de brilho voltaram a usar o macOS; use os atalhos comuns ou ative a opção novamente.</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>O macOS demorou demais para conectar o áudio do sistema.</string>
 	<key>minutes</key>
 	<string>minutos</string>
 	<key>screen</key>

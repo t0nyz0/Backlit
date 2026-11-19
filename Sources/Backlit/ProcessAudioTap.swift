@@ -40,7 +40,10 @@ final class ProcessAudioTap {
     }
     private func check(_ status:OSStatus,stage:String)throws {
         guard status != noErr else{return}
-        throw NSError(domain:"Backlit.Audio",code:Int(status),userInfo:[NSLocalizedDescriptionKey:"Backlit could not \(stage). Allow Backlit in System Settings → Privacy & Security → Screen & System Audio Recording, then reopen Backlit and retry. (macOS code \(status))"])
+        throw NSError(domain:"Backlit.Audio",code:Int(status),userInfo:[NSLocalizedDescriptionKey:Self.failureDescription(status: status, stage: stage)])
+    }
+    static func failureDescription(status: OSStatus, stage: String) -> String {
+        "Backlit could not \(stage). Allow Backlit in System Settings → Privacy & Security → Screen & System Audio Recording, then reopen Backlit and retry. (macOS code \(status))"
     }
     deinit {stop()}
 }

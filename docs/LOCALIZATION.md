@@ -65,3 +65,21 @@ Swift String Catalog symbol or that translations have native-speaker review.
 For process-level checks, `--verify-language-preferences -AppleLanguages '(fr)'
 -AppleLocale de_DE` runs without starting the UI or light control. These launch
 arguments are volatile; they do not change saved Mac language/region preferences.
+
+## Runtime-message coverage
+
+The parity follow-up adds independently worded runtime text, not code or Thai
+translations copied from an external contribution. The catalog contains 485 keys
+in each language. Tests generate shortcut conflicts, permission-check results,
+bridge status and failures, frame-pause decisions, audio errors and restoration
+failures through production-used paths with inert dependencies. They do not open
+listeners, change power settings, or acquire light hardware.
+
+`check-ui-localizations.py` checks static readable literals in 17 explicitly
+scoped status/error producers. Its exact file-scoped protocol/log/key-name
+exclusions are recorded in `Tests/Fixtures/ui-localization-exemptions.json`.
+New prose in those producers requires a catalog entry or a reviewed exclusion.
+Interpolated/composite messages have separate behavioral tests. This is a bounded
+regression guard, not a full Swift parser or a guarantee that all possible native
+or third-party error text is translated. Technical diagnostics outside that scope
+retain the documented English fallback.

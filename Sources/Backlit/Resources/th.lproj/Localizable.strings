@@ -12,6 +12,10 @@
 	<string>สร้างคีย์จับคู่ใหม่แล้ว คัดลอกไปอัปเดตใน Home Assistant คีย์เดิมใช้ไม่ได้แล้ว</string>
 	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
 	<string>ต้องกู้คืนเซสชันไฟก่อนหน้า ใช้ “กู้คืนไฟ” เพื่อจัดการสถานะค้างให้เสร็จ</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>ต้องกู้คืนเซสชันก่อนหน้า เลือก “คืนค่าการตั้งค่าโลโก้” ก่อน</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>ยังมีข้อมูลกู้คืนของเซสชันก่อนหน้า “กู้คืนไฟ” จะร้องขอกู้คืน แต่ไม่ได้ยืนยันว่าคืนการควบคุมให้ระบบแล้ว</string>
 	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
 	<string>สว่างเบา ๆ เมื่อว่าง สว่างเป็นจังหวะขณะทำงาน และกะพริบสองครั้งเมื่อเอเจนต์ต้องการคุณขณะที่คุณไม่อยู่</string>
 	<key>AI access remains off because its key could not be replaced. </key>
@@ -22,12 +26,26 @@
 	<string>ปิดการเชื่อมต่อ AI ในตัวอย่างแยกจากระบบจริง</string>
 	<key>Access key</key>
 	<string>คีย์การเข้าถึง</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>กำลังทำงาน ขีดจำกัดความปลอดภัยยังมีผล</string>
 	<key>Actual battery-driven logo output</key>
 	<string>ระดับไฟโลโก้จริงตามแบตเตอรี่</string>
 	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
 	<string>ปรับตามระดับเสียงที่เล่น ความแรงปรับการตอบสนอง ส่วนความสว่างที่ตั้งไว้เป็นขีดสูงสุด</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>มีการตั้งค่าเอเจนต์ปรากฏขึ้นระหว่างเชื่อมต่อ ไม่ได้เขียนทับข้อมูลใด ๆ ตรวจสอบแล้วลองใหม่</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>การตั้งค่าเอเจนต์เปลี่ยนระหว่างเชื่อมต่อ ลองใหม่</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>การตั้งค่าเอเจนต์เป็นลิงก์สัญลักษณ์หรือไฟล์พิเศษ เลือกโฟลเดอร์จริงก่อน</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>การตั้งค่าเอเจนต์ต้องเป็นอ็อบเจกต์ JSON ไม่มีการเปลี่ยนแปลงใด ๆ</string>
 	<key>Agents</key>
 	<string>เอเจนต์</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>อนุญาต Backlit ในการช่วยการเข้าถึง แล้วเปิดตัวเลือกนี้อีกครั้ง ปุ่มลัดทั่วไปไม่ต้องใช้สิทธิ์ใหม่</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>อนุญาต Backlit ในการตรวจดูอินพุต แล้วเปิดตัวเลือกนี้อีกครั้ง ตัวกรองปุ่มฮาร์ดแวร์จะยังปิดจนกว่าจะอนุญาตให้รับอินพุต</string>
 	<key>Allow Backlit links and other apps</key>
 	<string>อนุญาตลิงก์ Backlit และแอปอื่น</string>
 	<key>Allow connections from your local network</key>
@@ -42,6 +60,10 @@
 	<string>ไม่ได้เปลี่ยนขีดจำกัดความสว่างตามแสงแวดล้อม</string>
 	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
 	<string>มีอัปเดตรออยู่ เลือก “ติดตั้งอัปเดตแล้วเปิดใหม่” หรือข้ามในหน้าต่างอัปเดตก่อนออก</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>ตัวควบคุมอื่นเปลี่ยนโลโก้หรือไม่สามารถตรวจสถานะได้ โดยคงข้อมูลกู้คืนไว้</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>ตัวควบคุมอื่นเปลี่ยนโลโก้ Backlit หยุดเขียนค่าแล้ว โดยคงข้อมูลกู้คืนไว้</string>
 	<key>Appearance</key>
 	<string>ลักษณะที่ปรากฏ</string>
 	<key>Assistant setup</key>
@@ -50,18 +72,44 @@
 	<string>ผู้ช่วยและการเชื่อมต่อ</string>
 	<key>Attention</key>
 	<string>ต้องการความสนใจ</string>
+	<key>Authorization was cancelled.</key>
+	<string>ยกเลิกการอนุมัติแล้ว</string>
 	<key>Automatic level</key>
 	<string>ระดับอัตโนมัติ</string>
 	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
 	<string>แสดงสถานะเซสชันเขียนโค้ดผ่านไฟโดยอัตโนมัติ แยกจาก MCP</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>การกู้คืนไฟอัตโนมัติยังไม่พร้อมทำงานต่อ</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>การกู้คืนไฟอัตโนมัติหยุดหลังลองสามครั้ง กู้คืนไฟก่อนลองใหม่</string>
 	<key>Automatic pulse</key>
 	<string>จังหวะอัตโนมัติ</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>การกู้คืนอัตโนมัติไม่มีสิทธิ์ควบคุมเซสชันเฟดที่บันทึกไว้อีกต่อไป</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>ยืนยันเวลาการกู้คืนอัตโนมัติไม่ได้</string>
 	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
 	<string>การตรวจความปลอดภัยอัตโนมัติหยุดหลังลองสามครั้ง กู้คืนไฟในการตั้งค่า แล้วปิดและเปิด “เปิดโลโก้ค้างไว้เมื่อปิดฝาจอ” เพื่อลองใหม่</string>
+	<key>Available on this Mac</key>
+	<string>ใช้งานได้บน Mac เครื่องนี้</string>
+	<key>Available on your local network</key>
+	<string>ใช้งานได้ในเครือข่ายภายใน</string>
 	<key>Backlight</key>
 	<string>ไฟแบ็กไลต์</string>
 	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
 	<string>Backlit วิเคราะห์เสียงที่ระบบเล่นภายในเครื่องเพื่อให้โลโก้ตอบสนองต่อเพลง ไม่มีการบันทึกหรืออัปโหลดเสียง</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit เชื่อมต่อเสียงระบบไม่ได้ ให้อนุญาต Backlit ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การบันทึกหน้าจอและเสียงระบบ แล้วเปิด Backlit ใหม่และลองอีกครั้ง (รหัส macOS {code})</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit เตรียมเสียงระบบไม่ได้ ให้อนุญาต Backlit ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การบันทึกหน้าจอและเสียงระบบ แล้วเปิด Backlit ใหม่และลองอีกครั้ง (รหัส macOS {code})</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit อ่านรูปแบบเสียงไม่ได้ ให้อนุญาต Backlit ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การบันทึกหน้าจอและเสียงระบบ แล้วเปิด Backlit ใหม่และลองอีกครั้ง (รหัส macOS {code})</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit ร้องขอเสียงระบบไม่ได้ ให้อนุญาต Backlit ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การบันทึกหน้าจอและเสียงระบบ แล้วเปิด Backlit ใหม่และลองอีกครั้ง (รหัส macOS {code})</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit เริ่มเสียงระบบไม่ได้ ให้อนุญาต Backlit ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การบันทึกหน้าจอและเสียงระบบ แล้วเปิด Backlit ใหม่และลองอีกครั้ง (รหัส macOS {code})</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlit ทำงานอยู่ในอีกหน้าต่างแล้ว ให้ใช้แอปที่ติดตั้งไว้</string>
 	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
 	<string>คัดลอกลิงก์ Backlit แล้ว ใช้กับตัวเรียกแอปที่รองรับลิงก์แอปแบบกำหนดเอง</string>
 	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
@@ -114,6 +162,8 @@
 	<string>การเชื่อมต่อ</string>
 	<key>Cancel</key>
 	<string>ยกเลิก</string>
+	<key>Cannot reopen the power service.</key>
+	<string>เปิดบริการพลังงานอีกครั้งไม่ได้</string>
 	<key>Change </key>
 	<string>เปลี่ยน </string>
 	<key>Charge-ready signal</key>
@@ -186,6 +236,24 @@
 	<string>คัดลอกคีย์จับคู่</string>
 	<key>Copy Toggle Link</key>
 	<string>คัดลอกลิงก์สลับเปิด/ปิด</string>
+	<key>Could not generate a pairing key.</key>
+	<string>สร้างคีย์จับคู่ไม่ได้</string>
+	<key>Could not open the logo session lock.</key>
+	<string>เปิดล็อกเซสชันโลโก้ไม่ได้</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>คงการทำงานของหน้าจอและแป้นพิมพ์ไว้ไม่ได้ จึงหยุดไฟเมื่อปิดฝาจอ</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>อ่านการตั้งค่าโลโก้เดิมไม่ได้</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>คืนค่าการพักเครื่องตามปกติเมื่อปิดฝาจอไม่ได้</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>คืนสถานะฝาจอจริงไม่ได้ โดยคงข้อมูลกู้คืนไว้</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>คืนสถานะฝาจอจริงของโลโก้ไม่ได้ โดยคงข้อมูลกู้คืนไว้</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>เปิดไฟเมื่อปิดฝาจออย่างปลอดภัยไม่ได้ กู้คืนไฟก่อนลองใหม่</string>
+	<key>Could not start typing response</key>
+	<string>เริ่มการตอบสนองต่อการพิมพ์ไม่ได้</string>
 	<key>Create New Key</key>
 	<string>สร้างคีย์ใหม่</string>
 	<key>Create a new pairing key?</key>
@@ -224,6 +292,8 @@
 	<string>ระยะเวลา: {value} วินาที</string>
 	<key>Edit</key>
 	<string>แก้ไข</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>เปิดลิงก์ Backlit และแอปอื่นในหน้าการเชื่อมต่อก่อน</string>
 	<key>Enable Home Assistant bridge</key>
 	<string>เปิดบริดจ์ Home Assistant</string>
 	<key>Enable or retry typing access</key>
@@ -254,18 +324,24 @@
 	<string>ชาร์จเต็มแล้ว</string>
 	<key>General</key>
 	<string>ทั่วไป</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>ใช้ปุ่มลัดทั่วระบบไม่ได้</string>
 	<key>Global trackpad · event-driven, no input polling</key>
 	<string>แทร็คแพดทั่วระบบ · ทำงานตามเหตุการณ์ ไม่ตรวจอินพุตวนซ้ำ</string>
 	<key>Glow</key>
 	<string>สว่างค้าง</string>
 	<key>Glowing</key>
 	<string>กำลังส่องสว่าง</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>ปุ่มความสว่างฮาร์ดแวร์ให้ macOS จัดการ ใช้ปุ่มลูกศร ตัวอักษร หรือปุ่มทั่วไปอื่น</string>
 	<key>Hardware brightness keys use macOS.</key>
 	<string>ปุ่มความสว่างฮาร์ดแวร์ทำงานผ่าน macOS</string>
 	<key>Hardware-key capture is disabled in isolated preview.</key>
 	<string>ปิดการรับปุ่มฮาร์ดแวร์ในตัวอย่างแยกจากระบบจริง</string>
 	<key>Hide Dock icon</key>
 	<string>ซ่อนไอคอน Dock</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>ปิด Home Assistant เนื่องจากใช้คีย์ใน Keychain ไม่ได้ เปิดอีกครั้งในหน้าการเชื่อมต่อ</string>
 	<key>Hooks installed · start a new session</key>
 	<string>ติดตั้งฮุกแล้ว · เริ่มเซสชันใหม่</string>
 	<key>Hooks installed · trust them in Codex</key>
@@ -288,6 +364,8 @@
 	<string>บิลด์นี้ยังไม่เปิดอัปเดตในแอป ผู้เผยแพร่ต้องใส่ฟีดอัปเดตที่เชื่อถือได้และคีย์ลงนาม</string>
 	<key>Increase logo brightness</key>
 	<string>เพิ่มความสว่างโลโก้</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>อนุญาตการตรวจดูอินพุตแล้ว แต่ macOS สร้างตัวรับเหตุการณ์การพิมพ์ไม่ได้ เปิด Backlit ใหม่แล้วลองอีกครั้ง</string>
 	<key>Input Monitoring permission is required for typing response</key>
 	<string>ต้องมีสิทธิ์การตรวจดูอินพุตเพื่อให้ตอบสนองต่อการพิมพ์</string>
 	<key>Input active · light on</key>
@@ -298,6 +376,8 @@
 	<string>ติดตั้งอัปเดตแล้วเปิดใหม่</string>
 	<key>Integration Folder</key>
 	<string>โฟลเดอร์การเชื่อมต่อ</string>
+	<key>Invalid saved duration</key>
+	<string>ระยะเวลาที่บันทึกไว้ไม่ถูกต้อง</string>
 	<key>Keep Backlit a click away in the menu bar.</key>
 	<string>เปิด Backlit ได้ในคลิกเดียวจากแถบเมนู</string>
 	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
@@ -308,6 +388,10 @@
 	<string>เปิดค้างไว้นาน</string>
 	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
 	<string>ทำให้ Mac ไม่พักเครื่อง และหน้าจอในตัวอาจยังสว่างขณะปิดฝา จำกัด 30 นาที และหยุดเมื่อแบตเตอรี่ต่ำ เครื่องร้อน หรือเปิดโหมดพลังงานต่ำ วางบนพื้นแข็งที่ระบายอากาศได้ดี ห้ามใส่ในกระเป๋าเด็ดขาด</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>ใช้การควบคุมความปลอดภัยแป้นพิมพ์ไม่ได้ จึงไม่ได้เปิดไฟเมื่อปิดฝาจอ</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>Keychain บันทึกคีย์จับคู่ไม่ได้</string>
 	<key>LIVE PREVIEW</key>
 	<string>ตัวอย่างสด</string>
 	<key>LOGO CONNECTED</key>
@@ -322,10 +406,14 @@
 	<string>ตรวจสิทธิ์ล่าสุด: </string>
 	<key>Last access check: {diagnostic}</key>
 	<string>ตรวจสิทธิ์ล่าสุด: {diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>ตรวจสอบการแมปแบบเดิมได้เฉพาะขณะที่ฝาจอจริงเปิดอยู่</string>
 	<key>Light</key>
 	<string>สว่าง</string>
 	<key>Light cleanup verified. Reconnecting automatically.</key>
 	<string>ยืนยันการล้างสถานะไฟแล้ว กำลังเชื่อมต่อใหม่อัตโนมัติ</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>ยังยืนยันการกู้คืนไฟหรือฝาจอไม่ได้ โดยคงข้อมูลกู้คืนไว้</string>
 	<key>Light output paused</key>
 	<string>ไฟหยุดชั่วคราว</string>
 	<key>Light recovery is still in progress.</key>
@@ -344,8 +432,16 @@
 	<string>ความสว่างของโลโก้</string>
 	<key>Logo control enabled</key>
 	<string>เปิดการควบคุมโลโก้แล้ว</string>
+	<key>Logo control has not been enabled.</key>
+	<string>ยังไม่ได้เปิดการควบคุมโลโก้</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>กำลังกู้คืนการควบคุมโลโก้หลังระบบเปลี่ยนสถานะ</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>กำลังสลับการควบคุมโลโก้ระหว่างเปิดและปิดฝาจอ</string>
 	<key>Logo control unavailable: {detail}</key>
 	<string>ควบคุมโลโก้ไม่ได้: {detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>ใช้การแมปโลโก้ไม่ได้ โดยคงข้อมูลกู้คืนไว้</string>
 	<key>Logo off</key>
 	<string>โลโก้ปิดอยู่</string>
 	<key>Logo off · hardware disabled</key>
@@ -356,6 +452,8 @@
 	<string>โลโก้เปิดอยู่</string>
 	<key>Logo preview, {value} percent</key>
 	<string>ตัวอย่างโลโก้ {value} เปอร์เซ็นต์</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>ใช้การควบคุมกู้คืนโลโก้ไม่ได้ โดยคงข้อมูลกู้คืนไว้</string>
 	<key>Logo state unavailable · not controlling hardware</key>
 	<string>ไม่ทราบสถานะโลโก้ · ไม่ได้ควบคุมฮาร์ดแวร์</string>
 	<key>Logo state unavailable · {value}% requested</key>
@@ -366,6 +464,8 @@
 	<string>การเข้าถึง MCP</string>
 	<key>MCP control</key>
 	<string>การควบคุม MCP</string>
+	<key>Mac is sleeping</key>
+	<string>Mac กำลังพักเครื่อง</string>
 	<key>MacBook PROLED Logo Control</key>
 	<string>ควบคุมโลโก้ MacBook PROLED</string>
 	<key>Manage Connections</key>
@@ -394,6 +494,10 @@
 	<string>ไม่แสดงจังหวะชาร์จ คงระดับไฟโลโก้ 100% ขณะเสียบปลั๊ก</string>
 	<key>No compatible illuminated logo was detected.</key>
 	<string>ไม่พบโลโก้เรืองแสงที่รองรับ</string>
+	<key>No display is available for system audio capture.</key>
+	<string>ไม่มีหน้าจอที่ใช้จับเสียงระบบได้</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>ใช้อินพุตแทร็คแพดไม่ได้ เปิดการตอบสนองต่อการพิมพ์หรือเลือกรูปแบบอื่น</string>
 	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
 	<string>คืนค่าการพักเครื่องตามปกติเมื่อปิดฝาจอแล้ว แต่ลบไฟล์เซสชันที่ค้างไม่ได้</string>
 	<key>Not connected</key>
@@ -444,10 +548,18 @@
 	<string>หยุดชั่วคราวหลังข้อผิดพลาด กู้คืนไฟก่อนลองใหม่</string>
 	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
 	<string>หยุดชั่วคราวหลังข้อผิดพลาด หลังกู้คืนให้ปิดและเปิด “เปิดโลโก้ค้างไว้เมื่อปิดฝาจอ”</string>
+	<key>Paused in Low Power Mode</key>
+	<string>หยุดชั่วคราวในโหมดพลังงานต่ำ</string>
+	<key>Paused while your Mac cools down</key>
+	<string>หยุดชั่วคราวขณะรอให้ Mac เย็นลง</string>
+	<key>Paused with your display</key>
+	<string>หยุดชั่วคราวตามหน้าจอ</string>
 	<key>Playback only. No microphone. Nothing recorded.</key>
 	<string>ใช้เฉพาะเสียงที่เล่น ไม่ใช้ไมโครโฟนและไม่บันทึกเสียง</string>
 	<key>Plugged in · Not charging</key>
 	<string>เสียบปลั๊ก · ไม่ได้ชาร์จ</string>
+	<key>Power service unavailable.</key>
+	<string>ใช้บริการพลังงานไม่ได้</string>
 	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
 	<string>กด Command, Control หรือ Option พร้อมปุ่มทั่วไป กด Escape เพื่อยกเลิก</string>
 	<key>Preview only</key>
@@ -462,6 +574,8 @@
 	<string>ตัวอย่าง · โลโก้ไม่เปลี่ยนแปลง</string>
 	<key>Preview · {value}% requested</key>
 	<string>ตัวอย่าง · ร้องขอ {value}%</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>เอฟเฟ็กต์ก่อนหน้ายังล้างสถานะอยู่ กำลังรอก่อนตรวจความปลอดภัยอีกครั้ง</string>
 	<key>Previous light cleanup verified. Reconnecting automatically.</key>
 	<string>ยืนยันการล้างสถานะไฟครั้งก่อนแล้ว กำลังเชื่อมต่อใหม่อัตโนมัติ</string>
 	<key>Previous session verified. Reconnecting your remembered choice.</key>
@@ -482,6 +596,12 @@
 	<string>ออกจาก Backlit</string>
 	<key>Quit {app} before changing logo settings.</key>
 	<string>ออกจาก {app} ก่อนเปลี่ยนการตั้งค่าโลโก้</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>ออกจาก {app} ก่อนให้ Backlit ควบคุมโลโก้</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>ออกจาก {app} ก่อนกู้คืนเซสชัน Backlit ก่อนหน้า</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>ออกจาก {app} เพื่อใช้ Backlit</string>
 	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
 	<string>เมื่อออกจะคืนการตั้งค่าโลโก้เดิมที่บันทึกก่อนเซสชัน Backlit นี้ โลโก้อาจสว่างอีกครั้ง</string>
 	<key>Ready at</key>
@@ -492,6 +612,8 @@
 	<string>พร้อมรับการแตะแทร็คแพด</string>
 	<key>Ready for trackpad or typing</key>
 	<string>พร้อมรับแทร็คแพดหรือการพิมพ์</string>
+	<key>Ready for typing</key>
+	<string>พร้อมรับการพิมพ์</string>
 	<key>Ready for your music</key>
 	<string>พร้อมรับเพลง</string>
 	<key>Ready for {source} touch</key>
@@ -502,6 +624,8 @@
 	<string>เชื่อมต่อฮุกสถานะเขียนโค้ดของ {agent} ใหม่</string>
 	<key>Reconnecting to your MacBook</key>
 	<string>กำลังเชื่อมต่อกับ MacBook ใหม่</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>สิทธิ์ควบคุมการกู้คืนเปลี่ยนระหว่างตรวจสอบ กู้คืนไฟก่อนลองใหม่</string>
 	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
 	<string>ยังยืนยันการกู้คืนไม่ได้ บันทึกตัวเลือกเมื่อปิดฝาจอไว้และยังหยุดชั่วคราว ตรวจการกู้คืนในการตั้งค่า</string>
 	<key>Remembered. Open the lid before starting another timed session.</key>
@@ -512,6 +636,8 @@
 	<string>จดจำไว้แล้ว ตัวอย่างจะไม่เริ่มเซสชันปิดฝาจอ</string>
 	<key>Remembered. Waiting for a verified lid and timer state.</key>
 	<string>จดจำไว้แล้ว กำลังรอยืนยันสถานะฝาจอและตัวจับเวลา</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>จดจำไว้แล้ว กำลังรอการตรวจความปลอดภัยฮาร์ดแวร์ครั้งใหม่ขณะเครื่องตื่นและปลดล็อก</string>
 	<key>Remembered. Waiting for your Mac and light to be ready.</key>
 	<string>จดจำไว้แล้ว กำลังรอให้ Mac และไฟพร้อม</string>
 	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
@@ -542,6 +668,8 @@
 	<string>กู้คืนไฟ</string>
 	<key>Restore and Quit</key>
 	<string>กู้คืนแล้วออก</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>กู้คืนเซสชันโลโก้ปัจจุบันก่อนเชื่อมต่อบริการอีกครั้ง</string>
 	<key>Restore the logo and quit?</key>
 	<string>กู้คืนโลโก้แล้วออกไหม</string>
 	<key>Restore your light</key>
@@ -560,6 +688,10 @@
 	<string>ลองเสียงระบบอีกครั้ง</string>
 	<key>Review Closed-lid Pause</key>
 	<string>ตรวจสอบการหยุดชั่วคราวเมื่อปิดฝาจอ</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>สถานะความปลอดภัยเปลี่ยนระหว่างตรวจสอบ Backlit จะตรวจอีกครั้งก่อนเชื่อมต่อใหม่</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>ตรวจสอบความปลอดภัยไม่ผ่าน: {detail} กู้คืนไฟก่อนลองใหม่</string>
 	<key>Saved brightness: {value}% · logo is off</key>
 	<string>บันทึกความสว่าง: {value}% · โลโก้ปิดอยู่</string>
 	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
@@ -612,26 +744,86 @@
 	<string>ระบบ</string>
 	<key>System Default</key>
 	<string>ค่าเริ่มต้นของระบบ</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>ปิดสิทธิ์เสียงระบบของ Backlit อยู่ ให้อนุญาตในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การบันทึกหน้าจอและเสียงระบบ แล้วเปิด Backlit ใหม่หรือเลือก “ลองเสียงระบบอีกครั้ง” Backlit ไม่บันทึกหน้าจอหรือไมโครโฟน</string>
 	<key>System audio follows Music mode.</key>
 	<string>เสียงระบบทำงานตามโหมดเพลง</string>
 	<key>System audio is unavailable.</key>
 	<string>ใช้เสียงระบบไม่ได้</string>
 	<key>System audio starts with Music when your light is on and your Mac is active.</key>
 	<string>เสียงระบบเริ่มพร้อมโหมดเพลงเมื่อไฟเปิดและ Mac กำลังใช้งาน</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>เสียงระบบหยุดก่อนพร้อมใช้งาน</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>ชุดปุ่มนี้ถูกกำหนดให้คำสั่ง Backlit อื่นแล้ว</string>
 	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
 	<string>เปลี่ยนคีย์การเชื่อมต่อ AI แล้ว ปิดการเข้าถึง AI เพื่อหยุดการเชื่อมต่อผู้ช่วยทั้งหมด</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>ปิดการเชื่อมต่อ MCP เนื่องจากใช้คีย์ใน Keychain ไม่ได้ เปิดอีกครั้งในหน้าการเชื่อมต่อ</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>ยืนยันการเปลี่ยนความสว่างตามแสงแวดล้อมไม่ได้ คืนขีดจำกัดที่บันทึกไว้ก่อนลองใหม่</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>ตัวเลือกการกู้คืนอัตโนมัติเปลี่ยนระหว่างตรวจสอบ</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>เริ่มตัวกรองปุ่มความสว่างไม่ได้ ปุ่มลัดทั่วไปยังใช้งานได้</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>เตรียมคำขอขีดจำกัดความสว่างไม่ได้</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>รับช่วงตัวช่วยเมื่อปิดฝาจอไม่ได้</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>ยืนยันโปรเซสหลักของการทำงานเมื่อปิดฝาจอไม่ได้</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>บันทึกตัวเลือกการกู้คืนเมื่อปิดฝาจอไม่ได้ กู้คืนไฟก่อนลองใหม่</string>
 	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
 	<string>คีย์ปัจจุบันจะใช้ไม่ได้ทันที Home Assistant จะขอคีย์ใหม่ก่อนควบคุมไฟได้อีกครั้ง</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>ยังไม่ได้ยืนยันการล้างสถานะของเซสชันไฟก่อนหน้าที่ตรงกัน</string>
 	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
 	<string>ไฟจะดับไม่นานหลังหยุดพิมพ์ ใช้แป้นพิมพ์ภายนอกเมื่อปิดฝาจอ</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>บริการควบคุมโลโก้ใน macOS เวอร์ชันนี้ใช้อินเทอร์เฟซที่ไม่รองรับ</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>ใช้บริการควบคุมโลโก้ไม่ได้ใน macOS เวอร์ชันนี้</string>
+	<key>The logo control service is unavailable.</key>
+	<string>ใช้บริการควบคุมโลโก้ไม่ได้</string>
 	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
 	<string>ฮาร์ดแวร์โลโก้ให้แสงสีขาว Backlit เปลี่ยนเฉพาะความสว่างและจังหวะของโลโก้ ไม่เปลี่ยนความสว่างหน้าจอ</string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>บริการโลโก้ไม่ได้ยืนยันความสว่างที่ร้องขอ</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>บริการโลโก้ยังไม่เชื่อมต่อใหม่หลังเปลี่ยนขีดจำกัดแสงแวดล้อม กู้คืนไฟก่อนลองใหม่</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>ยืนยันสถานะปิดของโลโก้ไม่ได้ โดยคงข้อมูลกู้คืนเฟดไว้</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>แหล่งความสว่างโลโก้ของระบบเปลี่ยน จึงหยุดการควบคุมโลโก้</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>การกู้คืนอัตโนมัติครั้งก่อนยังไม่ได้รับอนุญาตให้เริ่ม</string>
 	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
 	<string>คีย์เดิมจะใช้ไม่ได้ ผู้ช่วยภายในเครื่องเชื่อมต่อใหม่ได้ขณะเปิดการเข้าถึง AI คีย์ Home Assistant ไม่เปลี่ยน</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>การเชื่อมต่อภายในเครื่องก่อนหน้ายังปิดไม่เสร็จ ปิดและเปิดการแชร์เพื่อลองใหม่</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>การตั้งค่ากู้คืนไม่ถูกต้อง จึงไม่ได้แก้ไข</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>ข้อมูลการกู้คืนอัตโนมัติที่บันทึกไว้ไม่ถูกต้อง กู้คืนไฟก่อนลองใหม่</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>ตัวเลือกเมื่อปิดฝาจอที่บันทึกไว้ไม่ถูกต้อง</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>ข้อผิดพลาดเมื่อปิดฝาจอที่บันทึกไว้ไม่เข้าเกณฑ์ล้างสถานะอัตโนมัติ</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>บันทึกสถานะความปลอดภัยเมื่อปิดฝาจอไม่ได้</string>
 	<key>The saved logo and lid settings were restored.</key>
 	<string>คืนค่าการตั้งค่าโลโก้และฝาจอที่บันทึกไว้แล้ว</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>ข้อมูลกู้คืนที่บันทึกไว้เป็นของตัวเลือกเมื่อปิดฝาจออื่น</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>ข้อมูลกู้คืนที่บันทึกไว้เป็นของเซสชันไฟอื่น</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>บันทึกผลตรวจความปลอดภัยไม่ได้ กู้คืนไฟก่อนลองใหม่</string>
 	<key>This is an isolated preview. Your real logo is unchanged.</key>
 	<string>นี่คือตัวอย่างแยกจากระบบจริง โลโก้จริงไม่เปลี่ยนแปลง</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>อุปกรณ์เอาต์พุตนี้ใช้รูปแบบเสียงระบบที่ไม่รองรับ</string>
 	<key>This update is incompatible with this build or Mac.</key>
 	<string>อัปเดตนี้ไม่รองรับบิลด์หรือ Mac เครื่องนี้</string>
 	<key>Timer finished. Reopen the lid to begin another timed session.</key>
@@ -660,18 +852,34 @@
 	<string>ปิดเซสชันเมื่อปิดฝาจอและรอให้การล้างสถานะเสร็จก่อนเปลี่ยนระยะเวลา</string>
 	<key>Typing</key>
 	<string>การพิมพ์</string>
+	<key>Typing access is allowed</key>
+	<string>อนุญาตการเข้าถึงการพิมพ์แล้ว</string>
+	<key>Typing access is no longer available</key>
+	<string>ไม่สามารถเข้าถึงการพิมพ์ได้อีกแล้ว</string>
 	<key>Typing active · light on</key>
 	<string>กำลังพิมพ์ · ไฟเปิด</string>
 	<key>Typing input is disabled in preview.</key>
 	<string>ปิดอินพุตการพิมพ์ในโหมดตัวอย่าง</string>
 	<key>Typing response is off</key>
 	<string>ปิดการตอบสนองต่อการพิมพ์</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>macOS หยุดการพิมพ์ชั่วคราว ปิดและเปิดการตอบสนองต่อการพิมพ์เพื่อทำงานต่อ</string>
 	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
 	<string>เมื่อถอดปลั๊ก ความสว่างโลโก้ปรับตามระดับแบตเตอรี่ลงถึง 0% การปรับความสว่างเองไม่มีผลต่อโหมดแบตเตอรี่</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>ไม่รู้จักรูปแบบเหตุการณ์ ไม่มีการเปลี่ยนแปลงใด ๆ</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>ไม่รู้จักกลุ่มฮุก ไม่มีการเปลี่ยนแปลงใด ๆ</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>ไม่รู้จักรูปแบบฮุก ไม่มีการเปลี่ยนแปลงใด ๆ</string>
 	<key>Update paused. Finish restoring the light, then retry installation.</key>
 	<string>อัปเดตหยุดชั่วคราว กู้คืนไฟให้เสร็จแล้วลองติดตั้งอีกครั้ง</string>
 	<key>Updates are unavailable in preview.</key>
 	<string>อัปเดตไม่ได้ในโหมดตัวอย่าง</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>ใช้ Command, Control หรือ Option กับปุ่มทั่วไป ไม่รองรับ Shift เพียงอย่างเดียวและปุ่มความสว่างฮาร์ดแวร์</string>
+	<key>User session inactive</key>
+	<string>เซสชันผู้ใช้ไม่ได้ใช้งานอยู่</string>
 	<key>Uses the brightness set above.</key>
 	<string>ใช้ความสว่างที่ตั้งไว้ด้านบน</string>
 	<key>Verifying previous light cleanup before reconnecting</key>
@@ -680,8 +888,12 @@
 	<string>เวอร์ชัน {version} · t0nyz</string>
 	<key>Waiting</key>
 	<string>กำลังรอ</string>
+	<key>Waiting for an agent</key>
+	<string>กำลังรอเอเจนต์</string>
 	<key>Waiting for closed-lid cleanup</key>
 	<string>กำลังรอการล้างสถานะเมื่อปิดฝาจอ</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>กำลังรอการตรวจความปลอดภัยเมื่อปิดฝาจอ</string>
 	<key>Waiting for keys…</key>
 	<string>กำลังรอการกดปุ่ม…</string>
 	<key>Waiting for light output</key>
@@ -712,12 +924,30 @@
 	<string>ผู้ช่วยอาจส่งสถานะไฟให้ผู้ให้บริการโมเดล ต้องเปิดสิทธิ์เพลงและการพิมพ์ใน Backlit ก่อน ฮุกสถานะยังแยกกัน</string>
 	<key>Your light</key>
 	<string>ไฟของคุณ</string>
+	<key>Your light is ready.</key>
+	<string>ไฟพร้อมแล้ว</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>กู้คืนไฟแล้ว ปิดและเปิดไฟเมื่อปิดฝาจอเพื่อลองใหม่</string>
 	<key>attention</key>
 	<string>ต้องการความสนใจ</string>
 	<key>both</key>
 	<string>หน้าจอหรือแทร็คแพด</string>
 	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
 	<string>macOS แสดงไอคอน Dock ไม่ได้ Backlit จะคงรายการในแถบเมนูไว้</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOS ไม่อนุญาตตัวกรองปุ่มความสว่าง ตรวจการช่วยการเข้าถึงและการตรวจดูอินพุต หรือใช้ปุ่มลัดทั่วไป</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOS ไม่ได้ยืนยันการกู้คืน โดยคงไฟล์กู้คืนไว้</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOS ปฏิเสธไฟเมื่อปิดฝาจอ กู้คืนเซสชันฝาจอก่อนลองใหม่</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOS ปฏิเสธการเปลี่ยนความสว่างโลโก้ คืนค่าการตั้งค่าโลโก้ก่อนลองใหม่</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>macOS ยังปฏิเสธการตรวจดูอินพุตสำหรับ Backlit ที่กำลังทำงาน เปิดการตรวจดูอินพุตและให้สิทธิ์แอปที่ติดตั้งไว้ แล้วเปิด Backlit ใหม่</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOS หยุดการควบคุมปุ่มฮาร์ดแวร์ ปุ่มความสว่างกลับมาใช้ macOS อีกครั้ง ใช้ปุ่มลัดทั่วไปหรือเปิดตัวเลือกนี้อีกครั้ง</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOS ใช้เวลาเชื่อมต่อเสียงระบบนานเกินไป</string>
 	<key>minutes</key>
 	<string>นาที</string>
 	<key>screen</key>

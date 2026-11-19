@@ -12,6 +12,10 @@
 	<string>已創建新的配對金鑰。請複製並更新 Home Assistant；舊金鑰已失效。</string>
 	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
 	<string>之前的燈光會話需要恢復。請使用“恢復燈光”完成清理。</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>之前的會話需要恢復。請先選擇“恢復標誌設定”。</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>之前的會話仍有恢復記錄。“恢復燈光”可請求恢復，但不代表已確認交還原生控制權。</string>
 	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
 	<string>空閒時柔和發光，工作時脈動。當代理需要您且您不在電腦前時閃爍兩次。</string>
 	<key>AI access remains off because its key could not be replaced. </key>
@@ -22,12 +26,26 @@
 	<string>隔離預覽中禁用 AI 連接。</string>
 	<key>Access key</key>
 	<string>訪問金鑰</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>已啓用。安全限制仍然有效。</string>
 	<key>Actual battery-driven logo output</key>
 	<string>實際的電量驅動徽標輸出</string>
 	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
 	<string>自動適應播放音量。強度調整響應效果，您設定的亮度決定上限。</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>連接期間出現了代理設定。未覆蓋任何內容。請檢查後重試。</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>連接期間代理設定發生變化。請重試。</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>代理設定是符號鏈接或特殊檔案。請先選擇其實際檔案夾。</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>代理設定必須是 JSON 對象。未做任何更改。</string>
 	<key>Agents</key>
 	<string>代理</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>請在“輔助使用”中允許 Backlit，然後重新啓用此選項。普通快捷鍵不需要新權限。</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>請在“輸入監控”中允許 Backlit，然後重新啓用此選項。在允許監聽訪問前，硬體按鍵過濾器將保持關閉。</string>
 	<key>Allow Backlit links and other apps</key>
 	<string>允許 Backlit 鏈接和其他應用</string>
 	<key>Allow connections from your local network</key>
@@ -42,6 +60,10 @@
 	<string>未更改環境光亮度限制。</string>
 	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
 	<string>有更新等待安裝。請選擇“安裝更新並重新啓動”，或在退出前於更新窗口中跳過它。</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>其他控制程序更改了標誌，或其狀態不可用。已保留恢複數據。</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>其他控制程序更改了標誌。Backlit 已停止寫入，並保留恢複數據。</string>
 	<key>Appearance</key>
 	<string>外觀</string>
 	<key>Assistant setup</key>
@@ -50,18 +72,44 @@
 	<string>助理與整合</string>
 	<key>Attention</key>
 	<string>需要注意</string>
+	<key>Authorization was cancelled.</key>
+	<string>授權已取消。</string>
 	<key>Automatic level</key>
 	<string>自動電平</string>
 	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
 	<string>根據編程會話自動提供燈光反饋，與 MCP 相互獨立。</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>自動燈光恢復尚未準備好繼續。</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>自動燈光恢復已在三次嘗試後停止。重試前請恢復燈光。</string>
 	<key>Automatic pulse</key>
 	<string>自動脈衝</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>自動恢復已不再擁有記錄的漸變會話控制權。</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>無法驗證自動恢復的時間資訊。</string>
 	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
 	<string>自動安全檢查已在三次嘗試後停止。請在設定中恢復燈光，然後關閉並重新開啓“合蓋時保持徽標亮起”以重試。</string>
+	<key>Available on this Mac</key>
+	<string>可在此 Mac 上使用</string>
+	<key>Available on your local network</key>
+	<string>可在本地網路中使用</string>
 	<key>Backlight</key>
 	<string>背光</string>
 	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
 	<string>Backlit 在本機分析系統播放音訊，使徽標響應音樂。不會錄制或上傳音訊。</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit 無法連接系統音訊。請在“系統設定”→“隱私與安全性”→“螢幕與系統音訊錄制”中允許 Backlit，然後重新打開 Backlit 並重試。（macOS 代碼 {code}）</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit 無法準備系統音訊。請在“系統設定”→“隱私與安全性”→“螢幕與系統音訊錄制”中允許 Backlit，然後重新打開 Backlit 並重試。（macOS 代碼 {code}）</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit 無法讀取音訊格式。請在“系統設定”→“隱私與安全性”→“螢幕與系統音訊錄制”中允許 Backlit，然後重新打開 Backlit 並重試。（macOS 代碼 {code}）</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit 無法請求系統音訊。請在“系統設定”→“隱私與安全性”→“螢幕與系統音訊錄制”中允許 Backlit，然後重新打開 Backlit 並重試。（macOS 代碼 {code}）</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit 無法啓動系統音訊。請在“系統設定”→“隱私與安全性”→“螢幕與系統音訊錄制”中允許 Backlit，然後重新打開 Backlit 並重試。（macOS 代碼 {code}）</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlit 已在另一個窗口中運行。請使用已安裝的副本。</string>
 	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
 	<string>已複製 Backlit 鏈接。請搭配支持自定義應用鏈接的啓動器使用。</string>
 	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
@@ -114,6 +162,8 @@
 	<string>連接</string>
 	<key>Cancel</key>
 	<string>取消</string>
+	<key>Cannot reopen the power service.</key>
+	<string>無法重新打開電源服務。</string>
 	<key>Change </key>
 	<string>更改：</string>
 	<key>Charge-ready signal</key>
@@ -186,6 +236,24 @@
 	<string>複製配對金鑰</string>
 	<key>Copy Toggle Link</key>
 	<string>複製開關鏈接</string>
+	<key>Could not generate a pairing key.</key>
+	<string>無法產生配對金鑰。</string>
+	<key>Could not open the logo session lock.</key>
+	<string>無法打開標誌會話鎖。</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>無法保持顯示器和鍵盤的行為，已停止闔蓋燈光。</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>無法讀取原始標誌設定。</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>無法恢復正常的闔蓋睡眠。</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>無法恢復真實上蓋狀態，已保留恢複數據。</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>無法恢復標誌的真實上蓋狀態。已保留恢複數據。</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>無法安全應用闔蓋燈光。重試前請恢復燈光。</string>
+	<key>Could not start typing response</key>
+	<string>無法啓動打字響應</string>
 	<key>Create New Key</key>
 	<string>創建新金鑰</string>
 	<key>Create a new pairing key?</key>
@@ -224,6 +292,8 @@
 	<string>持續時間：{value} 秒</string>
 	<key>Edit</key>
 	<string>編輯</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>請先在“連接”中啓用 Backlit 鏈接和其他應用。</string>
 	<key>Enable Home Assistant bridge</key>
 	<string>啓用 Home Assistant 橋接</string>
 	<key>Enable or retry typing access</key>
@@ -254,18 +324,24 @@
 	<string>已充滿</string>
 	<key>General</key>
 	<string>融入你的 Mac</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>全局快捷鍵不可用。</string>
 	<key>Global trackpad · event-driven, no input polling</key>
 	<string>全局觸控板 · 事件驅動，不輪詢輸入</string>
 	<key>Glow</key>
 	<string>常亮</string>
 	<key>Glowing</key>
 	<string>發光中</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>硬體亮度鍵交由 macOS 處理。請使用方向鍵、字母或其他普通按鍵。</string>
 	<key>Hardware brightness keys use macOS.</key>
 	<string>硬體亮度鍵由 macOS 控制。</string>
 	<key>Hardware-key capture is disabled in isolated preview.</key>
 	<string>隔離預覽中禁用硬體按鍵捕獲。</string>
 	<key>Hide Dock icon</key>
 	<string>隱藏 Dock 圖標</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Home Assistant 已關閉，因為其鑰匙串金鑰不可用。請在“連接”中重新啓用。</string>
 	<key>Hooks installed · start a new session</key>
 	<string>已安裝鈎子 · 請開始新會話</string>
 	<key>Hooks installed · trust them in Codex</key>
@@ -288,6 +364,8 @@
 	<string>此構建版本尚未啓用應用內更新。發佈者需提供可信的更新源和簽名金鑰。</string>
 	<key>Increase logo brightness</key>
 	<string>提高徽標亮度</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>已允許輸入監控，但 macOS 無法創建打字事件監聽器。請重新打開 Backlit 後重試。</string>
 	<key>Input Monitoring permission is required for typing response</key>
 	<string>打字響應需要“輸入監控”權限</string>
 	<key>Input active · light on</key>
@@ -298,6 +376,8 @@
 	<string>安裝更新並重新啓動</string>
 	<key>Integration Folder</key>
 	<string>集成檔案夾</string>
+	<key>Invalid saved duration</key>
+	<string>保存的持續時間無效</string>
 	<key>Keep Backlit a click away in the menu bar.</key>
 	<string>讓 Backlit 在菜單欄中隨時可用。</string>
 	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
@@ -308,6 +388,10 @@
 	<string>保持開啟</string>
 	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
 	<string>闔蓋時 Mac 保持喚醒，內建螢幕可能仍亮著。最長 30 分鐘；電量不足、過熱或開啟低耗電模式時也會停止。請放在通風的硬質平面上，切勿放入袋中。</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>鍵盤安全控制不可用，未啓用闔蓋燈光。</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>鑰匙圈無法儲存配對金鑰。</string>
 	<key>LIVE PREVIEW</key>
 	<string>實時預覽</string>
 	<key>LOGO CONNECTED</key>
@@ -322,10 +406,14 @@
 	<string>上次權限檢查：</string>
 	<key>Last access check: {diagnostic}</key>
 	<string>上次權限檢查：{diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>舊版映射驗證僅在上蓋實際打開時可用。</string>
 	<key>Light</key>
 	<string>淺色</string>
 	<key>Light cleanup verified. Reconnecting automatically.</key>
 	<string>已驗證燈光清理，正在自動重新連接。</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>燈光或上蓋恢復仍未確認，已保留恢複數據。</string>
 	<key>Light output paused</key>
 	<string>燈光輸出已暫停</string>
 	<key>Light recovery is still in progress.</key>
@@ -344,8 +432,16 @@
 	<string>徽標亮度</string>
 	<key>Logo control enabled</key>
 	<string>已啓用徽標控制</string>
+	<key>Logo control has not been enabled.</key>
+	<string>尚未啓用標誌控制。</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>系統狀態切換後，正在恢復標誌控制。</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>正在切換開蓋與闔蓋燈光控制。</string>
 	<key>Logo control unavailable: {detail}</key>
 	<string>徽標控制不可用：{detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>標誌映射不可用；已保留恢複數據。</string>
 	<key>Logo off</key>
 	<string>標誌已關閉</string>
 	<key>Logo off · hardware disabled</key>
@@ -356,6 +452,8 @@
 	<string>標誌開啟</string>
 	<key>Logo preview, {value} percent</key>
 	<string>徽標預覽，{value}%</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>標誌恢復控制不可用。已保留恢複數據。</string>
 	<key>Logo state unavailable · not controlling hardware</key>
 	<string>徽標狀態不可用 · 未控制硬體</string>
 	<key>Logo state unavailable · {value}% requested</key>
@@ -366,6 +464,8 @@
 	<string>MCP 訪問權限</string>
 	<key>MCP control</key>
 	<string>MCP 控制</string>
+	<key>Mac is sleeping</key>
+	<string>Mac 正在睡眠</string>
 	<key>MacBook PROLED Logo Control</key>
 	<string>MacBook 標誌控制</string>
 	<key>Manage Connections</key>
@@ -394,6 +494,10 @@
 	<string>不使用充電脈衝。接通電源時徽標保持 100% 輸出。</string>
 	<key>No compatible illuminated logo was detected.</key>
 	<string>未檢測到兼容的發光徽標。</string>
+	<key>No display is available for system audio capture.</key>
+	<string>沒有可用於系統音訊捕獲的顯示器。</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>觸控板輸入不可用。請啓用打字響應或選擇其他模式。</string>
 	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
 	<string>已恢復正常的合蓋睡眠，但無法移除殘留的會話檔案。</string>
 	<key>Not connected</key>
@@ -444,10 +548,18 @@
 	<string>因錯誤暫停。重試前請恢復燈光。</string>
 	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
 	<string>因錯誤暫停。恢復後請關閉並重新開啓“合蓋時保持徽標亮起”。</string>
+	<key>Paused in Low Power Mode</key>
+	<string>低電量模式下暫停</string>
+	<key>Paused while your Mac cools down</key>
+	<string>已暫停，等待 Mac 冷卻</string>
+	<key>Paused with your display</key>
+	<string>隨顯示器暫停</string>
 	<key>Playback only. No microphone. Nothing recorded.</key>
 	<string>僅使用播放音訊，不使用麥克風，不錄制任何內容。</string>
 	<key>Plugged in · Not charging</key>
 	<string>已接電源 · 未在充電</string>
+	<key>Power service unavailable.</key>
+	<string>電源服務不可用。</string>
 	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
 	<string>按 Command、Control 或 Option 加普通按鍵。按 Escape 取消。</string>
 	<key>Preview only</key>
@@ -462,6 +574,8 @@
 	<string>預覽・不會更改標誌</string>
 	<key>Preview · {value}% requested</key>
 	<string>預覽 · 請求亮度 {value}%</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>之前的燈效仍在清理。正在等待下一次安全檢查。</string>
 	<key>Previous light cleanup verified. Reconnecting automatically.</key>
 	<string>已驗證上一次燈光清理，正在自動重新連接。</string>
 	<key>Previous session verified. Reconnecting your remembered choice.</key>
@@ -482,6 +596,12 @@
 	<string>結束 Backlit</string>
 	<key>Quit {app} before changing logo settings.</key>
 	<string>更改標誌設定前，請結束 {app}。</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>將標誌控制權交給 Backlit 前，請退出 {app}。</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>恢復之前的 Backlit 會話前，請退出 {app}。</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>請退出 {app} 以使用 Backlit</string>
 	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
 	<string>退出時會恢復本次 Backlit 會話之前保存的原生徽標設定，徽標可能再次亮起。</string>
 	<key>Ready at</key>
@@ -492,6 +612,8 @@
 	<string>準備響應觸控板接觸</string>
 	<key>Ready for trackpad or typing</key>
 	<string>準備響應觸控板或打字</string>
+	<key>Ready for typing</key>
+	<string>準備響應打字</string>
 	<key>Ready for your music</key>
 	<string>準備響應您的音樂</string>
 	<key>Ready for {source} touch</key>
@@ -502,6 +624,8 @@
 	<string>重新連接 {agent} 編程狀態鈎子</string>
 	<key>Reconnecting to your MacBook</key>
 	<string>正在重新連接您的 MacBook</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>驗證期間恢復控制權發生變化。請在重試前恢復燈光。</string>
 	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
 	<string>恢復尚未確認。合蓋選擇已保存並繼續暫停。請在設定中檢查恢復。</string>
 	<key>Remembered. Open the lid before starting another timed session.</key>
@@ -512,6 +636,8 @@
 	<string>已記住。預覽不會啓動合蓋會話。</string>
 	<key>Remembered. Waiting for a verified lid and timer state.</key>
 	<string>已記住。正在等待驗證上蓋與計時器狀態。</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>已記住。正在等待 Mac 喚醒並解鎖後的新硬體安全檢查。</string>
 	<key>Remembered. Waiting for your Mac and light to be ready.</key>
 	<string>已記住。正在等待 Mac 和燈光準備就緒。</string>
 	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
@@ -542,6 +668,8 @@
 	<string>還原燈光</string>
 	<key>Restore and Quit</key>
 	<string>恢復並退出</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>重新連接服務前，請恢復當前標誌會話。</string>
 	<key>Restore the logo and quit?</key>
 	<string>恢復徽標設定並退出？</string>
 	<key>Restore your light</key>
@@ -560,6 +688,10 @@
 	<string>重試系統音訊</string>
 	<key>Review Closed-lid Pause</key>
 	<string>檢查合蓋暫停原因</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>驗證期間安全狀態發生變化。Backlit 將在重新連接前再次檢查。</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>安全驗證失敗：{detail} 重試前請恢復燈光。</string>
 	<key>Saved brightness: {value}% · logo is off</key>
 	<string>保存的亮度：{value}% · 徽標已關閉</string>
 	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
@@ -612,26 +744,86 @@
 	<string>系統</string>
 	<key>System Default</key>
 	<string>系統預設</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>Backlit 的系統音訊訪問已關閉。請在“系統設定”→“隱私與安全性”→“螢幕與系統音訊錄制”中允許 Backlit，然後重新打開 Backlit 或選擇“重試系統音訊”。Backlit 不錄制螢幕或麥克風。</string>
 	<key>System audio follows Music mode.</key>
 	<string>系統音訊跟隨音樂模式。</string>
 	<key>System audio is unavailable.</key>
 	<string>系統音訊不可用。</string>
 	<key>System audio starts with Music when your light is on and your Mac is active.</key>
 	<string>音樂模式下，當燈光開啓且 Mac 處於活動狀態時啓動系統音訊。</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>系統音訊在準備就緒前已停止。</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>此組合鍵已分配給其他 Backlit 操作。</string>
 	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
 	<string>已更換 AI 連接金鑰。關閉 AI 訪問可停止所有助手連接。</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>MCP 連接已關閉，因為其鑰匙串金鑰不可用。請在“連接”中重新啓用。</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>無法確認環境光亮度更改。重試前請恢復保存的限制。</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>驗證期間自動恢復選擇發生變化。</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>無法啓動亮度鍵過濾器。普通快捷鍵仍可使用。</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>無法準備亮度限制請求。</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>無法接管闔蓋輔助程序。</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>無法驗證闔蓋父進程。</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>無法保存闔蓋恢復選擇。重試前請恢復燈光。</string>
 	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
 	<string>當前金鑰將立即失效。Home Assistant 需要新金鑰才能再次控制燈光。</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>尚未驗證對應的上一燈光會話已完成清理。</string>
 	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
 	<string>停止打字後燈光很快熄滅。合蓋時請使用外接鍵盤。</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>此 macOS 版本的標誌控制服務介面不受支持。</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>此 macOS 版本不提供標誌控制服務。</string>
+	<key>The logo control service is unavailable.</key>
+	<string>標誌控制服務不可用。</string>
 	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
 	<string>徽標硬體發出白光。Backlit 只改變其亮度和節奏，絕不改變螢幕亮度。</string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>標誌服務未確認請求的亮度。</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>更改環境光限制後，標誌服務尚未重新連接。重試前請恢復燈光。</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>無法驗證標誌已關閉。已保留漸變恢複數據。</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>標誌的原生亮度來源發生變化，已停止標誌控制。</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>之前的自動恢復尚未獲准執行。</string>
 	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
 	<string>舊金鑰將失效。只要 AI 訪問保持開啓，本地助手就能重新連接。Home Assistant 金鑰不會改變。</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>之前的本地連接仍在關閉。請關閉並重新開啓共享以重試。</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>恢復設定無效；未對其進行更改。</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>保存的自動恢復記錄無效。重試前請恢復燈光。</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>保存的闔蓋選擇無效。</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>保存的闔蓋故障不符合自動清理條件。</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>無法記錄闔蓋安全狀態。</string>
 	<key>The saved logo and lid settings were restored.</key>
 	<string>已恢復保存的徽標和合蓋設定。</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>保存的恢復記錄屬於另一個闔蓋選擇。</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>保存的恢復記錄屬於另一個燈光會話。</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>無法記錄安全檢查結果。重試前請恢復燈光。</string>
 	<key>This is an isolated preview. Your real logo is unchanged.</key>
 	<string>這是隔離預覽，真實徽標不會改變。</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>此輸出設備使用的系統音訊格式不受支持。</string>
 	<key>This update is incompatible with this build or Mac.</key>
 	<string>此更新與當前構建版本或 Mac 不兼容。</string>
 	<key>Timer finished. Reopen the lid to begin another timed session.</key>
@@ -660,18 +852,34 @@
 	<string>請先關閉闔蓋功能並等待還原完成，再更改持續時間。</string>
 	<key>Typing</key>
 	<string>打字</string>
+	<key>Typing access is allowed</key>
+	<string>已允許打字訪問</string>
+	<key>Typing access is no longer available</key>
+	<string>打字訪問權限已不可用</string>
 	<key>Typing active · light on</key>
 	<string>正在打字 · 燈光開啓</string>
 	<key>Typing input is disabled in preview.</key>
 	<string>預覽中禁用打字輸入。</string>
 	<key>Typing response is off</key>
 	<string>打字響應已關閉</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>macOS 已暫停打字響應；請關閉後重新開啓以恢復</string>
 	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
 	<string>拔下電源後，徽標亮度跟隨電量降至 0%。手動亮度不會影響電池模式。</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>無法識別事件格式。未做任何更改。</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>無法識別鈎子組。未做任何更改。</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>無法識別鈎子格式。未做任何更改。</string>
 	<key>Update paused. Finish restoring the light, then retry installation.</key>
 	<string>更新已暫停。完成燈光恢復後，請重試安裝。</string>
 	<key>Updates are unavailable in preview.</key>
 	<string>預覽中無法更新。</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>請使用 Command、Control 或 Option 加普通按鍵。不支持單獨使用 Shift 或硬體亮度鍵。</string>
+	<key>User session inactive</key>
+	<string>用戶會話不活躍</string>
 	<key>Uses the brightness set above.</key>
 	<string>以你選擇的亮度持續發光。</string>
 	<key>Verifying previous light cleanup before reconnecting</key>
@@ -680,8 +888,12 @@
 	<string>版本 {version} · t0nyz</string>
 	<key>Waiting</key>
 	<string>等待中</string>
+	<key>Waiting for an agent</key>
+	<string>正在等待代理</string>
 	<key>Waiting for closed-lid cleanup</key>
 	<string>正在等待合蓋清理</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>正在等待闔蓋安全檢查。</string>
 	<key>Waiting for keys…</key>
 	<string>等待按鍵…</string>
 	<key>Waiting for light output</key>
@@ -712,12 +924,30 @@
 	<string>助手可能向其模型提供商發送燈光狀態。音樂和打字模式需要先在 Backlit 中啓用訪問權限。狀態鈎子仍保持獨立。</string>
 	<key>Your light</key>
 	<string>你的光芒</string>
+	<key>Your light is ready.</key>
+	<string>您的燈光已就緒。</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>燈光已恢復。請關閉並重新開啓闔蓋燈光以重試。</string>
 	<key>attention</key>
 	<string>需要注意</string>
 	<key>both</key>
 	<string>兩者</string>
 	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
 	<string>macOS 無法顯示 Dock 圖標。Backlit 將繼續保留菜單欄入口。</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOS 未允許亮度鍵篩選器。請檢查「輔助使用」和「輸入監控」，或使用一般快捷鍵。</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOS 未確認恢復結果。已保留恢復檔案。</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOS 拒絕了闔蓋燈光。重試前請恢復闔蓋會話。</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOS 拒絕了標誌亮度更改。重試前請恢復標誌設定。</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>macOS 仍拒絕當前運行的 Backlit 使用輸入監控。請打開“輸入監控”，向已安裝的應用授予訪問權限，然後重新打開 Backlit。</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOS 已停止硬體按鍵控制。亮度鍵已恢復由 macOS 處理；請使用一般快捷鍵或重新啟用此選項。</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOS 連接系統音訊所需時間過長。</string>
 	<key>minutes</key>
 	<string>分鐘</string>
 	<key>screen</key>

@@ -14,6 +14,9 @@ explicitly approved release passes exact-tag CI.
   actionable connection errors preserve app names and diagnostic details.
 - Includes localized menu, shortcut and accessibility text, including reconnect
   controls, with layout and placeholder regression coverage.
+- Localizes additional typing, connection, low-power, permission and recovery
+  messages. Combined failures retain their separate instructions, while opaque
+  diagnostic details, app names and native error codes remain unchanged.
 
 ### Limits
 
