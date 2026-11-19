@@ -12,15 +12,15 @@ For compatible MacBook Pro models with PROLED XDR and an illuminated logo. Downl
 
 Click the Backlit icon to open its popover. Toggle the light, choose a behavior, or change brightness when the mode allows it. **Option-click** or **Control–Command–B** toggles the light directly.
 
-<p align="center"><img src="docs/media/preview/menu-bar.jpg" width="780" alt="Backlit’s highlighted macOS menu bar icon and the open light-mode popover with a logo preview and behavior picker"></p>
+<p align="center"><img src="docs/media/preview/menu-bar.jpg" width="780" alt="Backlit’s highlighted macOS menu bar icon and the dark-mode popover with a logo preview and behavior picker"></p>
 
-*Illustrated menu bar framing around a real light-mode Backlit 0.2.5 preview capture.*
+*Illustrated menu bar with a native dark-mode popover captured offscreen from a 0.2.12 development build. Battery data is unavailable in this isolated preview.*
 
 ## Backlit main window
 
 Open the main window to see the logo preview, choose a behavior, and fine-tune its controls.
 
-<p align="center"><img src="docs/media/light-light.png" width="780" alt="Backlit’s light-mode main window with the logo preview, behavior list, and battery-output settings"></p>
+<p align="center"><img src="docs/media/light-dark.png" width="780" alt="Backlit’s dark-mode main window with the logo preview, behavior list, and battery-output settings"></p>
 
 *Historical Backlit 0.2.5 isolated capture; some layouts have changed. [Capture details](docs/media/README.md).*
 
@@ -125,14 +125,7 @@ The brightness-limit override runs only built-in macOS tools with administrator 
 
 Historical 0.2.5 screenshots show the native app in isolated preview; some controls and layouts have since changed. The illustrated light is a preview, not a hardware measurement. [Provenance](docs/media/README.md).
 
-<details>
-<summary>Historical 0.2.5 Music, Trackpad and Typing screenshots</summary>
-
-<img src="docs/media/music-light.png" width="280" alt="Native Music controls with Automatic level and response presets">
-<img src="docs/media/trackpad-light.png" width="280" alt="Native Trackpad controls with optional typing response switched off">
-<img src="docs/media/typing-light.png" width="280" alt="Native standalone Typing controls and Input Monitoring access guidance">
-
-</details>
+[Music](docs/media/music-light.png) · [Trackpad](docs/media/trackpad-light.png) · [Typing](docs/media/typing-light.png) (historical light-mode image links)
 
 ## Build from source
 
