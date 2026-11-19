@@ -143,15 +143,11 @@ class DownloadsTests(unittest.TestCase):
         self.assertNotIn('img.shields.io', text)
         self.assertIn('[License](LICENSE)', text)
         self.assertIn('](docs/media/download-backlit.svg)](https://t0nyz.com/backlit/install)', text)
-        install = text.index('## Get Backlit')
-        chart = text.index('https://t0nyz.com/counter/backlit/hero.svg')
-        picture = text.index('width="780"', install)
-        start = text.index('## Seven ways to light up', picture)
-        connections = text.index('## Connections', start)
-        self.assertLess(chart, install)
-        self.assertLess(chart, picture)
-        self.assertLess(picture, start)
-        self.assertLess(start, connections)
+        order = [text.index(marker) for marker in [
+            'https://t0nyz.com/counter/backlit/hero.svg', 'docs/media/download-backlit.svg',
+            'preview/panel-menu-bar.svg', 'preview/panel-main-window.svg',
+            'preview/panel-modes.svg', 'preview/panel-connections.svg']]
+        self.assertEqual(order, sorted(order))
         self.assertIn('built-in screen may remain lit', text)
         self.assertNotIn('## Restoration and automatic recovery', text)
 

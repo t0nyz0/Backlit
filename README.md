@@ -1,58 +1,38 @@
 <p align="center"><a href="https://t0nyz.com/counter/backlit/hero.svg?v=3"><img src="https://t0nyz.com/counter/backlit/hero.svg?v=3" width="1200" alt="Backlit — MacBook PROLED logo light control for macOS. Live app download total, actual last successful update time, and source/build metadata."></a></p>
 
-Make your MacBook’s illuminated Apple logo yours. Let it breathe, react to music, or show when your coding agent needs you. No account required.
-
-## Get Backlit
+<div align="center">
 
 [![Download Backlit for Apple silicon — latest ZIP or DMG](docs/media/download-backlit.svg)](https://t0nyz.com/backlit/install)
 
-For compatible **MacBook Pro with PROLED XDR** and an illuminated logo. [Installation & compatibility](docs/USER-GUIDE.md#install-and-update) · [All releases](https://github.com/t0nyz0/Backlit/releases)
+MacBook Pro with PROLED XDR · Apple silicon · No account required
 
-## One click from the macOS menu bar
+</div>
 
-Toggle the light and switch modes without leaving what you’re doing.
+<p align="center"><img src="docs/media/preview/panel-menu-bar.svg" width="100%" alt="Menu bar: one click away. Backlit’s native menu bar popover with the backlight switch, behavior picker and current output. Switch the light, pick a behavior and see a live preview, or press Control-Command-B from any app."></p>
 
-<p align="center"><img src="docs/media/preview/menu-bar.jpg" width="780" alt="Backlit’s highlighted macOS menu bar icon and the dark-mode popover with a logo preview and behavior picker"></p>
+<p align="center"><img src="docs/media/preview/panel-main-window.svg" width="100%" alt="Main window: pick a mode, tune the glow. Backlit’s native main window with the live logo preview, the list of seven behaviors and the output settings."></p>
 
-*Illustrated menu bar with a native dark-mode popover captured offscreen from a 0.2.12 development build. Battery data is unavailable in this isolated preview.*
+<p align="center"><img src="docs/media/preview/panel-breathe.svg" width="100%" alt="Breathe: a slow, quiet pulse. An illustrated lid whose light fades in and out on a 3 to 30 second cycle. You set the brightness and how low it dims."></p>
 
-## Backlit main window
+<p align="center"><img src="docs/media/preview/panel-music.svg" width="49%" alt="Music: it moves with the bass. An illustrated lid whose light flashes on each bass hit. Follows whatever your Mac is playing, with Smooth, Balanced or Punchy response. No microphone."> <img src="docs/media/preview/panel-agents.svg" width="49%" alt="Agents: know when your agent needs you. An illustrated lid whose light pulses beside the status “Claude Code is waiting for you”. Working, waiting and attention states for Claude Code and Codex."></p>
 
-Pick a mode and tune the glow.
+<p align="center"><img src="docs/media/preview/panel-battery.svg" width="49%" alt="Battery: glows with your charge. An illustrated lid lit at 82 percent. Brightness follows your battery, pulses while charging and holds steady when full."> <img src="docs/media/preview/panel-trackpad-typing.svg" width="49%" alt="Trackpad and Typing: lights up as you work. The light responds to a finger resting on the trackpad or to the rhythm of your typing, never to what you type."></p>
 
-<p align="center"><img src="docs/media/light-dark.png" width="780" alt="Backlit’s dark-mode main window with the logo preview, behavior list, and battery-output settings"></p>
+<p align="center"><img src="docs/media/preview/panel-modes.svg" width="100%" alt="Seven ways to light up: Steady, Breathe, Battery, Music, Agents, Trackpad and Typing, each shown as an illustrated lid."></p>
 
-*Historical Backlit 0.2.5 isolated capture; some layouts have changed. [Capture details](docs/media/README.md).*
+<p align="center"><img src="docs/media/preview/panel-closed-lid.svg" width="100%" alt="Closed lid: shut the lid, keep the light. Closed-lid lighting runs for 1 to 30 minutes."></p>
 
-## See the light in action
+<p align="center"><img src="docs/media/preview/panel-connections.svg" width="100%" alt="Connections: fits your setup. Claude Code and Codex status hooks light the logo while your agent works. Home Assistant gets a local light and status sensors with no cloud. MCP lets local AI assistants read the light, or change it if you allow. Stream Deck puts the light on a key and is an experimental add-on."></p>
 
-![Three simulated lid previews: Breathe fades smoothly, Music responds to bass hits, and Battery glows brighter at higher charge.](docs/media/preview/light-effects.gif)
+<p align="center"><img src="docs/media/preview/panel-more.svg" width="100%" alt="And the rest: ten languages, your own shortcuts, hiding the menu bar or Dock icon, launch at login, no account, no saved audio and hooks that never send prompts or code, a preview mode without the hardware, and available source."></p>
 
-*Illustrative loops, not hardware footage. Music uses simulated bass hits; Battery shows unplugged examples.*
-
-## What the controls change
-
-![Brightness adjusts the logo’s intensity, Cycle changes the time between pulses, and Dim to controls the low point of each breath.](docs/media/preview/settings.gif)
-
-*Illustrated controls; not a screen recording.*
-
-## Seven ways to light up
-
-**Steady** · **Breathe** · **Battery** · **Music** · **Agents** · **Trackpad** · **Typing**
-
-White light only. Music and Typing use [optional macOS permissions](docs/USER-GUIDE.md#behavior-details-and-permissions).
-
-## Connections
-
-![Backlit connections: Claude Code and Codex status hooks, local light control in Home Assistant, opt-in access for MCP tools, and an experimental Stream Deck add-on.](docs/media/preview/connections.png)
-
-[Setup & current limits](docs/USER-GUIDE.md#connection-setup-and-limits) · Live Codex hook delivery is unverified.
+<sub>Lid drawings are illustrations, not hardware footage. The menu bar popover is a native capture from a 0.2.12 development build in isolated preview, where battery data is unavailable. The main window is a historical 0.2.5 isolated capture, and some layouts have changed ([capture details](docs/media/README.md)). White light only. Music and Typing use [optional macOS permissions](docs/USER-GUIDE.md#behavior-details-and-permissions). The built-in screen may remain lit while the lid is closed. The Stream Deck add-on is experimental, and live Codex hook delivery is unverified ([setup and current limits](docs/USER-GUIDE.md#connection-setup-and-limits)).</sub>
 
 ---
 
-**0.2.11 (build 57)** · [Ten interface languages](docs/LOCALIZATION.md) · [User guide](docs/USER-GUIDE.md) · [Build from source](docs/USER-GUIDE.md#build-from-source) · [Download stats](docs/downloads/README.md)
+**0.2.11 (build 57)** · [Ten interface languages](docs/LOCALIZATION.md) · [User guide](docs/USER-GUIDE.md) · [Installation & compatibility](docs/USER-GUIDE.md#install-and-update) · [All releases](https://github.com/t0nyz0/Backlit/releases) · [Build from source](docs/USER-GUIDE.md#build-from-source) · [Download stats](docs/downloads/README.md)
 
-[Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](.github/SECURITY.md) · [Attribution and trademark notices](docs/USER-GUIDE.md#license-and-attribution) · [PolyForm Perimeter license](LICENSE)
+[Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](.github/SECURITY.md) · [Attribution and trademark notices](docs/USER-GUIDE.md#license-and-attribution) · [License](LICENSE)
 
 <p align="center">Made with care by <a href="https://t0nyz.com">t0nyz</a>.</p>
 <p align="center"><a href="https://buymeacoffee.com/tonyz"><img src="docs/media/buy-me-a-coffee.png" width="190" alt="Buy t0nyz a coffee"></a></p>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="395" height="380" viewBox="0 0 395 380" role="img" aria-labelledby="title desc"><title id="title">Trackpad and Typing: lights up as you work</title><desc id="desc">Three illustrated keys, one lit, beside a lid whose light flashes in time. Trackpad lights up while a finger rests on the trackpad, and Typing follows the rhythm of your typing, never what you type.</desc><style>
+text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Helvetica,Arial,sans-serif}
+.eyebrow{font-size:15px;font-weight:600;fill:#a1a1a6}
+.h{font-weight:700;fill:#f5f5f7}
+.p{fill:#a1a1a6}
+.s{fill:#c7c7cc}
+.b{font-weight:600;fill:#f5f5f7}
+@keyframes breathe{0%,100%{opacity:.1}50%{opacity:1}}
+@keyframes beat{0%,100%{opacity:.2}8%{opacity:1}34%{opacity:.2}}
+@keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.breathe{animation:breathe 4.5s ease-in-out infinite}
+.beat{animation:beat 1.1s ease-out infinite}
+.eq{transform-box:fill-box;transform-origin:50% 100%;animation:eq 1.1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.breathe,.beat,.eq{animation:none}}
+</style><defs>
+<linearGradient id="lid" x1="0" y1="0" x2=".55" y2="1"><stop offset="0" stop-color="#2c2c2f"/><stop offset=".5" stop-color="#171719"/><stop offset="1" stop-color="#0b0b0c"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#fff" stop-opacity=".62"/><stop offset=".2" stop-color="#fff" stop-opacity=".27"/><stop offset=".55" stop-color="#fff" stop-opacity=".07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<clipPath id="panel"><rect width="395" height="380" rx="28"/></clipPath></defs><rect width="395" height="380" rx="28" fill="#000"/><g clip-path="url(#panel)"><text x="36" y="50" class="eyebrow">Trackpad · Typing</text><text x="36" y="91" class="h" font-size="32" letter-spacing="-.03em">Lights up as you</text><text x="36" y="126" class="h" font-size="32" letter-spacing="-.03em">work.</text><text x="36" y="158" class="p" font-size="16">A finger resting on the trackpad, or</text><text x="36" y="180" class="p" font-size="16">the rhythm of your typing. Never</text><text x="36" y="202" class="p" font-size="16">what you type.</text><rect x="36" y="275.5" width="38" height="38" rx="9" fill="#1c1c1e"/><rect x="36.5" y="276" width="37" height="37" rx="8.5" fill="none" stroke="#fff" stroke-opacity=".1"/><rect class="beat" style="animation-duration:.7s" x="81" y="275.5" width="38" height="38" rx="9" fill="#f5f5f7"/><rect x="126" y="275.5" width="38" height="38" rx="9" fill="#1c1c1e"/><rect x="126.5" y="276" width="37" height="37" rx="8.5" fill="none" stroke="#fff" stroke-opacity=".1"/><clipPath id="l"><rect x="189" y="241" width="170" height="107" rx="9"/></clipPath><rect x="189" y="241" width="170" height="107" rx="9" fill="url(#lid)"/><rect x="189.5" y="241.5" width="169" height="106" rx="9" fill="none" stroke="#fff" stroke-opacity=".09"/><g clip-path="url(#l)"><g><g class="beat" style="animation-duration:.7s"><circle cx="274.0" cy="294.5" r="72.8" fill="url(#glow)"/><rect x="267.0" y="287.5" width="14" height="14" rx="3.64" fill="#fff"/></g></g></g></g></svg>
