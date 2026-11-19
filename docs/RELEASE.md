@@ -1,8 +1,5 @@
 ## Backlit 0.2.11
 
-Prepared locally; not published. Public downloads remain unchanged until an
-explicitly approved release passes exact-tag CI.
-
 ### Interface languages
 
 - Adds Spanish, French, German, Japanese, Korean, Brazilian Portuguese,
@@ -14,7 +11,7 @@ explicitly approved release passes exact-tag CI.
   actionable connection errors preserve app names and diagnostic details.
 - Includes localized menu, shortcut and accessibility text, including reconnect
   controls, with layout and placeholder regression coverage.
-- Localizes additional typing, connection, low-power, permission and recovery
+- Localizes additional typing, Home Assistant, Low Power Mode, permission and recovery
   messages. Combined failures retain their separate instructions, while opaque
   diagnostic details, app names and native error codes remain unchanged.
 
@@ -27,7 +24,8 @@ change system preferences. Some low-level diagnostics remain in English.
 
 This remains an ad-hoc signed, non-notarized arm64 build. In-app updates are not
 enabled without a trusted publisher feed and signing key. Existing hardware,
-permission and closed-lid safety limits are unchanged. No new hardware-compatibility
+permission and closed-lid safety limits, including the 30-minute maximum, are unchanged.
+No new hardware-compatibility
 claim is made by this language update.
 
 ## Backlit 0.2.10
