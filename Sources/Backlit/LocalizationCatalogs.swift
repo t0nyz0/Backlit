@@ -7,7 +7,14 @@ enum LocalizationCatalogs {
         // The standalone app packager puts the SwiftPM bundle under Resources.
         if let url = Bundle.main.resourceURL?.appendingPathComponent("Backlit_Backlit.bundle"),
            let bundle = Bundle(url: url) { return bundle }
+        #if BACKLIT_STANDALONE
+        // Never embed SwiftPM's development-machine fallback path in a release.
+        // Packaged resources are mandatory; missing resources must not silently
+        // fall back to the build checkout.
+        fatalError("Missing packaged localization resources.")
+        #else
         return Bundle.module
+        #endif
     }()
     // SwiftPM versions differ in whether script/region directory names are
     // preserved (zh-Hant) or normalized (zh-hant). Resolve the actual resource

@@ -68,6 +68,16 @@ class PackagedResourceLayoutTests(unittest.TestCase):
     def setUpClass(cls):
         spec=importlib.util.spec_from_file_location('check_localizations',ROOT/'scripts/check-localizations.py')
         cls.checker=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.checker)
+    def test_standalone_build_never_uses_development_resource_fallback(self):
+        root=Path(__file__).resolve().parents[2]
+        source=(root/'Sources/Backlit/LocalizationCatalogs.swift').read_text()
+        standalone=source.split('#if BACKLIT_STANDALONE',1)[1].split('#else',1)[0]
+        self.assertNotIn('Bundle.module',standalone)
+        self.assertIn('fatalError("Missing packaged localization resources.")',standalone)
+        self.assertIn('return Bundle.module',source.split('#else',1)[1])
+        compile_command=(root/'scripts/build.sh').read_text().split('swift build -c release',1)[1].split('binary_dir=',1)[0]
+        self.assertIn('-Xswiftc -D -Xswiftc BACKLIT_STANDALONE',compile_command)
+
     def test_macos_bundle_resources_directory(self):
         with tempfile.TemporaryDirectory() as directory:
             bundle=Path(directory)/'Backlit_Backlit.bundle'

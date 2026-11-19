@@ -28,6 +28,7 @@ if not destination.is_file() or destination.read_text() != normalized:
     destination.write_text(normalized)
 PY_PROTOCOLS
 swift build -c release --triple "$target_triple" \
+    -Xswiftc -D -Xswiftc BACKLIT_STANDALONE \
     -Xswiftc -file-prefix-map -Xswiftc "$PWD=/build/Backlit" \
     -Xswiftc -whole-module-optimization \
     -Xswiftc -emit-const-values \
