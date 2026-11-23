@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>Bij 0% gaat het licht tussen pulsen helemaal uit.</string>
+	<key>A compatible live Mac is required.</key>
+	<string>Een compatibele, actieve Mac is vereist.</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>Er kon geen nieuwe koppelingssleutel worden aangemaakt. Delen met Home Assistant is daarom uitgeschakeld. Kies opnieuw ‘Nieuwe koppelingssleutel’ voordat je delen weer inschakelt. ({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>Er is een nieuwe koppelingssleutel aangemaakt. Kopieer deze en werk Home Assistant bij. De oude sleutel werkt niet meer.</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>Een eerdere lichtsessie moet worden hersteld. Kies ‘Licht herstellen’ om het opruimen af te ronden.</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>Een eerdere sessie moet worden hersteld. Kies eerst ‘Licht herstellen’.</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>Er is nog herstelinformatie voor een eerdere sessie. Met ‘Licht herstellen’ kun je herstel aanvragen, maar daarmee is niet bevestigd dat macOS de bediening terugheeft.</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>Een zachte gloed tijdens het wachten. Een puls tijdens het werken. Twee flitsen als een agent je nodig heeft en je niet bij je Mac bent.</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>AI-toegang blijft uit omdat de sleutel niet kon worden vervangen. </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>AI-toegang blijft uit omdat de sleutel niet kon worden vervangen. {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>AI-verbindingen zijn uitgeschakeld in de geïsoleerde voorvertoning.</string>
+	<key>Access key</key>
+	<string>Toegangssleutel</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>Actief. De veiligheidslimieten blijven gelden.</string>
+	<key>Actual battery-driven logo output</key>
+	<string>Werkelijke logohelderheid op basis van de batterij</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>Past zich aan het afspeelniveau aan. Met de intensiteit regel je het effect. Je helderheidsinstelling bepaalt het maximum.</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>Tijdens het verbinden zijn agentinstellingen verschenen. Er is niets overschreven. Controleer de instellingen en probeer het opnieuw.</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>De agentinstellingen zijn gewijzigd tijdens het verbinden. Probeer het opnieuw.</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>Het bestand met agentinstellingen is een symbolische koppeling of een speciaal bestand. Kies eerst de echte map.</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>De agentinstellingen moeten een JSON-object zijn. Er is niets gewijzigd.</string>
+	<key>Agents</key>
+	<string>Agenten</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>Geef Backlit toegang bij ‘Toegankelijkheid’ en schakel deze optie opnieuw in. Voor gewone toetscombinaties zijn geen nieuwe machtigingen nodig.</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>Geef Backlit toegang bij ‘Invoercontrole’ en schakel deze optie opnieuw in. Het filter voor hardwaretoetsen blijft uit totdat je toegang geeft.</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Sta Backlit-links en andere apps toe</string>
+	<key>Allow connections from your local network</key>
+	<string>Sta verbindingen vanaf je lokale netwerk toe</string>
+	<key>Allow light changes</key>
+	<string>Sta lichtwijzigingen toe</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Hiermee mogen Backlit-links het licht wijzigen. Systeemeigen Opdrachten-acties zijn niet beschikbaar in deze build.</string>
+	<key>Also respond to typing</key>
+	<string>Reageer ook op typen</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>De limieten voor omgevingshelderheid zijn niet gewijzigd.</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>Er staat een update klaar. Kies ‘Installeer update en start opnieuw’ of sla de update over in het updatevenster voordat je stopt.</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>Een andere regelaar heeft het logo gewijzigd of de status is niet beschikbaar. De herstelinformatie is bewaard.</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>Een andere regelaar heeft het logo gewijzigd. Backlit wijzigt niets meer. De herstelinformatie is bewaard.</string>
+	<key>Appearance</key>
+	<string>Weergave</string>
+	<key>Assistant setup</key>
+	<string>Assistent configureren</string>
+	<key>Assistants &amp; integrations</key>
+	<string>Assistenten en integraties</string>
+	<key>Attention</key>
+	<string>Aandacht nodig</string>
+	<key>Authorization was cancelled.</key>
+	<string>De autorisatie is geannuleerd.</string>
+	<key>Automatic level</key>
+	<string>Automatisch niveau</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>Automatische lichtsignalen voor programmeersessies. Werkt onafhankelijk van MCP.</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>Automatisch lichtherstel is nog niet klaar om te worden hervat.</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>Automatisch lichtherstel is na drie pogingen gestopt. Kies ‘Licht herstellen’ voordat je het opnieuw probeert.</string>
+	<key>Automatic pulse</key>
+	<string>Automatische puls</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>Automatisch herstel beheert de opgeslagen fadesessie niet meer.</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>De timing van automatisch herstel kon niet worden gecontroleerd.</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>De automatische veiligheidscontroles zijn na drie pogingen gestopt. Herstel je licht in Instellingen en schakel ‘Houd logo aan bij gesloten deksel’ uit en weer in om het opnieuw te proberen.</string>
+	<key>Available on this Mac</key>
+	<string>Beschikbaar op deze Mac</string>
+	<key>Available on your local network</key>
+	<string>Beschikbaar op je lokale netwerk</string>
+	<key>Backlight</key>
+	<string>Achtergrondverlichting</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlit analyseert afgespeeld systeemgeluid lokaal om het logo op muziek te laten reageren. Er wordt geen audio opgenomen of geüpload.</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit kon geen verbinding maken met systeemgeluid. Geef Backlit toegang in Systeeminstellingen → Privacy en beveiliging → Scherm- en systeemaudio-opname, open de app opnieuw en probeer het nogmaals. (macOS-code {code})</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit kon systeemgeluid niet voorbereiden. Geef Backlit toegang in Systeeminstellingen → Privacy en beveiliging → Scherm- en systeemaudio-opname, open de app opnieuw en probeer het nogmaals. (macOS-code {code})</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit kon de audio-indeling niet lezen. Geef Backlit toegang in Systeeminstellingen → Privacy en beveiliging → Scherm- en systeemaudio-opname, open de app opnieuw en probeer het nogmaals. (macOS-code {code})</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit kon geen toegang tot systeemgeluid aanvragen. Geef Backlit toegang in Systeeminstellingen → Privacy en beveiliging → Scherm- en systeemaudio-opname, open de app opnieuw en probeer het nogmaals. (macOS-code {code})</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit kon systeemgeluid niet starten. Geef Backlit toegang in Systeeminstellingen → Privacy en beveiliging → Scherm- en systeemaudio-opname, open de app opnieuw en probeer het nogmaals. (macOS-code {code})</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlit is al geopend in een ander venster. Gebruik het geïnstalleerde exemplaar.</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Backlit-link gekopieerd. Gebruik de link in een launcher die aangepaste app-links ondersteunt.</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlit gebruikt afgespeeld systeemgeluid voor de muziekmodus. Scherm- en audio-inhoud worden niet opgeslagen of verzonden.</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Backlit maakt opnieuw verbinding wanneer je Mac actief en ontgrendeld is.</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Backlit controleert of het herstel is voltooid en maakt opnieuw verbinding wanneer je Mac actief is.</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — Voorvertoning</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>De hooks van Backlit zijn verwijderd. Bestaande hooks zijn behouden.</string>
+	<key>Balanced</key>
+	<string>Evenwichtig</string>
+	<key>Battery</key>
+	<string>Batterij</string>
+	<key>Battery charging behavior</key>
+	<string>Gedrag tijdens opladen</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>De modus Batterij regelt de helderheid automatisch. Kies een handmatig gedrag om toetscombinaties voor helderheid te gebruiken.</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>Duur van laadpuls in seconden</string>
+	<key>Battery state unavailable</key>
+	<string>Batterijstatus niet beschikbaar</string>
+	<key>Battery-driven output</key>
+	<string>Helderheid op basis van batterij</string>
+	<key>Beat intensity</key>
+	<string>Intensiteit van de beat</string>
+	<key>Behavior</key>
+	<string>Gedrag</string>
+	<key>Blink</key>
+	<string>Knipperen</string>
+	<key>Blink on click</key>
+	<string>Knipper bij klikken</string>
+	<key>Blink on trackpad click</key>
+	<string>Knipper bij klikken op trackpad</string>
+	<key>Breathe</key>
+	<string>Ademen</string>
+	<key>Breathing</key>
+	<string>Ademen</string>
+	<key>Breathing cycle seconds</key>
+	<string>Duur van ademcyclus in seconden</string>
+	<key>Breathing pace</key>
+	<string>Ademtempo</string>
+	<key>Brightness</key>
+	<string>Helderheid</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>Toetscombinaties voor helderheid wijzigen het handmatige niveau met 5%. Het huidige gedrag en de aan-uitstand blijven gelijk. De modus Batterij regelt de helderheid automatisch.</string>
+	<key>CONNECTIONS</key>
+	<string>VERBINDINGEN</string>
+	<key>Cancel</key>
+	<string>Annuleer</string>
+	<key>Cannot reopen the power service.</key>
+	<string>De energievoorzieningsservice kan niet opnieuw worden geopend.</string>
+	<key>Change </key>
+	<string>Wijzig </string>
+	<key>Charge-ready signal</key>
+	<string>Signaal bij bereikt laadniveau</string>
+	<key>Charge-ready threshold</key>
+	<string>Drempel voor laadsignaal</string>
+	<key>Charging</key>
+	<string>Aan het opladen</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>Minimale helderheid van laadpuls</string>
+	<key>Check for Updates</key>
+	<string>Zoek naar updates</string>
+	<key>Choose a custom configuration folder</key>
+	<string>Kies een aangepaste configuratiemap</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>Kies de configuratiemap van {agent}</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>Bezig met opruimen. Je keuze is opgeslagen.</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>Het opruimen is afgerond, maar het is niet bevestigd dat macOS de bediening terugheeft voor de opgeslagen sessie met gesloten deksel.</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>Opruimen bij gesloten deksel kon niet worden bevestigd. Controleer het energieherstel in Instellingen en probeer het opnieuw.</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>Bezig met opruimen na een sessie met gesloten deksel. Probeer ‘Licht herstellen’ opnieuw zodra dit klaar is.</string>
+	<key>Closed-lid duration</key>
+	<string>Duur bij gesloten deksel</string>
+	<key>Closed-lid duration amount</key>
+	<string>Tijdswaarde bij gesloten deksel</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>Licht bij gesloten deksel gepauzeerd na een fout</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Het licht bij gesloten deksel is na een fout gepauzeerd. Het logo is uit. Herstel je licht in Instellingen en schakel daarna ‘Houd logo aan bij gesloten deksel’ uit en weer in.</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>Gebruik bij gesloten deksel is niet beschikbaar in de geïsoleerde voorvertoning.</string>
+	<key>Coding agent status</key>
+	<string>Status van programmeeragent</string>
+	<key>Coding status hooks</key>
+	<string>Statushooks voor programmeersessies</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>Compatibel verlicht logo gevonden</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>Compatibele logohardware gevonden.</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>Compatibele logohardware is niet beschikbaar.</string>
+	<key>Connect</key>
+	<string>Verbind</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>Koppel de logoverlichting van Backlit aan je Home Assistant-instantie op je lokale netwerk.</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>Verbind statushooks van {agent}</string>
+	<key>Connecting to system audio…</key>
+	<string>Verbinding met systeemgeluid maken…</string>
+	<key>Connecting to your MacBook</key>
+	<string>Verbinding met je MacBook maken</string>
+	<key>Connections</key>
+	<string>Verbindingen</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>Verbindingen zijn uitgeschakeld in de geïsoleerde voorvertoning.</string>
+	<key>Constant brightness</key>
+	<string>Constante helderheid</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>Bedien je licht op verzoek of laat het automatisch je programmeeractiviteit weergeven.</string>
+	<key>Copy</key>
+	<string>Kopieer</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Kopieer configuratie voor Claude Code</string>
+	<key>Copy Codex Setup</key>
+	<string>Kopieer configuratie voor Codex</string>
+	<key>Copy Pairing Key</key>
+	<string>Kopieer koppelingssleutel</string>
+	<key>Copy Toggle Link</key>
+	<string>Kopieer aan-uitlink</string>
+	<key>Could not generate a pairing key.</key>
+	<string>Er kon geen koppelingssleutel worden gegenereerd.</string>
+	<key>Could not open the logo session lock.</key>
+	<string>De vergrendeling voor de logosessie kon niet worden geopend.</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>Het gedrag van het scherm en toetsenbord kon niet behouden blijven. Het licht bij gesloten deksel is gestopt.</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>De oorspronkelijke logoconfiguratie kon niet worden gelezen.</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>De normale sluimerstand bij het sluiten van het deksel kon niet worden hersteld.</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>De werkelijke dekselstatus kon niet worden hersteld. De herstelinformatie is bewaard.</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>De werkelijke status van het logo bij gesloten deksel kon niet worden hersteld. De herstelinformatie is bewaard.</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>Het licht bij gesloten deksel kon niet veilig worden ingeschakeld. Kies ‘Licht herstellen’ voordat je het opnieuw probeert.</string>
+	<key>Could not start typing response</key>
+	<string>Typreactie kon niet worden gestart</string>
+	<key>Create New Key</key>
+	<string>Maak nieuwe sleutel</string>
+	<key>Create a new pairing key?</key>
+	<string>Een nieuwe koppelingssleutel aanmaken?</string>
+	<key>Currently using {language}</key>
+	<string>Huidige taal: {language}</string>
+	<key>Dark</key>
+	<string>Donker</string>
+	<key>Dark between beats</key>
+	<string>Donker tussen beats</string>
+	<key>Decrease logo brightness</key>
+	<string>Verlaag logohelderheid</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>Standaard: automatische laadpuls, cyclus van 6 seconden, dimt tot 0%, laadsignaal uit.</string>
+	<key>Dim to</key>
+	<string>Dim tot</string>
+	<key>Disable</key>
+	<string>Schakel uit</string>
+	<key>Disconnect</key>
+	<string>Verbreek verbinding</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>Verbreek verbinding met statushooks van {agent}</string>
+	<key>Dismiss notice</key>
+	<string>Sluit melding</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>Verandert de helderheid van je scherm niet.</string>
+	<key>Download Latest Version</key>
+	<string>Download nieuwste versie</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>Download de app, sluit Backlit af en vervang de app in ‘Apps’.</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>Downloads zijn uitgeschakeld in de voorvertoning.</string>
+	<key>Duration</key>
+	<string>Duur</string>
+	<key>Duration: {value} s</key>
+	<string>Duur: {value} s</string>
+	<key>Edit</key>
+	<string>Bewerk</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>Sta eerst Backlit-links en andere apps toe in ‘Verbindingen’.</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Schakel Home Assistant-bridge in</string>
+	<key>Enable or retry typing access</key>
+	<string>Schakel toegang voor typen in of probeer het opnieuw</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>Experimenteel filter actief. Test Shift + helderheid op je toetsenbord. Het is nog niet bevestigd dat de schermhelderheid gelijk blijft.</string>
+	<key>Fade in and out</key>
+	<string>Geleidelijk feller en zachter</string>
+	<key>Faster</key>
+	<string>Sneller</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>Voltooi het lichtherstel voordat je toetscombinaties voor helderheid gebruikt.</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>Voltooi het herstel van de vorige sessie en maak opnieuw verbinding.</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>Rond het opruimen van de vorige sessie met gesloten deksel af voordat je een nieuwe start.</string>
+	<key>Follow battery charge</key>
+	<string>Volg de batterijlading</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Volg de instelling van je Mac of kies zelf een weergave.</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Volg de voorkeurstalen van je Mac of kies een taal voor Backlit.</string>
+	<key>Following your battery</key>
+	<string>Volgt de batterijlading</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>Volgt ook het batterijpercentage als de stroomadapter is aangesloten.</string>
+	<key>Fully charged</key>
+	<string>Volledig opgeladen</string>
+	<key>General</key>
+	<string>Algemeen</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>Algemene toetscombinaties zijn niet beschikbaar.</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>Globaal trackpad · reageert op gebeurtenissen, zonder invoer te peilen</string>
+	<key>Glow</key>
+	<string>Gloed</string>
+	<key>Glowing</key>
+	<string>Gloeit</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>macOS blijft de hardwaretoetsen voor helderheid beheren. Gebruik een pijltoets, een letter of een andere gewone toets.</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>De hardwaretoetsen voor helderheid worden beheerd door macOS.</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>Het onderscheppen van hardwaretoetsen is uitgeschakeld in de geïsoleerde voorvertoning.</string>
+	<key>Hide Dock icon</key>
+	<string>Verberg Dock-symbool</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Home Assistant is uitgeschakeld omdat de sleutel niet beschikbaar is in Sleutelhanger. Schakel Home Assistant opnieuw in bij ‘Verbindingen’.</string>
+	<key>Hooks installed · start a new session</key>
+	<string>Hooks geïnstalleerd · start een nieuwe sessie</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>Hooks geïnstalleerd · vertrouw ze in Codex</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>Controleer de hooks · verbind opnieuw of controleer de agentinstellingen</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>Hooks opgeslagen. Controleer en vertrouw ze in Codex-instellingen → Hooks en start een nieuwe sessie.</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>Hooks opgeslagen. Controleer je agentinstellingen en start een nieuwe Claude Code-sessie.</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>Hooks verzenden alleen een sessie-ID en een status. Je prompts, code en uitvoer van tools komen nooit in Backlit terecht.</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>GEÏSOLEERDE VOORVERTONING</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>Als Backlit daar al is ingeschakeld maar de toegang na een update nog steeds wordt geweigerd, verwijder dan de oude vermelding, voeg de geïnstalleerde app opnieuw toe, schakel deze in en open Backlit opnieuw.</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>Als de toegang uitstaat, geef Backlit dan toegang bij Privacy en beveiliging → Scherm- en systeemaudio-opname.</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>Updates binnen de app zijn nog niet ingeschakeld voor deze build. De uitgever moet een vertrouwde updatefeed en ondertekeningssleutel toevoegen.</string>
+	<key>Increase logo brightness</key>
+	<string>Verhoog logohelderheid</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>Invoercontrole is toegestaan, maar macOS kon niet luisteren naar typgebeurtenissen. Open Backlit opnieuw en probeer het nogmaals.</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>De machtiging ‘Invoercontrole’ is vereist om op typen te reageren</string>
+	<key>Input active · light on</key>
+	<string>Invoer actief · licht aan</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>Geen invoer beschikbaar · kies ander gedrag</string>
+	<key>Install Update and Relaunch</key>
+	<string>Installeer update en start opnieuw</string>
+	<key>Integration Folder</key>
+	<string>Integratiemap</string>
+	<key>Invalid saved duration</key>
+	<string>Ongeldige opgeslagen duur</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>Houd Backlit binnen één klik bereikbaar in de menubalk.</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Houd Backlit in de menubalk. Als je het menubalksymbool verbergt, wordt eerst het Dock-symbool teruggezet.</string>
+	<key>Keep logo on with lid closed</key>
+	<string>Houd logo aan bij gesloten deksel</string>
+	<key>Keep on for</key>
+	<string>Houd aan gedurende</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Houdt deze Mac actief en het ingebouwde scherm kan bij gesloten deksel aanblijven. Maximaal 30 minuten. Stopt ook bij een bijna lege batterij, warmte of de energiebesparingsmodus. Gebruik een harde, goed geventileerde ondergrond, nooit een tas.</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>De veiligheidsvoorzieningen voor het toetsenbord zijn niet beschikbaar. Het licht bij gesloten deksel is niet ingeschakeld.</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>Sleutelhanger kon de koppelingssleutel niet bewaren.</string>
+	<key>LIVE PREVIEW</key>
+	<string>LIVE VOORVERTONING</string>
+	<key>LOGO CONNECTED</key>
+	<string>LOGO VERBONDEN</string>
+	<key>LOGO CONTROL</key>
+	<string>LOGOBEDIENING</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>LOGO NIET BESCHIKBAAR</string>
+	<key>Language</key>
+	<string>Taal</string>
+	<key>Last access check: </key>
+	<string>Laatste toegangscontrole: </string>
+	<key>Last access check: {diagnostic}</key>
+	<string>Laatste toegangscontrole: {diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>De oude logotoewijzing kan alleen worden gecontroleerd als het deksel open is.</string>
+	<key>Light</key>
+	<string>Licht</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>Lichtherstel bevestigd. Automatisch opnieuw verbinden.</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>Herstel van licht of deksel is niet bevestigd. De herstelinformatie is bewaard.</string>
+	<key>Light output paused</key>
+	<string>Lichtuitvoer gepauzeerd</string>
+	<key>Light recovery is still in progress.</key>
+	<string>Lichtherstel is nog bezig.</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>Lichtherstel is nog bezig. Probeer opnieuw te stoppen zodra het klaar is.</string>
+	<key>Light up while typing</key>
+	<string>Licht op tijdens typen</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>Lokale verbindingen zijn uitgeschakeld omdat de luisterservice niet werkte. </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>Lokale verbindingen zijn uitgeschakeld omdat de luisterservice niet werkte. {detail}</string>
+	<key>Logo and power</key>
+	<string>Logo en energie</string>
+	<key>Logo brightness</key>
+	<string>Logohelderheid</string>
+	<key>Logo control enabled</key>
+	<string>Logobediening ingeschakeld</string>
+	<key>Logo control has not been enabled.</key>
+	<string>Logobediening is niet ingeschakeld.</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>Logobediening wordt hersteld na een verandering van de systeemstatus.</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>Logobediening schakelt tussen verlichting bij open en gesloten deksel.</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>Logobediening niet beschikbaar: {detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>Logotoewijzing is niet beschikbaar. De herstelinformatie is bewaard.</string>
+	<key>Logo off</key>
+	<string>Logo uit</string>
+	<key>Logo off · hardware disabled</key>
+	<string>Logo uit · hardware uitgeschakeld</string>
+	<key>Logo off · lid closed</key>
+	<string>Logo uit · deksel gesloten</string>
+	<key>Logo on</key>
+	<string>Logo aan</string>
+	<key>Logo preview, {value} percent</key>
+	<string>Logovoorvertoning, {value} procent</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>Herstelknoppen voor het logo zijn niet beschikbaar. De herstelinformatie is bewaard.</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>Logostatus niet beschikbaar · geen hardwarebediening</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>Logostatus niet beschikbaar · {value}% gevraagd</string>
+	<key>Logo unchanged</key>
+	<string>Logo ongewijzigd</string>
+	<key>MCP access</key>
+	<string>MCP-toegang</string>
+	<key>MCP control</key>
+	<string>MCP-bediening</string>
+	<key>Mac is sleeping</key>
+	<string>Mac staat in sluimerstand</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>MacBook PROLED-logobediening</string>
+	<key>Manage Connections</key>
+	<string>Beheer verbindingen</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>Handmatige logohelderheid: {value}%</string>
+	<key>Match battery level</key>
+	<string>Volg batterijniveau</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>Volgt de batterijlading als de Mac niet op netvoeding werkt.</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>Maximaal 30 minuten per sluiting. Sluimerstand telt mee; opnieuw openen van de app zet de timer niet terug. Deze limiet garandeert geen veilige temperaturen.</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · standaard uit</string>
+	<key>Moving with your music</key>
+	<string>Beweegt mee met je muziek</string>
+	<key>Music</key>
+	<string>Muziek</string>
+	<key>Music intensity</key>
+	<string>Muziekintensiteit</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>Delen via het netwerk is uitgeschakeld in de geïsoleerde voorvertoning.</string>
+	<key>New Pairing Key</key>
+	<string>Nieuwe koppelingssleutel</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>Geen laadpuls. Houdt de logohelderheid op 100% zolang de stroomadapter is aangesloten.</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>Geen compatibel verlicht logo gevonden.</string>
+	<key>No display is available for system audio capture.</key>
+	<string>Er is geen scherm beschikbaar voor het vastleggen van systeemaudio.</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>Trackpadinvoer is niet beschikbaar. Schakel typreactie in of kies ander gedrag.</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>De normale sluimerstand bij sluiten is hersteld. Een achtergebleven sessiebestand kon niet worden verwijderd.</string>
+	<key>Not connected</key>
+	<string>Niet verbonden</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>Waargenomen sessies: {count} · {state}</string>
+	<key>Off</key>
+	<string>Uit</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>Standaard uit. Sta netwerktoegang toe voor Home Assistant op een ander apparaat.</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>Standaard uit. Vereist Toegankelijkheid en Invoercontrole. Ondersteuning verschilt per toetsenbord: controleer of het scherm niet ook van helderheid verandert. Gewone toetscombinaties werken zonder deze machtigingen.</string>
+	<key>Off · lid closed</key>
+	<string>Uit · deksel gesloten</string>
+	<key>On battery</key>
+	<string>Op batterij</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>Een assistent kan op verzoek de status van het licht controleren of het licht wijzigen.</string>
+	<key>Open Accessibility</key>
+	<string>Open Toegankelijkheid</string>
+	<key>Open Input Monitoring</key>
+	<string>Open Invoercontrole</string>
+	<key>Open Privacy Settings</key>
+	<string>Open privacy-instellingen</string>
+	<key>Open at login</key>
+	<string>Open na inloggen</string>
+	<key>Open workspace</key>
+	<string>Open werkruimte</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>Optionele aanpassing van de limieten voor omgevingshelderheid. macOS vraagt een beheerder om goedkeuring. De vorige limieten worden bewaard.</string>
+	<key>Optional local light integration</key>
+	<string>Optionele lokale lichtintegratie</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>Optioneel: wijkt kort af van het normale batterijgedrag zodra de ingestelde drempel is bereikt terwijl de stroomadapter is aangesloten. Herhaalt pas als het laadniveau daalt of je de adapter loskoppelt.</string>
+	<key>Other apps</key>
+	<string>Andere apps</string>
+	<key>Override ambient brightness limit</key>
+	<string>Negeer limiet voor omgevingshelderheid</string>
+	<key>PREVIEW MODE</key>
+	<string>VOORVERTONINGSMODUS</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>Koppelingssleutel gekopieerd. Plak hem in Home Assistant en houd hem privé.</string>
+	<key>Paste</key>
+	<string>Plak</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>Gepauzeerd na een fout. Herstel je licht voordat je het opnieuw probeert.</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>Gepauzeerd na een fout. Schakel ‘Houd logo aan bij gesloten deksel’ na herstel uit en weer in.</string>
+	<key>Paused in Low Power Mode</key>
+	<string>Gepauzeerd in de energiebesparingsmodus</string>
+	<key>Paused while your Mac cools down</key>
+	<string>Gepauzeerd terwijl je Mac afkoelt</string>
+	<key>Paused with your display</key>
+	<string>Gepauzeerd met je scherm</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>Alleen afspeelgeluid. Geen microfoon. Er wordt niets opgenomen.</string>
+	<key>Plugged in · Not charging</key>
+	<string>Stroomadapter aangesloten · laadt niet op</string>
+	<key>Power service unavailable.</key>
+	<string>Energievoorzieningsservice niet beschikbaar.</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Druk op Command, Control of Option samen met een gewone toets. Druk op Esc om te annuleren.</string>
+	<key>Preview only</key>
+	<string>Alleen voorvertoning</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>De voorvertoning gebruikt een voorbeeldgolfvorm.</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>De voorvertoning gebruikt een voorbeeldgolfvorm. Systeemgeluid wordt in de voorvertoning nooit gestart.</string>
+	<key>Preview · compatible logo not found</key>
+	<string>Voorvertoning · geen compatibel logo gevonden</string>
+	<key>Preview · logo unchanged</key>
+	<string>Voorvertoning · logo ongewijzigd</string>
+	<key>Preview · {value}% requested</key>
+	<string>Voorvertoning · {value}% gevraagd</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>Eerdere effecten worden nog opgeruimd. De volgende veiligheidscontrole wacht.</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>Herstel van het eerdere licht bevestigd. Automatisch opnieuw verbinden.</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>Vorige sessie gecontroleerd. Opnieuw verbinden met je opgeslagen keuze.</string>
+	<key>Pulse</key>
+	<string>Puls</string>
+	<key>Pulse cycle</key>
+	<string>Pulscyclus</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>Pulseert alleen tijdens actief opladen. Brandt continu zodra het opladen wordt gepauzeerd of klaar is.</string>
+	<key>Pulsing while charging</key>
+	<string>Pulseert tijdens opladen</string>
+	<key>Punchy</key>
+	<string>Krachtig</string>
+	<key>Quit</key>
+	<string>Stop</string>
+	<key>Quit Backlit</key>
+	<string>Stop Backlit</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>Sluit {app} af voordat je de logo-instellingen wijzigt.</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>Sluit {app} af voordat Backlit het logo gaat bedienen.</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>Sluit {app} af voordat je een eerdere Backlit-sessie herstelt.</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>Sluit {app} af om Backlit te gebruiken</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>Als je stopt, worden de systeemeigen logo-instellingen van vóór deze Backlit-sessie hersteld. Het logo kan weer aangaan.</string>
+	<key>Ready at</key>
+	<string>Gereed bij</string>
+	<key>Ready for the next lid closure.</key>
+	<string>Klaar voor de volgende keer dat het deksel sluit.</string>
+	<key>Ready for trackpad contact</key>
+	<string>Klaar voor aanraking van het trackpad</string>
+	<key>Ready for trackpad or typing</key>
+	<string>Klaar voor trackpad of typen</string>
+	<key>Ready for typing</key>
+	<string>Klaar voor typen</string>
+	<key>Ready for your music</key>
+	<string>Klaar voor je muziek</string>
+	<key>Ready for {source} touch</key>
+	<string>Klaar voor aanraking: {source}</string>
+	<key>Reconnect</key>
+	<string>Verbind opnieuw</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>Verbind statushooks van {agent} opnieuw</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>Opnieuw verbinden met je MacBook</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>De controle over het herstel is tijdens de verificatie gewijzigd. Herstel je licht voordat je het opnieuw probeert.</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>Herstel niet bevestigd. Je keuze voor gesloten deksel is opgeslagen en blijft gepauzeerd. Controleer het herstel in Instellingen.</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>Keuze opgeslagen. Open het deksel voordat je een nieuwe sessie met timer start.</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>Keuze opgeslagen. Gepauzeerd vanwege de veiligheidsinstellingen van je Mac.</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>Keuze opgeslagen. In de voorvertoning wordt nooit een sessie met gesloten deksel gestart.</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>Keuze opgeslagen. Wacht op bevestiging van de deksel- en timerstatus.</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>Keuze opgeslagen. Wacht op nieuwe veiligheidscontroles terwijl je Mac actief en ontgrendeld is.</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>Keuze opgeslagen. Wacht tot je Mac en licht klaar zijn.</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>Keuze opgeslagen. Wacht op controle van de vorige sessie voordat er opnieuw wordt verbonden.</string>
+	<key>Replace AI Key</key>
+	<string>Vervang AI-sleutel</string>
+	<key>Replace Key</key>
+	<string>Vervang sleutel</string>
+	<key>Replace the AI connection key?</key>
+	<string>De sleutel voor AI-verbindingen vervangen?</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>Vervang de koppelingssleutel als iemand anders deze mogelijk heeft gezien</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>Vraag herstel aan. Het is nog niet bevestigd dat macOS de bediening terugheeft. Je opgeslagen keuze voor gesloten deksel blijft gepauzeerd.</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>Vereist Invoercontrole. Gebruikt alleen de timing; er worden geen tekens gelezen of bewaard. Beveiligde invoer kan de typreactie pauzeren.</string>
+	<key>Reset</key>
+	<string>Stel opnieuw in</string>
+	<key>Respond to system playback</key>
+	<string>Reageer op systeemgeluid</string>
+	<key>Response</key>
+	<string>Reactie</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>Herstel is aangevraagd. Het is nog niet bevestigd dat macOS de bediening terugheeft, dus de opgeslagen keuze voor gesloten deksel blijft gepauzeerd.</string>
+	<key>Restore Battery Defaults</key>
+	<string>Herstel batterijstandaarden</string>
+	<key>Restore Light</key>
+	<string>Licht herstellen</string>
+	<key>Restore and Quit</key>
+	<string>Herstel en stop</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>Herstel de huidige logosessie voordat je opnieuw verbinding maakt met de logoservice.</string>
+	<key>Restore the logo and quit?</key>
+	<string>Logo herstellen en stoppen?</string>
+	<key>Restore your light</key>
+	<string>Herstel je licht</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>Herstel je licht voordat je de omgevingslimieten wijzigt.</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>Herstel je licht voordat je stopt. De vorige sessie met gesloten deksel moet nog worden hersteld.</string>
+	<key>Restore your light before starting another session.</key>
+	<string>Herstel je licht voordat je een nieuwe sessie start.</string>
+	<key>Restore your light to continue</key>
+	<string>Herstel je licht om door te gaan</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>Herstel je licht om de vorige sessie met gesloten deksel af te ronden</string>
+	<key>Retry System Audio</key>
+	<string>Probeer systeemaudio opnieuw</string>
+	<key>Review Closed-lid Pause</key>
+	<string>Bekijk pauze bij gesloten deksel</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>De veiligheidsstatus is tijdens de verificatie gewijzigd. Backlit controleert deze opnieuw voordat het weer verbinding maakt.</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>Veiligheidscontrole mislukt: {detail} Herstel je licht voordat je het opnieuw probeert.</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>Opgeslagen helderheid: {value}% · logo uit</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>De opgeslagen hersteltiming kon niet worden gecontroleerd. Herstel je licht en schakel de verlichting bij gesloten deksel uit en weer in om het opnieuw te proberen.</string>
+	<key>Select All</key>
+	<string>Selecteer alles</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>De sessiemetadata zijn onvolledig. Sommige programmeersessies ontbreken mogelijk in dit overzicht.</string>
+	<key>Session snapshot incomplete</key>
+	<string>Sessieoverzicht onvolledig</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>Sessies: {count} · {state}</string>
+	<key>Settings</key>
+	<string>Instellingen</string>
+	<key>Settings…</key>
+	<string>Instellingen…</string>
+	<key>Setup</key>
+	<string>Configuratie</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>Configuratiecommando gekopieerd. Voer het lokaal uit in de terminal van je agent en controleer vervolgens de MCP-verbindingen.</string>
+	<key>Setup guide</key>
+	<string>Configuratiehandleiding</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + hardwaretoetsen voor helderheid (experimenteel)</string>
+	<key>Show Update Progress</key>
+	<string>Toon updatevoortgang</string>
+	<key>Show menu bar icon</key>
+	<string>Toon menubalksymbool</string>
+	<key>Signal</key>
+	<string>Signaal</string>
+	<key>Slower</key>
+	<string>Langzamer</string>
+	<key>Smooth</key>
+	<string>Vloeiend</string>
+	<key>Start update checks from Settings.</key>
+	<string>Start het zoeken naar updates vanuit Instellingen.</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>Veiligheidscontroles voor gesloten deksel starten…</string>
+	<key>State unavailable</key>
+	<string>Status niet beschikbaar</string>
+	<key>Status only</key>
+	<string>Alleen status</string>
+	<key>Steady</key>
+	<string>Constant</string>
+	<key>Steady brightness</key>
+	<string>Constante helderheid</string>
+	<key>Steady while plugged in</key>
+	<string>Constant op netvoeding</string>
+	<key>System</key>
+	<string>Systeem</string>
+	<key>System Default</key>
+	<string>Systeemstandaard</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>Backlit heeft geen toegang tot systeemaudio. Geef toegang in Systeeminstellingen → Privacy en beveiliging → Scherm- en systeemaudio-opname. Open daarna Backlit opnieuw of kies ‘Probeer systeemaudio opnieuw’. Backlit neemt je scherm of microfoon niet op.</string>
+	<key>System audio follows Music mode.</key>
+	<string>Systeemgeluid volgt de muziekmodus.</string>
+	<key>System audio is unavailable.</key>
+	<string>Systeemgeluid is niet beschikbaar.</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>Systeemgeluid start in de muziekmodus als je licht aan is en je Mac actief is.</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>Systeemgeluid is gestopt voordat het beschikbaar was.</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>Die toetscombinatie is al aan een andere Backlit-actie toegewezen.</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>De sleutel voor AI-verbindingen is vervangen. Schakel AI-toegang uit om alle assistentverbindingen te stoppen.</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>De MCP-verbinding is uitgeschakeld omdat de sleutel niet beschikbaar is in Sleutelhanger. Schakel deze opnieuw in bij ‘Verbindingen’.</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>De wijziging van de omgevingshelderheid kon niet worden bevestigd. Herstel de opgeslagen limieten voordat je het opnieuw probeert.</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>De keuze voor automatisch herstel is tijdens de verificatie gewijzigd.</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>Het filter voor helderheidstoetsen kon niet starten. Gewone toetscombinaties blijven beschikbaar.</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>Het verzoek om de helderheidslimiet te wijzigen kon niet worden voorbereid.</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>Het hulpproces voor gesloten deksel kon niet worden overgenomen.</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>Het bovenliggende proces voor gesloten deksel kon niet worden gecontroleerd.</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>De herstelkeuze voor gesloten deksel kon niet worden opgeslagen. Herstel je licht voordat je het opnieuw probeert.</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>De huidige sleutel stopt meteen met werken. Home Assistant vraagt om de nieuwe sleutel voordat het het licht weer kan bedienen.</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>Het opruimen van de specifieke vorige lichtsessie is niet bevestigd.</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>Het licht gaat uit kort nadat je stopt met typen. Gebruik een extern toetsenbord bij gesloten deksel.</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>De interface van de logobedieningsservice wordt niet ondersteund op deze versie van macOS.</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>De logobedieningsservice is niet beschikbaar op deze versie van macOS.</string>
+	<key>The logo control service is unavailable.</key>
+	<string>De logobedieningsservice is niet beschikbaar.</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>Het logo geeft wit licht. Backlit wijzigt de helderheid en het ritme van het logo, nooit de schermhelderheid. </string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>De logoservice heeft de gevraagde helderheid niet bevestigd.</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>De logoservice heeft na wijziging van de omgevingslimieten nog geen verbinding gemaakt. Kies ‘Licht herstellen’ voordat je het opnieuw probeert.</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>Het kon niet worden bevestigd dat het logo uit was. De herstelinformatie voor de fade is bewaard.</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>De systeemeigen bron voor logohelderheid is gewijzigd. De logobediening is gestopt.</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>Het eerdere automatische herstel is niet toegestaan.</string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>De vorige sleutel werkt niet meer. Je lokale assistenten kunnen opnieuw verbinding maken zolang AI-toegang ingeschakeld blijft. De sleutel voor Home Assistant blijft gelijk.</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>De vorige lokale verbinding wordt nog gesloten. Schakel delen uit en weer in om het opnieuw te proberen.</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>De herstelconfiguratie is ongeldig en is niet gewijzigd.</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>De opgeslagen informatie voor automatisch herstel is ongeldig. Kies ‘Licht herstellen’ voordat je het opnieuw probeert.</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>De opgeslagen keuze voor gesloten deksel is ongeldig.</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>De opgeslagen fout bij gesloten deksel komt niet in aanmerking voor automatisch opruimen.</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>De opgeslagen veiligheidsstatus voor gesloten deksel kon niet worden vastgelegd.</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>De opgeslagen logo- en dekselinstellingen zijn hersteld.</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>De opgeslagen herstelgegevens horen bij een andere keuze voor gesloten deksel.</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>De opgeslagen herstelgegevens horen bij een andere lichtsessie.</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>De opgeslagen veiligheidscontrole kon niet worden vastgelegd. Herstel je licht voordat je het opnieuw probeert.</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>Dit is een geïsoleerde voorvertoning. Je echte logo blijft ongewijzigd.</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>Dit uitvoerapparaat gebruikt een niet-ondersteunde indeling voor systeemaudio.</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>Deze update is niet compatibel met deze build of Mac.</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>Tijd verstreken. Open het deksel opnieuw om een nieuwe sessie met timer te starten.</string>
+	<key>Toggle logo</key>
+	<string>Zet logo aan of uit</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>Aanraking gedetecteerd · houd vast om het licht aan te laten</string>
+	<key>Touch released · light off</key>
+	<string>Aanraking beëindigd · licht uit</string>
+	<key>Trackpad</key>
+	<string>Trackpad</string>
+	<key>Trackpad and optional typing response</key>
+	<string>Trackpad en optionele reactie op typen</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>Trackpadgebeurtenissen zijn niet beschikbaar in deze versie van macOS</string>
+	<key>Trackpad input unavailable</key>
+	<string>Trackpadinvoer niet beschikbaar</string>
+	<key>Trackpad · unavailable</key>
+	<string>Trackpad · niet beschikbaar</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>Zet het logo aan of uit · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>Schakel verlichting bij gesloten deksel uit en wacht tot het opruimen klaar is voordat je de omgevingslimieten wijzigt.</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>Stop de sessie met gesloten deksel en wacht tot het opruimen klaar is voordat je de duur wijzigt.</string>
+	<key>Typing</key>
+	<string>Typen</string>
+	<key>Typing access is allowed</key>
+	<string>Toegang voor typen is toegestaan</string>
+	<key>Typing access is no longer available</key>
+	<string>Toegang voor typen is niet meer beschikbaar</string>
+	<key>Typing active · light on</key>
+	<string>Typen actief · licht aan</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>Typinvoer is uitgeschakeld in de voorvertoning.</string>
+	<key>Typing response is off</key>
+	<string>Reactie op typen staat uit</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>macOS heeft het typen gepauzeerd. Schakel de reactie op typen uit en weer in om door te gaan</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>Zonder netvoeding volgt de logohelderheid de batterijlading tot 0%. Handmatige helderheid heeft geen invloed op de modus Batterij.</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>Onbekende gebeurtenisindeling. Er is niets gewijzigd.</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>Onbekende hookgroep. Er is niets gewijzigd.</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>Onbekende hookindeling. Er is niets gewijzigd.</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>Update gepauzeerd. Rond het herstel van het licht af en probeer de installatie opnieuw.</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>Updates zijn niet beschikbaar in de voorvertoning.</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>Gebruik Command, Control of Option met een gewone toets. Shift alleen en hardwaretoetsen voor helderheid worden niet ondersteund.</string>
+	<key>User session inactive</key>
+	<string>Gebruikerssessie niet actief</string>
+	<key>Uses the brightness set above.</key>
+	<string>Gebruikt de hierboven ingestelde helderheid.</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>Controleert het herstel van het vorige licht voordat opnieuw wordt verbonden</string>
+	<key>Version {version} · t0nyz</key>
+	<string>Versie {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>Wachten</string>
+	<key>Waiting for an agent</key>
+	<string>Wachten op een agent</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>Wachten tot de sessie met gesloten deksel is opgeruimd</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>Wachten op veiligheidscontroles voor gesloten deksel.</string>
+	<key>Waiting for keys…</key>
+	<string>Wachten op toetsen…</string>
+	<key>Waiting for light output</key>
+	<string>Wachten op lichtuitvoer</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>Wachten tot macOS het verzoek om systeemgeluid en het opruimen heeft voltooid.</string>
+	<key>Waiting for touch</key>
+	<string>Wachten op aanraking</string>
+	<key>Waiting for {source} touch</key>
+	<string>Wachten op aanraking: {source}</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>Wachten op opnieuw verbinden na sluimerstand</string>
+	<key>Watching your agents</key>
+	<string>Volgt je agenten</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>Als het symbool is verborgen, open Backlit dan opnieuw vanuit het Dock of ‘Apps’. Instellingen blijven beschikbaar via het appmenu.</string>
+	<key>While plugged in</key>
+	<string>Op netvoeding</string>
+	<key>Working</key>
+	<string>Bezig</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>Bezig, wacht of heeft je aandacht nodig</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>Werkt met elke geopende app. Laat een vinger rusten om het logo aan te zetten; til alle vingers op om het uit te zetten.</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>Je kunt van modus wisselen of Backlit stoppen. Je kunt het opnieuw proberen zodra het opruimen klaar is.</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>Je assistent kan de lichtstatus naar de aanbieder van zijn model sturen. Muziek en Typen vereisen eerst toegang in Backlit. Statushooks blijven gescheiden.</string>
+	<key>Your light</key>
+	<string>Je licht</string>
+	<key>Your light is ready.</key>
+	<string>Je licht is klaar.</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>Je licht is hersteld. Schakel verlichting bij gesloten deksel uit en weer in om het opnieuw te proberen.</string>
+	<key>attention</key>
+	<string>aandacht nodig</string>
+	<key>both</key>
+	<string>beide</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOS kon het Dock-symbool niet tonen. Backlit blijft beschikbaar in de menubalk.</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOS stond het filter voor helderheidstoetsen niet toe. Controleer Toegankelijkheid en Invoercontrole of gebruik gewone toetscombinaties.</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOS heeft het herstel niet bevestigd. Het herstelbestand is bewaard.</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOS heeft verlichting bij gesloten deksel geweigerd. Herstel de dekselsessie voordat je het opnieuw probeert.</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOS heeft de wijziging van de logohelderheid geweigerd. Kies ‘Licht herstellen’ voordat je het opnieuw probeert.</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>macOS weigert nog steeds Invoercontrole voor dit geopende exemplaar van Backlit. Open Invoercontrole, geef de geïnstalleerde app toegang en open Backlit opnieuw.</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOS heeft de hardwaretoetsbediening gestopt. De helderheidstoetsen worden weer beheerd door macOS. Gebruik gewone toetscombinaties of schakel de optie opnieuw in.</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOS deed er te lang over om verbinding te maken met systeemgeluid.</string>
+	<key>minutes</key>
+	<string>minuten</string>
+	<key>screen</key>
+	<string>scherm</string>
+	<key>trackpad</key>
+	<string>trackpad</string>
+	<key>waiting</key>
+	<string>wachten</string>
+	<key>working</key>
+	<string>bezig</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>Helderheidsvoorbeeld voor {mode}, {value} procent. {status}</string>
+	<key>{mode} mode</key>
+	<string>Modus {mode}</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · poort {port}</string>
+	<key>{value} percent</key>
+	<string>{value} procent</string>
+	<key>{value} s</key>
+	<string>{value} s</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>{value}% gevraagd · hardware ingeschakeld</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ Koop een kop koffie voor me</string>
+</dict>
+</plist>

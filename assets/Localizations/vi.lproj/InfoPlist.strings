@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Backlit phân tích âm thanh đang phát ngay trên máy để đèn logo phản hồi theo nhạc. Âm thanh không được ghi hay tải lên.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Kết nối đèn logo Backlit với Home Assistant trên mạng cục bộ của bạn.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Backlit dùng âm thanh đang phát trên hệ thống cho chế độ Nhạc. Ứng dụng không lưu hay truyền nội dung màn hình hoặc âm thanh.</string>
+</dict>
+</plist>

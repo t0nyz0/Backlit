@@ -1,5 +1,18 @@
 # Backlit validation
 
+## 0.2.12 — local six-language expansion, build 58
+
+This candidate is prepared on a separate local branch from published 0.2.11. It is
+not installed or published. Italian, Dutch, Polish, Turkish, Vietnamese and
+Indonesian extend the native interface and privacy catalogs to sixteen languages.
+The 485 interface keys and three privacy descriptions per language preserve named
+placeholders and existing safety/permission meanings. Exact final suite counts,
+commit identity and artifact checksums accompany the private candidate handoff.
+
+Testing uses isolated preferences, inert dependencies and offscreen views, not
+changes to the running app, system permissions or hardware. Native-speaker review,
+complete live VoiceOver review and hands-on language acceptance remain open.
+
 ## 0.2.11 — local multilingual preparation, build 57
 
 This section records local preparation, not publication or exact-tag CI. The

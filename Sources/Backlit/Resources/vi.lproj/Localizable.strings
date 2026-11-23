@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>Mức 0% tắt hẳn đèn giữa các nhịp.</string>
+	<key>A compatible live Mac is required.</key>
+	<string>Cần dùng máy Mac tương thích.</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>Không tạo được khóa ghép nối mới nên tính năng chia sẻ với Home Assistant đã tắt. Hãy chọn Khóa ghép nối mới lần nữa trước khi bật lại. ({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>Đã tạo khóa ghép nối mới. Hãy sao chép khóa và cập nhật Home Assistant; khóa cũ không còn dùng được.</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>Cần khôi phục phiên chiếu sáng trước. Chọn Khôi phục đèn để hoàn tất dọn dẹp.</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>Cần khôi phục phiên trước. Trước tiên, hãy chọn Khôi phục đèn.</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>Phiên trước vẫn còn bản ghi khôi phục. Khôi phục đèn có thể yêu cầu khôi phục nhưng không xác nhận hệ thống đã tiếp quản lại.</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>Đèn sáng nhẹ khi rảnh, sáng theo nhịp khi đang làm việc và nháy hai lần khi tác nhân cần bạn mà bạn đang vắng mặt.</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>Quyền truy cập AI vẫn tắt vì không thay được khóa. </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>Quyền truy cập AI vẫn tắt vì không thay được khóa. {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>Kết nối AI bị tắt trong chế độ xem trước cách ly.</string>
+	<key>Access key</key>
+	<string>Khóa truy cập</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>Đang hoạt động. Các giới hạn an toàn vẫn áp dụng.</string>
+	<key>Actual battery-driven logo output</key>
+	<string>Mức sáng thực tế của đèn logo theo pin</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>Tự điều chỉnh theo mức âm thanh phát. Cường độ điều chỉnh hiệu ứng; độ sáng bạn đặt là mức tối đa.</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>Cài đặt tác nhân xuất hiện trong khi kết nối. Không có gì bị ghi đè. Hãy xem lại rồi thử lại.</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>Cài đặt tác nhân đã thay đổi trong khi kết nối. Hãy thử lại.</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>Tệp cài đặt tác nhân là liên kết tượng trưng hoặc tệp đặc biệt. Trước tiên, hãy chọn thư mục chứa tệp thật.</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>Cài đặt tác nhân phải là một đối tượng JSON. Không có thay đổi nào.</string>
+	<key>Agents</key>
+	<string>Tác nhân</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>Cho phép Backlit trong Trợ năng, sau đó bật lại tùy chọn này. Các phím tắt thông thường không cần quyền mới.</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>Cho phép Backlit trong Giám sát đầu vào, sau đó bật lại tùy chọn này. Bộ lọc phím phần cứng vẫn tắt cho đến khi được phép nhận thao tác phím.</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Cho phép liên kết Backlit và ứng dụng khác</string>
+	<key>Allow connections from your local network</key>
+	<string>Cho phép kết nối từ mạng cục bộ của bạn</string>
+	<key>Allow light changes</key>
+	<string>Cho phép thay đổi đèn</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Cho phép liên kết Backlit thay đổi đèn. Các tác vụ gốc của Phím tắt không có trong bản dựng này.</string>
+	<key>Also respond to typing</key>
+	<string>Phản hồi cả khi gõ phím</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>Giới hạn độ sáng theo ánh sáng môi trường không thay đổi.</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>Có bản cập nhật đang chờ. Chọn Cài đặt bản cập nhật và mở lại, hoặc bỏ qua bản cập nhật trong cửa sổ cập nhật trước khi thoát.</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>Một bộ điều khiển khác đã thay đổi đèn logo hoặc không đọc được trạng thái của đèn. Thông tin khôi phục vẫn được giữ lại.</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>Một bộ điều khiển khác đã thay đổi đèn logo. Backlit đã ngừng áp dụng thay đổi và giữ lại thông tin khôi phục.</string>
+	<key>Appearance</key>
+	<string>Giao diện</string>
+	<key>Assistant setup</key>
+	<string>Thiết lập trợ lý</string>
+	<key>Assistants &amp; integrations</key>
+	<string>Trợ lý và tích hợp</string>
+	<key>Attention</key>
+	<string>Cần chú ý</string>
+	<key>Authorization was cancelled.</key>
+	<string>Đã hủy cấp quyền.</string>
+	<key>Automatic level</key>
+	<string>Mức tự động</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>Đèn tự phản hồi theo phiên lập trình, độc lập với MCP.</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>Khôi phục đèn tự động chưa sẵn sàng tiếp tục.</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>Tự động khôi phục đèn đã dừng sau ba lần thử. Chọn Khôi phục đèn trước khi thử lại.</string>
+	<key>Automatic pulse</key>
+	<string>Nhịp sáng tự động</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>Tính năng khôi phục tự động không còn kiểm soát phiên chuyển sáng đã ghi.</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>Không xác minh được thời điểm khôi phục tự động.</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Kiểm tra an toàn tự động đã dừng sau ba lần thử. Hãy khôi phục đèn trong Cài đặt, rồi tắt và bật lại “Giữ đèn logo sáng khi đóng nắp” để thử lại.</string>
+	<key>Available on this Mac</key>
+	<string>Dùng được trên máy Mac này</string>
+	<key>Available on your local network</key>
+	<string>Dùng được trên mạng cục bộ của bạn</string>
+	<key>Backlight</key>
+	<string>Đèn nền</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlit phân tích âm thanh đang phát ngay trên máy để đèn logo phản hồi theo nhạc. Âm thanh không được ghi hay tải lên.</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit không kết nối được với âm thanh hệ thống. Cho phép Backlit trong Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống, rồi mở lại Backlit và thử lại. (Mã macOS {code})</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit không chuẩn bị được âm thanh hệ thống. Cho phép Backlit trong Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống, rồi mở lại Backlit và thử lại. (Mã macOS {code})</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit không đọc được định dạng âm thanh. Cho phép Backlit trong Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống, rồi mở lại Backlit và thử lại. (Mã macOS {code})</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit không gửi được yêu cầu truy cập âm thanh hệ thống. Cho phép Backlit trong Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống, rồi mở lại Backlit và thử lại. (Mã macOS {code})</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit không khởi động được âm thanh hệ thống. Cho phép Backlit trong Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống, rồi mở lại Backlit và thử lại. (Mã macOS {code})</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlit đang chạy trong một cửa sổ khác. Hãy dùng bản đã cài đặt.</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Đã sao chép liên kết Backlit. Hãy dùng với trình khởi chạy hỗ trợ liên kết ứng dụng tùy chỉnh.</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlit dùng âm thanh đang phát trên hệ thống cho chế độ Nhạc. Ứng dụng không lưu hay truyền nội dung màn hình hoặc âm thanh.</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Backlit sẽ kết nối lại khi máy Mac thức và được mở khóa.</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Backlit sẽ xác minh việc dọn dẹp và kết nối lại khi máy Mac thức.</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — Xem trước</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>Đã gỡ các hook của Backlit. Các hook có sẵn vẫn được giữ lại.</string>
+	<key>Balanced</key>
+	<string>Cân bằng</string>
+	<key>Battery</key>
+	<string>Pin</string>
+	<key>Battery charging behavior</key>
+	<string>Hiệu ứng khi sạc pin</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>Chế độ Pin tự điều chỉnh độ sáng. Hãy chọn hiệu ứng chỉnh tay để dùng phím tắt độ sáng.</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>Chu kỳ sáng theo pin (giây)</string>
+	<key>Battery state unavailable</key>
+	<string>Không đọc được trạng thái pin</string>
+	<key>Battery-driven output</key>
+	<string>Mức sáng theo pin</string>
+	<key>Beat intensity</key>
+	<string>Cường độ theo nhịp</string>
+	<key>Behavior</key>
+	<string>Hiệu ứng</string>
+	<key>Blink</key>
+	<string>Nháy</string>
+	<key>Blink on click</key>
+	<string>Nháy khi bấm</string>
+	<key>Blink on trackpad click</key>
+	<string>Nháy khi bấm bàn di chuột</string>
+	<key>Breathe</key>
+	<string>Thở</string>
+	<key>Breathing</key>
+	<string>Hiệu ứng thở</string>
+	<key>Breathing cycle seconds</key>
+	<string>Chu kỳ thở (giây)</string>
+	<key>Breathing pace</key>
+	<string>Tốc độ thở</string>
+	<key>Brightness</key>
+	<string>Độ sáng</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>Phím tắt độ sáng thay đổi mức chỉnh tay mỗi lần 5%. Hiệu ứng và trạng thái bật/tắt không đổi. Độ sáng của chế độ Pin vẫn tự động.</string>
+	<key>CONNECTIONS</key>
+	<string>KẾT NỐI</string>
+	<key>Cancel</key>
+	<string>Hủy</string>
+	<key>Cannot reopen the power service.</key>
+	<string>Không mở lại được dịch vụ quản lý nguồn.</string>
+	<key>Change </key>
+	<string>Thay đổi </string>
+	<key>Charge-ready signal</key>
+	<string>Tín hiệu pin đạt ngưỡng</string>
+	<key>Charge-ready threshold</key>
+	<string>Ngưỡng báo pin sẵn sàng</string>
+	<key>Charging</key>
+	<string>Đang sạc</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>Độ sáng tối thiểu theo nhịp sạc</string>
+	<key>Check for Updates</key>
+	<string>Kiểm tra bản cập nhật</string>
+	<key>Choose a custom configuration folder</key>
+	<string>Chọn thư mục cấu hình tùy chỉnh</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>Chọn thư mục cấu hình của {agent}</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>Đang dọn dẹp. Lựa chọn của bạn được lưu.</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>Đã thực hiện dọn dẹp nhưng chưa xác nhận hệ thống đã tiếp quản lại trạng thái đóng nắp đã lưu.</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>Chưa xác nhận được việc dọn dẹp sau khi đóng nắp. Xem phần khôi phục nguồn trong Cài đặt, rồi thử lại.</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>Đang dọn dẹp phiên đóng nắp. Hãy thử lại Khôi phục đèn khi hoàn tất.</string>
+	<key>Closed-lid duration</key>
+	<string>Thời gian sáng khi đóng nắp</string>
+	<key>Closed-lid duration amount</key>
+	<string>Giá trị thời gian sáng khi đóng nắp</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>Đèn khi đóng nắp tạm dừng do lỗi</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Đèn logo đã tắt vì tính năng chiếu sáng khi đóng nắp gặp lỗi. Hãy khôi phục đèn trong Cài đặt, rồi tắt và bật lại “Giữ đèn logo sáng khi đóng nắp” để thử lại.</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>Không thể sử dụng tính năng đóng nắp trong chế độ xem trước cách ly.</string>
+	<key>Coding agent status</key>
+	<string>Trạng thái tác nhân lập trình</string>
+	<key>Coding status hooks</key>
+	<string>Hook trạng thái lập trình</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>Đã phát hiện đèn logo tương thích</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>Đã phát hiện phần cứng đèn logo tương thích.</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>Không có phần cứng đèn logo tương thích.</string>
+	<key>Connect</key>
+	<string>Kết nối</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>Kết nối đèn logo Backlit với Home Assistant trên mạng cục bộ của bạn.</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>Kết nối hook trạng thái lập trình của {agent}</string>
+	<key>Connecting to system audio…</key>
+	<string>Đang kết nối với âm thanh hệ thống…</string>
+	<key>Connecting to your MacBook</key>
+	<string>Đang kết nối với MacBook của bạn</string>
+	<key>Connections</key>
+	<string>Kết nối</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>Các kết nối bị tắt trong chế độ xem trước cách ly.</string>
+	<key>Constant brightness</key>
+	<string>Độ sáng cố định</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>Điều khiển đèn theo yêu cầu hoặc để đèn tự phản ánh hoạt động lập trình.</string>
+	<key>Copy</key>
+	<string>Sao chép</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Sao chép thiết lập Claude Code</string>
+	<key>Copy Codex Setup</key>
+	<string>Sao chép thiết lập Codex</string>
+	<key>Copy Pairing Key</key>
+	<string>Sao chép khóa ghép nối</string>
+	<key>Copy Toggle Link</key>
+	<string>Sao chép liên kết bật/tắt</string>
+	<key>Could not generate a pairing key.</key>
+	<string>Không tạo được khóa ghép nối.</string>
+	<key>Could not open the logo session lock.</key>
+	<string>Không mở được khóa phiên đèn logo.</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>Không giữ được hoạt động của màn hình và bàn phím. Đã dừng chiếu sáng khi đóng nắp.</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>Không đọc được cấu hình đèn logo ban đầu.</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>Không khôi phục được chế độ ngủ bình thường khi đóng nắp.</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>Không khôi phục được trạng thái nắp thực tế. Thông tin khôi phục vẫn được giữ lại.</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>Không khôi phục được trạng thái thực tế của đèn logo theo nắp. Thông tin khôi phục vẫn được giữ lại.</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>Không thể bật đèn khi đóng nắp một cách an toàn. Chọn Khôi phục đèn trước khi thử lại.</string>
+	<key>Could not start typing response</key>
+	<string>Không khởi động được phản hồi khi gõ phím</string>
+	<key>Create New Key</key>
+	<string>Tạo khóa mới</string>
+	<key>Create a new pairing key?</key>
+	<string>Tạo khóa ghép nối mới?</string>
+	<key>Currently using {language}</key>
+	<string>Đang dùng {language}</string>
+	<key>Dark</key>
+	<string>Tối</string>
+	<key>Dark between beats</key>
+	<string>Tắt giữa các nhịp</string>
+	<key>Decrease logo brightness</key>
+	<string>Giảm độ sáng đèn logo</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>Mặc định: tự sáng theo nhịp khi sạc, chu kỳ 6 giây, giảm xuống 0%, tắt tín hiệu pin đạt ngưỡng.</string>
+	<key>Dim to</key>
+	<string>Giảm xuống</string>
+	<key>Disable</key>
+	<string>Tắt</string>
+	<key>Disconnect</key>
+	<string>Ngắt kết nối</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>Ngắt kết nối hook trạng thái lập trình của {agent}</string>
+	<key>Dismiss notice</key>
+	<string>Bỏ qua thông báo</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>Không thay đổi cài đặt độ sáng màn hình.</string>
+	<key>Download Latest Version</key>
+	<string>Tải bản mới nhất</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>Tải ứng dụng, thoát Backlit rồi thay bản cũ trong thư mục Ứng dụng.</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>Không thể tải xuống trong chế độ xem trước.</string>
+	<key>Duration</key>
+	<string>Thời lượng</string>
+	<key>Duration: {value} s</key>
+	<string>Thời lượng: {value} giây</string>
+	<key>Edit</key>
+	<string>Sửa</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>Trước tiên, hãy bật Cho phép liên kết Backlit và ứng dụng khác trong mục Kết nối.</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Bật cầu nối Home Assistant</string>
+	<key>Enable or retry typing access</key>
+	<string>Bật hoặc thử lại quyền nhận thao tác gõ phím</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>Bộ lọc thử nghiệm đang hoạt động. Hãy thử Shift + phím độ sáng trên bàn phím; chưa xác minh được rằng màn hình sẽ không đổi độ sáng.</string>
+	<key>Fade in and out</key>
+	<string>Sáng dần và mờ dần</string>
+	<key>Faster</key>
+	<string>Nhanh hơn</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>Hoàn tất khôi phục đèn trước khi dùng phím tắt độ sáng.</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>Hoàn tất khôi phục phiên trước rồi kết nối lại.</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>Hoàn tất dọn dẹp phiên đóng nắp trước khi bắt đầu phiên khác.</string>
+	<key>Follow battery charge</key>
+	<string>Theo mức pin</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Dùng giao diện của máy Mac hoặc chọn giao diện riêng.</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Dùng ngôn ngữ ưu tiên của máy Mac hoặc chọn ngôn ngữ riêng cho Backlit.</string>
+	<key>Following your battery</key>
+	<string>Đang theo mức pin của bạn</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>Vẫn theo phần trăm pin khi cắm nguồn.</string>
+	<key>Fully charged</key>
+	<string>Đã sạc đầy</string>
+	<key>General</key>
+	<string>Cài đặt chung</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>Không dùng được phím tắt toàn hệ thống.</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>Bàn di chuột toàn hệ thống · theo sự kiện, không thăm dò đầu vào</string>
+	<key>Glow</key>
+	<string>Sáng nhẹ</string>
+	<key>Glowing</key>
+	<string>Đang sáng</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>Phím độ sáng phần cứng do macOS xử lý. Hãy dùng phím mũi tên, phím chữ hoặc phím thông thường khác.</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>Phím độ sáng phần cứng do macOS xử lý.</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>Tính năng nhận phím phần cứng bị tắt trong chế độ xem trước cách ly.</string>
+	<key>Hide Dock icon</key>
+	<string>Ẩn biểu tượng Dock</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Home Assistant đã tắt vì không lấy được khóa trong Chuỗi khóa. Hãy bật lại trong mục Kết nối.</string>
+	<key>Hooks installed · start a new session</key>
+	<string>Đã cài hook · hãy bắt đầu phiên mới</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>Đã cài hook · hãy xác nhận tin cậy trong Codex</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>Cần xem lại hook · kết nối lại hoặc kiểm tra cài đặt tác nhân</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>Đã lưu hook. Hãy xem lại và xác nhận tin cậy trong Cài đặt Codex → Hooks, rồi bắt đầu phiên mới.</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>Đã lưu hook. Hãy xem lại cài đặt tác nhân rồi bắt đầu phiên Claude Code mới.</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>Hook chỉ gửi mã định danh phiên và trạng thái. Lời nhắc, mã nguồn và kết quả công cụ của bạn không bao giờ được gửi đến Backlit.</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>XEM TRƯỚC CÁCH LY</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>Nếu Backlit đã bật ở đó nhưng vẫn bị từ chối sau khi cập nhật, hãy xóa mục Backlit cũ, thêm lại ứng dụng Backlit đã cài đặt, bật quyền rồi mở lại Backlit.</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>Nếu chưa cấp quyền, hãy cho phép Backlit trong Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống.</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>Chưa bật cập nhật trong ứng dụng cho bản dựng này. Nhà phát hành phải cung cấp nguồn cập nhật tin cậy và khóa ký.</string>
+	<key>Increase logo brightness</key>
+	<string>Tăng độ sáng đèn logo</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>Đã cấp quyền Giám sát đầu vào nhưng macOS không tạo được trình lắng nghe sự kiện gõ phím. Hãy mở lại Backlit và thử lại.</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>Cần quyền Giám sát đầu vào để phản hồi khi gõ phím</string>
+	<key>Input active · light on</key>
+	<string>Đang nhận thao tác · đèn bật</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>Không nhận được thao tác · hãy chọn hiệu ứng khác</string>
+	<key>Install Update and Relaunch</key>
+	<string>Cài đặt bản cập nhật và mở lại</string>
+	<key>Integration Folder</key>
+	<string>Thư mục tích hợp</string>
+	<key>Invalid saved duration</key>
+	<string>Thời lượng đã lưu không hợp lệ</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>Mở Backlit bằng một cú bấm trên thanh menu.</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Giữ Backlit trên thanh menu. Khi ẩn biểu tượng thanh menu, biểu tượng Dock sẽ hiện lại trước.</string>
+	<key>Keep logo on with lid closed</key>
+	<string>Giữ đèn logo sáng khi đóng nắp</string>
+	<key>Keep on for</key>
+	<string>Giữ sáng trong</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Giữ máy Mac thức và có thể khiến màn hình tích hợp vẫn sáng khi đóng nắp. Giới hạn 30 phút; cũng dừng nếu pin yếu, máy quá nóng hoặc bật Chế độ nguồn điện thấp. Đặt máy trên bề mặt cứng, thoáng khí; không để trong túi.</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>Không dùng được tính năng an toàn bàn phím. Chưa bật chiếu sáng khi đóng nắp.</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>Chuỗi khóa không lưu được khóa ghép nối.</string>
+	<key>LIVE PREVIEW</key>
+	<string>XEM TRƯỚC TRỰC TIẾP</string>
+	<key>LOGO CONNECTED</key>
+	<string>ĐÃ KẾT NỐI ĐÈN LOGO</string>
+	<key>LOGO CONTROL</key>
+	<string>ĐIỀU KHIỂN ĐÈN LOGO</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>KHÔNG DÙNG ĐƯỢC ĐÈN LOGO</string>
+	<key>Language</key>
+	<string>Ngôn ngữ</string>
+	<key>Last access check: </key>
+	<string>Lần kiểm tra quyền gần nhất: </string>
+	<key>Last access check: {diagnostic}</key>
+	<string>Lần kiểm tra quyền gần nhất: {diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>Chỉ xác minh được ánh xạ cũ khi nắp máy đang mở.</string>
+	<key>Light</key>
+	<string>Đèn</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>Đã xác minh dọn dẹp đèn. Đang tự kết nối lại.</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>Chưa xác nhận được việc khôi phục đèn hoặc trạng thái nắp. Thông tin khôi phục vẫn được giữ lại.</string>
+	<key>Light output paused</key>
+	<string>Đã tạm dừng chiếu sáng</string>
+	<key>Light recovery is still in progress.</key>
+	<string>Đang khôi phục đèn.</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>Đang khôi phục đèn. Hãy thử thoát lại khi hoàn tất.</string>
+	<key>Light up while typing</key>
+	<string>Bật đèn khi gõ phím</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>Kết nối cục bộ đã tắt vì dịch vụ lắng nghe gặp lỗi. </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>Kết nối cục bộ đã tắt vì dịch vụ lắng nghe gặp lỗi. {detail}</string>
+	<key>Logo and power</key>
+	<string>Đèn logo và nguồn</string>
+	<key>Logo brightness</key>
+	<string>Độ sáng đèn logo</string>
+	<key>Logo control enabled</key>
+	<string>Đã bật điều khiển đèn logo</string>
+	<key>Logo control has not been enabled.</key>
+	<string>Chưa bật điều khiển đèn logo.</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>Tính năng điều khiển đèn logo đang khôi phục sau một lần chuyển trạng thái hệ thống.</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>Đang chuyển giữa chiếu sáng khi mở nắp và khi đóng nắp.</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>Không dùng được tính năng điều khiển đèn logo: {detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>Không dùng được ánh xạ đèn logo; thông tin khôi phục vẫn được giữ lại.</string>
+	<key>Logo off</key>
+	<string>Đèn logo tắt</string>
+	<key>Logo off · hardware disabled</key>
+	<string>Đèn logo tắt · đã tắt điều khiển phần cứng</string>
+	<key>Logo off · lid closed</key>
+	<string>Đèn logo tắt · nắp đóng</string>
+	<key>Logo on</key>
+	<string>Đèn logo bật</string>
+	<key>Logo preview, {value} percent</key>
+	<string>Xem trước đèn logo, {value} phần trăm</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>Không dùng được tính năng khôi phục đèn logo. Thông tin khôi phục vẫn được giữ lại.</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>Không đọc được trạng thái đèn logo · không điều khiển phần cứng</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>Không đọc được trạng thái đèn logo · đã yêu cầu {value}%</string>
+	<key>Logo unchanged</key>
+	<string>Đèn logo không đổi</string>
+	<key>MCP access</key>
+	<string>Quyền truy cập MCP</string>
+	<key>MCP control</key>
+	<string>Điều khiển qua MCP</string>
+	<key>Mac is sleeping</key>
+	<string>Máy Mac đang ngủ</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>Điều khiển đèn logo MacBook PROLED</string>
+	<key>Manage Connections</key>
+	<string>Quản lý kết nối</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>Độ sáng đèn logo chỉnh tay: {value}%</string>
+	<key>Match battery level</key>
+	<string>Theo mức pin</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>Theo mức pin khi rút nguồn.</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>Tối đa 30 phút mỗi lần đóng nắp. Thời gian ngủ vẫn được tính; mở lại ứng dụng không đặt lại bộ hẹn giờ. Giới hạn này không đảm bảo nhiệt độ an toàn.</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · tắt theo mặc định</string>
+	<key>Moving with your music</key>
+	<string>Đang theo nhịp nhạc</string>
+	<key>Music</key>
+	<string>Nhạc</string>
+	<key>Music intensity</key>
+	<string>Cường độ theo nhạc</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>Chia sẻ qua mạng bị tắt trong chế độ xem trước cách ly.</string>
+	<key>New Pairing Key</key>
+	<string>Khóa ghép nối mới</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>Không sáng theo nhịp khi sạc. Giữ đèn logo ở 100% khi cắm nguồn.</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>Không phát hiện đèn logo tương thích.</string>
+	<key>No display is available for system audio capture.</key>
+	<string>Không có màn hình để thu âm thanh hệ thống.</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>Không nhận được thao tác bàn di chuột. Hãy bật phản hồi khi gõ phím hoặc chọn hiệu ứng khác.</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>Đã khôi phục chế độ ngủ bình thường khi đóng nắp. Không xóa được một tệp phiên còn sót lại.</string>
+	<key>Not connected</key>
+	<string>Chưa kết nối</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>Phiên quan sát được: {count} · {state}</string>
+	<key>Off</key>
+	<string>Tắt</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>Tắt theo mặc định. Bật quyền truy cập qua mạng để dùng Home Assistant trên thiết bị khác.</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>Tắt theo mặc định. Cần quyền Trợ năng và Giám sát đầu vào. Tùy bàn phím, hãy kiểm tra xem độ sáng màn hình có thay đổi theo không. Các phím tắt thông thường không cần những quyền này.</string>
+	<key>Off · lid closed</key>
+	<string>Tắt · nắp đóng</string>
+	<key>On battery</key>
+	<string>Đang dùng pin</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>Cho phép trợ lý kiểm tra hoặc thay đổi đèn khi bạn yêu cầu.</string>
+	<key>Open Accessibility</key>
+	<string>Mở Trợ năng</string>
+	<key>Open Input Monitoring</key>
+	<string>Mở Giám sát đầu vào</string>
+	<key>Open Privacy Settings</key>
+	<string>Mở Cài đặt quyền riêng tư</string>
+	<key>Open at login</key>
+	<string>Mở khi đăng nhập</string>
+	<key>Open workspace</key>
+	<string>Mở không gian làm việc</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>Tùy chọn bỏ qua giới hạn theo ánh sáng môi trường. macOS yêu cầu quản trị viên phê duyệt. Giới hạn trước đó của bạn được lưu.</string>
+	<key>Optional local light integration</key>
+	<string>Tích hợp đèn cục bộ tùy chọn</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>Tùy chọn: thay thế hiệu ứng Pin trong chốc lát khi pin đạt ngưỡng bạn đặt và máy đang cắm nguồn. Không lặp lại cho đến khi mức pin giảm hoặc bạn rút nguồn.</string>
+	<key>Other apps</key>
+	<string>Ứng dụng khác</string>
+	<key>Override ambient brightness limit</key>
+	<string>Bỏ qua giới hạn độ sáng theo ánh sáng môi trường</string>
+	<key>PREVIEW MODE</key>
+	<string>CHẾ ĐỘ XEM TRƯỚC</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>Đã sao chép khóa ghép nối. Hãy dán vào Home Assistant và giữ khóa riêng tư.</string>
+	<key>Paste</key>
+	<string>Dán</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>Tạm dừng do lỗi. Hãy khôi phục đèn trước khi thử lại.</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>Tạm dừng do lỗi. Sau khi khôi phục, hãy tắt rồi bật lại “Giữ đèn logo sáng khi đóng nắp”.</string>
+	<key>Paused in Low Power Mode</key>
+	<string>Tạm dừng trong Chế độ nguồn điện thấp</string>
+	<key>Paused while your Mac cools down</key>
+	<string>Tạm dừng để máy Mac nguội</string>
+	<key>Paused with your display</key>
+	<string>Tạm dừng cùng màn hình</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>Chỉ dùng âm thanh đang phát. Không dùng micrô. Không ghi âm.</string>
+	<key>Plugged in · Not charging</key>
+	<string>Đang cắm nguồn · không sạc</string>
+	<key>Power service unavailable.</key>
+	<string>Không dùng được dịch vụ quản lý nguồn.</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Nhấn Command, Control hoặc Option cùng một phím thông thường. Nhấn Escape để hủy.</string>
+	<key>Preview only</key>
+	<string>Chỉ xem trước</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>Chế độ xem trước dùng dạng sóng mẫu.</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>Chế độ xem trước dùng dạng sóng mẫu và không bao giờ khởi động âm thanh hệ thống thật.</string>
+	<key>Preview · compatible logo not found</key>
+	<string>Xem trước · không tìm thấy đèn logo tương thích</string>
+	<key>Preview · logo unchanged</key>
+	<string>Xem trước · đèn logo không đổi</string>
+	<key>Preview · {value}% requested</key>
+	<string>Xem trước · đã yêu cầu {value}%</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>Các hiệu ứng trước vẫn đang được dọn dẹp. Đang chờ lần kiểm tra an toàn tiếp theo.</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>Đã xác minh dọn dẹp phiên đèn trước. Đang tự kết nối lại.</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>Đã xác minh phiên trước. Đang kết nối lại theo lựa chọn đã lưu.</string>
+	<key>Pulse</key>
+	<string>Nhịp sáng</string>
+	<key>Pulse cycle</key>
+	<string>Chu kỳ nhịp sáng</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>Chỉ sáng theo nhịp khi đang sạc; sáng liên tục khi tạm dừng hoặc sạc xong.</string>
+	<key>Pulsing while charging</key>
+	<string>Đang sáng theo nhịp khi sạc</string>
+	<key>Punchy</key>
+	<string>Mạnh</string>
+	<key>Quit</key>
+	<string>Thoát</string>
+	<key>Quit Backlit</key>
+	<string>Thoát Backlit</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>Hãy thoát {app} trước khi thay đổi cài đặt đèn logo.</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>Hãy thoát {app} trước khi giao quyền điều khiển đèn logo cho Backlit.</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>Hãy thoát {app} trước khi khôi phục phiên Backlit trước đó.</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>Thoát {app} để dùng Backlit</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>Khi thoát, hệ thống sẽ khôi phục cài đặt đèn logo gốc đã lưu trước phiên Backlit này. Đèn logo có thể sáng lại.</string>
+	<key>Ready at</key>
+	<string>Sẵn sàng ở mức</string>
+	<key>Ready for the next lid closure.</key>
+	<string>Sẵn sàng cho lần đóng nắp tiếp theo.</string>
+	<key>Ready for trackpad contact</key>
+	<string>Sẵn sàng nhận thao tác chạm bàn di chuột</string>
+	<key>Ready for trackpad or typing</key>
+	<string>Sẵn sàng nhận thao tác bàn di chuột hoặc gõ phím</string>
+	<key>Ready for typing</key>
+	<string>Sẵn sàng nhận thao tác gõ phím</string>
+	<key>Ready for your music</key>
+	<string>Sẵn sàng phản hồi theo nhạc</string>
+	<key>Ready for {source} touch</key>
+	<string>Sẵn sàng nhận thao tác chạm: {source}</string>
+	<key>Reconnect</key>
+	<string>Kết nối lại</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>Kết nối lại hook trạng thái lập trình của {agent}</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>Đang kết nối lại với MacBook của bạn</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>Quyền kiểm soát việc khôi phục đã đổi trong khi xác minh. Hãy khôi phục đèn trước khi thử lại.</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>Chưa xác nhận khôi phục. Lựa chọn đóng nắp của bạn đã lưu và vẫn tạm dừng. Xem phần khôi phục trong Cài đặt.</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>Đã lưu lựa chọn. Hãy mở nắp trước khi bắt đầu phiên hẹn giờ khác.</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>Đã lưu lựa chọn. Tạm dừng theo cài đặt an toàn của máy Mac.</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>Đã lưu lựa chọn. Chế độ xem trước không bao giờ bắt đầu phiên đóng nắp.</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>Đã lưu lựa chọn. Đang chờ xác minh trạng thái nắp và bộ hẹn giờ.</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>Đã lưu lựa chọn. Đang chờ kiểm tra lại độ an toàn phần cứng khi máy thức và mở khóa.</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>Đã lưu lựa chọn. Đang chờ máy Mac và đèn sẵn sàng.</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>Đã lưu lựa chọn. Đang chờ xác minh phiên trước khi kết nối lại.</string>
+	<key>Replace AI Key</key>
+	<string>Thay khóa AI</string>
+	<key>Replace Key</key>
+	<string>Thay khóa</string>
+	<key>Replace the AI connection key?</key>
+	<string>Thay khóa kết nối AI?</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>Thay khóa ghép nối nếu người khác có thể đã nhìn thấy</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>Yêu cầu khôi phục. Chưa xác nhận hệ thống đã tiếp quản lại; lựa chọn đóng nắp đã lưu vẫn tạm dừng.</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>Cần quyền Giám sát đầu vào. Chỉ dùng thời điểm gõ, không đọc hay lưu ký tự. Tính năng Nhập liệu an toàn có thể tạm dừng phản hồi này.</string>
+	<key>Reset</key>
+	<string>Đặt lại</string>
+	<key>Respond to system playback</key>
+	<string>Phản hồi theo âm thanh hệ thống</string>
+	<key>Response</key>
+	<string>Phản hồi</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>Đã yêu cầu khôi phục. Chưa xác nhận hệ thống đã tiếp quản lại, nên lựa chọn đóng nắp đã lưu vẫn tạm dừng.</string>
+	<key>Restore Battery Defaults</key>
+	<string>Khôi phục mặc định cho Pin</string>
+	<key>Restore Light</key>
+	<string>Khôi phục đèn</string>
+	<key>Restore and Quit</key>
+	<string>Khôi phục và thoát</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>Khôi phục phiên đèn logo hiện tại trước khi kết nối lại với dịch vụ.</string>
+	<key>Restore the logo and quit?</key>
+	<string>Khôi phục đèn logo và thoát?</string>
+	<key>Restore your light</key>
+	<string>Khôi phục đèn</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>Khôi phục đèn trước khi thay đổi giới hạn theo ánh sáng môi trường.</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>Khôi phục đèn trước khi thoát; phiên đóng nắp trước vẫn cần khôi phục.</string>
+	<key>Restore your light before starting another session.</key>
+	<string>Khôi phục đèn trước khi bắt đầu phiên khác.</string>
+	<key>Restore your light to continue</key>
+	<string>Khôi phục đèn để tiếp tục</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>Khôi phục đèn để hoàn tất phiên đóng nắp trước</string>
+	<key>Retry System Audio</key>
+	<string>Thử lại âm thanh hệ thống</string>
+	<key>Review Closed-lid Pause</key>
+	<string>Xem lý do tạm dừng khi đóng nắp</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>Trạng thái an toàn đã đổi trong khi xác minh. Backlit sẽ kiểm tra lại trước khi kết nối lại.</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>Xác minh an toàn thất bại: {detail} Hãy khôi phục đèn trước khi thử lại.</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>Độ sáng đã lưu: {value}% · đèn logo tắt</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>Không xác minh được thời điểm khôi phục đã lưu. Hãy khôi phục đèn, rồi tắt và bật lại đèn khi đóng nắp để thử lại.</string>
+	<key>Select All</key>
+	<string>Chọn tất cả</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>Thông tin phiên không đầy đủ. Bản ghi này có thể thiếu một số phiên lập trình.</string>
+	<key>Session snapshot incomplete</key>
+	<string>Bản ghi phiên không đầy đủ</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>Phiên: {count} · {state}</string>
+	<key>Settings</key>
+	<string>Cài đặt</string>
+	<key>Settings…</key>
+	<string>Cài đặt…</string>
+	<key>Setup</key>
+	<string>Thiết lập</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>Đã sao chép lệnh thiết lập. Chạy lệnh cục bộ trong trình dòng lệnh của tác nhân, rồi kiểm tra các kết nối MCP của tác nhân.</string>
+	<key>Setup guide</key>
+	<string>Hướng dẫn thiết lập</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + phím độ sáng phần cứng (thử nghiệm)</string>
+	<key>Show Update Progress</key>
+	<string>Hiện tiến trình cập nhật</string>
+	<key>Show menu bar icon</key>
+	<string>Hiện biểu tượng thanh menu</string>
+	<key>Signal</key>
+	<string>Tín hiệu</string>
+	<key>Slower</key>
+	<string>Chậm hơn</string>
+	<key>Smooth</key>
+	<string>Mượt</string>
+	<key>Start update checks from Settings.</key>
+	<string>Bắt đầu kiểm tra bản cập nhật trong Cài đặt.</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>Đang bắt đầu kiểm tra an toàn khi đóng nắp…</string>
+	<key>State unavailable</key>
+	<string>Không đọc được trạng thái</string>
+	<key>Status only</key>
+	<string>Chỉ xem trạng thái</string>
+	<key>Steady</key>
+	<string>Sáng đều</string>
+	<key>Steady brightness</key>
+	<string>Độ sáng ổn định</string>
+	<key>Steady while plugged in</key>
+	<string>Sáng đều khi cắm nguồn</string>
+	<key>System</key>
+	<string>Hệ thống</string>
+	<key>System Default</key>
+	<string>Mặc định hệ thống</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>Backlit chưa có quyền truy cập âm thanh hệ thống. Cho phép ứng dụng trong Cài đặt hệ thống → Quyền riêng tư &amp; Bảo mật → Ghi màn hình và âm thanh hệ thống, rồi mở lại Backlit hoặc chọn Thử lại âm thanh hệ thống. Backlit không ghi màn hình hay micrô.</string>
+	<key>System audio follows Music mode.</key>
+	<string>Âm thanh hệ thống chạy theo chế độ Nhạc.</string>
+	<key>System audio is unavailable.</key>
+	<string>Không dùng được âm thanh hệ thống.</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>Âm thanh hệ thống khởi động cùng chế độ Nhạc khi đèn bật và máy Mac đang hoạt động.</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>Âm thanh hệ thống đã dừng trước khi sẵn sàng.</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>Tổ hợp này đã được dùng cho một tác vụ Backlit khác.</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>Đã thay khóa kết nối AI. Tắt quyền truy cập AI để dừng mọi kết nối của trợ lý.</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Kết nối MCP đã tắt vì không lấy được khóa trong Chuỗi khóa. Hãy bật lại trong mục Kết nối.</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>Không xác nhận được thay đổi giới hạn độ sáng theo ánh sáng môi trường. Hãy khôi phục giới hạn đã lưu trước khi thử lại.</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>Lựa chọn khôi phục tự động đã thay đổi trong khi xác minh.</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>Không khởi động được bộ lọc phím độ sáng. Vẫn dùng được phím tắt thông thường.</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>Không chuẩn bị được yêu cầu đổi giới hạn độ sáng.</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>Không tiếp quản được tiến trình hỗ trợ khi đóng nắp.</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>Không xác minh được tiến trình cha của phiên đóng nắp.</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>Không lưu được lựa chọn khôi phục khi đóng nắp. Hãy khôi phục đèn trước khi thử lại.</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>Khóa hiện tại sẽ mất hiệu lực ngay. Home Assistant sẽ yêu cầu khóa mới trước khi điều khiển lại đèn.</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>Chưa xác minh được việc dọn dẹp đúng phiên đèn trước đó.</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>Đèn sẽ tắt ngay sau khi bạn ngừng gõ. Khi đóng nắp, hãy dùng bàn phím ngoài.</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>Giao diện dịch vụ điều khiển đèn logo không được hỗ trợ trên phiên bản macOS này.</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>Không dùng được dịch vụ điều khiển đèn logo trên phiên bản macOS này.</string>
+	<key>The logo control service is unavailable.</key>
+	<string>Không dùng được dịch vụ điều khiển đèn logo.</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>Đèn logo phần cứng phát ánh sáng trắng. Backlit chỉ thay đổi độ sáng và nhịp của đèn, không thay đổi độ sáng màn hình. </string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>Dịch vụ đèn logo không xác nhận mức sáng đã yêu cầu.</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>Dịch vụ đèn logo chưa kết nối lại sau khi đổi giới hạn theo ánh sáng môi trường. Chọn Khôi phục đèn trước khi thử lại.</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>Không xác minh được trạng thái tắt của đèn logo. Thông tin khôi phục hiệu ứng chuyển sáng vẫn được giữ lại.</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>Nguồn độ sáng gốc của đèn logo đã thay đổi. Đã dừng điều khiển đèn logo.</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>Chưa cho phép tiếp tục khôi phục tự động phiên trước.</string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>Khóa cũ sẽ mất hiệu lực. Trợ lý cục bộ có thể kết nối lại nếu quyền truy cập AI vẫn bật. Khóa Home Assistant không đổi.</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>Kết nối cục bộ trước vẫn đang đóng. Hãy tắt và bật lại chia sẻ để thử lại.</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>Cấu hình khôi phục không hợp lệ; không có thay đổi nào.</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>Bản ghi khôi phục tự động đã lưu không hợp lệ. Chọn Khôi phục đèn trước khi thử lại.</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>Lựa chọn đóng nắp đã lưu không hợp lệ.</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>Lỗi đóng nắp đã lưu không đủ điều kiện dọn dẹp tự động.</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>Không lưu được trạng thái an toàn khi đóng nắp.</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>Đã khôi phục cài đặt đèn logo và nắp máy đã lưu.</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>Thông tin khôi phục đã lưu thuộc một lựa chọn đóng nắp khác.</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>Thông tin khôi phục đã lưu thuộc phiên đèn khác.</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>Không ghi được kết quả kiểm tra an toàn. Hãy khôi phục đèn trước khi thử lại.</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>Đây là chế độ xem trước cách ly. Đèn logo thật không thay đổi.</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>Thiết bị đầu ra này dùng định dạng âm thanh hệ thống không được hỗ trợ.</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>Bản cập nhật không tương thích với bản dựng này hoặc máy Mac này.</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>Đã hết giờ. Hãy mở nắp để bắt đầu phiên hẹn giờ khác.</string>
+	<key>Toggle logo</key>
+	<string>Bật/tắt đèn logo</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>Đã phát hiện chạm · giữ để đèn tiếp tục sáng</string>
+	<key>Touch released · light off</key>
+	<string>Đã nhấc ngón tay · đèn tắt</string>
+	<key>Trackpad</key>
+	<string>Bàn di chuột</string>
+	<key>Trackpad and optional typing response</key>
+	<string>Bàn di chuột và phản hồi khi gõ phím (tùy chọn)</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>Không dùng được sự kiện bàn di chuột trên bản dựng macOS này</string>
+	<key>Trackpad input unavailable</key>
+	<string>Không nhận được thao tác bàn di chuột</string>
+	<key>Trackpad · unavailable</key>
+	<string>Bàn di chuột · không khả dụng</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>Bật hoặc tắt đèn logo · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>Tắt đèn khi đóng nắp và đợi dọn dẹp xong trước khi đổi giới hạn theo ánh sáng môi trường.</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>Tắt phiên đóng nắp và đợi dọn dẹp xong trước khi đổi thời lượng.</string>
+	<key>Typing</key>
+	<string>Gõ phím</string>
+	<key>Typing access is allowed</key>
+	<string>Đã có quyền nhận thao tác gõ phím</string>
+	<key>Typing access is no longer available</key>
+	<string>Không còn quyền nhận thao tác gõ phím</string>
+	<key>Typing active · light on</key>
+	<string>Đang gõ phím · đèn bật</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>Đã tắt nhận thao tác gõ phím trong chế độ xem trước.</string>
+	<key>Typing response is off</key>
+	<string>Phản hồi khi gõ phím đang tắt</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>macOS đã tạm dừng nhận thao tác gõ phím; hãy tắt và bật lại phản hồi khi gõ phím để tiếp tục</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>Khi rút nguồn, độ sáng đèn logo theo mức pin đến 0%. Mức sáng chỉnh tay không ảnh hưởng đến chế độ Pin.</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>Không nhận dạng được định dạng sự kiện. Không có thay đổi nào.</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>Không nhận dạng được nhóm hook. Không có thay đổi nào.</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>Không nhận dạng được định dạng hook. Không có thay đổi nào.</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>Đã tạm dừng cập nhật. Hoàn tất khôi phục đèn rồi thử cài đặt lại.</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>Không thể cập nhật trong chế độ xem trước.</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>Dùng Command, Control hoặc Option cùng một phím thông thường. Không hỗ trợ chỉ dùng Shift hoặc phím độ sáng phần cứng.</string>
+	<key>User session inactive</key>
+	<string>Phiên người dùng không hoạt động</string>
+	<key>Uses the brightness set above.</key>
+	<string>Dùng độ sáng đã đặt ở trên.</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>Đang xác minh dọn dẹp phiên đèn trước khi kết nối lại</string>
+	<key>Version {version} · t0nyz</key>
+	<string>Phiên bản {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>Đang chờ</string>
+	<key>Waiting for an agent</key>
+	<string>Đang chờ tác nhân</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>Đang chờ dọn dẹp phiên đóng nắp</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>Đang chờ kiểm tra an toàn khi đóng nắp.</string>
+	<key>Waiting for keys…</key>
+	<string>Đang chờ phím…</string>
+	<key>Waiting for light output</key>
+	<string>Đang chờ đèn sáng</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>Đang đợi macOS xử lý xong yêu cầu âm thanh hệ thống và hoàn tất dọn dẹp.</string>
+	<key>Waiting for touch</key>
+	<string>Đang chờ thao tác chạm</string>
+	<key>Waiting for {source} touch</key>
+	<string>Đang chờ thao tác chạm: {source}</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>Đang chờ kết nối lại sau khi máy thức</string>
+	<key>Watching your agents</key>
+	<string>Đang theo dõi tác nhân của bạn</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>Khi biểu tượng bị ẩn, hãy mở lại Backlit từ Dock hoặc thư mục Ứng dụng. Bạn vẫn mở được Cài đặt từ menu ứng dụng.</string>
+	<key>While plugged in</key>
+	<string>Khi cắm nguồn</string>
+	<key>Working</key>
+	<string>Đang làm việc</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>Đang làm việc, đang chờ hoặc cần bạn chú ý</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>Hoạt động với mọi ứng dụng đang mở. Đặt một ngón tay để bật đèn logo; nhấc tất cả ngón tay để tắt.</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>Bạn có thể đổi chế độ hoặc thoát Backlit. Có thể thử lại khi dọn dẹp hoàn tất.</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>Trợ lý có thể gửi trạng thái đèn cho nhà cung cấp mô hình của nó. Nhạc và Gõ phím cần được cấp quyền truy cập trong Backlit trước. Các hook trạng thái hoạt động riêng.</string>
+	<key>Your light</key>
+	<string>Đèn của bạn</string>
+	<key>Your light is ready.</key>
+	<string>Đèn của bạn đã sẵn sàng.</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>Đã khôi phục đèn. Hãy tắt và bật lại đèn khi đóng nắp để thử lại.</string>
+	<key>attention</key>
+	<string>cần chú ý</string>
+	<key>both</key>
+	<string>cả hai</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOS không hiển thị được biểu tượng Dock. Backlit sẽ giữ mục trên thanh menu.</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOS không cho phép dùng bộ lọc phím độ sáng. Kiểm tra Trợ năng và Giám sát đầu vào hoặc dùng phím tắt thông thường.</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOS chưa xác nhận khôi phục. Tệp khôi phục vẫn được giữ lại.</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOS từ chối chiếu sáng khi đóng nắp. Hãy khôi phục phiên đóng nắp trước khi thử lại.</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOS từ chối thay đổi độ sáng đèn logo. Chọn Khôi phục đèn trước khi thử lại.</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>macOS vẫn từ chối quyền Giám sát đầu vào cho phiên Backlit đang chạy. Mở Giám sát đầu vào, cấp quyền cho ứng dụng đã cài đặt, rồi mở lại Backlit.</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOS đã dừng điều khiển phím phần cứng. Phím độ sáng lại do macOS xử lý; hãy dùng phím tắt thông thường hoặc bật lại tùy chọn.</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOS mất quá nhiều thời gian để kết nối âm thanh hệ thống.</string>
+	<key>minutes</key>
+	<string>phút</string>
+	<key>screen</key>
+	<string>màn hình</string>
+	<key>trackpad</key>
+	<string>bàn di chuột</string>
+	<key>waiting</key>
+	<string>đang chờ</string>
+	<key>working</key>
+	<string>đang làm việc</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>Xem trước độ sáng chế độ {mode}, {value} phần trăm. {status}</string>
+	<key>{mode} mode</key>
+	<string>Chế độ {mode}</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · cổng {port}</string>
+	<key>{value} percent</key>
+	<string>{value} phần trăm</string>
+	<key>{value} s</key>
+	<string>{value} giây</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>Đã yêu cầu {value}% · đã bật điều khiển phần cứng</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ Mời tôi một ly cà phê</string>
+</dict>
+</plist>

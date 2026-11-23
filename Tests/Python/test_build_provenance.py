@@ -151,6 +151,54 @@ class BuildProvenanceTests(unittest.TestCase):
         self.assertEqual(sentinel.read_text(), 'previous package')
         self.assertFalse(list((self.root / 'dist').glob('package-work.*')))
 
+    def test_packager_refuses_locally_qualified_control_artifacts(self):
+        project = SOURCE.parents[1]
+        (self.root / 'scripts').mkdir()
+        for name in ['package.sh', 'build-provenance.py']:
+            (self.root / 'scripts' / name).write_bytes((project / 'scripts' / name).read_bytes())
+        self.git('add', '.'); self.git('commit', '-qm', 'Local-control packaging fixture')
+        bins = self.root / 'dist/mock-bin'; bins.mkdir()
+        for name, body in {
+            'codesign': '#!/bin/sh\nexit 0\n',
+            'ditto': '#!/bin/sh\nexec /bin/cp -R "$1" "$2"\n',
+        }.items():
+            tool = bins / name; tool.write_text(body); tool.chmod(0o700)
+        env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
+        env['PATH'] = str(bins) + os.pathsep + env['PATH']
+        contents = self.app / 'Contents'
+        info_path = contents / 'Info.plist'
+        provenance.write(self.root, self.app, provenance.capture(self.root))
+        output = self.root / 'dist/packages'; output.mkdir()
+        sentinel = output / 'original-zip'; sentinel.write_text('previous output')
+
+        for case in ['preview marker', 'app group', 'extension', 'gallery icon', 'native intent']:
+            with self.subTest(case=case):
+                info = dict(self.info)
+                residue = None
+                if case == 'preview marker':
+                    info['BacklitLocalControlPreview'] = True
+                elif case == 'app group':
+                    info['BacklitControlAppGroup'] = 'fixture.example'
+                elif case == 'extension':
+                    residue = contents / 'PlugIns/BacklitControl.appex'
+                elif case == 'gallery icon':
+                    residue = contents / 'Resources/Assets.car'
+                else:
+                    residue = contents / 'Resources/Metadata.appintents/extract.actionsdata'
+                if residue:
+                    residue.parent.mkdir(parents=True, exist_ok=True)
+                    residue.write_bytes(b'SetLogoLightControlIntent' if case == 'native intent' else b'fixture')
+                info_path.write_bytes(plistlib.dumps(info))
+                result = subprocess.run(['bash', 'scripts/package.sh'], cwd=self.root, env=env,
+                                        capture_output=True, text=True, timeout=15)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('Local Control Center artifacts cannot be packaged', result.stderr)
+                self.assertEqual(sentinel.read_text(), 'previous output')
+                if residue:
+                    residue.unlink()
+                    if case in ['extension', 'native intent']:
+                        residue.parent.rmdir()
+
     def test_frozen_identity_accepts_an_exact_private_copy(self):
         provenance.write(self.root, self.app, provenance.capture(self.root))
         frozen = provenance.freeze(self.root, self.app)

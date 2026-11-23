@@ -52,3 +52,42 @@ struct BridgeConnectionSetup {
         return true
     }
 }
+
+
+/// Apply only the last still-authorized startup read. No Keychain work runs on
+/// the main queue, and a delayed read cannot reopen a listener after a setting
+/// change or the app's approved quit.
+@MainActor final class BridgeStartupResume {
+    typealias Prepare = @Sendable (_ enabled: Bool, _ access: MCPAccess) throws -> BridgeConnectionSetup
+    private var generation = UUID()
+    private var pendingLAN: Bool?
+
+    var isPending: Bool { pendingLAN != nil }
+
+    func begin(enabled: Bool, access: MCPAccess, lan: Bool,
+               prepare: @escaping Prepare = { try BridgeConnectionSetup.prepare(
+                   homeAssistantRequested: $0, agentAccess: $1, intent: .automaticResume) },
+               complete: @escaping @MainActor (Result<BridgeConnectionSetup, Error>, Bool) -> Void) {
+        let request = UUID()
+        generation = request
+        pendingLAN = lan
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let result = Result { try prepare(enabled, access) }
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.generation == request, let lan = self.pendingLAN else { return }
+                self.pendingLAN = nil
+                complete(result, lan)
+            }
+        }
+    }
+
+    /// LAN scope does not change credential authorization. Keep the in-flight
+    /// read and apply only the latest scope if its credentials are still valid.
+    func updateLAN(_ lan: Bool) -> Bool {
+        guard isPending else { return false }
+        pendingLAN = lan
+        return true
+    }
+
+    func invalidate() { generation = UUID(); pendingLAN = nil }
+}

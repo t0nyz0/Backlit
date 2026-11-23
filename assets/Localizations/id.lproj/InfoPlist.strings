@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Backlit menganalisis audio yang diputar sistem secara lokal agar logo merespons musik. Tidak ada audio yang direkam atau diunggah.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Hubungkan lampu logo Backlit ke instans Home Assistant di jaringan lokal Anda.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Backlit menggunakan audio yang diputar sistem untuk mode Musik. Backlit tidak menyimpan atau mengirim konten layar maupun audio.</string>
+</dict>
+</plist>

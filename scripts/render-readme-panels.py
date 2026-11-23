@@ -144,7 +144,23 @@ def flag(code):
         return ('<rect width="30" height="20" fill="#FE0000"/><rect width="15" height="10" fill="#000095"/>'
                 f'<polygon points="{star(7.5, 5, 3.75, 2, points=12)}" fill="#fff"/>'
                 '<circle cx="7.5" cy="5" r="2.2" fill="#000095"/><circle cx="7.5" cy="5" r="1.85" fill="#fff"/>')
-    return stripes(['#A51931', '#F4F5F8', '#2D2A4A', '#F4F5F8', '#A51931'], weights=[1, 1, 2, 1, 1])
+    if code == 'th':
+        return stripes(['#A51931', '#F4F5F8', '#2D2A4A', '#F4F5F8', '#A51931'], weights=[1, 1, 2, 1, 1])
+    if code == 'it':
+        return stripes(['#009246', '#fff', '#CE2B37'], vertical=True)
+    if code == 'nl':
+        return stripes(['#AE1C28', '#fff', '#21468B'])
+    if code == 'pl':
+        return stripes(['#fff', '#DC143C'])
+    if code == 'tr':
+        return ('<rect width="30" height="20" fill="#E30A17"/><circle cx="11" cy="10" r="5" fill="#fff"/>'
+                '<circle cx="12.4" cy="10" r="4" fill="#E30A17"/>'
+                f'<polygon points="{star(17.5, 10, 2.6, .99, turn=-18)}" fill="#fff"/>')
+    if code == 'vi':
+        return f'<rect width="30" height="20" fill="#DA251D"/><polygon points="{star(15, 10, 6.5, 2.48)}" fill="#FF0"/>'
+    if code == 'id':
+        return stripes(['#CE1126', '#fff'])
+    raise ValueError(f'Unknown flag code: {code}')
 
 
 def flag_at(code, x, y, scale=1.2):
@@ -295,15 +311,17 @@ def main() -> None:
           'send prompts or code. Preview mode to try the interface without the hardware. Source available to read or build.', rest)
 
     languages = [('us', 'English'), ('es', 'Español'), ('fr', 'Français'), ('de', 'Deutsch'), ('jp', '日本語'),
-                 ('kr', '한국어'), ('br', 'Português'), ('cn', '简体中文'), ('tw', '繁體中文'), ('th', 'ไทย')]
-    tongues = text(48, 58, 'Languages', 'eyebrow') + text(48, 106, 'In ten languages.', 'h', 40, spacing='-.03em')
+                 ('kr', '한국어'), ('br', 'Português (Brasil)'), ('cn', '简体中文'), ('tw', '繁體中文'), ('th', 'ไทย'),
+                 ('it', 'Italiano'), ('nl', 'Nederlands'), ('pl', 'Polski'), ('tr', 'Türkçe'),
+                 ('vi', 'Tiếng Việt'), ('id', 'Bahasa Indonesia')]
+    tongues = text(48, 58, 'Languages', 'eyebrow') + text(48, 106, 'In sixteen languages.', 'h', 40, spacing='-.03em')
     for index, (code, label) in enumerate(languages):
-        x, y = 48 + (index % 5) * 148, 148 + (index // 5) * 46
+        x, y = 48 + (index % 4) * 181, 148 + (index // 4) * 43
         tongues += flag_at(code, x, y) + text(x + 46, y + 18, label, 'b', 16)
-    tongues += text(48, 262, 'Follows your Mac’s language, or pick one in Settings.', 'p', 17)
-    panel('panel-languages.svg', 806, 306, 'In ten languages',
-          'Ten interface languages, each shown with a small flag: English, Spanish, French, German, Japanese, Korean, '
-          'Brazilian Portuguese, Simplified Chinese, Traditional Chinese and Thai. Backlit follows your Mac’s language, '
+    tongues += text(48, 347, 'Follows your Mac’s language, or pick one in Settings.', 'p', 17)
+    panel('panel-languages.svg', 806, 388, 'In sixteen languages',
+          'Sixteen interface languages: English, Spanish, French, German, Japanese, Korean, Brazilian Portuguese, '
+          'Simplified Chinese, Traditional Chinese, Thai, Italian, Dutch, Polish, Turkish, Vietnamese and Indonesian. Backlit follows your Mac’s language, '
           'or you can pick one in Settings.', tongues)
 
     ROOT.joinpath('docs/media/download-backlit.svg').write_text(

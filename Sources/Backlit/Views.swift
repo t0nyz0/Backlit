@@ -316,12 +316,12 @@ struct ConnectionsPage: View {
             HStack(spacing:14) {
                 Image(systemName:"house").font(.system(size:20)).frame(width:42,height:42)
                 VStack(alignment:.leading,spacing:4){Text("Home Assistant").font(.system(size:14,weight:.semibold));Text(model.l("Optional local light integration")).font(.system(size:11)).foregroundStyle(.secondary)}
-                Spacer();Toggle(model.l("Enable Home Assistant bridge"),isOn:Binding(get:{model.bridgeEnabled},set:{model.configureBridge(enabled:$0,lan:model.bridgeLAN)})).toggleStyle(.switch).labelsHidden()
+                Spacer();Toggle(model.l("Enable Home Assistant bridge"),isOn:Binding(get:{model.bridgeRequested},set:{model.configureBridge(enabled:$0,lan:model.bridgeLAN)})).toggleStyle(.switch).labelsHidden()
             }
             DisclosureGroup(model.l("Setup"),isExpanded:$showHomeSetup) {
                 VStack(alignment:.leading,spacing:12) {
-                    Toggle(model.t("Allow connections from your local network","允許本地網路連接"),isOn:Binding(get:{model.bridgeLAN},set:{model.configureBridge(enabled:model.bridgeEnabled,lan:$0)})).toggleStyle(.switch).controlSize(.small)
-                    Text(model.bridgeEnabled ? model.lf("{status} · port {port}", arguments: ["status":model.l(model.bridgeStatus),"port":"48261"]) : model.l("Off by default. Enable network access for Home Assistant on another device.")).font(.system(size:11)).foregroundStyle(.secondary)
+                    Toggle(model.t("Allow connections from your local network","允許本地網路連接"),isOn:Binding(get:{model.bridgeLAN},set:{model.configureBridgeLAN($0)})).toggleStyle(.switch).controlSize(.small)
+                    Text(model.bridgeRequested ? model.lf("{status} · port {port}", arguments: ["status":model.l(model.bridgeStatus),"port":"48261"]) : model.l("Off by default. Enable network access for Home Assistant on another device.")).font(.system(size:11)).foregroundStyle(.secondary)
                     HStack {
                         Button(model.l("Copy Pairing Key")){model.copyPairingKey()}.disabled(!model.bridgeEnabled)
                         Button(model.l("New Pairing Key")){model.regeneratePairingKey()}.disabled(model.demo)

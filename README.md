@@ -26,13 +26,13 @@ MacBook Pro with PROLED XDR · Apple silicon · No account required
 
 <p align="center"><img src="docs/media/preview/panel-more.svg" width="100%" alt="And the rest: Option-click the menu bar icon to toggle the light, your own shortcuts, hiding the menu bar or Dock icon, launch at login, no account, no saved audio and hooks that never send prompts or code, a preview mode without the hardware, and available source."></p>
 
-<p align="center"><img src="docs/media/preview/panel-languages.svg" width="100%" alt="In ten languages: English, Español, Français, Deutsch, 日本語, 한국어, Português (Brasil), 简体中文, 繁體中文 and ไทย, each shown with a small flag. Backlit follows your Mac’s language, or you can pick one in Settings."></p>
+<p align="center"><img src="docs/media/preview/panel-languages.svg" width="100%" alt="In sixteen languages: English, Español, Français, Deutsch, 日本語, 한국어, Português (Brasil), 简体中文, 繁體中文, ไทย, Italiano, Nederlands, Polski, Türkçe, Tiếng Việt and Bahasa Indonesia. Backlit follows your Mac’s language, or you can pick one in Settings."></p>
 
 <sub>Lid drawings are illustrations, not hardware footage. The menu bar popover is a native capture from a 0.2.12 development build in isolated preview, where battery data is unavailable. The main window is a historical 0.2.5 isolated capture, and some layouts have changed ([capture details](docs/media/README.md)). White light only. Music and Typing use [optional macOS permissions](docs/USER-GUIDE.md#behavior-details-and-permissions). The built-in screen may remain lit while the lid is closed. The Stream Deck add-on is experimental, and live Codex hook delivery is unverified ([setup and current limits](docs/USER-GUIDE.md#connection-setup-and-limits)).</sub>
 
 ---
 
-**0.2.11 (build 57)** · [Ten interface languages](docs/LOCALIZATION.md) · [User guide](docs/USER-GUIDE.md) · [Installation & compatibility](docs/USER-GUIDE.md#install-and-update) · [All releases](https://github.com/t0nyz0/Backlit/releases) · [Build from source](docs/USER-GUIDE.md#build-from-source) · [Download stats](docs/downloads/README.md)
+**Public download: 0.2.11 (build 57)** · **0.2.12 source preview: [Sixteen interface languages](docs/LOCALIZATION.md)** · [User guide](docs/USER-GUIDE.md) · [Installation & compatibility](docs/USER-GUIDE.md#install-and-update) · [All releases](https://github.com/t0nyz0/Backlit/releases) · [Build from source](docs/USER-GUIDE.md#build-from-source) · [Download stats](docs/downloads/README.md)
 
 [Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](.github/SECURITY.md) · [Attribution and trademark notices](docs/USER-GUIDE.md#license-and-attribution) · [License](LICENSE)
 

@@ -190,6 +190,9 @@ enum MusicCapturePolicy {
     @Published var bridgeLAN = false
     @Published var bridgeStatus = "Not connected"
     @Published private(set) var mcpAccess: MCPAccess = .off
+    private let bridgeStartup = BridgeStartupResume()
+    @Published private var pendingHomeAssistantResume = false
+    var bridgeRequested: Bool { bridgeEnabled || pendingHomeAssistantResume }
     private var agentRateLimit = ExternalControlRateLimit()
     private let externalControlObservation: (() -> ExternalControlContext)?
     @Published var language = "system" {
@@ -584,6 +587,7 @@ enum MusicCapturePolicy {
         }
         bridge.onFailure = { [weak self] text in
             guard let self else { return }
+            self.bridgeStartup.invalidate(); self.pendingHomeAssistantResume = false
             self.bridge.stop(); self.bridgeEnabled = false; self.mcpAccess = .off
             self.defaults.set(false,forKey:"bridge.enabled"); self.defaults.set("off",forKey:"mcp.access")
             self.presentError(.listenerFailed(detail: text))
@@ -635,7 +639,7 @@ enum MusicCapturePolicy {
         controlWanted = canReconnectLight
         configureTimer()
         if !controlWanted && needsLightRecovery { notice = "A previous light session needs restoration. Use Restore Light to finish its cleanup." }
-        if !demo { configureBridge(enabled:self.defaults.bool(forKey:"bridge.enabled"),lan:self.defaults.bool(forKey:"bridge.lan"),credentialIntent:.automaticResume) }
+        if !demo { resumeSavedBridge() }
         if !demo, defaults.bool(forKey:"shortcut.shiftBrightness.enabled") { configureShiftBrightness(true,prompt:false) }
         startPowerMonitoring()
         if !demo {
@@ -960,6 +964,23 @@ enum MusicCapturePolicy {
             paused: pausedReason, mode: mode, enabled: enabled, availableModes: availableModes,
             musicAuthorized: audioConsent, typingAuthorized: typing.permissionGranted)
     }
+    // The native Control Center entry is deliberately separate from public URL,
+    // MCP and Home Assistant opt-ins, but uses their complete safety admission.
+    // It cannot repair hardware, enable permissions, or change the selected mode.
+    func performControlCenterPower(_ value: Bool) throws {
+        guard !demo || externalControlObservation != nil else { throw AutomationError.unavailable }
+        try performExternal(LightCommand(enabled: value))
+    }
+
+    func controlCenterObservation() -> (requested: Bool, effective: Bool, available: Bool) {
+        let context = externalControlContext
+        let available = !demo && context.hardwareAvailable && context.controlWanted &&
+            !context.needsRecovery && !context.busy
+        let effective = available && enabled && controlling && pausedReason == nil &&
+            lastHardwareResult == .applied
+        return (enabled, effective, available)
+    }
+
     private func performExternal(_ command: LightCommand, agent: Bool = false) throws {
         // Legacy links/Home Assistant may save a manual level while Battery is
         // active. Agents get an explicit automatic-brightness error instead.
@@ -1709,12 +1730,55 @@ enum MusicCapturePolicy {
         let panel = NSOpenPanel(); panel.canChooseFiles = false; panel.canChooseDirectories = true; panel.showsHiddenFiles = true
         if panel.runModal() == .OK, let folder = panel.url { defaults.set(folder.path,forKey:"agent.folder."+agent.rawValue); objectWillChange.send() }
     }
+    private func resumeSavedBridge() {
+        guard !demo else { return }
+        bridgeStartup.invalidate()
+        let enabled = defaults.bool(forKey: "bridge.enabled")
+        let lan = defaults.bool(forKey: "bridge.lan")
+        let access = mcpAccess
+        bridgeLAN = lan
+        pendingHomeAssistantResume = enabled
+        guard enabled || access != .off else { return }
+        // An existing Keychain ACL may wait on Security after a signing change,
+        // even with interaction disabled. Keep UI, lighting and Quit responsive.
+        bridgeStartup.begin(enabled: enabled, access: access, lan: lan) { [weak self] result, latestLAN in
+            guard let self else { return }
+            self.applyBridgeSetup(result, lan: latestLAN)
+            self.pendingHomeAssistantResume = false
+        }
+    }
+
+    func configureBridgeLAN(_ lan: Bool) {
+        guard !demo else { notice = "Network sharing is disabled in isolated preview."; return }
+        if bridgeStartup.updateLAN(lan) {
+            bridgeLAN = lan
+            defaults.set(lan, forKey: "bridge.lan")
+        } else {
+            configureBridge(enabled: bridgeRequested, lan: lan)
+        }
+    }
+
     func configureBridge(enabled: Bool, lan: Bool, credentialIntent: BridgeCredentialIntent = .deliberateSetup) {
         guard !demo else { notice = "Network sharing is disabled in isolated preview."; return }
+        if !enabled && bridgeStartup.isPending {
+            // Explicit Off wins immediately. Any still-enabled MCP scope gets
+            // a new noninteractive read; the old HA result can never bind.
+            bridge.stop(); bridgeEnabled = false; bridgeStatus = "Not connected"
+            defaults.set(false, forKey: "bridge.enabled"); defaults.set(lan, forKey: "bridge.lan")
+            resumeSavedBridge()
+            return
+        }
+        bridgeStartup.invalidate()
+        pendingHomeAssistantResume = false
         bridge.stop(); bridgeEnabled = false; bridgeLAN = lan
+        let setup = Result { try BridgeConnectionSetup.prepare(homeAssistantRequested: enabled,
+            agentAccess: mcpAccess, intent: credentialIntent) }
+        applyBridgeSetup(setup, lan: lan)
+    }
+
+    private func applyBridgeSetup(_ result: Result<BridgeConnectionSetup, Error>, lan: Bool) {
         do {
-            let setup = try BridgeConnectionSetup.prepare(homeAssistantRequested: enabled,
-                agentAccess: mcpAccess, intent: credentialIntent)
+            let setup = try result.get()
             mcpAccess = setup.agentAccess
             if try !setup.start(lan: lan, using: { lan, home, agent, access in
                 try bridge.start(lan: lan, token: home, agentToken: agent, agentAccess: access)
@@ -1734,7 +1798,8 @@ enum MusicCapturePolicy {
         do {
             if access != .off { _ = try BridgeToken.value(account:BridgeToken.agentAccount) }
             mcpAccess = access; defaults.set(access.rawValue,forKey:"mcp.access")
-            configureBridge(enabled:bridgeEnabled,lan:bridgeLAN,credentialIntent:.automaticResume)
+            if bridgeStartup.isPending { resumeSavedBridge() }
+            else { configureBridge(enabled:bridgeRequested,lan:bridgeLAN,credentialIntent:.automaticResume) }
         } catch { self.presentFailure(error) }
     }
     func regenerateMCPKey() {
@@ -1782,8 +1847,9 @@ enum MusicCapturePolicy {
         }
         guard approved else { return }
         let lan = bridgeLAN
-        switch PairingKeyRotation.run(wasSharing: bridgeEnabled, stopSharing: {
+        switch PairingKeyRotation.run(wasSharing: bridgeRequested, stopSharing: {
             // From here the old key is refused, whatever happens next.
+            bridgeStartup.invalidate(); pendingHomeAssistantResume = false
             bridge.stop(); bridgeEnabled = false; bridgeStatus = "Not connected"
         }, regenerate: { try BridgeToken.regenerate() }) {
         case .rotated(let restartSharing):
@@ -1809,7 +1875,7 @@ enum MusicCapturePolicy {
         isStopping = false; terminationApproved = false
         controlWanted = canReconnectLight
         startPowerMonitoring()
-        if bridgeEnabled || mcpAccess != .off { configureBridge(enabled: bridgeEnabled, lan: bridgeLAN, credentialIntent: .automaticResume) }
+        resumeSavedBridge()
         if defaults.bool(forKey:"shortcut.shiftBrightness.enabled") {
             configureShiftBrightness(true, prompt:false)
         }
@@ -1863,7 +1929,9 @@ enum MusicCapturePolicy {
         stopLid(); releaseHardware()
         if controlling { cancelStopping(); return false }
         guard !recoveryBlocksAdmission else { cancelStopping(); return false }
-        timer?.invalidate(); bridge.stop(); stopAudio(); stopShiftBrightness(); terminationApproved = true; return true
+        timer?.invalidate(); bridgeStartup.invalidate(); pendingHomeAssistantResume = false
+        bridge.stop(); bridgeEnabled = false; bridgeStatus = "Not connected"
+        stopAudio(); stopShiftBrightness(); terminationApproved = true; return true
     }
     private func cancelStopping() {
         guard isStopping else { return }

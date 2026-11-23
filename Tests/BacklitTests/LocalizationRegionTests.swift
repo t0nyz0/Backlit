@@ -38,6 +38,24 @@ import XCTest
             XCTAssertEqual(model.formattingLocale.identifier,"fr_CH")
         }
     }
+    func testNewInterfaceLanguagesKeepIndependentRegionalNumberConventions() {
+        let languages: [AppLanguage] = [.italian, .dutch, .polish, .turkish, .vietnamese, .indonesian]
+        let regions = ["de_DE", "en_US"]
+        for code in regions {
+            let region = Locale(identifier: code)
+            withModel(region: code, language: "en") { model in
+                for language in languages {
+                    model.language = language.rawValue
+                    XCTAssertEqual(model.resolvedLanguage, language)
+                    XCTAssertNotEqual(model.l("Settings"), "Settings", language.rawValue)
+                    XCTAssertEqual(model.formattingLocale.identifier, code, language.rawValue)
+                    XCTAssertEqual(model.formattedDecimal(6.5), code == "de_DE" ? "6,5" : "6.5", language.rawValue)
+                    XCTAssertEqual(model.formattedInteger(12345), 12345.formatted(.number.locale(region)), language.rawValue)
+                    XCTAssertEqual(model.formattedPercent(0.82), 0.82.formatted(.percent.precision(.fractionLength(0)).locale(region)), language.rawValue)
+                }
+            }
+        }
+    }
     func testRegionRefreshDoesNotOverwriteManualLanguage() {
         let suite = "local.backlit.test.locale-region." + UUID().uuidString
         let defaults = UserDefaults(suiteName:suite)!

@@ -182,6 +182,9 @@ if arguments.contains("--verify-hardware") {
             } else if safe { self.model.updater.continueApprovedInstallation() }
         }
         model.start()
+        #if BACKLIT_CONTROL_CENTER
+        if #available(macOS 27.0, *) { LogoLightControlHost.shared.start(model: model) }
+        #endif
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
         // Initial policy setup runs before hardware/Keychain startup. Recheck
@@ -213,6 +216,11 @@ if arguments.contains("--verify-hardware") {
         if model.prepareQuit(reason: reason) { return .terminateNow }
         if model.lidStopPending { pendingTerminationReason = reason; return .terminateLater }
         return .terminateCancel
+    }
+    func applicationWillTerminate(_ notification: Notification) {
+        #if BACKLIT_CONTROL_CENTER
+        if #available(macOS 27.0, *) { LogoLightControlHost.shared.stop() }
+        #endif
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {false}
     @objc func toggleMenu() {

@@ -5,14 +5,22 @@ target_triple="$(uname -m)-apple-macosx14.0"
 toolchain_usr="$(dirname "$(dirname "$(xcrun --find swiftc)")")"
 intent_protocols="$toolchain_usr/share/swift/SwiftConstantValues/AppIntents.json"
 [ -s "$intent_protocols" ] || { echo 'This Xcode toolchain is missing AppIntents constant-gathering definitions.' >&2; exit 1; }
-mkdir -p dist/appintents
+app_bundle="$PWD/dist/Backlit.app"
+scratch_dir="$PWD/.build"
+intent_work="$PWD/dist/appintents"
+if [ "${BACKLIT_LOCAL_CONTROL_BUILD:-0}" = "1" ]; then
+    app_bundle="$PWD/dist/Backlit-Control-Preview.app"
+    scratch_dir="$PWD/.build/control-preview"
+    intent_work="$PWD/dist/appintents-control-preview"
+fi
+mkdir -p "$intent_work"
 build_snapshot="$(mktemp "$PWD/dist/build-input.XXXXXX")"
 trap 'rm -f "$build_snapshot"' EXIT
 python3 scripts/compile-localizations.py --write
 python3 scripts/build-provenance.py capture "$build_snapshot"
 # The SDK definition is versioned on newer toolchains; the frontend consumes
 # a plain protocol-name array on both older and newer Swift compilers.
-intent_array="$PWD/dist/appintents/protocols.json"
+intent_array="$intent_work/protocols.json"
 python3 - "$intent_protocols" "$intent_array" <<'PY_PROTOCOLS'
 import json
 from pathlib import Path
@@ -27,23 +35,31 @@ normalized = json.dumps(sorted(set(value))) + '\n'
 if not destination.is_file() or destination.read_text() != normalized:
     destination.write_text(normalized)
 PY_PROTOCOLS
-swift build -c release --triple "$target_triple" \
+experimental_flags=()
+if [ "${BACKLIT_LOCAL_CONTROL_BUILD:-0}" = "1" ]; then
+    sdk_version="$(xcrun --sdk macosx --show-sdk-version)"
+    experimental_flags=(-Xswiftc -D -Xswiftc BACKLIT_CONTROL_CENTER
+        -Xlinker -platform_version -Xlinker macos -Xlinker 14.0 -Xlinker "$sdk_version")
+fi
+swift build -c release --scratch-path "$scratch_dir" --triple "$target_triple" "${experimental_flags[@]}" \
     -Xswiftc -D -Xswiftc BACKLIT_STANDALONE \
     -Xswiftc -file-prefix-map -Xswiftc "$PWD=/build/Backlit" \
     -Xswiftc -whole-module-optimization \
     -Xswiftc -emit-const-values \
     -Xswiftc -Xfrontend -Xswiftc -const-gather-protocols-file -Xswiftc -Xfrontend -Xswiftc "$intent_array"
-binary_dir="$(swift build -c release --triple "$target_triple" --show-bin-path)"
+binary_dir="$(swift build -c release --scratch-path "$scratch_dir" --triple "$target_triple" --show-bin-path)"
 # Let the driver assign compile-only outputs. Forwarding an explicit frontend
 # output path also reaches dependency scanning, where constant emission is invalid.
-python3 - "$PWD" "$binary_dir" "$target_triple" <<'PY_CONSTANTS'
+python3 - "$scratch_dir" "$binary_dir" "$target_triple" "$intent_work" <<'PY_CONSTANTS'
 import json
 from pathlib import Path
 import sys
-root, binary = map(lambda value: Path(value).resolve(), sys.argv[1:3])
+scratch, binary = map(lambda value: Path(value).resolve(), sys.argv[1:3])
 architecture = sys.argv[3].split('-')[0]
 module_maps = []
-for path in root.joinpath('.build').rglob('*.json'):
+for path in scratch.rglob('*.json'):
+    if scratch.name == '.build' and 'control-preview' in path.relative_to(scratch).parts:
+        continue
     if 'outputfilemap' not in path.name.lower().replace('-', '') or 'Backlit.build' not in path.parts:
         continue
     if path.is_relative_to(binary) or ('Release' in path.parts and architecture in path.parts):
@@ -75,13 +91,15 @@ for path in constants:
             values.append(record)
 if not values:
     raise SystemExit('The release compiler emitted no AppIntents constants.')
-root.joinpath('dist/appintents/Backlit.swiftconstvalues').write_text(json.dumps(values) + '\n')
+Path(sys.argv[4], 'Backlit.swiftconstvalues').write_text(json.dumps(values) + '\n')
 print(f'Collected compiler constants from {len(constants)} release output(s).')
 PY_CONSTANTS
 python3 scripts/check-localizations.py
-app_bundle="$PWD/dist/Backlit.app"
 mkdir -p "$app_bundle/Contents/MacOS" "$app_bundle/Contents/Resources"
 cp "$binary_dir/Backlit" "$app_bundle/Contents/MacOS/Backlit"
+if [ "${BACKLIT_LOCAL_CONTROL_BUILD:-0}" = "1" ]; then
+    xcrun vtool -show-build "$app_bundle/Contents/MacOS/Backlit" | grep -Fq "sdk $sdk_version"
+fi
 cp assets/Info.plist "$app_bundle/Contents/Info.plist"
 # Copy SwiftPM’s compiled native interface resources into the standalone app.
 [ -d "$binary_dir/Backlit_Backlit.bundle" ] || { echo "Missing compiled interface resource bundle." >&2; exit 1; }
@@ -101,6 +119,14 @@ cp docs/ATTRIBUTION.md "$app_bundle/Contents/Resources/ATTRIBUTION.md"
 mkdir -p "$app_bundle/Contents/Resources/licenses"
 cp docs/licenses/*.txt "$app_bundle/Contents/Resources/licenses/"
 if [ -f assets/Backlit.icns ]; then cp assets/Backlit.icns "$app_bundle/Contents/Resources/Backlit.icns"; fi
+if [ "${BACKLIT_LOCAL_CONTROL_BUILD:-0}" = "1" ]; then
+    /usr/libexec/PlistBuddy -c 'Add :BacklitLocalControlPreview bool true' "$app_bundle/Contents/Info.plist"
+    bash scripts/compile-control-gallery-icon.sh "$app_bundle"
+else
+    # Do not carry outputs from historical local previews into the public app.
+    rm -rf "$app_bundle/Contents/PlugIns"
+    rm -f "$app_bundle/Contents/Resources/Assets.car"
+fi
 mkdir -p "$app_bundle/Contents/Resources/HomeAssistant"
 rsync -a --delete --delete-excluded --exclude=__pycache__ --exclude='*.pyc' integrations/homeassistant/ "$app_bundle/Contents/Resources/HomeAssistant/"
 # Retired integrations must not survive an incremental generated-bundle build.

@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>%0 ayarında logo, atımlar arasında tamamen söner.</string>
+	<key>A compatible live Mac is required.</key>
+	<string>Desteklenen, gerçek bir Mac gerekir.</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>Yeni eşleme anahtarı oluşturulamadığı için Home Assistant paylaşımı kapatıldı. Paylaşımı açmadan önce tekrar “Yeni Eşleme Anahtarı”nı seçin. ({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>Yeni eşleme anahtarı oluşturuldu. Anahtarı kopyalayıp Home Assistant’ta güncelleyin. Eski anahtar artık çalışmaz.</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>Önceki bir ışık oturumunun ayarları geri yüklenmeli. Temizlemeyi tamamlamak için “Işığı Geri Yükle”yi seçin.</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>Önceki bir oturumun ayarları geri yüklenmeli. Önce “Işığı Geri Yükle”yi seçin.</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>Önceki bir oturumun kurtarma kaydı hâlâ var. “Işığı Geri Yükle” ile geri yüklemeyi isteyebilirsiniz, ancak denetimin macOS’a döndüğünü doğrulamaz.</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>Boştayken hafifçe parlar. Çalışırken atım yapar. Siz uzaktayken bir ajan ilginizi bekliyorsa iki kez yanıp söner.</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>Anahtarı değiştirilemediği için yapay zekâ erişimi kapalı kalıyor. </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>Anahtarı değiştirilemediği için yapay zekâ erişimi kapalı kalıyor. {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>Yapay zekâ bağlantıları yalıtılmış önizlemede kapalıdır.</string>
+	<key>Access key</key>
+	<string>Erişim anahtarı</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>Etkin. Güvenlik sınırları geçerliliğini korur.</string>
+	<key>Actual battery-driven logo output</key>
+	<string>Pil düzeyine göre gerçek logo parlaklığı</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>Çalma sesinin düzeyine uyum sağlar. Yoğunluk tepkiyi ayarlar. Parlaklık ayarınız üst sınırı belirler.</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>Bağlantı sırasında ajan ayarları ortaya çıktı. Hiçbir ayarın üzerine yazılmadı. Ayarları gözden geçirip tekrar deneyin.</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>Bağlantı sırasında ajan ayarları değişti. Tekrar deneyin.</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>Ajan ayarları bir sembolik bağlantı veya özel dosya. Önce asıl klasörü seçin.</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>Ajan ayarları bir JSON nesnesi olmalı. Hiçbir değişiklik yapılmadı.</string>
+	<key>Agents</key>
+	<string>Ajanlar</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>Erişilebilirlik bölümünde Backlit’e izin verin, ardından bu seçeneği yeniden açın. Normal kestirmeler için yeni bir izin gerekmez.</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>Girdi İzleme bölümünde Backlit’e izin verin, ardından bu seçeneği yeniden açın. Dinleme izni verilene kadar donanım tuşu filtresi kapalı kalır.</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Backlit bağlantılarına ve diğer uygulamalara izin ver</string>
+	<key>Allow connections from your local network</key>
+	<string>Yerel ağınızdan bağlantılara izin ver</string>
+	<key>Allow light changes</key>
+	<string>Işık değişikliklerine izin ver</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Backlit bağlantıları ışığı değiştirebilir. Bu sürümde yerleşik Kestirmeler eylemleri kullanılamaz.</string>
+	<key>Also respond to typing</key>
+	<string>Yazmaya da tepki ver</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>Ortam ışığına bağlı parlaklık sınırları değiştirilmedi.</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>Bir güncelleme bekliyor. Çıkmadan önce güncelleme penceresinde “Güncellemeyi Yükle ve Yeniden Aç”ı seçin veya güncellemeyi atlayın.</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>Başka bir denetleyici logoyu değiştirdi veya logo durumu okunamadı. Kurtarma bilgileri saklandı.</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>Başka bir denetleyici logoyu değiştirdi. Backlit logoda değişiklik yapmayı bıraktı; kurtarma bilgileri saklandı.</string>
+	<key>Appearance</key>
+	<string>Görünüş</string>
+	<key>Assistant setup</key>
+	<string>Asistan kurulumu</string>
+	<key>Assistants &amp; integrations</key>
+	<string>Asistanlar ve entegrasyonlar</string>
+	<key>Attention</key>
+	<string>İlgi gerekiyor</string>
+	<key>Authorization was cancelled.</key>
+	<string>Yetkilendirme iptal edildi.</string>
+	<key>Automatic level</key>
+	<string>Otomatik düzey</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>Kodlama oturumlarından otomatik ışık sinyalleri. MCP’den bağımsızdır.</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>Otomatik ışık kurtarma henüz sürdürülemiyor.</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>Otomatik ışık kurtarma üç denemeden sonra durdu. Tekrar denemeden önce “Işığı Geri Yükle”yi seçin.</string>
+	<key>Automatic pulse</key>
+	<string>Otomatik atım</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>Otomatik kurtarma artık kaydedilen sönümleme oturumunu denetlemiyor.</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>Otomatik kurtarma zamanlaması doğrulanamadı.</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Otomatik güvenlik kontrolleri üç denemeden sonra durdu. Işığı Ayarlar’da geri yükleyin, ardından “Kapak kapalıyken logoyu açık tut” seçeneğini kapatıp açarak tekrar deneyin.</string>
+	<key>Available on this Mac</key>
+	<string>Bu Mac’te kullanılabilir</string>
+	<key>Available on your local network</key>
+	<string>Yerel ağınızda kullanılabilir</string>
+	<key>Backlight</key>
+	<string>Arka ışık</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlit, logonun müziğe tepki vermesi için sistemde çalınan sesi yerel olarak analiz eder. Ses kaydedilmez veya yüklenmez.</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit sistem sesine bağlanamadı. Sistem Ayarları → Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde Backlit’e izin verin, ardından uygulamayı yeniden açıp tekrar deneyin. (macOS kodu: {code})</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit sistem sesini hazırlayamadı. Sistem Ayarları → Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde Backlit’e izin verin, ardından uygulamayı yeniden açıp tekrar deneyin. (macOS kodu: {code})</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit ses biçimini okuyamadı. Sistem Ayarları → Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde Backlit’e izin verin, ardından uygulamayı yeniden açıp tekrar deneyin. (macOS kodu: {code})</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit sistem sesine erişim isteyemedi. Sistem Ayarları → Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde Backlit’e izin verin, ardından uygulamayı yeniden açıp tekrar deneyin. (macOS kodu: {code})</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit sistem sesini başlatamadı. Sistem Ayarları → Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde Backlit’e izin verin, ardından uygulamayı yeniden açıp tekrar deneyin. (macOS kodu: {code})</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlit başka bir pencerede zaten çalışıyor. Yüklü kopyayı kullanın.</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Backlit bağlantısı kopyalandı. Özel uygulama bağlantılarını destekleyen bir başlatıcıyla kullanın.</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlit, Müzik modu için sistemde çalınan sesi kullanır. Ekran veya ses içeriğini kaydetmez ya da iletmez.</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Mac’iniz uyanık ve kilidi açık olduğunda Backlit yeniden bağlanır.</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Mac’iniz uyandığında Backlit temizliği doğrular ve yeniden bağlanır.</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — Önizleme</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>Backlit’in kancaları kaldırıldı. Önceden var olan kancalar korundu.</string>
+	<key>Balanced</key>
+	<string>Dengeli</string>
+	<key>Battery</key>
+	<string>Pil</string>
+	<key>Battery charging behavior</key>
+	<string>Şarj sırasında pil davranışı</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>Pil modu parlaklığını kendisi ayarlar. Parlaklık kestirmelerini kullanmak için elle ayarlanan bir mod seçin.</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>Pil atım döngüsü (sn)</string>
+	<key>Battery state unavailable</key>
+	<string>Pil durumu kullanılamıyor</string>
+	<key>Battery-driven output</key>
+	<string>Pile göre parlaklık</string>
+	<key>Beat intensity</key>
+	<string>Ritim yoğunluğu</string>
+	<key>Behavior</key>
+	<string>Davranış</string>
+	<key>Blink</key>
+	<string>Yanıp sön</string>
+	<key>Blink on click</key>
+	<string>Tıklamada yanıp sön</string>
+	<key>Blink on trackpad click</key>
+	<string>İzleme dörtgenine tıklanınca yanıp sön</string>
+	<key>Breathe</key>
+	<string>Nefes</string>
+	<key>Breathing</key>
+	<string>Nefes efekti</string>
+	<key>Breathing cycle seconds</key>
+	<string>Nefes döngüsü (sn)</string>
+	<key>Breathing pace</key>
+	<string>Nefes hızı</string>
+	<key>Brightness</key>
+	<string>Parlaklık</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>Parlaklık kestirmeleri elle ayarlanan düzeyi %5 değiştirir. Geçerli davranış ve açık/kapalı durumu değişmez. Pil modunda parlaklık otomatik kalır.</string>
+	<key>CONNECTIONS</key>
+	<string>BAĞLANTILAR</string>
+	<key>Cancel</key>
+	<string>Vazgeç</string>
+	<key>Cannot reopen the power service.</key>
+	<string>Güç servisi yeniden açılamıyor.</string>
+	<key>Change </key>
+	<string>Değiştir </string>
+	<key>Charge-ready signal</key>
+	<string>Şarj eşiğine ulaşma sinyali</string>
+	<key>Charge-ready threshold</key>
+	<string>Şarj sinyali eşiği</string>
+	<key>Charging</key>
+	<string>Şarj oluyor</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>Şarj atımında en düşük parlaklık</string>
+	<key>Check for Updates</key>
+	<string>Güncellemeleri Denetle</string>
+	<key>Choose a custom configuration folder</key>
+	<string>Özel yapılandırma klasörünü seçin</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>Yapılandırma klasörünü seçin: {agent}</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>Temizleniyor. Seçiminiz hatırlanacak.</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>Temizleme tamamlandı, ancak kayıtlı kapalı kapak oturumunun denetimi sisteme geri verdiği doğrulanmadı.</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>Kapalı kapak oturumunun temizlendiği doğrulanamadı. Ayarlar’da güç kurtarma seçeneklerini gözden geçirip tekrar deneyin.</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>Kapalı kapak oturumu temizleniyor. Bittiğinde “Işığı Geri Yükle”yi tekrar seçin.</string>
+	<key>Closed-lid duration</key>
+	<string>Kapak kapalıyken açık kalma süresi</string>
+	<key>Closed-lid duration amount</key>
+	<string>Kapak kapalıyken açık kalma süresi değeri</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>Kapak kapalıyken aydınlatma bir hatadan sonra duraklatıldı</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Bir hatadan sonra kapak kapalıyken aydınlatma duraklatıldı, bu yüzden logo kapalı. Işığı Ayarlar’da geri yükleyin, ardından “Kapak kapalıyken logoyu açık tut” seçeneğini kapatıp açarak tekrar deneyin.</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>Kapak kapalıyken çalışma, yalıtılmış önizlemede kullanılamaz.</string>
+	<key>Coding agent status</key>
+	<string>Kodlama ajanı durumu</string>
+	<key>Coding status hooks</key>
+	<string>Kodlama durumu kancaları</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>Uyumlu ışıklı logo algılandı</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>Uyumlu logo donanımı algılandı.</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>Uyumlu logo donanımı kullanılamıyor.</string>
+	<key>Connect</key>
+	<string>Bağlan</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>Backlit’in logo ışığını yerel ağınızdaki Home Assistant örneğine bağlayın.</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>Kodlama durumu kancalarını bağla: {agent}</string>
+	<key>Connecting to system audio…</key>
+	<string>Sistem sesine bağlanılıyor…</string>
+	<key>Connecting to your MacBook</key>
+	<string>MacBook’unuza bağlanılıyor</string>
+	<key>Connections</key>
+	<string>Bağlantılar</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>Bağlantılar yalıtılmış önizlemede kapalıdır.</string>
+	<key>Constant brightness</key>
+	<string>Sabit parlaklık</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>Işığı istediğinizde denetleyin veya kodlama etkinliğini otomatik olarak ışıkla gösterin.</string>
+	<key>Copy</key>
+	<string>Kopyala</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Claude Code Kurulumunu Kopyala</string>
+	<key>Copy Codex Setup</key>
+	<string>Codex Kurulumunu Kopyala</string>
+	<key>Copy Pairing Key</key>
+	<string>Eşleme Anahtarını Kopyala</string>
+	<key>Copy Toggle Link</key>
+	<string>Aç/Kapat Bağlantısını Kopyala</string>
+	<key>Could not generate a pairing key.</key>
+	<string>Eşleme anahtarı üretilemedi.</string>
+	<key>Could not open the logo session lock.</key>
+	<string>Logo oturumu kilidi açılamadı.</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>Ekran ve klavye davranışı korunamadı. Kapak kapalıyken aydınlatma durduruldu.</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>Özgün logo yapılandırması okunamadı.</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>Kapak kapanınca normal uyku davranışı geri yüklenemedi.</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>Kapağın gerçek durumu geri yüklenemedi. Kurtarma bilgileri saklandı.</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>Logonun gerçek kapak durumu geri yüklenemedi. Kurtarma bilgileri saklandı.</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>Kapak kapalıyken aydınlatma güvenli şekilde uygulanamadı. Tekrar denemeden önce “Işığı Geri Yükle”yi seçin.</string>
+	<key>Could not start typing response</key>
+	<string>Yazmaya tepki başlatılamadı</string>
+	<key>Create New Key</key>
+	<string>Yeni Anahtar Oluştur</string>
+	<key>Create a new pairing key?</key>
+	<string>Yeni eşleme anahtarı oluşturulsun mu?</string>
+	<key>Currently using {language}</key>
+	<string>Kullanılan dil: {language}</string>
+	<key>Dark</key>
+	<string>Koyu</string>
+	<key>Dark between beats</key>
+	<string>Vuruşlar arasında sönük</string>
+	<key>Decrease logo brightness</key>
+	<string>Logo parlaklığını azalt</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>Saptanmış ayar: Şarj sırasında otomatik atım, 6 saniyelik döngü, %0’a kadar kısma. Şarj eşiği sinyali kapalı.</string>
+	<key>Dim to</key>
+	<string>Şu düzeye kadar kıs</string>
+	<key>Disable</key>
+	<string>Devre Dışı Bırak</string>
+	<key>Disconnect</key>
+	<string>Bağlantıyı Kes</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>Kodlama durumu kancalarının bağlantısını kes: {agent}</string>
+	<key>Dismiss notice</key>
+	<string>Bildirimi kapat</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>Ekran parlaklığı ayarınızı değiştirmez.</string>
+	<key>Download Latest Version</key>
+	<string>En Son Sürümü İndir</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>Uygulamayı indirin, ardından Backlit’ten çıkıp Uygulamalar klasöründeki kopyayı değiştirin.</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>İndirmeler önizlemede kapalıdır.</string>
+	<key>Duration</key>
+	<string>Süre</string>
+	<key>Duration: {value} s</key>
+	<string>Süre: {value} sn</string>
+	<key>Edit</key>
+	<string>Düzenle</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>Önce Bağlantılar’da Backlit bağlantılarına ve diğer uygulamalara izin verin.</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Home Assistant köprüsünü aç</string>
+	<key>Enable or retry typing access</key>
+	<string>Yazma erişimini etkinleştir veya tekrar dene</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>Deneysel filtre etkin. Klavyenizde Shift + parlaklık tuşunu deneyin. Ekran parlaklığının değişmediği henüz doğrulanmadı.</string>
+	<key>Fade in and out</key>
+	<string>Yavaşça parlayıp sön</string>
+	<key>Faster</key>
+	<string>Daha hızlı</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>Parlaklık kestirmelerini kullanmadan önce ışık kurtarmayı tamamlayın.</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>Önceki oturumun kurtarmasını tamamlayıp yeniden bağlanın.</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>Yeni bir kapalı kapak oturumu başlatmadan önce öncekini temizlemeyi bitirin.</string>
+	<key>Follow battery charge</key>
+	<string>Pil doluluk düzeyini izle</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Mac’inizin görünüşünü kullanın veya başka bir görünüş seçin.</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Mac’inizin tercih edilen dillerini izleyin veya Backlit için bir dil seçin.</string>
+	<key>Following your battery</key>
+	<string>Pil düzeyinizi izliyor</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>Güce bağlıyken de pil yüzdesini izler.</string>
+	<key>Fully charged</key>
+	<string>Tam dolu</string>
+	<key>General</key>
+	<string>Genel</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>Genel kestirmeler kullanılamıyor.</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>Sistem genelinde izleme dörtgeni · olay temelli, girdi yoklaması yok</string>
+	<key>Glow</key>
+	<string>Parıltı</string>
+	<key>Glowing</key>
+	<string>Parlıyor</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>Donanım parlaklık tuşları macOS’a bırakılır. Ok, harf veya başka bir normal tuş kullanın.</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>Donanım parlaklık tuşlarını macOS yönetir.</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>Donanım tuşlarını yakalama, yalıtılmış önizlemede kapalıdır.</string>
+	<key>Hide Dock icon</key>
+	<string>Dock simgesini gizle</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Anahtar Zinciri’ndeki anahtarı kullanılamadığı için Home Assistant kapatıldı. Bağlantılar’da yeniden açın.</string>
+	<key>Hooks installed · start a new session</key>
+	<string>Kancalar yüklendi · yeni oturum başlatın</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>Kancalar yüklendi · Codex’te güvenilir olarak işaretleyin</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>Kancalar gözden geçirilmeli · yeniden bağlanın veya ajan ayarlarını denetleyin</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>Kancalar kaydedildi. Codex Settings → Hooks bölümünde inceleyip güvenilir olarak işaretleyin, sonra yeni bir oturum başlatın.</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>Kancalar kaydedildi. Ajan ayarlarınızı gözden geçirip yeni bir Claude Code oturumu başlatın.</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>Kancalar yalnızca oturum kimliği ve durum gönderir. İstemleriniz, kodunuz ve araç çıktılarınız Backlit’e hiçbir zaman aktarılmaz.</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>YALITILMIŞ ÖNİZLEME</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>Backlit burada zaten etkin olduğu hâlde güncellemeden sonra erişim reddediliyorsa eski Backlit kaydını kaldırın, yüklü uygulamayı yeniden ekleyip etkinleştirin ve Backlit’i yeniden açın.</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>Erişim kapalıysa Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde Backlit’e izin verin.</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>Bu sürümde uygulama içi güncellemeler henüz açık değil. Yayıncı güvenilir bir güncelleme kaynağı ve imzalama anahtarı eklemelidir.</string>
+	<key>Increase logo brightness</key>
+	<string>Logo parlaklığını artır</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>Girdi İzleme izni var, ancak macOS yazma olayları için dinleyici oluşturamadı. Backlit’i yeniden açıp tekrar deneyin.</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>Yazmaya tepki için Girdi İzleme izni gerekir</string>
+	<key>Input active · light on</key>
+	<string>Girdi etkin · ışık açık</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>Girdi kullanılamıyor · başka bir davranış seçin</string>
+	<key>Install Update and Relaunch</key>
+	<string>Güncellemeyi Yükle ve Yeniden Aç</string>
+	<key>Integration Folder</key>
+	<string>Entegrasyon Klasörü</string>
+	<key>Invalid saved duration</key>
+	<string>Kayıtlı süre geçersiz</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>Backlit’e menü çubuğundan tek tıklamayla ulaşın.</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Backlit’i menü çubuğunda tutun. Menü çubuğu simgesi gizlendiğinde önce Dock simgesi geri gelir.</string>
+	<key>Keep logo on with lid closed</key>
+	<string>Kapak kapalıyken logoyu açık tut</string>
+	<key>Keep on for</key>
+	<string>Açık kalma süresi</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Bu Mac’i uyanık tutar ve kapak kapalıyken yerleşik ekran açık kalabilir. Süre en fazla 30 dakikadır. Düşük pil, aşırı ısınma veya Düşük Güç Modu nedeniyle de durur. Mac’i sert, havalandırılan bir yüzeyde tutun; asla çantada kullanmayın.</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>Klavye güvenlik denetimleri kullanılamıyor. Kapak kapalıyken aydınlatma açılmadı.</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>Anahtar Zinciri eşleme anahtarını kaydedemedi.</string>
+	<key>LIVE PREVIEW</key>
+	<string>CANLI ÖNİZLEME</string>
+	<key>LOGO CONNECTED</key>
+	<string>LOGO BAĞLI</string>
+	<key>LOGO CONTROL</key>
+	<string>LOGO DENETİMİ</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>LOGO KULLANILAMIYOR</string>
+	<key>Language</key>
+	<string>Dil</string>
+	<key>Last access check: </key>
+	<string>Son erişim denetimi: </string>
+	<key>Last access check: {diagnostic}</key>
+	<string>Son erişim denetimi: {diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>Eski eşleme yalnızca kapak fiziksel olarak açıkken doğrulanabilir.</string>
+	<key>Light</key>
+	<string>Açık</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>Işık temizliği doğrulandı. Otomatik olarak yeniden bağlanılıyor.</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>Işık veya kapak ayarlarının kurtarıldığı henüz doğrulanmadı. Kurtarma bilgileri saklandı.</string>
+	<key>Light output paused</key>
+	<string>Işık çıkışı duraklatıldı</string>
+	<key>Light recovery is still in progress.</key>
+	<string>Işık kurtarma hâlâ sürüyor.</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>Işık kurtarma hâlâ sürüyor. Tamamlandığında tekrar çıkmayı deneyin.</string>
+	<key>Light up while typing</key>
+	<string>Yazarken aydınlat</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>Dinleyici çalışmadığı için yerel bağlantılar kapatıldı. </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>Dinleyici çalışmadığı için yerel bağlantılar kapatıldı. {detail}</string>
+	<key>Logo and power</key>
+	<string>Logo ve güç</string>
+	<key>Logo brightness</key>
+	<string>Logo parlaklığı</string>
+	<key>Logo control enabled</key>
+	<string>Logo denetimi etkin</string>
+	<key>Logo control has not been enabled.</key>
+	<string>Logo denetimi etkinleştirilmedi.</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>Sistem durumu değiştikten sonra logo denetimi kurtarılıyor.</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>Logo denetimi, açık ve kapalı kapak aydınlatması arasında geçiş yapıyor.</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>Logo denetimi kullanılamıyor: {detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>Logo eşlemesi kullanılamıyor; kurtarma bilgileri saklandı.</string>
+	<key>Logo off</key>
+	<string>Logo kapalı</string>
+	<key>Logo off · hardware disabled</key>
+	<string>Logo kapalı · donanım denetimi kapalı</string>
+	<key>Logo off · lid closed</key>
+	<string>Logo kapalı · kapak kapalı</string>
+	<key>Logo on</key>
+	<string>Logo açık</string>
+	<key>Logo preview, {value} percent</key>
+	<string>Logo önizlemesi, yüzde {value}</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>Logo kurtarma denetimleri kullanılamıyor. Kurtarma bilgileri saklandı.</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>Logo durumu kullanılamıyor · donanım denetlenmiyor</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>Logo durumu kullanılamıyor · istenen parlaklık: %{value}</string>
+	<key>Logo unchanged</key>
+	<string>Logo değişmedi</string>
+	<key>MCP access</key>
+	<string>MCP erişimi</string>
+	<key>MCP control</key>
+	<string>MCP denetimi</string>
+	<key>Mac is sleeping</key>
+	<string>Mac uykuda</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>MacBook PROLED Logo Denetimi</string>
+	<key>Manage Connections</key>
+	<string>Bağlantıları Yönet</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>Elle ayarlanan logo parlaklığı: %{value}</string>
+	<key>Match battery level</key>
+	<string>Pil düzeyine göre ayarla</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>Güç bağlantısı kesildiğinde pil doluluk düzeyiyle eşleşir.</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>Kapak her kapatıldığında en fazla 30 dakika. Uyku süresi bu sınıra dahildir; uygulamayı yeniden açmak süreyi sıfırlamaz. Bu sınır güvenli sıcaklığı garanti etmez.</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · saptanmış olarak kapalı</string>
+	<key>Moving with your music</key>
+	<string>Müziğinizin ritminde</string>
+	<key>Music</key>
+	<string>Müzik</string>
+	<key>Music intensity</key>
+	<string>Müzik yoğunluğu</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>Ağ paylaşımı yalıtılmış önizlemede kapalıdır.</string>
+	<key>New Pairing Key</key>
+	<string>Yeni Eşleme Anahtarı</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>Şarj sırasında atım yok. Güce bağlıyken logo %100 parlaklıkta kalır.</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>Uyumlu ışıklı logo algılanmadı.</string>
+	<key>No display is available for system audio capture.</key>
+	<string>Sistem sesini yakalamak için kullanılabilir ekran yok.</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>İzleme dörtgeni girdisi yok. Yazmaya tepkiyi açın veya başka bir davranış seçin.</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>Kapak kapanınca normal uyku davranışı geri yüklendi. Oturumdan kalan bir dosya kaldırılamadı.</string>
+	<key>Not connected</key>
+	<string>Bağlı değil</string>
+	<key>OK</key>
+	<string>Tamam</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>Gözlemlenen oturumlar: {count} · {state}</string>
+	<key>Off</key>
+	<string>Kapalı</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>Saptanmış olarak kapalıdır. Home Assistant’ı başka bir aygıtta kullanmak için ağ erişimini açın.</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>Saptanmış olarak kapalıdır. Erişilebilirlik ve Girdi İzleme izni gerekir. Klavye desteği değişebilir; ekran parlaklığının da değişmediğini doğrulayın. Normal kestirmeler bu izinler olmadan çalışır.</string>
+	<key>Off · lid closed</key>
+	<string>Kapalı · kapak kapalı</string>
+	<key>On battery</key>
+	<string>Pil gücünde</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>Siz istediğinizde bir asistan ışığı denetleyebilir veya değiştirebilir.</string>
+	<key>Open Accessibility</key>
+	<string>Erişilebilirlik Ayarlarını Aç</string>
+	<key>Open Input Monitoring</key>
+	<string>Girdi İzlemeyi Aç</string>
+	<key>Open Privacy Settings</key>
+	<string>Gizlilik Ayarlarını Aç</string>
+	<key>Open at login</key>
+	<string>Oturum açıldığında başlat</string>
+	<key>Open workspace</key>
+	<string>Çalışma alanını aç</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>Ortam ışığı sınırını isteğe bağlı olarak geçersiz kılar. macOS yönetici onayı ister. Önceki sınırlarınız saklanır.</string>
+	<key>Optional local light integration</key>
+	<string>İsteğe bağlı yerel ışık entegrasyonu</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>İsteğe bağlı: Güce bağlıyken şarj seçtiğiniz eşiğe ulaştığında normal Pil modu davranışını kısa süreliğine geçersiz kılar. Şarj düzeyi düşene veya güç bağlantısı kesilene kadar yinelenmez.</string>
+	<key>Other apps</key>
+	<string>Diğer uygulamalar</string>
+	<key>Override ambient brightness limit</key>
+	<string>Ortam parlaklığı sınırını geçersiz kıl</string>
+	<key>PREVIEW MODE</key>
+	<string>ÖNİZLEME MODU</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>Eşleme anahtarı kopyalandı. Home Assistant’a yapıştırın ve başkalarıyla paylaşmayın.</string>
+	<key>Paste</key>
+	<string>Yapıştır</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>Bir hatadan sonra duraklatıldı. Tekrar denemeden önce ışığı geri yükleyin.</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>Bir hatadan sonra duraklatıldı. Kurtarmadan sonra “Kapak kapalıyken logoyu açık tut” seçeneğini kapatıp açın.</string>
+	<key>Paused in Low Power Mode</key>
+	<string>Düşük Güç Modu nedeniyle duraklatıldı</string>
+	<key>Paused while your Mac cools down</key>
+	<string>Mac’iniz soğuyana kadar duraklatıldı</string>
+	<key>Paused with your display</key>
+	<string>Ekranla birlikte duraklatıldı</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>Yalnızca çalınan ses. Mikrofon kullanılmaz. Hiçbir şey kaydedilmez.</string>
+	<key>Plugged in · Not charging</key>
+	<string>Güce bağlı · şarj olmuyor</string>
+	<key>Power service unavailable.</key>
+	<string>Güç servisi kullanılamıyor.</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Normal bir tuşla birlikte Command, Control veya Option tuşuna basın. Escape iptal eder.</string>
+	<key>Preview only</key>
+	<string>Yalnızca önizleme</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>Önizleme bir örnek dalga biçimi kullanır.</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>Önizleme bir örnek dalga biçimi kullanır. Önizlemede canlı sistem sesi asla başlatılmaz.</string>
+	<key>Preview · compatible logo not found</key>
+	<string>Önizleme · uyumlu logo bulunamadı</string>
+	<key>Preview · logo unchanged</key>
+	<string>Önizleme · logo değişmedi</string>
+	<key>Preview · {value}% requested</key>
+	<string>Önizleme · istenen parlaklık: %{value}</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>Önceki efektlerin temizliği sürüyor. Sonraki güvenlik denetimi için bekleniyor.</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>Önceki ışık temizliği doğrulandı. Otomatik olarak yeniden bağlanılıyor.</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>Önceki oturum doğrulandı. Hatırlanan seçiminize göre yeniden bağlanılıyor.</string>
+	<key>Pulse</key>
+	<string>Atım</string>
+	<key>Pulse cycle</key>
+	<string>Atım döngüsü</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>Yalnızca şarj olurken atım yapar; şarj durakladığında veya tamamlandığında sabit yanar.</string>
+	<key>Pulsing while charging</key>
+	<string>Şarj sırasında atım yapıyor</string>
+	<key>Punchy</key>
+	<string>Vurgulu</string>
+	<key>Quit</key>
+	<string>Çık</string>
+	<key>Quit Backlit</key>
+	<string>Backlit’ten Çık</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>Logo ayarlarını değiştirmeden önce {app} uygulamasından çıkın.</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>Logo denetimini Backlit’e vermeden önce {app} uygulamasından çıkın.</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>Önceki bir Backlit oturumunu geri yüklemeden önce {app} uygulamasından çıkın.</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>Backlit’i kullanmak için {app} uygulamasından çıkın</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>Çıktığınızda bu Backlit oturumundan önce kaydedilen yerleşik logo ayarları geri yüklenir. Logo yeniden yanabilir.</string>
+	<key>Ready at</key>
+	<string>Hazır olma eşiği</string>
+	<key>Ready for the next lid closure.</key>
+	<string>Kapağın bir sonraki kapanışına hazır.</string>
+	<key>Ready for trackpad contact</key>
+	<string>İzleme dörtgeni temasına hazır</string>
+	<key>Ready for trackpad or typing</key>
+	<string>İzleme dörtgeni veya yazma girdisine hazır</string>
+	<key>Ready for typing</key>
+	<string>Yazmaya hazır</string>
+	<key>Ready for your music</key>
+	<string>Müziğinize hazır</string>
+	<key>Ready for {source} touch</key>
+	<string>Dokunmaya hazır · {source}</string>
+	<key>Reconnect</key>
+	<string>Yeniden Bağlan</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>Kodlama durumu kancalarını yeniden bağla: {agent}</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>MacBook’unuza yeniden bağlanılıyor</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>Doğrulama sırasında kurtarmayı yöneten işlem değişti. Tekrar denemeden önce ışığı geri yükleyin.</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>Kurtarma doğrulanmadı. Kapak kapalıyken kullanım seçiminiz saklandı ve duraklatılmış olarak kalıyor. Ayarlar’da kurtarmayı gözden geçirin.</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>Seçim hatırlandı. Yeni bir süreli oturum başlatmadan önce kapağı açın.</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>Seçim hatırlandı. Mac’inizin güvenlik ayarları nedeniyle duraklatıldı.</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>Seçim hatırlandı. Önizleme kapak kapalıyken oturum başlatmaz.</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>Seçim hatırlandı. Kapak ve sayaç durumunun doğrulanması bekleniyor.</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>Seçim hatırlandı. Mac uyanık ve kilidi açıkken yeni donanım güvenlik denetimleri bekleniyor.</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>Seçim hatırlandı. Mac’inizin ve ışığın hazır olması bekleniyor.</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>Seçim hatırlandı. Yeniden bağlanmadan önce önceki oturumun doğrulanması bekleniyor.</string>
+	<key>Replace AI Key</key>
+	<string>Yapay Zekâ Anahtarını Değiştir</string>
+	<key>Replace Key</key>
+	<string>Anahtarı Değiştir</string>
+	<key>Replace the AI connection key?</key>
+	<string>Yapay zekâ bağlantı anahtarı değiştirilsin mi?</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>Başka biri görmüş olabilirse eşleme anahtarını değiştirin</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>Geri yükleme isteyin. Denetimin macOS’a döndüğü doğrulanmadı; kayıtlı kapalı kapak seçiminiz duraklatılmış olarak kalır.</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>Girdi İzleme izni gerekir. Yalnızca tuş vuruşlarının zamanlaması kullanılır; hiçbir karakter okunmaz veya kaydedilmez. Güvenli Girdi bu tepkiyi duraklatabilir.</string>
+	<key>Reset</key>
+	<string>Sıfırla</string>
+	<key>Respond to system playback</key>
+	<string>Sistemde çalınan sese tepki ver</string>
+	<key>Response</key>
+	<string>Tepki</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>Geri yükleme istendi. Denetimin macOS’a döndüğü doğrulanmadığı için kayıtlı kapalı kapak seçimi duraklatılmış olarak kalıyor.</string>
+	<key>Restore Battery Defaults</key>
+	<string>Saptanmış Pil Ayarlarını Geri Yükle</string>
+	<key>Restore Light</key>
+	<string>Işığı Geri Yükle</string>
+	<key>Restore and Quit</key>
+	<string>Geri Yükle ve Çık</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>Servise yeniden bağlanmadan önce geçerli logo oturumunun ayarlarını geri yükleyin.</string>
+	<key>Restore the logo and quit?</key>
+	<string>Logo ayarları geri yüklenip çıkılsın mı?</string>
+	<key>Restore your light</key>
+	<string>Işığı geri yükle</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>Ortam sınırlarını değiştirmeden önce ışığı geri yükleyin.</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>Çıkmadan önce ışığı geri yükleyin; önceki kapalı kapak oturumu hâlâ kurtarılmalı.</string>
+	<key>Restore your light before starting another session.</key>
+	<string>Yeni bir oturum başlatmadan önce ışığı geri yükleyin.</string>
+	<key>Restore your light to continue</key>
+	<string>Sürdürmek için ışığı geri yükleyin</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>Önceki kapalı kapak oturumunu bitirmek için ışığı geri yükleyin</string>
+	<key>Retry System Audio</key>
+	<string>Sistem Sesini Tekrar Dene</string>
+	<key>Review Closed-lid Pause</key>
+	<string>Kapalı Kapak Duraklamasını İncele</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>Doğrulama sırasında güvenlik durumu değişti. Backlit yeniden bağlanmadan önce tekrar denetleyecek.</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>Güvenlik doğrulaması başarısız oldu: {detail} Tekrar denemeden önce ışığı geri yükleyin.</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>Kayıtlı parlaklık: %{value} · logo kapalı</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>Kayıtlı kurtarma zamanlaması doğrulanamadı. Işığı geri yükleyin, ardından kapak kapalıyken aydınlatmayı kapatıp açarak tekrar deneyin.</string>
+	<key>Select All</key>
+	<string>Tümünü Seç</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>Oturum üst verileri eksik. Bu görünümde bazı kodlama oturumları eksik olabilir.</string>
+	<key>Session snapshot incomplete</key>
+	<string>Oturum görünümü eksik</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>Oturumlar: {count} · {state}</string>
+	<key>Settings</key>
+	<string>Ayarlar</string>
+	<key>Settings…</key>
+	<string>Ayarlar…</string>
+	<key>Setup</key>
+	<string>Kurulum</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>Kurulum komutu kopyalandı. Komutu ajanınızın terminalinde yerel olarak çalıştırın, ardından MCP bağlantılarını denetleyin.</string>
+	<key>Setup guide</key>
+	<string>Kurulum kılavuzu</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + donanım parlaklık tuşları (deneysel)</string>
+	<key>Show Update Progress</key>
+	<string>Güncelleme İlerlemesini Göster</string>
+	<key>Show menu bar icon</key>
+	<string>Menü çubuğu simgesini göster</string>
+	<key>Signal</key>
+	<string>Sinyal</string>
+	<key>Slower</key>
+	<string>Daha yavaş</string>
+	<key>Smooth</key>
+	<string>Yumuşak</string>
+	<key>Start update checks from Settings.</key>
+	<string>Güncelleme denetimini Ayarlar’dan başlatın.</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>Kapalı kapak güvenlik denetimleri başlatılıyor…</string>
+	<key>State unavailable</key>
+	<string>Durum kullanılamıyor</string>
+	<key>Status only</key>
+	<string>Yalnızca durum</string>
+	<key>Steady</key>
+	<string>Sabit</string>
+	<key>Steady brightness</key>
+	<string>Sabit parlaklık</string>
+	<key>Steady while plugged in</key>
+	<string>Güce bağlıyken sabit</string>
+	<key>System</key>
+	<string>Sistem</string>
+	<key>System Default</key>
+	<string>Saptanmış Sistem Dili</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>Backlit’in sistem sesi erişimi kapalı. Sistem Ayarları → Gizlilik ve Güvenlik → Ekran ve Sistem Sesi Kaydı bölümünde izin verin, ardından Backlit’i yeniden açın veya “Sistem Sesini Tekrar Dene”yi seçin. Backlit ekranı veya mikrofonu kaydetmez.</string>
+	<key>System audio follows Music mode.</key>
+	<string>Sistem sesi Müzik moduyla birlikte çalışır.</string>
+	<key>System audio is unavailable.</key>
+	<string>Sistem sesi kullanılamıyor.</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>Işık yanarken ve Mac etkin durumdayken sistem sesi Müzik moduyla birlikte başlar.</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>Sistem sesi hazır olmadan durdu.</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>Bu tuş birleşimi başka bir Backlit eylemine atanmış.</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>Yapay zekâ bağlantı anahtarı değiştirildi. Tüm asistan bağlantılarını durdurmak için yapay zekâ erişimini kapatın.</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Anahtar Zinciri’ndeki anahtarı kullanılamadığı için MCP bağlantısı kapatıldı. Bağlantılar’da yeniden açın.</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>Ortam parlaklığı değişikliği doğrulanamadı. Tekrar denemeden önce kayıtlı sınırları geri yükleyin.</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>Doğrulama sırasında otomatik kurtarma seçimi değişti.</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>Parlaklık tuşu filtresi başlatılamadı. Normal kestirmeler kullanılabilir.</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>Parlaklık sınırı isteği hazırlanamadı.</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>Kapalı kapak yardımcı işlemi devralınamadı.</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>Kapalı kapak üst işlemi doğrulanamadı.</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>Kapalı kapak kurtarma seçimi kaydedilemedi. Tekrar denemeden önce ışığı geri yükleyin.</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>Geçerli anahtar hemen geçersiz olur. Home Assistant, ışığı yeniden denetlemeden önce yeni anahtarı ister.</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>Tam olarak önceki ışık oturumunun temizliği doğrulanmadı.</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>Yazma durduktan kısa süre sonra ışık söner. Kapak kapalıyken harici klavye kullanın.</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>Logo denetim servisinin arayüzü bu macOS sürümünde desteklenmiyor.</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>Logo denetim servisi bu macOS sürümünde kullanılamıyor.</string>
+	<key>The logo control service is unavailable.</key>
+	<string>Logo denetim servisi kullanılamıyor.</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>Logo donanımı beyaz ışık üretir. Backlit yalnızca logonun parlaklığını ve ritmini değiştirir, ekran parlaklığını asla değiştirmez. </string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>Logo servisi istenen parlaklığı doğrulamadı.</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>Ortam sınırları değiştikten sonra logo servisi yeniden bağlanmadı. Tekrar denemeden önce “Işığı Geri Yükle”yi seçin.</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>Logonun kapalı olduğu doğrulanamadı. Sönümleme kurtarma bilgileri saklandı.</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>Yerleşik logo parlaklığı kaynağı değişti. Logo denetimi durduruldu.</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>Önceki otomatik kurtarmaya izin verilmedi.</string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>Önceki anahtar artık çalışmaz. Yapay zekâ erişimi açık kaldığı sürece yerel asistanlar yeniden bağlanabilir. Home Assistant anahtarı değişmez.</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>Önceki yerel bağlantı hâlâ kapanıyor. Tekrar denemek için paylaşımı kapatıp açın.</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>Kurtarma yapılandırması geçersiz; olduğu gibi bırakıldı.</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>Otomatik kurtarma kaydı geçersiz. Tekrar denemeden önce “Işığı Geri Yükle”yi seçin.</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>Kayıtlı kapalı kapak seçimi geçersiz.</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>Kaydedilen kapalı kapak hatası otomatik temizlemeye uygun değil.</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>Kayıtlı kapalı kapak güvenlik durumu yazılamadı.</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>Kayıtlı logo ve kapak ayarları geri yüklendi.</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>Kayıtlı kurtarma başka bir kapalı kapak seçimine ait.</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>Kayıtlı kurtarma başka bir ışık oturumuna ait.</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>Güvenlik denetimi kaydedilemedi. Tekrar denemeden önce ışığı geri yükleyin.</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>Bu, yalıtılmış bir önizlemedir. Gerçek logonuz değişmez.</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>Bu çıkış aygıtı desteklenmeyen bir sistem sesi biçimi kullanıyor.</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>Bu güncelleme bu sürümle veya Mac’le uyumlu değil.</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>Süre doldu. Yeni bir süreli oturum başlatmak için kapağı yeniden açın.</string>
+	<key>Toggle logo</key>
+	<string>Logoyu Aç/Kapat</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>Dokunma algılandı · ışığın yanması için parmağınızı kaldırmayın</string>
+	<key>Touch released · light off</key>
+	<string>Dokunma sona erdi · ışık kapalı</string>
+	<key>Trackpad</key>
+	<string>İzleme dörtgeni</string>
+	<key>Trackpad and optional typing response</key>
+	<string>İzleme dörtgeni ve isteğe bağlı yazma tepkisi</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>İzleme dörtgeni olayları bu macOS sürümünde kullanılamıyor</string>
+	<key>Trackpad input unavailable</key>
+	<string>İzleme dörtgeni girdisi kullanılamıyor</string>
+	<key>Trackpad · unavailable</key>
+	<string>İzleme dörtgeni · kullanılamıyor</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>Logo ışığını aç veya kapat · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>Ortam sınırlarını değiştirmeden önce kapak kapalıyken aydınlatmayı kapatıp temizlemenin bitmesini bekleyin.</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>Süreyi değiştirmeden önce kapalı kapak oturumunu kapatıp temizlemenin bitmesini bekleyin.</string>
+	<key>Typing</key>
+	<string>Yazma</string>
+	<key>Typing access is allowed</key>
+	<string>Yazma erişimine izin veriliyor</string>
+	<key>Typing access is no longer available</key>
+	<string>Yazma erişimi artık kullanılamıyor</string>
+	<key>Typing active · light on</key>
+	<string>Yazma etkin · ışık açık</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>Yazma girdisi önizlemede kapalıdır.</string>
+	<key>Typing response is off</key>
+	<string>Yazma tepkisi kapalı</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>macOS yazma tepkisini duraklattı; sürdürmek için yazma tepkisini kapatıp açın</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>Güç bağlantısı kesildiğinde logo parlaklığı, %0’a kadar pil doluluk düzeyine uyar. Elle ayarlanan parlaklık Pil modunu etkilemez.</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>Olay biçimi tanınmadı. Hiçbir değişiklik yapılmadı.</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>Kanca grubu tanınmadı. Hiçbir değişiklik yapılmadı.</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>Kanca biçimi tanınmadı. Hiçbir değişiklik yapılmadı.</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>Güncelleme duraklatıldı. Işığı geri yüklemeyi bitirin, ardından yüklemeyi tekrar deneyin.</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>Önizlemede güncellemeler kullanılamaz.</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>Normal bir tuşla birlikte Command, Control veya Option kullanın. Yalnız Shift ve donanım parlaklık tuşları desteklenmez.</string>
+	<key>User session inactive</key>
+	<string>Kullanıcı oturumu etkin değil</string>
+	<key>Uses the brightness set above.</key>
+	<string>Yukarıda ayarlanan parlaklığı kullanır.</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>Yeniden bağlanmadan önce önceki ışık oturumunun temizliği doğrulanıyor</string>
+	<key>Version {version} · t0nyz</key>
+	<string>Sürüm {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>Bekliyor</string>
+	<key>Waiting for an agent</key>
+	<string>Ajan bekleniyor</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>Kapalı kapak oturumunun temizlenmesi bekleniyor</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>Kapalı kapak güvenlik denetimleri bekleniyor.</string>
+	<key>Waiting for keys…</key>
+	<string>Tuşlar bekleniyor…</string>
+	<key>Waiting for light output</key>
+	<string>Işık çıkışı bekleniyor</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>macOS’un sistem sesi isteğini ve temizliği tamamlaması bekleniyor.</string>
+	<key>Waiting for touch</key>
+	<string>Dokunma bekleniyor</string>
+	<key>Waiting for {source} touch</key>
+	<string>Dokunma bekleniyor · {source}</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>Uyanma sonrası yeniden bağlantı bekleniyor</string>
+	<key>Watching your agents</key>
+	<string>Ajanlarınız izleniyor</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>Simge gizliyse Backlit’i Dock’tan veya Uygulamalar klasöründen yeniden açın. Ayarlar’a uygulama menüsünden hâlâ erişilebilir.</string>
+	<key>While plugged in</key>
+	<string>Güce bağlıyken</string>
+	<key>Working</key>
+	<string>Çalışıyor</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>Çalışıyor, bekliyor veya ilginizi istiyor</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>Hangi uygulama açık olursa olsun çalışır. Logoyu yakmak için bir parmağınızı izleme dörtgenine koyun; söndürmek için tüm parmaklarınızı kaldırın.</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>Mod değiştirebilir veya Backlit’ten çıkabilirsiniz. Temizlik tamamlandıktan sonra tekrar deneyebilirsiniz.</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>Asistanınız ışık durumunu kendi model sağlayıcısına gönderebilir. Müzik ve Yazma için önce Backlit’te erişim açılmalıdır. Durum kancaları ayrı çalışır.</string>
+	<key>Your light</key>
+	<string>Işığınız</string>
+	<key>Your light is ready.</key>
+	<string>Işığınız hazır.</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>Işığınız geri yüklendi. Tekrar denemek için kapak kapalıyken aydınlatmayı kapatıp açın.</string>
+	<key>attention</key>
+	<string>ilgi gerekiyor</string>
+	<key>both</key>
+	<string>ikisi de</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOS Dock simgesini gösteremedi. Backlit’in menü çubuğu simgesi kullanılabilir kalacak.</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOS, parlaklık tuşu filtresine izin vermedi. Erişilebilirlik ve Girdi İzleme ayarlarını gözden geçirin veya normal kestirmeleri kullanın.</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOS geri yüklemeyi doğrulamadı. Kurtarma dosyası saklandı.</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOS, kapak kapalıyken aydınlatmayı reddetti. Tekrar denemeden önce kapak oturumunu geri yükleyin.</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOS, logo parlaklığı değişikliğini reddetti. Tekrar denemeden önce “Işığı Geri Yükle”yi seçin.</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>macOS, çalışan Backlit’in Girdi İzleme erişimini hâlâ reddediyor. Girdi İzleme bölümünü açıp yüklü uygulamaya erişim verin, ardından Backlit’i yeniden açın.</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOS donanım tuşu denetimini durdurdu. Parlaklık tuşları yeniden macOS’un denetiminde. Normal kestirmeleri kullanın veya seçeneği tekrar açın.</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOS’un sistem sesine bağlanması çok uzun sürdü.</string>
+	<key>minutes</key>
+	<string>dakika</string>
+	<key>screen</key>
+	<string>ekran</string>
+	<key>trackpad</key>
+	<string>izleme dörtgeni</string>
+	<key>waiting</key>
+	<string>bekliyor</string>
+	<key>working</key>
+	<string>çalışıyor</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>Parlaklık önizlemesi · {mode}, yüzde {value}. {status}</string>
+	<key>{mode} mode</key>
+	<string>Mod: {mode}</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · bağlantı noktası {port}</string>
+	<key>{value} percent</key>
+	<string>yüzde {value}</string>
+	<key>{value} s</key>
+	<string>{value} sn</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>İstenen parlaklık: %{value} · donanım denetimi açık</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ Bana bir kahve ısmarla</string>
+</dict>
+</plist>

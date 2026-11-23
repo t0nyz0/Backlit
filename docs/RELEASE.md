@@ -1,3 +1,25 @@
+## Backlit 0.2.12 — draft
+
+Draft for approval. Public downloads remain on 0.2.11.
+
+- Adds Italian, Dutch, Polish, Turkish, Vietnamese and Indonesian, bringing the
+  interface to sixteen languages, with localized macOS permission descriptions.
+- Keeps System Default, manual selection and saved language choices. Mac regional
+  number conventions remain independent of interface language.
+- Previously enabled Home Assistant and MCP connections resume in the background.
+  Backlit remains responsive while macOS checks their saved keys. Switching Home
+  Assistant off cancels its pending resume; changing LAN access only changes
+  where it can listen.
+- Preserves the existing English fallback, opaque diagnostic values and all
+  hardware, permission and closed-lid safety policies.
+
+Translations receive automated catalog/placeholder checks and sampled offscreen
+layout review, not native-speaker certification or a full live VoiceOver audit.
+macOS controls the language of its own permission prompts; some diagnostics remain
+in English. The planned public macOS build remains ad-hoc signed, non-notarized
+arm64; in-app updates remain disabled without a trusted feed and signing key.
+Control Center is an experimental local preview and is not in the public build.
+
 ## Backlit 0.2.11
 
 ### Interface languages

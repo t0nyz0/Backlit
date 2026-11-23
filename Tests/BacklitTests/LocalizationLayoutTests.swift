@@ -70,16 +70,19 @@ import AppKit
     }
 
     func testMenuPreviewAccessibilityTracksPresentationOnlyChanges() {
-        let presentation = LightPresentation()
-        let preview = MenuLidPreview(presentation: presentation, language: .french)
-        presentation.level = 0.15
-        let first = preview.accessibilityText
-        presentation.level = 0.80
-        let second = preview.accessibilityText
-        XCTAssertNotEqual(first, second)
-        XCTAssertTrue(first.contains("15"))
-        XCTAssertTrue(second.contains("80"))
-        XCTAssertEqual(second, Localization.format(Localization.text("Logo preview, {value} percent", language: .french), arguments:["value":"80"]))
+        let region = Locale(identifier: "en_US")
+        for language in AppLanguage.allCases {
+            let presentation = LightPresentation()
+            let preview = MenuLidPreview(presentation: presentation, language: language, formattingLocale: region)
+            let template = Localization.text("Logo preview, {value} percent", language: language)
+            presentation.level = 0.15
+            let first = preview.accessibilityText
+            presentation.level = 0.80
+            let second = preview.accessibilityText
+            XCTAssertNotEqual(first, second, language.rawValue)
+            XCTAssertEqual(first, Localization.format(template, arguments: ["value": "15"]), language.rawValue)
+            XCTAssertEqual(second, Localization.format(template, arguments: ["value": "80"]), language.rawValue)
+        }
     }
 
     private func snapshot(_ view: NSView, to url: URL) throws {

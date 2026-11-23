@@ -64,6 +64,42 @@
             "state": "translated",
             "value": "Backlit วิเคราะห์เสียงที่ระบบเล่นภายในเครื่องเพื่อให้โลโก้ตอบสนองต่อเพลง ไม่มีการบันทึกหรืออัปโหลดเสียง"
           }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analizza localmente l’audio riprodotto dal sistema per far reagire il logo alla musica. L’audio non viene registrato né caricato."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analyseert afgespeeld systeemgeluid lokaal om het logo op muziek te laten reageren. Er wordt geen audio opgenomen of geüpload."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit analizuje lokalnie dźwięk odtwarzany przez system, aby logo reagowało na muzykę. Dźwięk nie jest nagrywany ani przesyłany."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit, logonun müziğe tepki vermesi için sistemde çalınan sesi yerel olarak analiz eder. Ses kaydedilmez veya yüklenmez."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit phân tích âm thanh đang phát ngay trên máy để đèn logo phản hồi theo nhạc. Âm thanh không được ghi hay tải lên."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit menganalisis audio yang diputar sistem secara lokal agar logo merespons musik. Tidak ada audio yang direkam atau diunggah."
+          }
         }
       }
     },
@@ -130,6 +166,42 @@
             "state": "translated",
             "value": "เชื่อมต่อไฟโลโก้ Backlit กับ Home Assistant ในเครือข่ายภายในของคุณ"
           }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collega la luce del logo di Backlit alla tua istanza di Home Assistant sulla rete locale."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koppel de logoverlichting van Backlit aan je Home Assistant-instantie op je lokale netwerk."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Połącz podświetlenie logo Backlit z instancją Home Assistant w sieci lokalnej."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit’in logo ışığını yerel ağınızdaki Home Assistant örneğine bağlayın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối đèn logo Backlit với Home Assistant trên mạng cục bộ của bạn."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hubungkan lampu logo Backlit ke instans Home Assistant di jaringan lokal Anda."
+          }
         }
       }
     },
@@ -195,6 +267,42 @@
           "stringUnit": {
             "state": "translated",
             "value": "Backlit ใช้เสียงที่ระบบเล่นสำหรับโหมดเพลง ไม่บันทึกหรือส่งเนื้อหาหน้าจอหรือเสียง"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit usa l’audio riprodotto dal sistema in modalità Musica. Non salva né trasmette contenuti dello schermo o audio."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit gebruikt afgespeeld systeemgeluid voor de muziekmodus. Scherm- en audio-inhoud worden niet opgeslagen of verzonden."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit wykorzystuje dźwięk odtwarzany przez system w trybie Muzyka. Nie zapisuje ani nie przesyła obrazu ekranu ani dźwięku."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit, Müzik modu için sistemde çalınan sesi kullanır. Ekran veya ses içeriğini kaydetmez ya da iletmez."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit dùng âm thanh đang phát trên hệ thống cho chế độ Nhạc. Ứng dụng không lưu hay truyền nội dung màn hình hoặc âm thanh."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backlit menggunakan audio yang diputar sistem untuk mode Musik. Backlit tidak menyimpan atau mengirim konten layar maupun audio."
           }
         }
       }

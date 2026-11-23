@@ -1,7 +1,8 @@
 # Interface languages
 
-Prepared 0.2.11 candidate (not yet published): English, Spanish, French, German, Japanese, Korean,
-Brazilian Portuguese, Simplified Chinese, Traditional Chinese, and Thai.
+Prepared 0.2.12 candidate (not published): English, Spanish, French, German, Japanese, Korean,
+Brazilian Portuguese, Simplified Chinese, Traditional Chinese, Thai, Italian, Dutch,
+Polish, Turkish, Vietnamese, and Indonesian. This adds six languages to 0.2.11. Public downloads remain on 0.2.11.
 
 In Settings → Language, **System Default** follows the first supported language
 selected by Foundation for this app, including macOS per-app language settings

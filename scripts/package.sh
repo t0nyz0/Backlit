@@ -31,6 +31,21 @@ mkdir -p "$(dirname "$snapshot_bundle")"
 ditto "$app_bundle" "$snapshot_bundle"
 codesign --verify --deep --strict "$snapshot_bundle"
 python3 scripts/build-provenance.py verify "$snapshot_bundle" --frozen "$verified_record"
+python3 - "$snapshot_bundle" <<'PY_RELEASE_FLAVOR'
+import plistlib
+from pathlib import Path
+import sys
+
+contents = Path(sys.argv[1], 'Contents')
+info = plistlib.loads((contents / 'Info.plist').read_bytes())
+resources = contents / 'Resources'
+metadata = [p for p in resources.iterdir() if p.name.lower() == 'metadata.appintents']
+if ('BacklitLocalControlPreview' in info or 'BacklitControlAppGroup' in info
+        or (contents / 'PlugIns').exists() or (resources / 'Assets.car').exists()
+        or any(b'SetLogoLightControlIntent' in p.read_bytes()
+               for folder in metadata for p in folder.rglob('*') if p.is_file())):
+    raise SystemExit('Local Control Center artifacts cannot be packaged as a public release.')
+PY_RELEASE_FLAVOR
 source_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["provenance"]["source_commit"])' "$verified_record")"
 source_short="$(git rev-parse --short "$source_commit")"
 app_version="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["provenance"]["version"])' "$verified_record")"

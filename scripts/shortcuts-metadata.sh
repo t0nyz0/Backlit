@@ -21,6 +21,9 @@ case "$backlit_target" in arm64-apple-macos*|x86_64-apple-macos*) ;; *) fail 'Pa
 backlit_binary="$backlit_bundle/Contents/MacOS/Backlit"
 [ -x "$backlit_binary" ] || fail 'Compile and copy the app binary before extracting metadata.'
 backlit_work="$PWD/dist/appintents"
+if [ "$(basename "$backlit_bundle")" = Backlit-Control-Preview.app ]; then
+    backlit_work="$PWD/dist/appintents-control-preview"
+fi
 backlit_const="$backlit_work/Backlit.swiftconstvalues"
 [ -s "$backlit_const" ] || fail 'Missing compiler constants. Run scripts/build.sh to gather the driver-emitted release constants before this step.'
 backlit_processor="$(xcrun --find appintentsmetadataprocessor)"

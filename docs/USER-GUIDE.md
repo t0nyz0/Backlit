@@ -96,9 +96,9 @@ open -n dist/Backlit.app --args --preview
 
 The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy/secret checks, and an optimized build. Release publication requires that workflow to pass for the exact version tag. It packages ZIP, DMG, clean source, the separate Stream Deck add-on, build metadata, and SHA-256 checksums. Check the tagged workflow run for its commit and results. [Contributing](../.github/CONTRIBUTING.md) covers packaging and Home Assistant tests.
 
-**0.2.11 (build 57)** supports ten interface languages, System Default and manual language selection, with independent Mac regional number formatting. [Interface language behavior](LOCALIZATION.md).
+The public **0.2.11 (build 57)** supports ten interface languages. The unpublished **0.2.12 source preview** adds six more. Both offer System Default and manual language selection, with independent Mac regional number formatting. [Interface language behavior](LOCALIZATION.md).
 
-Source **0.2.11** · [Download counts and refresh details](downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases) · [License](../LICENSE)
+Source **0.2.12 preview** · [Download counts and refresh details](downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases) · [License](../LICENSE)
 
 [Privacy](PRIVACY.md) · [Validation](VALIDATION.md) · [Security](../.github/SECURITY.md) · [Attribution](ATTRIBUTION.md)
 

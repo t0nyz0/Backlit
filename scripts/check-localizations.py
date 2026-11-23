@@ -29,9 +29,9 @@ def check(app=None):
                 matches=[p for p in base.iterdir() if p.name.lower()==f'{code}.lproj'.lower()]
                 assert len(matches)==1,(code,'missing or duplicate language directory')
                 assert compiler.read_strings(matches[0]/f'{name}.strings')==tables[code],(code,name,'packaged translation differs from catalog')
-        print('Verified standalone app interface and privacy resources for all 10 languages.')
+        print(f'Verified standalone app interface and privacy resources for all {len(compiler.LOCALES)} languages.')
     else:
-        print('Verified source catalogs and Apple-generated interface/privacy resources for all 10 languages.')
+        print(f'Verified source catalogs and Apple-generated interface/privacy resources for all {len(compiler.LOCALES)} languages.')
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--app',type=Path);args=parser.parse_args()

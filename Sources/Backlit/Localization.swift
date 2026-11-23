@@ -7,6 +7,9 @@ enum AppLanguage: String, CaseIterable {
     case japanese = "ja", korean = "ko", portugueseBrazil = "pt-BR"
     case chineseSimplified = "zh-Hans", chineseTraditional = "zh-Hant", thai = "th"
 
+    case italian = "it", dutch = "nl", polish = "pl", turkish = "tr"
+    case vietnamese = "vi", indonesian = "id"
+
     var nativeName: String {
         switch self {
         case .english: "English"
@@ -19,6 +22,12 @@ enum AppLanguage: String, CaseIterable {
         case .chineseSimplified: "简体中文"
         case .chineseTraditional: "繁體中文"
         case .thai: "ไทย"
+        case .italian: "Italiano"
+        case .dutch: "Nederlands"
+        case .polish: "Polski"
+        case .turkish: "Türkçe"
+        case .vietnamese: "Tiếng Việt"
+        case .indonesian: "Bahasa Indonesia"
         }
     }
     private static var supportedIdentifiers: [String] { allCases.map(\.rawValue) }

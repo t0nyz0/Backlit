@@ -3,7 +3,7 @@
 import argparse, json, plistlib, re, subprocess, tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-LOCALES={'en','es','fr','de','ja','ko','pt-BR','zh-Hans','zh-Hant','th'}
+LOCALES={'en','es','fr','de','ja','ko','pt-BR','zh-Hans','zh-Hant','th','it','nl','pl','tr','vi','id'}
 PRIVACY_KEYS={'NSAudioCaptureUsageDescription','NSScreenCaptureUsageDescription','NSLocalNetworkUsageDescription'}
 CORE_INTERFACE_KEYS={'Settings','System Default'}
 def read_strings(path):

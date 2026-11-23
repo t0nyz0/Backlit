@@ -39,6 +39,18 @@ final class LocalizationCatalogTests: XCTestCase {
             }
         }
     }
+    func testNewLanguageRecoveryInstructionsNameTheActualRestoreButton() {
+        let languages: [AppLanguage] = [.italian, .dutch, .polish, .turkish, .vietnamese, .indonesian]
+        let keys = ["A previous session needs restoration. Choose Restore Logo Settings first.",
+                    "macOS rejected the logo brightness change. Restore Logo Settings before retrying."]
+        for language in languages {
+            let button = Localization.text("Restore Light", language: language)
+            for key in keys {
+                XCTAssertTrue(Localization.text(key, language: language).localizedCaseInsensitiveContains(button), language.rawValue)
+            }
+        }
+    }
+
     func testCountNeutralSessionTemplatesAndMenuAccessibilityAreLocalized() {
         for language in AppLanguage.allCases where language != .english {
             for key in ["Sessions: {count} · {state}", "Observed sessions: {count} · {state}", "Logo preview, {value} percent", "Last access check: {diagnostic}"] {

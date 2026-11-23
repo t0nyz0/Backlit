@@ -12,11 +12,23 @@ final class LocalizationResolverTests: XCTestCase {
             (["zh-TW"], .chineseTraditional), (["zh-HK"], .chineseTraditional),
             (["zh-MO"], .chineseTraditional), (["zh-CN"], .chineseSimplified),
             (["zh-SG"], .chineseSimplified), (["zh"], .chineseSimplified),
+            (["it-CH"], .italian), (["nl-BE"], .dutch), (["pl-PL"], .polish),
+            (["tr-TR"], .turkish), (["vi-VN"], .vietnamese), (["id_ID"], .indonesian),
+            (["sv-SE", "id-ID", "en"], .indonesian), (["it-IT", "nl-NL"], .italian),
+            (["nl-NL", "it-IT"], .dutch), (["sv-SE"], .english),
             (["xx"], .english), ([], .english)
         ]
         for (preferred, expected) in cases {
             XCTAssertEqual(AppLanguage.resolve(preference: "system", preferredLanguages: preferred), expected, preferred.description)
         }
+    }
+    func testOnlyTheApprovedLocalesAreExposedWithNativeNames() {
+        let codes: Set<String> = ["en", "es", "fr", "de", "ja", "ko", "pt-BR", "zh-Hans",
+                                  "zh-Hant", "th", "it", "nl", "pl", "tr", "vi", "id"]
+        XCTAssertEqual(Set(AppLanguage.allCases.map(\.rawValue)), codes)
+        let names: [AppLanguage: String] = [.italian: "Italiano", .dutch: "Nederlands",
+            .polish: "Polski", .turkish: "Türkçe", .vietnamese: "Tiếng Việt", .indonesian: "Bahasa Indonesia"]
+        for (language, name) in names { XCTAssertEqual(language.nativeName, name) }
     }
     func testExplicitChoiceAndUnknownStoredValue() {
         for language in AppLanguage.allCases {
@@ -93,14 +105,21 @@ final class LocalizationResolverTests: XCTestCase {
         withDefaults { defaults in
             for language in AppLanguage.allCases {
                 let model = AppModel(demo:true,defaults:defaults,preferredLanguages:{["ja"]})
-                model.language = language.rawValue
+                let selection = SettingsPage(model:model).languageSelection
+                selection.wrappedValue = language.rawValue
+                XCTAssertEqual(selection.wrappedValue, language.rawValue)
                 XCTAssertEqual(defaults.string(forKey:"language"),language.rawValue)
                 XCTAssertTrue(model.prepareQuit())
                 let reopened = AppModel(demo:true,defaults:defaults,preferredLanguages:{["ja"]})
                 XCTAssertEqual(reopened.resolvedLanguage,language)
-                reopened.language = "system"
+                SettingsPage(model:reopened).languageSelection.wrappedValue = "system"
                 XCTAssertEqual(reopened.resolvedLanguage,.japanese)
+                XCTAssertEqual(defaults.string(forKey:"language"),"system")
                 XCTAssertTrue(reopened.prepareQuit())
+                let systemRelaunch = AppModel(demo:true,defaults:defaults,preferredLanguages:{["id-ID"]})
+                XCTAssertEqual(systemRelaunch.language,"system")
+                XCTAssertEqual(systemRelaunch.resolvedLanguage,.indonesian)
+                XCTAssertTrue(systemRelaunch.prepareQuit())
             }
         }
     }

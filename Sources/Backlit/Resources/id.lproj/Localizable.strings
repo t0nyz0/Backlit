@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>0% goes fully dark between pulses.</key>
+	<string>0% membuat logo benar-benar gelap di antara denyut.</string>
+	<key>A compatible live Mac is required.</key>
+	<string>Diperlukan Mac yang kompatibel.</string>
+	<key>A new pairing key could not be created, so Home Assistant sharing was switched off. Choose New Pairing Key again before switching it back on. ({detail})</key>
+	<string>Kunci pemasangan baru tidak dapat dibuat, sehingga akses Home Assistant dimatikan. Pilih Kunci Pemasangan Baru lagi sebelum menyalakannya kembali. ({detail})</string>
+	<key>A new pairing key was created. Copy it and update Home Assistant; the old key no longer works.</key>
+	<string>Kunci pemasangan baru telah dibuat. Salin kunci itu dan perbarui Home Assistant; kunci lama tidak lagi berlaku.</string>
+	<key>A previous light session needs restoration. Use Restore Light to finish its cleanup.</key>
+	<string>Sesi lampu sebelumnya perlu dipulihkan. Gunakan Pulihkan Lampu untuk menyelesaikan pembersihannya.</string>
+	<key>A previous session needs restoration. Choose Restore Logo Settings first.</key>
+	<string>Sesi sebelumnya perlu dipulihkan. Pilih Pulihkan Lampu terlebih dahulu.</string>
+	<key>A previous session still has a recovery record. Restore Light can request restoration; it does not confirm native handback.</key>
+	<string>Sesi sebelumnya masih memiliki catatan pemulihan. Pulihkan Lampu dapat meminta pemulihan, tetapi tidak mengonfirmasi bahwa kendali telah dikembalikan ke macOS.</string>
+	<key>A soft glow while idle. A pulse while working. Two blinks when an agent needs you and you're away.</key>
+	<string>Cahaya lembut saat tidak aktif. Berdenyut saat bekerja. Berkedip dua kali saat agen memerlukan Anda dan Anda sedang tidak di tempat.</string>
+	<key>AI access remains off because its key could not be replaced. </key>
+	<string>Akses AI tetap mati karena kuncinya tidak dapat diganti. </string>
+	<key>AI access remains off because its key could not be replaced. {detail}</key>
+	<string>Akses AI tetap mati karena kuncinya tidak dapat diganti. {detail}</string>
+	<key>AI connections are disabled in isolated preview.</key>
+	<string>Koneksi AI dinonaktifkan dalam pratinjau terisolasi.</string>
+	<key>Access key</key>
+	<string>Kunci akses</string>
+	<key>Active. Safety limits still apply.</key>
+	<string>Aktif. Batas keselamatan tetap berlaku.</string>
+	<key>Actual battery-driven logo output</key>
+	<string>Keluaran logo aktual berdasarkan baterai</string>
+	<key>Adapts to playback level. Intensity adjusts the result; your brightness sets its ceiling.</key>
+	<string>Menyesuaikan dengan tingkat audio yang diputar. Intensitas mengatur hasilnya; kecerahan yang Anda pilih menjadi batas maksimum.</string>
+	<key>Agent settings appeared during connection. Nothing was overwritten. Review them and try again.</key>
+	<string>Pengaturan agen muncul saat penyambungan. Tidak ada yang ditimpa. Tinjau pengaturannya, lalu coba lagi.</string>
+	<key>Agent settings changed during connection. Try again.</key>
+	<string>Pengaturan agen berubah saat penyambungan. Coba lagi.</string>
+	<key>Agent settings is a symbolic link or special file. Choose its actual folder first.</key>
+	<string>Pengaturan agen berupa tautan simbolik atau berkas khusus. Pilih folder aslinya terlebih dahulu.</string>
+	<key>Agent settings must be a JSON object. Nothing changed.</key>
+	<string>Pengaturan agen harus berupa objek JSON. Tidak ada yang berubah.</string>
+	<key>Agents</key>
+	<string>Agen</string>
+	<key>Allow Backlit in Accessibility, then enable this option again. Regular shortcuts need no new permission.</key>
+	<string>Izinkan Backlit di Aksesibilitas, lalu aktifkan kembali opsi ini. Pintasan biasa tidak memerlukan izin baru.</string>
+	<key>Allow Backlit in Input Monitoring, then enable this option again. The hardware-key filter stays off until listening access is allowed.</key>
+	<string>Izinkan Backlit di Pemantauan Input, lalu aktifkan kembali opsi ini. Filter tombol perangkat keras tetap mati hingga izin pemantauan diberikan.</string>
+	<key>Allow Backlit links and other apps</key>
+	<string>Izinkan tautan Backlit dan app lain</string>
+	<key>Allow connections from your local network</key>
+	<string>Izinkan koneksi dari jaringan lokal</string>
+	<key>Allow light changes</key>
+	<string>Izinkan perubahan lampu</string>
+	<key>Allows Backlit links to change the light. Native Shortcuts actions are unavailable in this build.</key>
+	<string>Mengizinkan tautan Backlit mengubah lampu. Tindakan Pintasan bawaan tidak tersedia dalam versi ini.</string>
+	<key>Also respond to typing</key>
+	<string>Respons juga saat mengetik</string>
+	<key>Ambient brightness limits were not changed.</key>
+	<string>Batas kecerahan sekitar tidak diubah.</string>
+	<key>An update is waiting. Choose Install Update and Relaunch, or skip it in the update window before quitting.</key>
+	<string>Ada pembaruan yang menunggu. Pilih Instal Pembaruan dan Buka Kembali, atau lewati pembaruan di jendelanya sebelum keluar.</string>
+	<key>Another controller changed the logo or its state is unavailable. Recovery was retained.</key>
+	<string>Pengendali lain mengubah logo atau statusnya tidak tersedia. Catatan pemulihan dipertahankan.</string>
+	<key>Another controller changed the logo. Backlit stopped writing; recovery is retained.</key>
+	<string>Pengendali lain mengubah logo. Backlit berhenti mengubahnya; catatan pemulihan dipertahankan.</string>
+	<key>Appearance</key>
+	<string>Tampilan</string>
+	<key>Assistant setup</key>
+	<string>Penyiapan asisten</string>
+	<key>Assistants &amp; integrations</key>
+	<string>Asisten &amp; integrasi</string>
+	<key>Attention</key>
+	<string>Perlu perhatian</string>
+	<key>Authorization was cancelled.</key>
+	<string>Otorisasi dibatalkan.</string>
+	<key>Automatic level</key>
+	<string>Tingkat otomatis</string>
+	<key>Automatic light feedback from coding sessions. Independent of MCP.</key>
+	<string>Umpan balik lampu otomatis dari sesi pemrograman. Tidak bergantung pada MCP.</string>
+	<key>Automatic light recovery is not ready to resume.</key>
+	<string>Pemulihan lampu otomatis belum siap dilanjutkan.</string>
+	<key>Automatic light recovery stopped after three attempts. Restore Light before retrying.</key>
+	<string>Pemulihan lampu otomatis berhenti setelah tiga percobaan. Pilih Pulihkan Lampu sebelum mencoba lagi.</string>
+	<key>Automatic pulse</key>
+	<string>Denyut otomatis</string>
+	<key>Automatic recovery no longer owns the recorded fade session.</key>
+	<string>Pemulihan otomatis tidak lagi mengendalikan sesi peredupan yang tercatat.</string>
+	<key>Automatic recovery timing could not be verified.</key>
+	<string>Waktu pemulihan otomatis tidak dapat diverifikasi.</string>
+	<key>Automatic safety checks stopped after three attempts. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Pemeriksaan keselamatan otomatis berhenti setelah tiga percobaan. Pulihkan lampu di Pengaturan, lalu matikan dan nyalakan kembali “Biarkan logo menyala saat penutup tertutup” untuk mencoba lagi.</string>
+	<key>Available on this Mac</key>
+	<string>Tersedia di Mac ini</string>
+	<key>Available on your local network</key>
+	<string>Tersedia di jaringan lokal Anda</string>
+	<key>Backlight</key>
+	<string>Lampu latar</string>
+	<key>Backlit analyzes system playback locally to make your logo respond to music. No audio is recorded or uploaded.</key>
+	<string>Backlit menganalisis audio yang diputar sistem secara lokal agar logo merespons musik. Tidak ada audio yang direkam atau diunggah.</string>
+	<key>Backlit could not connect system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit tidak dapat menyambungkan audio sistem. Izinkan Backlit di Pengaturan Sistem → Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem, lalu buka kembali Backlit dan coba lagi. (kode macOS {code})</string>
+	<key>Backlit could not prepare system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit tidak dapat menyiapkan audio sistem. Izinkan Backlit di Pengaturan Sistem → Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem, lalu buka kembali Backlit dan coba lagi. (kode macOS {code})</string>
+	<key>Backlit could not read the audio format. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit tidak dapat membaca format audio. Izinkan Backlit di Pengaturan Sistem → Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem, lalu buka kembali Backlit dan coba lagi. (kode macOS {code})</string>
+	<key>Backlit could not request system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit tidak dapat meminta akses audio sistem. Izinkan Backlit di Pengaturan Sistem → Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem, lalu buka kembali Backlit dan coba lagi. (kode macOS {code})</string>
+	<key>Backlit could not start system audio. Allow Backlit in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit and retry. (macOS code {code})</key>
+	<string>Backlit tidak dapat memulai audio sistem. Izinkan Backlit di Pengaturan Sistem → Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem, lalu buka kembali Backlit dan coba lagi. (kode macOS {code})</string>
+	<key>Backlit is already running in another window. Use the installed copy.</key>
+	<string>Backlit sudah berjalan di jendela lain. Gunakan app yang telah diinstal.</string>
+	<key>Backlit link copied. Use it with a launcher that supports custom app links.</key>
+	<string>Tautan Backlit disalin. Gunakan dengan peluncur yang mendukung tautan app khusus.</string>
+	<key>Backlit uses system playback audio for Music mode. It does not save or transmit screen or audio content.</key>
+	<string>Backlit menggunakan audio yang diputar sistem untuk mode Musik. Backlit tidak menyimpan atau mengirim konten layar maupun audio.</string>
+	<key>Backlit will reconnect when your Mac is awake and unlocked.</key>
+	<string>Backlit akan menyambung kembali saat Mac aktif dan tidak terkunci.</string>
+	<key>Backlit will verify cleanup and reconnect when your Mac is awake.</key>
+	<string>Backlit akan memverifikasi pembersihan dan menyambung kembali saat Mac aktif.</string>
+	<key>Backlit — Preview</key>
+	<string>Backlit — Pratinjau</string>
+	<key>Backlit's hooks were removed. Existing hooks were preserved.</key>
+	<string>Hook Backlit dihapus. Hook yang sudah ada dipertahankan.</string>
+	<key>Balanced</key>
+	<string>Seimbang</string>
+	<key>Battery</key>
+	<string>Baterai</string>
+	<key>Battery charging behavior</key>
+	<string>Perilaku saat baterai diisi</string>
+	<key>Battery controls its own brightness. Select a manual behavior to use brightness shortcuts.</key>
+	<string>Mode Baterai mengatur kecerahannya sendiri. Pilih perilaku manual untuk menggunakan pintasan kecerahan.</string>
+	<key>Battery pulse cycle seconds</key>
+	<string>Siklus denyut baterai (detik)</string>
+	<key>Battery state unavailable</key>
+	<string>Status baterai tidak tersedia</string>
+	<key>Battery-driven output</key>
+	<string>Keluaran berdasarkan baterai</string>
+	<key>Beat intensity</key>
+	<string>Intensitas ketukan</string>
+	<key>Behavior</key>
+	<string>Perilaku</string>
+	<key>Blink</key>
+	<string>Kedip</string>
+	<key>Blink on click</key>
+	<string>Kedip saat diklik</string>
+	<key>Blink on trackpad click</key>
+	<string>Kedip saat trackpad diklik</string>
+	<key>Breathe</key>
+	<string>Bernapas</string>
+	<key>Breathing</key>
+	<string>Efek napas</string>
+	<key>Breathing cycle seconds</key>
+	<string>Siklus efek napas (detik)</string>
+	<key>Breathing pace</key>
+	<string>Tempo efek napas</string>
+	<key>Brightness</key>
+	<string>Kecerahan</string>
+	<key>Brightness shortcuts change the manual level by 5%. They keep the current behavior and on/off state. Battery brightness stays automatic.</key>
+	<string>Pintasan kecerahan mengubah tingkat manual sebesar 5%. Perilaku dan status nyala atau mati tetap sama. Kecerahan mode Baterai tetap otomatis.</string>
+	<key>CONNECTIONS</key>
+	<string>KONEKSI</string>
+	<key>Cancel</key>
+	<string>Batal</string>
+	<key>Cannot reopen the power service.</key>
+	<string>Tidak dapat membuka kembali layanan daya.</string>
+	<key>Change </key>
+	<string>Ubah </string>
+	<key>Charge-ready signal</key>
+	<string>Sinyal daya siap</string>
+	<key>Charge-ready threshold</key>
+	<string>Ambang daya siap</string>
+	<key>Charging</key>
+	<string>Mengisi daya</string>
+	<key>Charging pulse minimum brightness</key>
+	<string>Kecerahan minimum denyut saat mengisi daya</string>
+	<key>Check for Updates</key>
+	<string>Periksa Pembaruan</string>
+	<key>Choose a custom configuration folder</key>
+	<string>Pilih folder konfigurasi khusus</string>
+	<key>Choose {agent} configuration folder</key>
+	<string>Pilih folder konfigurasi {agent}</string>
+	<key>Cleaning up. Your choice is remembered.</key>
+	<string>Sedang membersihkan. Pilihan Anda disimpan.</string>
+	<key>Cleanup returned, but saved closed-lid handback remains unconfirmed.</key>
+	<string>Pembersihan selesai, tetapi pengembalian kendali untuk sesi penutup tertutup belum terkonfirmasi.</string>
+	<key>Closed-lid cleanup could not be confirmed. Review power recovery in Settings, then retry.</key>
+	<string>Pembersihan sesi dengan penutup tertutup tidak dapat dikonfirmasi. Tinjau pemulihan daya di Pengaturan, lalu coba lagi.</string>
+	<key>Closed-lid cleanup is in progress. Retry Restore Light when it finishes.</key>
+	<string>Pembersihan sesi dengan penutup tertutup sedang berlangsung. Coba Pulihkan Lampu lagi setelah selesai.</string>
+	<key>Closed-lid duration</key>
+	<string>Durasi saat penutup tertutup</string>
+	<key>Closed-lid duration amount</key>
+	<string>Nilai durasi saat penutup tertutup</string>
+	<key>Closed-lid lighting paused after an error</key>
+	<string>Lampu saat penutup tertutup dijeda setelah terjadi kesalahan</string>
+	<key>Closed-lid lighting paused after an error, so the logo is off. Restore your light in Settings, then turn “Keep logo on with lid closed” off and on to retry.</key>
+	<string>Lampu saat penutup tertutup dijeda setelah terjadi kesalahan, sehingga logo mati. Pulihkan lampu di Pengaturan, lalu matikan dan nyalakan kembali “Biarkan logo menyala saat penutup tertutup” untuk mencoba lagi.</string>
+	<key>Closed-lid operation is unavailable in isolated preview.</key>
+	<string>Pengoperasian dengan penutup tertutup tidak tersedia dalam pratinjau terisolasi.</string>
+	<key>Coding agent status</key>
+	<string>Status agen pemrograman</string>
+	<key>Coding status hooks</key>
+	<string>Hook status pemrograman</string>
+	<key>Compatible illuminated logo detected</key>
+	<string>Logo bercahaya yang kompatibel terdeteksi</string>
+	<key>Compatible logo hardware detected.</key>
+	<string>Perangkat keras logo yang kompatibel terdeteksi.</string>
+	<key>Compatible logo hardware is unavailable.</key>
+	<string>Perangkat keras logo yang kompatibel tidak tersedia.</string>
+	<key>Connect</key>
+	<string>Sambungkan</string>
+	<key>Connect the Backlit logo light to your Home Assistant instance on your local network.</key>
+	<string>Hubungkan lampu logo Backlit ke instans Home Assistant di jaringan lokal Anda.</string>
+	<key>Connect {agent} coding status hooks</key>
+	<string>Sambungkan hook status pemrograman {agent}</string>
+	<key>Connecting to system audio…</key>
+	<string>Menyambungkan ke audio sistem…</string>
+	<key>Connecting to your MacBook</key>
+	<string>Menyambungkan ke MacBook</string>
+	<key>Connections</key>
+	<string>Koneksi</string>
+	<key>Connections are disabled in isolated preview.</key>
+	<string>Koneksi dinonaktifkan dalam pratinjau terisolasi.</string>
+	<key>Constant brightness</key>
+	<string>Kecerahan tetap</string>
+	<key>Control your light on request, or reflect coding activity automatically.</key>
+	<string>Kendalikan lampu saat diminta atau tampilkan aktivitas pemrograman secara otomatis.</string>
+	<key>Copy</key>
+	<string>Salin</string>
+	<key>Copy Claude Code Setup</key>
+	<string>Salin Penyiapan Claude Code</string>
+	<key>Copy Codex Setup</key>
+	<string>Salin Penyiapan Codex</string>
+	<key>Copy Pairing Key</key>
+	<string>Salin Kunci Pemasangan</string>
+	<key>Copy Toggle Link</key>
+	<string>Salin Tautan Nyala/Mati</string>
+	<key>Could not generate a pairing key.</key>
+	<string>Tidak dapat membuat kunci pemasangan.</string>
+	<key>Could not open the logo session lock.</key>
+	<string>Tidak dapat membuka kunci sesi logo.</string>
+	<key>Could not preserve display and keyboard behavior. Closed-lid lighting was stopped.</key>
+	<string>Perilaku layar dan papan ketik tidak dapat dipertahankan. Lampu saat penutup tertutup dihentikan.</string>
+	<key>Could not read the original logo configuration.</key>
+	<string>Tidak dapat membaca konfigurasi logo asli.</string>
+	<key>Could not restore normal lid sleep.</key>
+	<string>Tidak dapat memulihkan mode tidur normal saat penutup ditutup.</string>
+	<key>Could not restore the real lid state. Recovery has been retained.</key>
+	<string>Tidak dapat memulihkan status penutup yang sebenarnya. Catatan pemulihan dipertahankan.</string>
+	<key>Could not restore the real logo lid state. Recovery is retained.</key>
+	<string>Tidak dapat memulihkan status penutup yang sebenarnya pada pengendali logo. Catatan pemulihan dipertahankan.</string>
+	<key>Could not safely apply closed-lid lighting. Restore Light before retrying.</key>
+	<string>Tidak dapat menyalakan lampu dengan aman saat penutup tertutup. Pilih Pulihkan Lampu sebelum mencoba lagi.</string>
+	<key>Could not start typing response</key>
+	<string>Tidak dapat memulai respons ketikan</string>
+	<key>Create New Key</key>
+	<string>Buat Kunci Baru</string>
+	<key>Create a new pairing key?</key>
+	<string>Buat kunci pemasangan baru?</string>
+	<key>Currently using {language}</key>
+	<string>Saat ini menggunakan {language}</string>
+	<key>Dark</key>
+	<string>Gelap</string>
+	<key>Dark between beats</key>
+	<string>Gelap di antara ketukan</string>
+	<key>Decrease logo brightness</key>
+	<string>Kurangi kecerahan logo</string>
+	<key>Default: automatic charging pulse, 6-second cycle, dims to 0%, charge-ready signal off.</key>
+	<string>Bawaan: denyut otomatis saat mengisi daya, siklus 6 detik, redup hingga 0%, dan sinyal daya siap mati.</string>
+	<key>Dim to</key>
+	<string>Redupkan hingga</string>
+	<key>Disable</key>
+	<string>Nonaktifkan</string>
+	<key>Disconnect</key>
+	<string>Putuskan</string>
+	<key>Disconnect {agent} coding status hooks</key>
+	<string>Putuskan hook status pemrograman {agent}</string>
+	<key>Dismiss notice</key>
+	<string>Tutup pemberitahuan</string>
+	<key>Does not change your screen brightness setting.</key>
+	<string>Tidak mengubah pengaturan kecerahan layar Anda.</string>
+	<key>Download Latest Version</key>
+	<string>Unduh Versi Terbaru</string>
+	<key>Download the app, then quit Backlit and replace it in Applications.</key>
+	<string>Unduh app, lalu keluar dari Backlit dan ganti app tersebut di folder Aplikasi.</string>
+	<key>Downloads are disabled in preview.</key>
+	<string>Unduhan dinonaktifkan dalam pratinjau.</string>
+	<key>Duration</key>
+	<string>Durasi</string>
+	<key>Duration: {value} s</key>
+	<string>Durasi: {value} dtk</string>
+	<key>Edit</key>
+	<string>Edit</string>
+	<key>Enable Backlit links and other apps in Connections first.</key>
+	<string>Izinkan tautan Backlit dan app lain di Koneksi terlebih dahulu.</string>
+	<key>Enable Home Assistant bridge</key>
+	<string>Aktifkan penghubung Home Assistant</string>
+	<key>Enable or retry typing access</key>
+	<string>Aktifkan atau coba lagi akses ketikan</string>
+	<key>Experimental filter active. Test Shift + brightness on your keyboard; screen suppression is not yet verified.</key>
+	<string>Filter eksperimental aktif. Uji Shift + tombol kecerahan pada papan ketik; belum dipastikan apakah perubahan layar berhasil dicegah.</string>
+	<key>Fade in and out</key>
+	<string>Terang dan redup secara bertahap</string>
+	<key>Faster</key>
+	<string>Lebih cepat</string>
+	<key>Finish light recovery before using brightness shortcuts.</key>
+	<string>Selesaikan pemulihan lampu sebelum menggunakan pintasan kecerahan.</string>
+	<key>Finish recovering the previous session and reconnect.</key>
+	<string>Selesaikan pemulihan sesi sebelumnya dan sambungkan kembali.</string>
+	<key>Finish the previous closed-lid session cleanup before starting another.</key>
+	<string>Selesaikan pembersihan sesi dengan penutup tertutup sebelumnya sebelum memulai sesi lain.</string>
+	<key>Follow battery charge</key>
+	<string>Ikuti tingkat baterai</string>
+	<key>Follow your Mac, or choose a look.</key>
+	<string>Ikuti pengaturan Mac atau pilih tampilan.</string>
+	<key>Follow your Mac’s preferred languages, or choose a language for Backlit.</key>
+	<string>Ikuti bahasa pilihan Mac atau pilih bahasa untuk Backlit.</string>
+	<key>Following your battery</key>
+	<string>Mengikuti tingkat baterai</string>
+	<key>Follows the battery percentage while plugged in too.</key>
+	<string>Tetap mengikuti persentase baterai saat daya tersambung.</string>
+	<key>Fully charged</key>
+	<string>Terisi penuh</string>
+	<key>General</key>
+	<string>Umum</string>
+	<key>Global shortcuts are unavailable.</key>
+	<string>Pintasan global tidak tersedia.</string>
+	<key>Global trackpad · event-driven, no input polling</key>
+	<string>Trackpad global · berbasis peristiwa, tanpa pemeriksaan input berkala</string>
+	<key>Glow</key>
+	<string>Cahaya lembut</string>
+	<key>Glowing</key>
+	<string>Bercahaya</string>
+	<key>Hardware brightness keys are left to macOS. Use an arrow, letter or other regular key.</key>
+	<string>Tombol kecerahan perangkat keras tetap dikendalikan macOS. Gunakan tombol panah, huruf, atau tombol biasa lainnya.</string>
+	<key>Hardware brightness keys use macOS.</key>
+	<string>Tombol kecerahan perangkat keras dikendalikan macOS.</string>
+	<key>Hardware-key capture is disabled in isolated preview.</key>
+	<string>Penangkapan tombol perangkat keras dinonaktifkan dalam pratinjau terisolasi.</string>
+	<key>Hide Dock icon</key>
+	<string>Sembunyikan ikon Dock</string>
+	<key>Home Assistant was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Home Assistant dimatikan karena kuncinya di Rantai Kunci tidak tersedia. Aktifkan kembali di Koneksi.</string>
+	<key>Hooks installed · start a new session</key>
+	<string>Hook diinstal · mulai sesi baru</string>
+	<key>Hooks installed · trust them in Codex</key>
+	<string>Hook diinstal · tandai tepercaya di Codex</string>
+	<key>Hooks need review · reconnect or check agent settings</key>
+	<string>Hook perlu ditinjau · sambungkan kembali atau periksa pengaturan agen</string>
+	<key>Hooks saved. Review and trust them in Codex Settings → Hooks, then start a new session.</key>
+	<string>Hook disimpan. Tinjau dan tandai tepercaya di Pengaturan Codex → Hooks, lalu mulai sesi baru.</string>
+	<key>Hooks saved. Review your agent settings, then start a new Claude Code session.</key>
+	<string>Hook disimpan. Tinjau pengaturan agen, lalu mulai sesi Claude Code baru.</string>
+	<key>Hooks send only a session identifier and a status. Your prompts, code, and tool output never enter Backlit.</key>
+	<string>Hook hanya mengirim pengenal dan status sesi. Prompt, kode, dan keluaran alat tidak pernah dikirim ke Backlit.</string>
+	<key>ISOLATED PREVIEW</key>
+	<string>PRATINJAU TERISOLASI</string>
+	<key>If Backlit is already enabled there but access is still denied after an update, remove the old Backlit entry, add the installed Backlit app again, enable it, then reopen Backlit.</key>
+	<string>Jika Backlit sudah diaktifkan di sana tetapi akses masih ditolak setelah pembaruan, hapus entri Backlit lama, tambahkan kembali app Backlit yang terinstal, aktifkan, lalu buka kembali Backlit.</string>
+	<key>If access is off, allow Backlit in Privacy &amp; Security → Screen &amp; System Audio Recording.</key>
+	<string>Jika akses mati, izinkan Backlit di Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem.</string>
+	<key>In-app updates aren’t enabled for this build yet. A trusted update feed and signing key must be included by the publisher.</key>
+	<string>Pembaruan dalam app belum diaktifkan dalam versi ini. Penerbit harus menyertakan umpan pembaruan tepercaya dan kunci penandatanganan.</string>
+	<key>Increase logo brightness</key>
+	<string>Tambah kecerahan logo</string>
+	<key>Input Monitoring is allowed, but macOS could not create the typing event listener. Reopen Backlit and retry.</key>
+	<string>Pemantauan Input diizinkan, tetapi macOS tidak dapat membuat pemantau peristiwa ketikan. Buka kembali Backlit dan coba lagi.</string>
+	<key>Input Monitoring permission is required for typing response</key>
+	<string>Izin Pemantauan Input diperlukan agar lampu merespons ketikan</string>
+	<key>Input active · light on</key>
+	<string>Input aktif · lampu menyala</string>
+	<key>Input unavailable · choose another behavior</key>
+	<string>Input tidak tersedia · pilih perilaku lain</string>
+	<key>Install Update and Relaunch</key>
+	<string>Instal Pembaruan dan Buka Kembali</string>
+	<key>Integration Folder</key>
+	<string>Folder Integrasi</string>
+	<key>Invalid saved duration</key>
+	<string>Durasi tersimpan tidak valid</string>
+	<key>Keep Backlit a click away in the menu bar.</key>
+	<string>Akses Backlit dengan sekali klik di bar menu.</string>
+	<key>Keep Backlit in the menu bar. Hiding the menu bar icon restores the Dock icon first.</key>
+	<string>Tetap tampilkan Backlit di bar menu. Menyembunyikan ikon bar menu akan memunculkan kembali ikon Dock terlebih dahulu.</string>
+	<key>Keep logo on with lid closed</key>
+	<string>Biarkan logo menyala saat penutup tertutup</string>
+	<key>Keep on for</key>
+	<string>Tetap menyala selama</string>
+	<key>Keeps this Mac awake and may leave its built-in screen lit while closed. Limited to 30 minutes; also stops for low battery, heat or Low Power Mode. Keep it on a hard, ventilated surface, never in a bag.</key>
+	<string>Mencegah Mac ini tidur dan dapat membuat layar bawaannya tetap menyala saat penutup tertutup. Dibatasi hingga 30 menit; juga berhenti jika baterai lemah, Mac terlalu panas, atau Mode Daya Rendah aktif. Letakkan di permukaan keras dengan sirkulasi udara, jangan pernah di dalam tas.</string>
+	<key>Keyboard safety controls are unavailable. Closed-lid lighting was not enabled.</key>
+	<string>Kontrol keselamatan papan ketik tidak tersedia. Lampu saat penutup tertutup tidak diaktifkan.</string>
+	<key>Keychain could not save the pairing key.</key>
+	<string>Rantai Kunci tidak dapat menyimpan kunci pemasangan.</string>
+	<key>LIVE PREVIEW</key>
+	<string>PRATINJAU LANGSUNG</string>
+	<key>LOGO CONNECTED</key>
+	<string>LOGO TERSAMBUNG</string>
+	<key>LOGO CONTROL</key>
+	<string>KONTROL LOGO</string>
+	<key>LOGO UNAVAILABLE</key>
+	<string>LOGO TIDAK TERSEDIA</string>
+	<key>Language</key>
+	<string>Bahasa</string>
+	<key>Last access check: </key>
+	<string>Pemeriksaan akses terakhir: </string>
+	<key>Last access check: {diagnostic}</key>
+	<string>Pemeriksaan akses terakhir: {diagnostic}</string>
+	<key>Legacy mapping verification is available only with the physical lid open.</key>
+	<string>Verifikasi pemetaan lama hanya tersedia saat penutup terbuka secara fisik.</string>
+	<key>Light</key>
+	<string>Lampu</string>
+	<key>Light cleanup verified. Reconnecting automatically.</key>
+	<string>Pembersihan lampu terverifikasi. Menyambungkan kembali secara otomatis.</string>
+	<key>Light or lid recovery remains unconfirmed. Recovery was retained.</key>
+	<string>Pemulihan lampu atau penutup belum terkonfirmasi. Catatan pemulihan dipertahankan.</string>
+	<key>Light output paused</key>
+	<string>Keluaran lampu dijeda</string>
+	<key>Light recovery is still in progress.</key>
+	<string>Pemulihan lampu masih berlangsung.</string>
+	<key>Light recovery is still in progress. Retry Quit when it finishes.</key>
+	<string>Pemulihan lampu masih berlangsung. Coba keluar lagi setelah selesai.</string>
+	<key>Light up while typing</key>
+	<string>Nyalakan lampu saat mengetik</string>
+	<key>Local connections were switched off because the listener failed. </key>
+	<string>Koneksi lokal dimatikan karena pemantau koneksi gagal. </string>
+	<key>Local connections were switched off because the listener failed. {detail}</key>
+	<string>Koneksi lokal dimatikan karena pemantau koneksi gagal. {detail}</string>
+	<key>Logo and power</key>
+	<string>Logo dan daya</string>
+	<key>Logo brightness</key>
+	<string>Kecerahan logo</string>
+	<key>Logo control enabled</key>
+	<string>Kontrol logo aktif</string>
+	<key>Logo control has not been enabled.</key>
+	<string>Kontrol logo belum diaktifkan.</string>
+	<key>Logo control is recovering after a system transition.</key>
+	<string>Kontrol logo sedang dipulihkan setelah perubahan status sistem.</string>
+	<key>Logo control is switching between open-lid and closed-lid lighting.</key>
+	<string>Kontrol logo sedang beralih antara pencahayaan dengan penutup terbuka dan tertutup.</string>
+	<key>Logo control unavailable: {detail}</key>
+	<string>Kontrol logo tidak tersedia: {detail}</string>
+	<key>Logo mapping is unavailable; recovery was retained.</key>
+	<string>Pemetaan logo tidak tersedia; catatan pemulihan dipertahankan.</string>
+	<key>Logo off</key>
+	<string>Logo mati</string>
+	<key>Logo off · hardware disabled</key>
+	<string>Logo mati · perangkat keras dinonaktifkan</string>
+	<key>Logo off · lid closed</key>
+	<string>Logo mati · penutup tertutup</string>
+	<key>Logo on</key>
+	<string>Logo menyala</string>
+	<key>Logo preview, {value} percent</key>
+	<string>Pratinjau logo, {value} persen</string>
+	<key>Logo recovery controls are unavailable. Recovery is retained.</key>
+	<string>Kontrol pemulihan logo tidak tersedia. Catatan pemulihan dipertahankan.</string>
+	<key>Logo state unavailable · not controlling hardware</key>
+	<string>Status logo tidak tersedia · perangkat keras tidak dikendalikan</string>
+	<key>Logo state unavailable · {value}% requested</key>
+	<string>Status logo tidak tersedia · {value}% diminta</string>
+	<key>Logo unchanged</key>
+	<string>Logo tidak berubah</string>
+	<key>MCP access</key>
+	<string>Akses MCP</string>
+	<key>MCP control</key>
+	<string>Kontrol MCP</string>
+	<key>Mac is sleeping</key>
+	<string>Mac sedang tidur</string>
+	<key>MacBook PROLED Logo Control</key>
+	<string>Kontrol Logo MacBook PROLED</string>
+	<key>Manage Connections</key>
+	<string>Kelola Koneksi</string>
+	<key>Manual logo brightness: {value}%</key>
+	<string>Kecerahan logo manual: {value}%</string>
+	<key>Match battery level</key>
+	<string>Sesuaikan dengan tingkat baterai</string>
+	<key>Matches battery charge when unplugged.</key>
+	<string>Mengikuti tingkat baterai saat daya dicabut.</string>
+	<key>Maximum 30 minutes per closure. Sleep counts toward the timer; relaunching does not reset it. This limit does not guarantee safe temperatures.</key>
+	<string>Maksimum 30 menit setiap kali penutup ditutup. Waktu tidur tetap dihitung; membuka ulang app tidak mengatur ulang penghitung waktu. Batas ini tidak menjamin suhu aman.</string>
+	<key>Model Context Protocol · Off by default</key>
+	<string>Model Context Protocol · Mati secara bawaan</string>
+	<key>Moving with your music</key>
+	<string>Mengikuti irama musik Anda</string>
+	<key>Music</key>
+	<string>Musik</string>
+	<key>Music intensity</key>
+	<string>Intensitas musik</string>
+	<key>Network sharing is disabled in isolated preview.</key>
+	<string>Berbagi melalui jaringan dinonaktifkan dalam pratinjau terisolasi.</string>
+	<key>New Pairing Key</key>
+	<string>Kunci Pemasangan Baru</string>
+	<key>No charging pulse. Holds 100% logo output while plugged in.</key>
+	<string>Tanpa denyut saat mengisi daya. Keluaran logo tetap 100% selama daya tersambung.</string>
+	<key>No compatible illuminated logo was detected.</key>
+	<string>Tidak ada logo bercahaya yang kompatibel terdeteksi.</string>
+	<key>No display is available for system audio capture.</key>
+	<string>Tidak ada layar yang tersedia untuk menangkap audio sistem.</string>
+	<key>No trackpad input is available. Enable typing response or choose another behavior.</key>
+	<string>Tidak ada input trackpad yang tersedia. Aktifkan respons ketikan atau pilih perilaku lain.</string>
+	<key>Normal lid sleep was restored. A leftover session file could not be removed.</key>
+	<string>Mode tidur normal saat penutup ditutup telah dipulihkan. Berkas sesi yang tersisa tidak dapat dihapus.</string>
+	<key>Not connected</key>
+	<string>Tidak tersambung</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>Observed sessions: {count} · {state}</key>
+	<string>Sesi yang terpantau: {count} · {state}</string>
+	<key>Off</key>
+	<string>Mati</string>
+	<key>Off by default. Enable network access for Home Assistant on another device.</key>
+	<string>Mati secara bawaan. Aktifkan akses jaringan untuk Home Assistant di perangkat lain.</string>
+	<key>Off by default. Requires Accessibility and Input Monitoring. Keyboard support varies: verify that the screen does not also change. Regular shortcuts work without these permissions.</key>
+	<string>Mati secara bawaan. Memerlukan Aksesibilitas dan Pemantauan Input. Dukungan papan ketik bervariasi: pastikan kecerahan layar tidak ikut berubah. Pintasan biasa berfungsi tanpa izin ini.</string>
+	<key>Off · lid closed</key>
+	<string>Mati · penutup tertutup</string>
+	<key>On battery</key>
+	<string>Menggunakan baterai</string>
+	<key>On-demand access for an assistant to check or change your light when you ask.</key>
+	<string>Asisten dapat memeriksa atau mengubah lampu saat Anda memintanya.</string>
+	<key>Open Accessibility</key>
+	<string>Buka Aksesibilitas</string>
+	<key>Open Input Monitoring</key>
+	<string>Buka Pemantauan Input</string>
+	<key>Open Privacy Settings</key>
+	<string>Buka Pengaturan Privasi</string>
+	<key>Open at login</key>
+	<string>Buka saat masuk</string>
+	<key>Open workspace</key>
+	<string>Buka ruang kerja</string>
+	<key>Optional ambient-light override. macOS asks for administrator approval. Your previous limits are saved.</key>
+	<string>Penggantian batas cahaya sekitar bersifat opsional. macOS meminta persetujuan administrator. Batas sebelumnya disimpan.</string>
+	<key>Optional local light integration</key>
+	<string>Integrasi lampu lokal opsional</string>
+	<key>Optional: briefly overrides normal Battery behavior when charge reaches your threshold while plugged in. Does not repeat until charge drops or you unplug.</key>
+	<string>Opsional: menggantikan sementara perilaku Baterai saat pengisian mencapai ambang yang Anda tetapkan. Tidak berulang sampai tingkat baterai turun atau daya dicabut.</string>
+	<key>Other apps</key>
+	<string>App lain</string>
+	<key>Override ambient brightness limit</key>
+	<string>Ganti batas kecerahan sekitar</string>
+	<key>PREVIEW MODE</key>
+	<string>MODE PRATINJAU</string>
+	<key>Pairing key copied. Paste it into Home Assistant; keep it private.</key>
+	<string>Kunci pemasangan disalin. Tempelkan ke Home Assistant dan jaga kerahasiaannya.</string>
+	<key>Paste</key>
+	<string>Tempel</string>
+	<key>Paused after an error. Restore your light before retrying.</key>
+	<string>Dijeda setelah terjadi kesalahan. Pulihkan lampu sebelum mencoba lagi.</string>
+	<key>Paused after an error. Turn “Keep logo on with lid closed” off and on after recovery.</key>
+	<string>Dijeda setelah terjadi kesalahan. Setelah pemulihan, matikan dan nyalakan kembali “Biarkan logo menyala saat penutup tertutup”.</string>
+	<key>Paused in Low Power Mode</key>
+	<string>Dijeda dalam Mode Daya Rendah</string>
+	<key>Paused while your Mac cools down</key>
+	<string>Dijeda saat Mac mendingin</string>
+	<key>Paused with your display</key>
+	<string>Dijeda mengikuti layar</string>
+	<key>Playback only. No microphone. Nothing recorded.</key>
+	<string>Hanya audio yang diputar. Tanpa mikrofon. Tidak ada yang direkam.</string>
+	<key>Plugged in · Not charging</key>
+	<string>Daya tersambung · Tidak mengisi</string>
+	<key>Power service unavailable.</key>
+	<string>Layanan daya tidak tersedia.</string>
+	<key>Press Command, Control or Option with a regular key. Escape cancels.</key>
+	<string>Tekan Command, Control, atau Option bersama tombol biasa. Tekan Escape untuk membatalkan.</string>
+	<key>Preview only</key>
+	<string>Hanya pratinjau</string>
+	<key>Preview uses a sample waveform.</key>
+	<string>Pratinjau menggunakan contoh bentuk gelombang.</string>
+	<key>Preview uses a sample waveform. Live system audio is never started in preview.</key>
+	<string>Pratinjau menggunakan contoh bentuk gelombang. Audio sistem langsung tidak pernah dimulai dalam pratinjau.</string>
+	<key>Preview · compatible logo not found</key>
+	<string>Pratinjau · logo yang kompatibel tidak ditemukan</string>
+	<key>Preview · logo unchanged</key>
+	<string>Pratinjau · logo tidak berubah</string>
+	<key>Preview · {value}% requested</key>
+	<string>Pratinjau · {value}% diminta</string>
+	<key>Previous effects are still cleaning up. Waiting before another safety check.</key>
+	<string>Efek sebelumnya masih dibersihkan. Menunggu sebelum pemeriksaan keselamatan berikutnya.</string>
+	<key>Previous light cleanup verified. Reconnecting automatically.</key>
+	<string>Pembersihan sesi lampu sebelumnya terverifikasi. Menyambungkan kembali secara otomatis.</string>
+	<key>Previous session verified. Reconnecting your remembered choice.</key>
+	<string>Sesi sebelumnya terverifikasi. Menyambungkan kembali sesuai pilihan yang disimpan.</string>
+	<key>Pulse</key>
+	<string>Denyut</string>
+	<key>Pulse cycle</key>
+	<string>Siklus denyut</string>
+	<key>Pulses only while actively charging, then stays solid when charging pauses or finishes.</key>
+	<string>Berdenyut hanya saat mengisi daya, lalu menyala stabil saat pengisian dijeda atau selesai.</string>
+	<key>Pulsing while charging</key>
+	<string>Berdenyut saat mengisi daya</string>
+	<key>Punchy</key>
+	<string>Tegas</string>
+	<key>Quit</key>
+	<string>Keluar</string>
+	<key>Quit Backlit</key>
+	<string>Keluar dari Backlit</string>
+	<key>Quit {app} before changing logo settings.</key>
+	<string>Keluar dari {app} sebelum mengubah pengaturan logo.</string>
+	<key>Quit {app} before giving Backlit the logo.</key>
+	<string>Keluar dari {app} sebelum menyerahkan kendali logo kepada Backlit.</string>
+	<key>Quit {app} before restoring a previous Backlit session.</key>
+	<string>Keluar dari {app} sebelum memulihkan sesi Backlit sebelumnya.</string>
+	<key>Quit {app} to use Backlit</key>
+	<string>Keluar dari {app} untuk menggunakan Backlit</string>
+	<key>Quitting restores the native logo settings saved before this Backlit session. The logo may turn on again.</key>
+	<string>Keluar akan memulihkan pengaturan logo bawaan yang disimpan sebelum sesi Backlit ini. Logo mungkin menyala kembali.</string>
+	<key>Ready at</key>
+	<string>Siap pada</string>
+	<key>Ready for the next lid closure.</key>
+	<string>Siap untuk penutupan penutup berikutnya.</string>
+	<key>Ready for trackpad contact</key>
+	<string>Siap mendeteksi sentuhan trackpad</string>
+	<key>Ready for trackpad or typing</key>
+	<string>Siap menerima sentuhan trackpad atau ketikan</string>
+	<key>Ready for typing</key>
+	<string>Siap menerima ketikan</string>
+	<key>Ready for your music</key>
+	<string>Siap mengikuti musik Anda</string>
+	<key>Ready for {source} touch</key>
+	<string>Siap mendeteksi sentuhan: {source}</string>
+	<key>Reconnect</key>
+	<string>Sambungkan Kembali</string>
+	<key>Reconnect {agent} coding status hooks</key>
+	<string>Sambungkan kembali hook status pemrograman {agent}</string>
+	<key>Reconnecting to your MacBook</key>
+	<string>Menyambungkan kembali ke MacBook</string>
+	<key>Recovery ownership changed during verification. Restore your light before retrying.</key>
+	<string>Kendali pemulihan berubah selama verifikasi. Pulihkan lampu sebelum mencoba lagi.</string>
+	<key>Recovery unconfirmed. Your closed-lid choice is saved and remains paused. Review recovery in Settings.</key>
+	<string>Pemulihan belum terkonfirmasi. Pilihan saat penutup tertutup disimpan dan tetap dijeda. Tinjau pemulihan di Pengaturan.</string>
+	<key>Remembered. Open the lid before starting another timed session.</key>
+	<string>Pilihan disimpan. Buka penutup sebelum memulai sesi berwaktu lain.</string>
+	<key>Remembered. Paused for your Mac’s safety settings.</key>
+	<string>Pilihan disimpan. Dijeda demi pengaturan keselamatan Mac.</string>
+	<key>Remembered. Preview never starts a closed-lid session.</key>
+	<string>Pilihan disimpan. Pratinjau tidak pernah memulai sesi dengan penutup tertutup.</string>
+	<key>Remembered. Waiting for a verified lid and timer state.</key>
+	<string>Pilihan disimpan. Menunggu verifikasi status penutup dan penghitung waktu.</string>
+	<key>Remembered. Waiting for fresh awake, unlocked hardware safety checks.</key>
+	<string>Pilihan disimpan. Menunggu pemeriksaan keselamatan terbaru saat Mac aktif dan tidak terkunci.</string>
+	<key>Remembered. Waiting for your Mac and light to be ready.</key>
+	<string>Pilihan disimpan. Menunggu Mac dan lampu siap.</string>
+	<key>Remembered. Waiting to verify the previous session before reconnecting.</key>
+	<string>Pilihan disimpan. Menunggu verifikasi sesi sebelumnya sebelum menyambungkan kembali.</string>
+	<key>Replace AI Key</key>
+	<string>Ganti Kunci AI</string>
+	<key>Replace Key</key>
+	<string>Ganti Kunci</string>
+	<key>Replace the AI connection key?</key>
+	<string>Ganti kunci koneksi AI?</string>
+	<key>Replace the pairing key if it may have been seen by someone else</key>
+	<string>Ganti kunci pemasangan jika mungkin telah dilihat orang lain</string>
+	<key>Request restoration. Native handback remains unconfirmed; your saved closed-lid choice stays paused.</key>
+	<string>Minta pemulihan. Pengembalian kendali ke macOS belum terkonfirmasi; pilihan tersimpan untuk penutup tertutup tetap dijeda.</string>
+	<key>Requires Input Monitoring. Uses timing only; no characters are read or saved. Secure Input can pause this response.</key>
+	<string>Memerlukan Pemantauan Input. Hanya menggunakan waktu ketikan; karakter tidak dibaca atau disimpan. Input Aman dapat menjeda respons ini.</string>
+	<key>Reset</key>
+	<string>Atur Ulang</string>
+	<key>Respond to system playback</key>
+	<string>Respons terhadap audio yang diputar sistem</string>
+	<key>Response</key>
+	<string>Respons</string>
+	<key>Restoration was requested. Native handback remains unconfirmed, so the saved closed-lid choice stays paused.</key>
+	<string>Pemulihan telah diminta. Pengembalian kendali ke macOS belum terkonfirmasi, sehingga pilihan tersimpan untuk penutup tertutup tetap dijeda.</string>
+	<key>Restore Battery Defaults</key>
+	<string>Pulihkan Bawaan Baterai</string>
+	<key>Restore Light</key>
+	<string>Pulihkan Lampu</string>
+	<key>Restore and Quit</key>
+	<string>Pulihkan dan Keluar</string>
+	<key>Restore the current logo session before reconnecting its service.</key>
+	<string>Pulihkan sesi logo saat ini sebelum menyambungkan kembali layanannya.</string>
+	<key>Restore the logo and quit?</key>
+	<string>Pulihkan logo dan keluar?</string>
+	<key>Restore your light</key>
+	<string>Pulihkan lampu Anda</string>
+	<key>Restore your light before changing ambient limits.</key>
+	<string>Pulihkan lampu sebelum mengubah batas cahaya sekitar.</string>
+	<key>Restore your light before quitting; the previous lid session still needs recovery.</key>
+	<string>Pulihkan lampu sebelum keluar; sesi penutup sebelumnya masih perlu dipulihkan.</string>
+	<key>Restore your light before starting another session.</key>
+	<string>Pulihkan lampu sebelum memulai sesi lain.</string>
+	<key>Restore your light to continue</key>
+	<string>Pulihkan lampu untuk melanjutkan</string>
+	<key>Restore your light to finish the previous lid session</key>
+	<string>Pulihkan lampu untuk menyelesaikan sesi penutup sebelumnya</string>
+	<key>Retry System Audio</key>
+	<string>Coba Lagi Audio Sistem</string>
+	<key>Review Closed-lid Pause</key>
+	<string>Tinjau Jeda saat Penutup Tertutup</string>
+	<key>Safety state changed during verification. Backlit will check again before reconnecting.</key>
+	<string>Status keselamatan berubah selama verifikasi. Backlit akan memeriksa lagi sebelum menyambungkan kembali.</string>
+	<key>Safety verification failed: {detail} Restore your light before retrying.</key>
+	<string>Verifikasi keselamatan gagal: {detail} Pulihkan lampu sebelum mencoba lagi.</string>
+	<key>Saved brightness: {value}% · logo is off</key>
+	<string>Kecerahan tersimpan: {value}% · logo mati</string>
+	<key>Saved recovery timing could not be verified. Restore your light, then turn closed-lid lighting off and on to retry.</key>
+	<string>Waktu pemulihan tersimpan tidak dapat diverifikasi. Pulihkan lampu, lalu matikan dan nyalakan kembali pencahayaan saat penutup tertutup untuk mencoba lagi.</string>
+	<key>Select All</key>
+	<string>Pilih Semua</string>
+	<key>Session metadata is incomplete. Some coding sessions may be missing from this snapshot.</key>
+	<string>Metadata sesi tidak lengkap. Beberapa sesi pemrograman mungkin tidak tercantum dalam cuplikan ini.</string>
+	<key>Session snapshot incomplete</key>
+	<string>Cuplikan sesi tidak lengkap</string>
+	<key>Sessions: {count} · {state}</key>
+	<string>Sesi: {count} · {state}</string>
+	<key>Settings</key>
+	<string>Pengaturan</string>
+	<key>Settings…</key>
+	<string>Pengaturan…</string>
+	<key>Setup</key>
+	<string>Penyiapan</string>
+	<key>Setup command copied. Run it locally in your agent's terminal, then check its MCP connections.</key>
+	<string>Perintah penyiapan disalin. Jalankan secara lokal di terminal agen Anda, lalu periksa koneksi MCP-nya.</string>
+	<key>Setup guide</key>
+	<string>Panduan penyiapan</string>
+	<key>Shift + hardware brightness keys (experimental)</key>
+	<string>Shift + tombol kecerahan perangkat keras (eksperimental)</string>
+	<key>Show Update Progress</key>
+	<string>Tampilkan Progres Pembaruan</string>
+	<key>Show menu bar icon</key>
+	<string>Tampilkan ikon bar menu</string>
+	<key>Signal</key>
+	<string>Sinyal</string>
+	<key>Slower</key>
+	<string>Lebih lambat</string>
+	<key>Smooth</key>
+	<string>Halus</string>
+	<key>Start update checks from Settings.</key>
+	<string>Mulai pemeriksaan pembaruan dari Pengaturan.</string>
+	<key>Starting closed-lid safety checks…</key>
+	<string>Memulai pemeriksaan keselamatan saat penutup tertutup…</string>
+	<key>State unavailable</key>
+	<string>Status tidak tersedia</string>
+	<key>Status only</key>
+	<string>Hanya status</string>
+	<key>Steady</key>
+	<string>Stabil</string>
+	<key>Steady brightness</key>
+	<string>Kecerahan stabil</string>
+	<key>Steady while plugged in</key>
+	<string>Stabil saat daya tersambung</string>
+	<key>System</key>
+	<string>Sistem</string>
+	<key>System Default</key>
+	<string>Bawaan Sistem</string>
+	<key>System audio access is off for Backlit. Allow it in System Settings → Privacy &amp; Security → Screen &amp; System Audio Recording, then reopen Backlit or choose Retry System Audio. Backlit does not record your screen or microphone.</key>
+	<string>Akses audio sistem untuk Backlit mati. Izinkan di Pengaturan Sistem → Privasi &amp; Keamanan → Perekaman Layar &amp; Audio Sistem, lalu buka kembali Backlit atau pilih Coba Lagi Audio Sistem. Backlit tidak merekam layar atau mikrofon.</string>
+	<key>System audio follows Music mode.</key>
+	<string>Audio sistem mengikuti mode Musik.</string>
+	<key>System audio is unavailable.</key>
+	<string>Audio sistem tidak tersedia.</string>
+	<key>System audio starts with Music when your light is on and your Mac is active.</key>
+	<string>Audio sistem dimulai bersama mode Musik saat lampu menyala dan Mac aktif.</string>
+	<key>System audio stopped before it was ready.</key>
+	<string>Audio sistem berhenti sebelum siap.</string>
+	<key>That combination is assigned to another Backlit action.</key>
+	<string>Kombinasi itu sudah digunakan untuk tindakan Backlit lain.</string>
+	<key>The AI connection key was replaced. Turn AI access off to stop all assistant connections.</key>
+	<string>Kunci koneksi AI telah diganti. Matikan akses AI untuk menghentikan semua koneksi asisten.</string>
+	<key>The MCP connection was switched off because its Keychain key is unavailable. Enable it again in Connections.</key>
+	<string>Koneksi MCP dimatikan karena kuncinya di Rantai Kunci tidak tersedia. Aktifkan kembali di Koneksi.</string>
+	<key>The ambient brightness change could not be confirmed. Restore the saved limits before retrying.</key>
+	<string>Perubahan batas kecerahan sekitar tidak dapat dikonfirmasi. Pulihkan batas yang tersimpan sebelum mencoba lagi.</string>
+	<key>The automatic recovery choice changed during verification.</key>
+	<string>Pilihan pemulihan otomatis berubah selama verifikasi.</string>
+	<key>The brightness-key filter could not start. Regular shortcuts remain available.</key>
+	<string>Filter tombol kecerahan tidak dapat dimulai. Pintasan biasa tetap tersedia.</string>
+	<key>The brightness-limit request could not be prepared.</key>
+	<string>Permintaan batas kecerahan tidak dapat disiapkan.</string>
+	<key>The closed-lid helper could not be adopted.</key>
+	<string>Proses bantu untuk penutup tertutup tidak dapat diambil alih.</string>
+	<key>The closed-lid parent process could not be verified.</key>
+	<string>Proses induk untuk penutup tertutup tidak dapat diverifikasi.</string>
+	<key>The closed-lid recovery choice could not be saved. Restore your light before retrying.</key>
+	<string>Pilihan pemulihan untuk penutup tertutup tidak dapat disimpan. Pulihkan lampu sebelum mencoba lagi.</string>
+	<key>The current key stops working immediately. Home Assistant will ask for the new key before it can control the light again.</key>
+	<string>Kunci saat ini langsung berhenti berlaku. Home Assistant akan meminta kunci baru sebelum dapat mengendalikan lampu lagi.</string>
+	<key>The exact previous light session's cleanup is not verified.</key>
+	<string>Pembersihan sesi lampu sebelumnya yang tercatat belum terverifikasi.</string>
+	<key>The light turns off shortly after typing stops. With the lid closed, use an external keyboard.</key>
+	<string>Lampu mati sesaat setelah Anda berhenti mengetik. Gunakan papan ketik eksternal saat penutup tertutup.</string>
+	<key>The logo control service has an unsupported interface on this version of macOS.</key>
+	<string>Antarmuka layanan kontrol logo tidak didukung pada versi macOS ini.</string>
+	<key>The logo control service is unavailable on this version of macOS.</key>
+	<string>Layanan kontrol logo tidak tersedia pada versi macOS ini.</string>
+	<key>The logo control service is unavailable.</key>
+	<string>Layanan kontrol logo tidak tersedia.</string>
+	<key>The logo hardware produces white light. Backlit changes its brightness and rhythm, never the screen brightness. </key>
+	<string>Perangkat keras logo menghasilkan cahaya putih. Backlit mengubah kecerahan dan iramanya, tetapi tidak pernah mengubah kecerahan layar. </string>
+	<key>The logo service did not confirm the requested brightness.</key>
+	<string>Layanan logo tidak mengonfirmasi kecerahan yang diminta.</string>
+	<key>The logo service has not reconnected after changing ambient limits. Restore Light before retrying.</key>
+	<string>Layanan logo belum tersambung kembali setelah batas cahaya sekitar diubah. Pilih Pulihkan Lampu sebelum mencoba lagi.</string>
+	<key>The logo's off state could not be verified. Fade recovery is retained.</key>
+	<string>Status logo mati tidak dapat diverifikasi. Catatan pemulihan peredupan dipertahankan.</string>
+	<key>The native logo brightness source changed. Logo control was stopped.</key>
+	<string>Sumber kecerahan logo bawaan berubah. Kontrol logo dihentikan.</string>
+	<key>The previous automatic recovery has not been admitted.</key>
+	<string>Pemulihan otomatis sebelumnya belum diizinkan berjalan.</string>
+	<key>The previous key stops working. Your local assistants can reconnect while AI access stays enabled. The Home Assistant key stays the same.</key>
+	<string>Kunci sebelumnya tidak lagi berlaku. Asisten lokal Anda dapat menyambungkan kembali selama akses AI tetap aktif. Kunci Home Assistant tidak berubah.</string>
+	<key>The previous local connection is still closing. Turn sharing off and on to retry.</key>
+	<string>Koneksi lokal sebelumnya masih ditutup. Matikan dan nyalakan kembali berbagi untuk mencoba lagi.</string>
+	<key>The recovery configuration is invalid; it was left untouched.</key>
+	<string>Konfigurasi pemulihan tidak valid dan tidak diubah.</string>
+	<key>The saved automatic recovery record is invalid. Restore Light before retrying.</key>
+	<string>Catatan pemulihan otomatis tersimpan tidak valid. Pilih Pulihkan Lampu sebelum mencoba lagi.</string>
+	<key>The saved closed-lid choice is invalid.</key>
+	<string>Pilihan tersimpan untuk penutup tertutup tidak valid.</string>
+	<key>The saved closed-lid failure is not eligible for automatic cleanup.</key>
+	<string>Kegagalan sesi penutup tertutup yang tercatat tidak memenuhi syarat untuk pembersihan otomatis.</string>
+	<key>The saved closed-lid safety state could not be recorded.</key>
+	<string>Status keselamatan untuk penutup tertutup tidak dapat disimpan.</string>
+	<key>The saved logo and lid settings were restored.</key>
+	<string>Pengaturan logo dan penutup yang tersimpan telah dipulihkan.</string>
+	<key>The saved recovery belongs to a different closed-lid choice.</key>
+	<string>Catatan pemulihan tersimpan terkait dengan pilihan lain untuk penutup tertutup.</string>
+	<key>The saved recovery belongs to a different light session.</key>
+	<string>Catatan pemulihan tersimpan terkait dengan sesi lampu lain.</string>
+	<key>The saved safety check could not be recorded. Restore your light before retrying.</key>
+	<string>Pemeriksaan keselamatan tidak dapat dicatat. Pulihkan lampu sebelum mencoba lagi.</string>
+	<key>This is an isolated preview. Your real logo is unchanged.</key>
+	<string>Ini adalah pratinjau terisolasi. Logo fisik Anda tidak berubah.</string>
+	<key>This output device uses an unsupported system-audio format.</key>
+	<string>Perangkat keluaran ini menggunakan format audio sistem yang tidak didukung.</string>
+	<key>This update is incompatible with this build or Mac.</key>
+	<string>Pembaruan ini tidak kompatibel dengan versi ini atau Mac ini.</string>
+	<key>Timer finished. Reopen the lid to begin another timed session.</key>
+	<string>Waktu habis. Buka kembali penutup untuk memulai sesi berwaktu lain.</string>
+	<key>Toggle logo</key>
+	<string>Nyalakan atau matikan logo</string>
+	<key>Touch detected · hold to keep lit</key>
+	<string>Sentuhan terdeteksi · tahan agar tetap menyala</string>
+	<key>Touch released · light off</key>
+	<string>Sentuhan dilepas · lampu mati</string>
+	<key>Trackpad</key>
+	<string>Trackpad</string>
+	<key>Trackpad and optional typing response</key>
+	<string>Trackpad dan respons ketikan opsional</string>
+	<key>Trackpad events are unavailable on this macOS build</key>
+	<string>Peristiwa trackpad tidak tersedia pada versi macOS ini</string>
+	<key>Trackpad input unavailable</key>
+	<string>Input trackpad tidak tersedia</string>
+	<key>Trackpad · unavailable</key>
+	<string>Trackpad · tidak tersedia</string>
+	<key>Turn logo output on or off · {shortcut}</key>
+	<string>Nyalakan atau matikan lampu logo · {shortcut}</string>
+	<key>Turn off closed-lid lighting and finish its cleanup before changing ambient limits.</key>
+	<string>Matikan lampu saat penutup tertutup dan selesaikan pembersihan sebelum mengubah batas cahaya sekitar.</string>
+	<key>Turn off the closed-lid session and let cleanup finish before changing its duration.</key>
+	<string>Matikan sesi dengan penutup tertutup dan tunggu hingga pembersihan selesai sebelum mengubah durasinya.</string>
+	<key>Typing</key>
+	<string>Ketikan</string>
+	<key>Typing access is allowed</key>
+	<string>Akses ketikan diizinkan</string>
+	<key>Typing access is no longer available</key>
+	<string>Akses ketikan tidak lagi tersedia</string>
+	<key>Typing active · light on</key>
+	<string>Ketikan aktif · lampu menyala</string>
+	<key>Typing input is disabled in preview.</key>
+	<string>Input ketikan dinonaktifkan dalam pratinjau.</string>
+	<key>Typing response is off</key>
+	<string>Respons ketikan mati</string>
+	<key>Typing was paused by macOS; turn typing response off and on to resume</key>
+	<string>Respons ketikan dijeda oleh macOS; matikan lalu nyalakan kembali untuk melanjutkan</string>
+	<key>Unplugged, logo brightness matches battery charge down to 0%. Manual brightness does not affect Battery mode.</key>
+	<string>Saat daya dicabut, kecerahan logo mengikuti tingkat baterai hingga 0%. Kecerahan manual tidak memengaruhi mode Baterai.</string>
+	<key>Unrecognized event format. Nothing changed.</key>
+	<string>Format peristiwa tidak dikenal. Tidak ada yang berubah.</string>
+	<key>Unrecognized hook group. Nothing changed.</key>
+	<string>Grup hook tidak dikenal. Tidak ada yang berubah.</string>
+	<key>Unrecognized hooks format. Nothing changed.</key>
+	<string>Format hook tidak dikenal. Tidak ada yang berubah.</string>
+	<key>Update paused. Finish restoring the light, then retry installation.</key>
+	<string>Pembaruan dijeda. Selesaikan pemulihan lampu, lalu coba instal lagi.</string>
+	<key>Updates are unavailable in preview.</key>
+	<string>Pembaruan tidak tersedia dalam pratinjau.</string>
+	<key>Use Command, Control or Option with a regular key. Shift alone and hardware brightness keys are not supported.</key>
+	<string>Gunakan Command, Control, atau Option dengan tombol biasa. Shift saja dan tombol kecerahan perangkat keras tidak didukung.</string>
+	<key>User session inactive</key>
+	<string>Sesi pengguna tidak aktif</string>
+	<key>Uses the brightness set above.</key>
+	<string>Menggunakan kecerahan yang diatur di atas.</string>
+	<key>Verifying previous light cleanup before reconnecting</key>
+	<string>Memverifikasi pembersihan sesi lampu sebelumnya sebelum menyambungkan kembali</string>
+	<key>Version {version} · t0nyz</key>
+	<string>Versi {version} · t0nyz</string>
+	<key>Waiting</key>
+	<string>Menunggu</string>
+	<key>Waiting for an agent</key>
+	<string>Menunggu agen</string>
+	<key>Waiting for closed-lid cleanup</key>
+	<string>Menunggu pembersihan sesi dengan penutup tertutup</string>
+	<key>Waiting for closed-lid safety checks.</key>
+	<string>Menunggu pemeriksaan keselamatan untuk penutup tertutup.</string>
+	<key>Waiting for keys…</key>
+	<string>Menunggu tombol…</string>
+	<key>Waiting for light output</key>
+	<string>Menunggu keluaran lampu</string>
+	<key>Waiting for macOS to finish the system audio request and cleanup.</key>
+	<string>Menunggu macOS menyelesaikan permintaan audio sistem dan pembersihan.</string>
+	<key>Waiting for touch</key>
+	<string>Menunggu sentuhan</string>
+	<key>Waiting for {source} touch</key>
+	<string>Menunggu sentuhan: {source}</string>
+	<key>Waiting to reconnect after wake</key>
+	<string>Menunggu penyambungan kembali setelah Mac bangun</string>
+	<key>Watching your agents</key>
+	<string>Memantau agen Anda</string>
+	<key>When hidden, reopen Backlit from the Dock or Applications. Settings stays available from the app menu.</key>
+	<string>Jika ikon disembunyikan, buka lagi Backlit dari Dock atau folder Aplikasi. Pengaturan tetap tersedia di menu app.</string>
+	<key>While plugged in</key>
+	<string>Saat daya tersambung</string>
+	<key>Working</key>
+	<string>Sedang bekerja</string>
+	<key>Working, waiting, or needs your attention</key>
+	<string>Sedang bekerja, menunggu, atau memerlukan perhatian Anda</string>
+	<key>Works with any app open. Rest a finger to light the logo; lift all fingers to turn it off.</key>
+	<string>Berfungsi dengan app apa pun yang terbuka. Letakkan jari agar logo menyala; angkat semua jari untuk mematikannya.</string>
+	<key>You can switch modes or quit Backlit. Retry becomes available after cleanup finishes.</key>
+	<string>Anda dapat mengganti mode atau keluar dari Backlit. Anda dapat mencoba lagi setelah pembersihan selesai.</string>
+	<key>Your assistant may send light status to its model provider. Music and Typing need access enabled in Backlit first. Status hooks stay separate.</key>
+	<string>Asisten Anda dapat mengirim status lampu ke penyedia modelnya. Akses Musik dan Ketikan harus diaktifkan terlebih dahulu di Backlit. Hook status tetap terpisah.</string>
+	<key>Your light</key>
+	<string>Lampu Anda</string>
+	<key>Your light is ready.</key>
+	<string>Lampu Anda siap.</string>
+	<key>Your light was restored. Turn closed-lid lighting off and on to retry.</key>
+	<string>Lampu telah dipulihkan. Matikan dan nyalakan kembali pencahayaan saat penutup tertutup untuk mencoba lagi.</string>
+	<key>attention</key>
+	<string>perlu perhatian</string>
+	<key>both</key>
+	<string>keduanya</string>
+	<key>macOS could not show the Dock icon. Backlit will keep its menu bar entry available.</key>
+	<string>macOS tidak dapat menampilkan ikon Dock. Backlit akan tetap tersedia di bar menu.</string>
+	<key>macOS did not allow the brightness-key filter. Review Accessibility and Input Monitoring, or use the regular shortcuts.</key>
+	<string>macOS tidak mengizinkan filter tombol kecerahan. Tinjau Aksesibilitas dan Pemantauan Input, atau gunakan pintasan biasa.</string>
+	<key>macOS did not confirm restoration. The recovery file is retained.</key>
+	<string>macOS tidak mengonfirmasi pemulihan. Berkas pemulihan dipertahankan.</string>
+	<key>macOS rejected closed-lid lighting. Restore the lid session before retrying.</key>
+	<string>macOS menolak pencahayaan saat penutup tertutup. Pulihkan sesi tersebut sebelum mencoba lagi.</string>
+	<key>macOS rejected the logo brightness change. Restore Logo Settings before retrying.</key>
+	<string>macOS menolak perubahan kecerahan logo. Pilih Pulihkan Lampu sebelum mencoba lagi.</string>
+	<key>macOS still denies Input Monitoring for this running Backlit. Open Input Monitoring and grant access to the installed app, then reopen Backlit.</key>
+	<string>macOS masih menolak Pemantauan Input untuk Backlit yang sedang berjalan. Buka Pemantauan Input dan beri izin pada app yang terinstal, lalu buka kembali Backlit.</string>
+	<key>macOS stopped hardware-key control. Brightness keys use macOS again; use the regular shortcuts or enable the option again.</key>
+	<string>macOS menghentikan kontrol tombol perangkat keras. Tombol kecerahan kembali dikendalikan macOS; gunakan pintasan biasa atau aktifkan ulang opsi ini.</string>
+	<key>macOS took too long to connect system audio.</key>
+	<string>macOS terlalu lama menyambungkan audio sistem.</string>
+	<key>minutes</key>
+	<string>menit</string>
+	<key>screen</key>
+	<string>layar</string>
+	<key>trackpad</key>
+	<string>trackpad</string>
+	<key>waiting</key>
+	<string>menunggu</string>
+	<key>working</key>
+	<string>sedang bekerja</string>
+	<key>{mode} brightness preview, {value} percent. {status}</key>
+	<string>Pratinjau kecerahan mode {mode}, {value} persen. {status}</string>
+	<key>{mode} mode</key>
+	<string>Mode {mode}</string>
+	<key>{status} · port {port}</key>
+	<string>{status} · port {port}</string>
+	<key>{value} percent</key>
+	<string>{value} persen</string>
+	<key>{value} s</key>
+	<string>{value} dtk</string>
+	<key>{value}% requested · hardware enabled</key>
+	<string>{value}% diminta · perangkat keras diaktifkan</string>
+	<key>☕ Buy me a coffee</key>
+	<string>☕ Traktir saya kopi</string>
+</dict>
+</plist>
