@@ -10,6 +10,8 @@ MacBook Pro with PROLED XDR · Apple silicon · No account required
 
 <p align="center"><img src="docs/media/preview/panel-menu-bar.svg" width="100%" alt="Menu bar: one click away. Backlit’s native menu bar popover with the backlight switch, behavior picker and current output. Switch the light, pick a behavior and see a live preview, or press Control-Command-B from any app."></p>
 
+<p align="center"><img src="docs/media/preview/panel-control-center.svg" width="100%" alt="Control Center design preview, not yet released: an illustrated Logo Light toggle. Add Logo Light to your controls. No need to open Backlit’s window. macOS 27 or later; Backlit must be running."></p>
+
 <p align="center"><img src="docs/media/preview/panel-main-window.svg" width="100%" alt="Main window: pick a mode, tune the glow. Backlit’s native main window with the live logo preview, the list of seven behaviors and the output settings."></p>
 
 <p align="center"><img src="docs/media/preview/panel-breathe.svg" width="100%" alt="Breathe: a slow, quiet pulse. An illustrated lid whose light fades in and out on a 3 to 30 second cycle. You set the brightness and how low it dims."></p>
