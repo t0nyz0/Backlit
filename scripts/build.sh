@@ -41,7 +41,8 @@ if [ "${BACKLIT_LOCAL_CONTROL_BUILD:-0}" = "1" ]; then
     experimental_flags=(-Xswiftc -D -Xswiftc BACKLIT_CONTROL_CENTER
         -Xlinker -platform_version -Xlinker macos -Xlinker 14.0 -Xlinker "$sdk_version")
 fi
-swift build -c release --scratch-path "$scratch_dir" --triple "$target_triple" "${experimental_flags[@]}" \
+# macOS Bash 3.2 treats an empty array expansion as unbound under set -u.
+swift build -c release --scratch-path "$scratch_dir" --triple "$target_triple" ${experimental_flags[@]+"${experimental_flags[@]}"} \
     -Xswiftc -D -Xswiftc BACKLIT_STANDALONE \
     -Xswiftc -file-prefix-map -Xswiftc "$PWD=/build/Backlit" \
     -Xswiftc -whole-module-optimization \

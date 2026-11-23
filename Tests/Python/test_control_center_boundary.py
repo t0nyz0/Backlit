@@ -1,3 +1,5 @@
+import os
+import subprocess
 import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,6 +22,31 @@ class ControlCenterBoundaryTests(unittest.TestCase):
         self.assertNotIn('.foreground(.immediate)', shared)
         for text in ['RuntimeServices', 'LogoDevice', 'HomeBridge']: self.assertNotIn(text, shared)
         self.assertIn('try model.performControlCenterPower(value)', host)
+    def test_macos_bash_passes_compile_flags_only_for_preview(self):
+        script = (ROOT / 'scripts/build.sh').read_text()
+        compile_step = script[script.index('experimental_flags=()'):script.index('binary_dir=')]
+        shims = '''
+scratch_dir='/tmp/fake SwiftPM scratch'
+target_triple=arm64-apple-macosx14.0
+intent_array='/tmp/fake App Intents.json'
+xcrun() { echo '27.2'; }
+swift() { printf '%s\\n' "$@"; }
+'''
+        for preview in ('0', '1'):
+            with self.subTest(preview=preview):
+                result = subprocess.run(['/bin/bash', '-eu', '-c', shims + compile_step],
+                                        env={**os.environ, 'BASH_ENV': '', 'BACKLIT_LOCAL_CONTROL_BUILD': preview},
+                                        capture_output=True, text=True, check=True)
+                args = result.stdout.splitlines()
+                start = args.index('arm64-apple-macosx14.0') + 1
+                end = args.index('BACKLIT_STANDALONE') - 3
+                expected = [] if preview == '0' else [
+                    '-Xswiftc', '-D', '-Xswiftc', 'BACKLIT_CONTROL_CENTER',
+                    '-Xlinker', '-platform_version', '-Xlinker', 'macos',
+                    '-Xlinker', '14.0', '-Xlinker', '27.2']
+                self.assertEqual(args[start:end], expected)
+                self.assertIn('/tmp/fake SwiftPM scratch', args)
+                self.assertIn('/tmp/fake App Intents.json', args)
     def test_control_and_public_artifact_guard_use_same_backlit_identity(self):
         widget = (ROOT / 'integrations/control-center/BacklitControl.swift').read_text()
         shared = (ROOT / 'Sources/Backlit/ControlCenterShared.swift').read_text()
