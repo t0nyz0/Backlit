@@ -11,7 +11,7 @@ extension, gallery icon catalog, Control Center intent, or App Group metadata.
 
 ## Implemented and checked
 
-- One macOS 27+ WidgetKit Logo Light toggle, using an authenticated background
+- One macOS 27+ WidgetKit toggle named **Backlit**, using an authenticated background
   `SetValueIntent`. No slider, hardware access, network listener or IPC exception.
 - Host power requests use the existing complete external admission policy; no
   public automation enabling, mode changes, permission requests or recovery bypass.
@@ -27,6 +27,11 @@ extension, gallery icon catalog, Control Center intent, or App Group metadata.
   semantics, not live widget registration or hardware.
 - The standalone macOS 27 extension build validates the shared intent metadata,
   private-path absence and ad-hoc signature. No install or launch.
+
+## Upgrading the preview
+
+If you added the control from an earlier local preview, remove that tile and add
+**Backlit** again from the Control Center gallery. This does not reset app settings.
 
 ## No-ship gates
 

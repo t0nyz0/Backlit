@@ -183,7 +183,7 @@ if arguments.contains("--verify-hardware") {
         }
         model.start()
         #if BACKLIT_CONTROL_CENTER
-        if #available(macOS 27.0, *) { LogoLightControlHost.shared.start(model: model) }
+        if #available(macOS 27.0, *) { BacklitControlHost.shared.start(model: model) }
         #endif
         if let page = option("--page") {model.selectedPage=page}
         showWindow()
@@ -219,7 +219,7 @@ if arguments.contains("--verify-hardware") {
     }
     func applicationWillTerminate(_ notification: Notification) {
         #if BACKLIT_CONTROL_CENTER
-        if #available(macOS 27.0, *) { LogoLightControlHost.shared.stop() }
+        if #available(macOS 27.0, *) { BacklitControlHost.shared.stop() }
         #endif
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {false}

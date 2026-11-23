@@ -92,7 +92,7 @@ folders = [p for p in resources.iterdir() if p.is_dir() and p.name.lower() == "m
 if len(folders) != 1:
     raise SystemExit("Missing unique extension intent metadata.")
 content = b"\n".join(p.read_bytes() for p in folders[0].rglob("*") if p.is_file())
-action = json.loads((folders[0] / "extract.actionsdata").read_bytes()).get("actions", {}).get("SetLogoLightControlIntent", {})
+action = json.loads((folders[0] / "extract.actionsdata").read_bytes()).get("actions", {}).get("SetBacklitControlPowerIntent", {})
 parameters = action.get("parameters", [])
 if (action.get("openAppWhenRun") is not False or action.get("supportedModes") != 1
         or action.get("allowedTargets") != [{"type": 1}] or not action.get("isAuthPolExplicit")

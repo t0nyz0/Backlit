@@ -42,7 +42,7 @@ resources = contents / 'Resources'
 metadata = [p for p in resources.iterdir() if p.name.lower() == 'metadata.appintents']
 if ('BacklitLocalControlPreview' in info or 'BacklitControlAppGroup' in info
         or (contents / 'PlugIns').exists() or (resources / 'Assets.car').exists()
-        or any(b'SetLogoLightControlIntent' in p.read_bytes()
+        or any(b'SetBacklitControlPowerIntent' in p.read_bytes()
                for folder in metadata for p in folder.rglob('*') if p.is_file())):
     raise SystemExit('Local Control Center artifacts cannot be packaged as a public release.')
 PY_RELEASE_FLAVOR

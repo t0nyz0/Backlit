@@ -187,7 +187,7 @@ class BuildProvenanceTests(unittest.TestCase):
                     residue = contents / 'Resources/Metadata.appintents/extract.actionsdata'
                 if residue:
                     residue.parent.mkdir(parents=True, exist_ok=True)
-                    residue.write_bytes(b'SetLogoLightControlIntent' if case == 'native intent' else b'fixture')
+                    residue.write_bytes(b'SetBacklitControlPowerIntent' if case == 'native intent' else b'fixture')
                 info_path.write_bytes(plistlib.dumps(info))
                 result = subprocess.run(['bash', 'scripts/package.sh'], cwd=self.root, env=env,
                                         capture_output=True, text=True, timeout=15)

@@ -20,9 +20,20 @@ class ControlCenterBoundaryTests(unittest.TestCase):
         self.assertNotIn('.foreground(.immediate)', shared)
         for text in ['RuntimeServices', 'LogoDevice', 'HomeBridge']: self.assertNotIn(text, shared)
         self.assertIn('try model.performControlCenterPower(value)', host)
+    def test_control_and_public_artifact_guard_use_same_backlit_identity(self):
+        widget = (ROOT / 'integrations/control-center/BacklitControl.swift').read_text()
+        shared = (ROOT / 'Sources/Backlit/ControlCenterShared.swift').read_text()
+        self.assertIn('ControlWidgetToggle(\n                "Backlit",', widget)
+        self.assertIn('.displayName("Backlit")', widget)
+        self.assertIn('static let kind = "local.backlit.control-center.power"', shared)
+        self.assertIn('struct SetBacklitControlPowerIntent: SetValueIntent', shared)
+        self.assertIn('action: SetBacklitControlPowerIntent()', widget)
+        for file in ['scripts/build-control-extension.sh', 'scripts/package.sh']:
+            self.assertIn('SetBacklitControlPowerIntent', (ROOT / file).read_text())
+
     def test_extension_does_not_claim_paused_for_unknown_effective_state(self):
         extension = (ROOT / 'integrations/control-center/BacklitControl.swift').read_text()
         self.assertNotIn('Enabled · paused', extension)
-        self.assertIn('try LogoLightControlState.currentValue()', extension)
+        self.assertIn('try BacklitControlState.currentValue()', extension)
         self.assertNotIn('try?', extension)
 if __name__ == '__main__': unittest.main()
