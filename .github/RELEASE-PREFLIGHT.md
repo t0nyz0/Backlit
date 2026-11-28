@@ -38,3 +38,10 @@ Keychain read. They do not prove macOS will allow a different signing identity
 to read every prior 0.2.11 user's keys. Do not guarantee silent migration.
 The user guide and release notes explain how to re-enable an affected
 connection without resetting Backlit or rotating its keys.
+
+## Installer verification for future releases
+
+The installer currently pins the exact signed 0.2.12 checksum receipt. A later
+signed release needs a reviewed installer verifier update before publication.
+Test the new receipt and both download routes without loosening digest checks;
+then verify the production installer after publishing.

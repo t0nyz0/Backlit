@@ -1,8 +1,8 @@
 # Interface languages
 
-Prepared 0.2.12 candidate (not published): English, Spanish, French, German, Japanese, Korean,
+Backlit 0.2.12 supports sixteen interface languages: English, Spanish, French, German, Japanese, Korean,
 Brazilian Portuguese, Simplified Chinese, Traditional Chinese, Thai, Italian, Dutch,
-Polish, Turkish, Vietnamese, and Indonesian. This adds six languages to 0.2.11. Public downloads remain on 0.2.11.
+Polish, Turkish, Vietnamese, and Indonesian. That is six more than 0.2.11.
 
 In Settings → Language, **System Default** follows the first supported language
 selected by Foundation for this app, including macOS per-app language settings

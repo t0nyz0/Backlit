@@ -110,9 +110,9 @@ open -n dist/Backlit.app --args --preview
 
 The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy checks, and an optimized build. Its ad-hoc artifacts are for CI testing, not public downloads. Use the signed and notarized ZIP or DMG from [GitHub Releases](https://github.com/t0nyz0/Backlit/releases) for Control Center. The release also includes source, the optional Stream Deck add-on, build details, and SHA-256 checksums. [Contributing](../.github/CONTRIBUTING.md) covers local packaging and tests.
 
-The public **0.2.11 (build 57)** supports ten interface languages. The unpublished **0.2.12 source preview** adds six more. Both offer System Default and manual language selection, with independent Mac regional number formatting. [Interface language behavior](LOCALIZATION.md).
+Backlit **0.2.12 (build 58)** supports sixteen interface languages, six more than 0.2.11. Choose System Default or a language in Settings. Your Mac’s regional number formatting stays independent. [Interface language behavior](LOCALIZATION.md).
 
-Source **0.2.12 preview** · [Download counts and refresh details](downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases) · [License](../LICENSE)
+[Backlit 0.2.12 release](https://github.com/t0nyz0/Backlit/releases/tag/v0.2.12) · [Download counts and refresh details](downloads/README.md) · [View all releases](https://github.com/t0nyz0/Backlit/releases) · [License](../LICENSE)
 
 [Privacy](PRIVACY.md) · [Validation](VALIDATION.md) · [Security](../.github/SECURITY.md) · [Attribution](ATTRIBUTION.md)
 

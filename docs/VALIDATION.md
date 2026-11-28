@@ -1,17 +1,31 @@
 # Backlit validation
 
-## 0.2.12 — local six-language expansion, build 58
+## Backlit 0.2.12 (build 58)
 
-This candidate is prepared on a separate local branch from published 0.2.11. It is
-not installed or published. Italian, Dutch, Polish, Turkish, Vietnamese and
-Indonesian extend the native interface and privacy catalogs to sixteen languages.
-The 485 interface keys and three privacy descriptions per language preserve named
-placeholders and existing safety/permission meanings. Exact final suite counts,
-commit identity and artifact checksums accompany the private candidate handoff.
+[Backlit 0.2.12](https://github.com/t0nyz0/Backlit/releases/tag/v0.2.12) is a
+Developer ID-signed and Apple-notarized release for Apple silicon. The public ZIP
+and DMG contain the same signed app bundle. The DMG itself is also notarized.
+The release includes build provenance and SHA-256 checksums. Updates remain manual.
 
-Testing uses isolated preferences, inert dependencies and offscreen views, not
-changes to the running app, system permissions or hardware. Native-speaker review,
-complete live VoiceOver review and hands-on language acceptance remain open.
+- Both downloads were installed separately on the test Mac and the signed
+  Control Center extension registered from each. The owner verified physical
+  logo toggling without opening the window on the final ZIP install and checked
+  behavior after quit. Control Center requires macOS 27 or later with Backlit
+  running. This is not qualification across all Mac hardware or system states.
+- The Control Center-enabled Swift suite passed 914 tests. The
+  [main-branch CI run](https://github.com/t0nyz0/Backlit/actions/runs/46159328299)
+  independently verified the release source and standard CI package, not a
+  substitute for the signed release artifact.
+- Six new interface languages bring the total to sixteen. Catalog and placeholder
+  checks and sampled layouts passed. Full native-speaker and VoiceOver review
+  have not been performed.
+- Background startup checks for Home Assistant and MCP have automated coverage.
+  An upgrade from the older ad-hoc signature can require renewed Keychain
+  access. Silent migration of existing credentials on every Mac was not tested.
+
+The remaining sections are historical validation records. Their signing,
+publication and test status describe the builds in those sections, not 0.2.12.
+For current installation and limits, see the [user guide](USER-GUIDE.md).
 
 ## 0.2.11 — local multilingual preparation, build 57
 
@@ -96,7 +110,7 @@ Version: **0.2.7, build 45**. Installed-app GUI and physical smoke checks for bu
 
 Publication requires the exact source in a clean commit and a passing [Build and package workflow](https://github.com/t0nyz0/Backlit/actions) for the matching `v0.2.7` tag. Check the matching tagged workflow for its exact commit and outcome; local checks are recorded separately below. BUILD-INFO.json records artifact source identity and signing status; SHA256SUMS.txt covers package bytes.
 
-## Current local checks
+## Historical local checks
 
 - **673 Swift tests passed**, with zero failures. Fourteen new recovery regressions exercise the production model with injected native operations; they do not trigger power or hardware failures on the live Mac.
 - **21 Python tests passed**, with zero failures or skips. Two source-export regressions inspect the actual ZIP from a disposable committed repository, including public-document links, committed bytes, provenance, private-file exclusion and absence of Git history. Restoring the earlier allowlist makes the regression fail on missing MCP documentation.
@@ -129,7 +143,7 @@ Fixtures cover saved/custom/disabled bindings, registration conflicts, action ID
 
 Synthetic events remain in memory and are never posted. Installing build 44 and passing these fixtures do not establish real shortcut dispatch in another foreground app. Accessibility/Input Monitoring behavior, actual Shift-only screen suppression, keyboard/Fn/Touch Bar variants, held repeats, permission revocation, sleep/wake and quit handback remain unverified. Hardware interception starts off. See [shortcut setup and acceptance](SHORTCUTS.md).
 
-## Current limits and remaining acceptance
+## Build 45 limits and remaining acceptance
 
 - Build 45 still needs normal installed startup, quit and relaunch acceptance with settings preserved and no unowned recovery left behind.
 - Sleep/wake, closed-lid native handback and the 30-minute expiry need physical acceptance on the installed candidate. Do not intentionally force a native power failure on the live Mac to reproduce an injected regression.
@@ -230,7 +244,7 @@ Screenshots are captured from current native views in isolated preview; they ill
 
 Music and interactive effects use a capped 20 Hz feedback loop; Breathe, Battery and interior static levels use 10 Hz. Exact settled endpoints and paused states use one-second housekeeping. Previews publish at most 10 Hz, cache static artwork, and skip occluded windows. The independent recovery helper uses event-woken polling with a nominal 250 ms idle interval; this is not a hard scheduling guarantee. Input callbacks run only while eligible; hidden previews do not keep publishing frames. Tray/preview redraws are suppressed while the cached session/display state is unavailable; hardware effects keep their separate timing/safety policy and UI refresh resumes when the user returns. These mechanisms are not measured battery-life/latency claims.
 
-The app targets Apple silicon/macOS 14+ and uses compatibility-sensitive private hardware/audio interfaces. Global screen-touch is unsupported. It is ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.
+These historical builds target Apple silicon/macOS 14+ and use compatibility-sensitive private hardware/audio interfaces. Global screen-touch was not supported. These builds were ad-hoc signed and not notarized. Sparkle requires a pinned publisher public key, signed feed/notes/archives, and a trusted manual bootstrap before updating older public versions. Current same-source hashes do not establish authenticity.
 
 ## Earlier candidate follow-up checks
 

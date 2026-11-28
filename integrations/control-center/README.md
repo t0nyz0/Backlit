@@ -1,13 +1,20 @@
-# Control Center experiment (not in public builds)
+# Backlit Control Center
 
-The regular Backlit build targets macOS 14 and later. This separate local
-experiment requires macOS 27 or later and is not part of the public build.
+The signed Backlit 0.2.12 ZIP and DMG include the **Backlit** control for
+macOS 27 or later. Open Backlit once, then add it from **Control Center → Edit
+Controls**. Keep Backlit running in the background. On earlier supported
+versions of macOS, use the menu bar or keyboard shortcut.
+
+## Development builds
+
 `BACKLIT_LOCAL_CONTROL_BUILD=1 bash scripts/build.sh` builds only the host
 for development, under `dist/Backlit-Control-Preview.app`.
 `bash scripts/build-control-extension.sh` builds a standalone extension.
 Neither command embeds or registers the extension or grants App Group access.
-The public packaging script rejects artifacts with the local preview marker,
-extension, gallery icon catalog, Control Center intent, or App Group metadata.
+`scripts/package.sh` is the ad-hoc CI packaging path and rejects the preview
+marker, extension, gallery icon catalog, Control Center intent, and App Group
+metadata. Only the verified Developer ID-signed and notarized release assets
+ship the control.
 
 ## Implemented and checked
 
@@ -28,27 +35,23 @@ extension, gallery icon catalog, Control Center intent, or App Group metadata.
 - The standalone macOS 27 extension build validates the shared intent metadata,
   private-path absence and ad-hoc signature. No install or launch.
 
-## Upgrading the preview
+## Upgrading from a local preview
 
-If you added the control from an earlier local preview, remove that tile and add
+If you added the control from an earlier preview, remove that tile and add
 **Backlit** again from the Control Center gallery. This does not reset app settings.
 
-## No-ship gates
+## Release verification and limits
 
-Compilation/signing is not App Group authorization or live discovery/action proof.
-Before public release, establish a reproducible signed host and extension with the
-same supported App Group, containing-app metadata and working macOS 27 background
-routing to the host. The regular ad-hoc public build does not claim any of these.
-The extension has no action handler and fails safely if dispatched there.
+The released host and extension were signed with the same team and App Group.
+The final ZIP and DMG copies were both installed and registered on the test Mac.
+The owner exercised the tile and confirmed it does not bring the running app
+window forward. This does not establish crash recovery, behavior during sleep
+or lock, unsupported hardware, denied permissions, or broader VoiceOver
+acceptance. If you fully quit Backlit, reopen it before using the tile.
 
-Controlled user testing must cover discovery, closed/relaunched app, quit/crash,
-repeated requests, unsupported hardware, sleeping/locked/lid-closed states,
-recovery/busy and denied permissions. Background intent mode does not prove a
-cold app launch won't display Backlit's window. Control-specific strings are
-English-only; native UI/VoiceOver and minimum-OS acceptance remain unverified.
-No private IPC or fake-state fallback is acceptable.
-
-Do not package this experiment as public Control Center support.
+The extension has no action handler and fails safely if dispatched there. The
+inert host/state tests and development build checks do not substitute for native
+registration or physical hardware tests.
 
 ## Apple references
 - https://developer.apple.com/documentation/widgetkit/creating-controls-to-perform-actions-across-the-system
