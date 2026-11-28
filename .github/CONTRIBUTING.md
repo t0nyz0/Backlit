@@ -10,7 +10,7 @@ uv pip install --python .venv-ha/bin/python homeassistant==2026.11.1
 .venv-ha/bin/python -m unittest discover -s Tests/Python -v
 ```
 
-`bash scripts/package.sh` creates local ad-hoc ZIP, DMG and source packages. GitHub Actions uses pinned actions, read-only repository permissions, and CI-only artifacts. It cannot create or publish a release. For the signed 0.2.12 release, follow the [release preflight](../docs/RELEASE-PREFLIGHT.md). In-app updates remain disabled without a trusted signing key and signed feed.
+`bash scripts/package.sh` creates local ad-hoc ZIP, DMG and source packages. GitHub Actions uses pinned actions, read-only repository permissions, and CI-only artifacts. It cannot create or publish a release. For the signed 0.2.12 release, follow the [release preflight](RELEASE-PREFLIGHT.md). In-app updates remain disabled without a trusted signing key and signed feed.
 
 Never commit pairing keys, hook input, local configuration, raw audio, or live private account data. Native screenshots are generated with `--capture-suite`; keep their preview label and provenance intact. Do not describe an unmeasured physical behavior as verified.
 
