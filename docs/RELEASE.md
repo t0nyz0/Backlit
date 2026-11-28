@@ -1,24 +1,20 @@
-## Backlit 0.2.12 — draft
+## Backlit 0.2.12
 
-Draft for approval. Public downloads remain on 0.2.11.
+- **Control Center.** Add the Backlit tile on macOS 27 or later to switch the
+  logo light on or off without opening the app window. Keep Backlit running
+  in the background.
+- **Six new languages.** Italian, Dutch, Polish, Turkish, Vietnamese and
+  Indonesian bring the interface to sixteen languages.
+- **Smoother startup.** Backlit checks access to saved Home Assistant and MCP
+  keys in the background. When upgrading from 0.2.11, you may need to grant
+  Keychain access or re-enable the connection in **Connections**.
+- **Signed and notarized downloads.** The Apple silicon ZIP and DMG carry
+  the same Developer ID-signed app. Updates remain manual. Earlier supported
+  versions of macOS still use the existing Backlit controls.
 
-- Adds Italian, Dutch, Polish, Turkish, Vietnamese and Indonesian, bringing the
-  interface to sixteen languages, with localized macOS permission descriptions.
-- Keeps System Default, manual selection and saved language choices. Mac regional
-  number conventions remain independent of interface language.
-- Previously enabled Home Assistant and MCP connections resume in the background.
-  Backlit remains responsive while macOS checks their saved keys. Switching Home
-  Assistant off cancels its pending resume; changing LAN access only changes
-  where it can listen.
-- Preserves the existing English fallback, opaque diagnostic values and all
-  hardware, permission and closed-lid safety policies.
-
-Translations receive automated catalog/placeholder checks and sampled offscreen
-layout review, not native-speaker certification or a full live VoiceOver audit.
-macOS controls the language of its own permission prompts; some diagnostics remain
-in English. The planned public macOS build remains ad-hoc signed, non-notarized
-arm64; in-app updates remain disabled without a trusted feed and signing key.
-Control Center is an experimental local preview and is not in the public build.
+Translations passed automated checks and sampled layout review, not a full
+native-speaker or VoiceOver audit. Some low-level diagnostics remain in English.
+Existing hardware and closed-lid limits are unchanged.
 
 ## Backlit 0.2.11
 

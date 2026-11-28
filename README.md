@@ -8,6 +8,8 @@ MacBook Pro with PROLED XDR · Apple silicon · No account required
 
 </div>
 
+<p align="center"><a href="docs/USER-GUIDE.md#control-center"><img src="docs/media/preview/panel-control-center.svg" width="100%" alt="Control Center: add Backlit to your controls and switch the logo light on or off without opening the window. Requires macOS 27 or later and Backlit running. Illustrated tile."></a></p>
+
 <p align="center"><img src="docs/media/preview/panel-menu-bar.svg" width="100%" alt="Menu bar: one click away. Backlit’s native menu bar popover with the backlight switch, behavior picker and current output. Switch the light, pick a behavior and see a live preview, or press Control-Command-B from any app."></p>
 
 <p align="center"><img src="docs/media/preview/panel-main-window.svg" width="100%" alt="Main window: pick a mode, tune the glow. Backlit’s native main window with the live logo preview, the list of seven behaviors and the output settings."></p>
@@ -32,7 +34,7 @@ MacBook Pro with PROLED XDR · Apple silicon · No account required
 
 ---
 
-**Public download: 0.2.11 (build 57)** · **0.2.12 source preview: [Sixteen interface languages](docs/LOCALIZATION.md)** · [User guide](docs/USER-GUIDE.md) · [Installation & compatibility](docs/USER-GUIDE.md#install-and-update) · [All releases](https://github.com/t0nyz0/Backlit/releases) · [Build from source](docs/USER-GUIDE.md#build-from-source) · [Download stats](docs/downloads/README.md)
+**[Download the latest release](https://github.com/t0nyz0/Backlit/releases/latest)** · **[Sixteen interface languages](docs/LOCALIZATION.md)** · [User guide](docs/USER-GUIDE.md) · [Installation & compatibility](docs/USER-GUIDE.md#install-and-update) · [All releases](https://github.com/t0nyz0/Backlit/releases) · [Build from source](docs/USER-GUIDE.md#build-from-source) · [Download stats](docs/downloads/README.md)
 
 [Privacy](docs/PRIVACY.md) · [Validation](docs/VALIDATION.md) · [Security](.github/SECURITY.md) · [Attribution and trademark notices](docs/USER-GUIDE.md#license-and-attribution) · [License](LICENSE)
 

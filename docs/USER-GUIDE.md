@@ -8,6 +8,20 @@ Download the [latest ZIP or DMG](https://github.com/t0nyz0/Backlit/releases), mo
 
 Use **Download Latest Version** in Settings to open the [installer page](https://t0nyz.com/backlit/install), then replace Backlit in Applications. Installation remains manual. See [validation](VALIDATION.md) for update verification and known limits.
 
+## Control Center
+
+The signed Backlit 0.2.12 download includes a **Backlit** control on macOS 27 or later.
+
+1. Move Backlit to **Applications** and open it once.
+2. Open **Control Center → Edit Controls**, then drag **Backlit** into Control Center and click **Done**.
+3. Leave Backlit running in the background. The tile turns the logo light on or off without bringing Backlit’s window forward. If you quit Backlit, reopen it before using the tile.
+
+If you're using an older version of macOS, use the Backlit menu bar or keyboard shortcut instead. See [Apple’s Control Center guide](https://support.apple.com/guide/mac-help/quickly-change-settings-with-control-center-mchlc9d0e1f2/27/mac/27).
+
+### Updating from Backlit 0.2.11
+
+Starting with the signed 0.2.12 download, macOS may require you to grant permissions again. If an existing Home Assistant or MCP connection turns itself off, reopen **Connections** and enable it again. If macOS asks for Keychain access, review the prompt before approving. You don't need to reset Backlit or rotate your pairing key just to update.
+
 ## Behavior details and permissions
 
 | Behavior | What it does |
@@ -46,7 +60,7 @@ Brightness-up/down shortcuts are **Off by default** and can be assigned in Setti
 
 Claude Code and Codex have separate, reversible status hooks. Existing hooks are preserved. They send a session identifier and status—not prompts, code, or tool output. Codex requires hook review/trust in its settings. Live status-hook delivery in Codex remains unverified.
 
-Opt-in local Backlit links and a separately packaged Stream Deck plugin provide toggle, on/off, brightness and behavior controls. Stream Deck remains experimental; real key/profile acceptance is unverified. The four native Shortcuts actions are unavailable in this ad-hoc signed build. Extracted action metadata does not establish discovery.
+Opt-in local Backlit links and a separately packaged Stream Deck plugin provide toggle, on/off, brightness and behavior controls. Stream Deck remains experimental; real key/profile acceptance is unverified. This release does not claim support for the four experimental native Shortcuts actions. The Control Center tile is separate.
 
 An optional [Home Assistant integration](HOME-ASSISTANT.md) exposes a light and status sensors over a local, authenticated connection. It is off by default.
 
@@ -94,7 +108,7 @@ The local installer gracefully quits, replaces, and reopens `/Applications/Backl
 open -n dist/Backlit.app --args --preview
 ```
 
-The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy/secret checks, and an optimized build. Release publication requires that workflow to pass for the exact version tag. It packages ZIP, DMG, clean source, the separate Stream Deck add-on, build metadata, and SHA-256 checksums. Check the tagged workflow run for its commit and results. [Contributing](../.github/CONTRIBUTING.md) covers packaging and Home Assistant tests.
+The [GitHub Actions workflow](https://github.com/t0nyz0/Backlit/actions) runs tests, privacy checks, and an optimized build. Its ad-hoc artifacts are for CI testing, not public downloads. Use the signed and notarized ZIP or DMG from [GitHub Releases](https://github.com/t0nyz0/Backlit/releases) for Control Center. The release also includes source, the optional Stream Deck add-on, build details, and SHA-256 checksums. [Contributing](../.github/CONTRIBUTING.md) covers local packaging and tests.
 
 The public **0.2.11 (build 57)** supports ten interface languages. The unpublished **0.2.12 source preview** adds six more. Both offer System Default and manual language selection, with independent Mac regional number formatting. [Interface language behavior](LOCALIZATION.md).
 
